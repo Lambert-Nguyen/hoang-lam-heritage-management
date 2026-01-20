@@ -18,8 +18,13 @@
 6. [Screen Designs](#6-screen-designs)
 7. [OTA Integration Strategy](#7-ota-integration-strategy)
 8. [Multi-Currency Support](#8-multi-currency-support)
-9. [Development Phases](#9-development-phases)
-10. [Deployment Strategy](#10-deployment-strategy)
+9. [Security & Privacy](#9-security--privacy)
+10. [Testing Strategy](#10-testing-strategy)
+11. [Error Handling & Logging](#11-error-handling--logging)
+12. [Backup & Recovery](#12-backup--recovery)
+13. [Accessibility Considerations](#13-accessibility-considerations)
+14. [Development Phases](#14-development-phases)
+15. [Deployment Strategy](#15-deployment-strategy)
 
 ---
 
@@ -823,7 +828,809 @@ class ExchangeRate(models.Model):
 
 ---
 
-## 9. Development Phases
+## 9. Security & Privacy
+
+### Authentication & Authorization
+
+#### JWT Token Security
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Token Management                          │
+├─────────────────────────────────────────────────────────────┤
+│  Access Token:  Short-lived (15 minutes)                    │
+│  Refresh Token: Long-lived (7 days), stored securely        │
+│  Token Rotation: New refresh token on each refresh          │
+│  Blacklisting:   Revoke tokens on logout/password change    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Role-Based Access Control (RBAC)
+| Role | Permissions |
+|------|-------------|
+| **Owner** | Full access: all features, settings, user management, financial reports |
+| **Manager** | Operational: bookings, check-in/out, daily finance, basic reports |
+| **Staff** | Limited: view bookings, housekeeping tasks, room status updates |
+
+### Guest Data Protection
+
+#### Sensitive Data Handling
+```python
+# Data Classification
+SENSITIVE_FIELDS = {
+    'HIGH': ['guest_id_number', 'passport_number'],      # CCCD/Passport - encrypted at rest
+    'MEDIUM': ['guest_phone', 'guest_email'],            # Contact info - access logged
+    'LOW': ['guest_name', 'guest_count'],                # Basic info - standard protection
+}
+
+# Encryption Strategy
+- Database: AES-256 encryption for HIGH sensitivity fields
+- Transit: TLS 1.3 for all API communications
+- Storage: Encrypted Hive boxes on mobile (AES)
+```
+
+#### Vietnam Data Protection Compliance
+| Requirement | Implementation |
+|-------------|----------------|
+| **CCCD Storage** | Encrypted, access-logged, retention policy (checkout + 30 days) |
+| **Guest Consent** | Explicit consent checkbox during booking |
+| **Data Retention** | Auto-archive after 1 year, delete after 3 years |
+| **Data Export** | Guest can request their data (GDPR-like) |
+| **Audit Trail** | Log all access to sensitive guest data |
+
+### API Security
+
+#### Rate Limiting
+```
+┌─────────────────────────────────────────┐
+│  Endpoint Type    │  Rate Limit         │
+├───────────────────┼─────────────────────┤
+│  Authentication   │  5 requests/minute  │
+│  Booking CRUD     │  60 requests/minute │
+│  Reports          │  10 requests/minute │
+│  General API      │  100 requests/minute│
+└───────────────────┴─────────────────────┘
+```
+
+#### Security Headers
+```python
+# Django Security Settings
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+```
+
+#### Input Validation
+- All user inputs sanitized and validated
+- SQL injection prevention via Django ORM
+- XSS prevention via template escaping
+- File upload validation (receipt images only: jpg, png, pdf, max 5MB)
+
+### Mobile App Security
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 Flutter Security Measures                    │
+├─────────────────────────────────────────────────────────────┤
+│  Secure Storage:  flutter_secure_storage for tokens         │
+│  Certificate Pin: Pin SSL certificates (optional)           │
+│  Obfuscation:     Code obfuscation for release builds       │
+│  Biometric Auth:  Optional fingerprint/face unlock          │
+│  Session Timeout: Auto-logout after 30 minutes inactive     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 10. Testing Strategy
+
+### Testing Pyramid
+
+```
+                    ┌─────────┐
+                    │   E2E   │  ← Few, slow, expensive
+                    │  Tests  │
+                   ─┴─────────┴─
+                 ┌───────────────┐
+                 │  Integration  │  ← Medium amount
+                 │    Tests      │
+                ─┴───────────────┴─
+              ┌───────────────────────┐
+              │      Unit Tests       │  ← Many, fast, cheap
+              └───────────────────────┘
+```
+
+### Backend Testing (Django)
+
+#### Unit Tests
+```python
+# Test Categories
+tests/
+├── test_models/
+│   ├── test_room.py           # Room model validation
+│   ├── test_booking.py        # Booking business logic
+│   └── test_financial.py      # Financial calculations
+├── test_api/
+│   ├── test_auth.py           # JWT authentication
+│   ├── test_bookings.py       # Booking CRUD endpoints
+│   ├── test_rooms.py          # Room management
+│   └── test_finance.py        # Financial entries
+└── test_services/
+    ├── test_pricing.py        # Rate calculations
+    ├── test_availability.py   # Room availability logic
+    └── test_reports.py        # Report generation
+```
+
+#### Test Coverage Goals
+| Component | Target Coverage |
+|-----------|-----------------|
+| Models | 90%+ |
+| API Views | 85%+ |
+| Services/Utils | 90%+ |
+| Overall | 80%+ minimum |
+
+#### Testing Tools
+```python
+# requirements-dev.txt
+pytest==8.x
+pytest-django==4.x
+pytest-cov==4.x
+factory-boy==3.x          # Test data factories
+faker==22.x               # Fake data generation
+responses==0.24.x         # Mock HTTP requests (OTA APIs)
+```
+
+### Frontend Testing (Flutter)
+
+#### Unit Tests
+```dart
+// Test Structure
+test/
+├── unit/
+│   ├── models/            // Data model tests
+│   ├── providers/         // Riverpod provider tests
+│   └── utils/             // Utility function tests
+├── widget/
+│   ├── screens/           // Screen widget tests
+│   └── components/        // Reusable component tests
+└── integration/
+    └── flows/             // User flow tests
+```
+
+#### Widget Tests
+```dart
+// Example: Booking Card Widget Test
+testWidgets('BookingCard displays guest name and dates', (tester) async {
+  final booking = Booking(
+    guestName: 'Nguyễn Văn A',
+    checkInDate: DateTime(2026, 1, 19),
+    checkOutDate: DateTime(2026, 1, 21),
+  );
+
+  await tester.pumpWidget(BookingCard(booking: booking));
+
+  expect(find.text('Nguyễn Văn A'), findsOneWidget);
+  expect(find.text('19/01 → 21/01'), findsOneWidget);
+});
+```
+
+#### Testing Tools
+```yaml
+# pubspec.yaml (dev_dependencies)
+flutter_test:
+  sdk: flutter
+mockito: ^5.4.0
+build_runner: ^2.4.0
+integration_test:
+  sdk: flutter
+```
+
+### Integration Testing
+
+#### API Integration Tests
+```python
+# Test real API flows
+class BookingFlowTest(APITestCase):
+    def test_complete_booking_flow(self):
+        # 1. Login
+        # 2. Check room availability
+        # 3. Create booking
+        # 4. Check-in guest
+        # 5. Record payment
+        # 6. Check-out guest
+        # 7. Verify financial entry created
+```
+
+#### Mobile Integration Tests
+```dart
+// integration_test/booking_flow_test.dart
+void main() {
+  integrationTest('Complete booking flow', (tester) async {
+    app.main();
+    await tester.pumpAndSettle();
+
+    // Login
+    await tester.enterText(find.byKey(Key('email')), 'test@hotel.com');
+    await tester.enterText(find.byKey(Key('password')), 'password');
+    await tester.tap(find.byKey(Key('loginButton')));
+    await tester.pumpAndSettle();
+
+    // Create booking
+    await tester.tap(find.byKey(Key('newBookingFab')));
+    // ... continue flow
+  });
+}
+```
+
+### E2E Testing
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Critical User Flows to Test E2E                            │
+├─────────────────────────────────────────────────────────────┤
+│  1. New user login → view dashboard → create booking        │
+│  2. Walk-in guest → booking → check-in → payment → checkout │
+│  3. Record expense → view daily summary → monthly report    │
+│  4. Offline booking → sync when online → verify data        │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Continuous Integration
+
+```yaml
+# .github/workflows/test.yml
+name: Tests
+on: [push, pull_request]
+
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Django tests
+        run: |
+          cd hotel_backend
+          pip install -r requirements-dev.txt
+          pytest --cov=hotel_api --cov-report=xml
+
+  flutter-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+      - name: Run Flutter tests
+        run: |
+          cd hotel_app
+          flutter test --coverage
+```
+
+---
+
+## 11. Error Handling & Logging
+
+### Backend Error Handling
+
+#### Exception Hierarchy
+```python
+# hotel_api/exceptions.py
+class HotelAPIException(Exception):
+    """Base exception for all hotel API errors"""
+    status_code = 500
+    default_message = "Đã xảy ra lỗi"
+    error_code = "INTERNAL_ERROR"
+
+class BookingConflictError(HotelAPIException):
+    status_code = 409
+    default_message = "Phòng đã được đặt trong thời gian này"
+    error_code = "BOOKING_CONFLICT"
+
+class RoomNotAvailableError(HotelAPIException):
+    status_code = 400
+    default_message = "Phòng không khả dụng"
+    error_code = "ROOM_NOT_AVAILABLE"
+
+class PaymentRequiredError(HotelAPIException):
+    status_code = 402
+    default_message = "Yêu cầu thanh toán trước"
+    error_code = "PAYMENT_REQUIRED"
+```
+
+#### API Error Response Format
+```json
+{
+  "success": false,
+  "error": {
+    "code": "BOOKING_CONFLICT",
+    "message": "Phòng đã được đặt trong thời gian này",
+    "message_en": "Room is already booked for this period",
+    "details": {
+      "room_id": 101,
+      "conflicting_booking_id": 456,
+      "requested_dates": "19/01 - 21/01"
+    }
+  },
+  "timestamp": "2026-01-19T10:30:00Z"
+}
+```
+
+### Frontend Error Handling
+
+#### Error State Management
+```dart
+// Riverpod error handling pattern
+@riverpod
+class BookingNotifier extends _$BookingNotifier {
+  @override
+  AsyncValue<List<Booking>> build() => const AsyncValue.loading();
+
+  Future<void> createBooking(BookingRequest request) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      return await ref.read(bookingRepositoryProvider).create(request);
+    });
+  }
+}
+
+// UI handles AsyncValue states
+booking.when(
+  data: (data) => BookingList(bookings: data),
+  loading: () => const LoadingSpinner(),
+  error: (error, stack) => ErrorWidget(
+    message: _getLocalizedError(error),
+    onRetry: () => ref.refresh(bookingProvider),
+  ),
+)
+```
+
+#### User-Friendly Error Messages
+```dart
+// lib/core/errors/error_messages.dart
+String getLocalizedError(Object error, String locale) {
+  if (error is BookingConflictException) {
+    return locale == 'vi'
+      ? 'Phòng đã có người đặt. Vui lòng chọn ngày khác.'
+      : 'Room already booked. Please select different dates.';
+  }
+  if (error is NetworkException) {
+    return locale == 'vi'
+      ? 'Không có kết nối mạng. Đang làm việc offline.'
+      : 'No network connection. Working offline.';
+  }
+  // Default fallback
+  return locale == 'vi' ? 'Đã xảy ra lỗi' : 'An error occurred';
+}
+```
+
+### Logging Strategy
+
+#### Backend Logging
+```python
+# settings.py
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/hotel_api.log',
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 5,
+        },
+    },
+    'loggers': {
+        'hotel_api': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'hotel_api.security': {  # Sensitive data access
+            'handlers': ['file'],
+            'level': 'INFO',
+        },
+    },
+}
+```
+
+#### Log Levels & Usage
+| Level | Usage | Example |
+|-------|-------|---------|
+| **ERROR** | Unexpected failures | Database connection failed |
+| **WARNING** | Potential issues | Rate limit approaching |
+| **INFO** | Business events | Booking created, Check-in completed |
+| **DEBUG** | Development details | API request/response payloads |
+
+#### Structured Logging Format
+```json
+{
+  "timestamp": "2026-01-19T10:30:00Z",
+  "level": "INFO",
+  "logger": "hotel_api.bookings",
+  "message": "Booking created",
+  "context": {
+    "booking_id": 123,
+    "room_id": 101,
+    "user_id": 1,
+    "source": "walk_in"
+  },
+  "request_id": "abc-123-def"
+}
+```
+
+#### Mobile Logging
+```dart
+// Using logger package
+final logger = Logger(
+  printer: PrettyPrinter(
+    methodCount: 0,
+    errorMethodCount: 5,
+    lineLength: 50,
+    colors: true,
+  ),
+);
+
+// Log levels
+logger.d('Debug: API request to /bookings');
+logger.i('Info: Booking #123 created');
+logger.w('Warning: Offline mode, queuing request');
+logger.e('Error: Failed to sync', error: e, stackTrace: stack);
+
+// Production: Send errors to crash reporting (Sentry/Crashlytics)
+```
+
+---
+
+## 12. Backup & Recovery
+
+### Database Backup Strategy
+
+#### Backup Schedule
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Backup Schedule                           │
+├─────────────────────────────────────────────────────────────┤
+│  Frequency     │  Type       │  Retention                   │
+├────────────────┼─────────────┼──────────────────────────────┤
+│  Every 6 hours │  Incremental│  7 days                      │
+│  Daily (2 AM)  │  Full       │  30 days                     │
+│  Weekly (Sun)  │  Full       │  3 months                    │
+│  Monthly       │  Full       │  1 year                      │
+└────────────────┴─────────────┴──────────────────────────────┘
+```
+
+#### Backup Implementation
+```bash
+#!/bin/bash
+# scripts/backup.sh
+
+# PostgreSQL backup
+BACKUP_DIR="/backups/hotel_db"
+DATE=$(date +%Y%m%d_%H%M%S)
+FILENAME="hotel_backup_${DATE}.sql.gz"
+
+pg_dump hotel_db | gzip > "${BACKUP_DIR}/${FILENAME}"
+
+# Upload to cloud storage (optional)
+aws s3 cp "${BACKUP_DIR}/${FILENAME}" s3://hotel-backups/daily/
+
+# Clean old backups (keep last 30 days)
+find ${BACKUP_DIR} -name "*.sql.gz" -mtime +30 -delete
+```
+
+#### Automated Backup (Cron)
+```cron
+# /etc/cron.d/hotel_backup
+0 2 * * * root /opt/hotel/scripts/backup.sh >> /var/log/hotel_backup.log 2>&1
+0 */6 * * * root /opt/hotel/scripts/incremental_backup.sh >> /var/log/hotel_backup.log 2>&1
+```
+
+### Recovery Procedures
+
+#### Database Recovery
+```bash
+# Restore from backup
+gunzip -c hotel_backup_20260119.sql.gz | psql hotel_db
+
+# Point-in-time recovery (if WAL archiving enabled)
+pg_restore --target-time="2026-01-19 10:00:00" -d hotel_db
+```
+
+#### Recovery Time Objectives
+| Scenario | RTO (Recovery Time) | RPO (Data Loss) |
+|----------|---------------------|-----------------|
+| Minor issue | < 1 hour | 0 (no data loss) |
+| Database corruption | < 4 hours | < 6 hours |
+| Server failure | < 8 hours | < 24 hours |
+| Disaster recovery | < 24 hours | < 24 hours |
+
+### Mobile Data Recovery
+
+#### Local Data Backup
+```dart
+// Hive boxes backup to cloud
+Future<void> backupLocalData() async {
+  final bookingsBox = Hive.box<Booking>('bookings');
+  final financesBox = Hive.box<FinancialEntry>('finances');
+
+  final backup = {
+    'bookings': bookingsBox.values.map((b) => b.toJson()).toList(),
+    'finances': financesBox.values.map((f) => f.toJson()).toList(),
+    'timestamp': DateTime.now().toIso8601String(),
+  };
+
+  // Sync to server
+  await api.uploadBackup(backup);
+}
+```
+
+#### Offline Queue Recovery
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Offline Queue Management                                    │
+├─────────────────────────────────────────────────────────────┤
+│  1. All offline actions stored in pending_operations box    │
+│  2. Each operation has unique ID and timestamp              │
+│  3. On reconnect, sync in order (oldest first)              │
+│  4. Conflict resolution: server wins, notify user           │
+│  5. Failed syncs retry 3x, then prompt user                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Disaster Recovery Plan
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                 Disaster Recovery Steps                      │
+├─────────────────────────────────────────────────────────────┤
+│  1. ASSESS: Identify scope of failure                       │
+│  2. NOTIFY: Alert users (mom, brother) of downtime          │
+│  3. PROVISION: Spin up new server if needed                 │
+│  4. RESTORE: Restore from latest backup                     │
+│  5. VERIFY: Test all critical functions                     │
+│  6. RESUME: Notify users service is restored                │
+│  7. REVIEW: Document incident and improve                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 13. Accessibility Considerations
+
+### Target User Considerations
+
+> **Primary Users:** Mom (50s+) and Brother - may need larger text, simple navigation, and forgiving UI
+
+### Visual Accessibility
+
+#### Font Sizes
+```dart
+// lib/core/theme/text_theme.dart
+class HotelTextTheme {
+  // Minimum touch target: 48x48 dp
+  // Minimum font size: 16sp for body text
+
+  static const TextTheme lightTheme = TextTheme(
+    displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+    headlineMedium: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+    titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+    bodyLarge: TextStyle(fontSize: 18),    // Larger than default
+    bodyMedium: TextStyle(fontSize: 16),   // Minimum readable
+    labelLarge: TextStyle(fontSize: 16),   // Button text
+  );
+}
+```
+
+#### Adjustable Text Size
+```dart
+// User can increase text size in Settings
+class AccessibilitySettings {
+  double textScaleFactor;  // 1.0, 1.2, 1.4, 1.6
+  bool highContrast;
+  bool reducedMotion;
+}
+
+// Apply in app
+MaterialApp(
+  builder: (context, child) {
+    return MediaQuery(
+      data: MediaQuery.of(context).copyWith(
+        textScaleFactor: settings.textScaleFactor,
+      ),
+      child: child!,
+    );
+  },
+)
+```
+
+#### Color Contrast
+```dart
+// WCAG AA compliant contrast ratios (4.5:1 minimum)
+class HotelColors {
+  // Primary actions - high contrast
+  static const primary = Color(0xFF1565C0);      // Blue
+  static const onPrimary = Color(0xFFFFFFFF);    // White text
+
+  // Status colors - distinguishable
+  static const available = Color(0xFF2E7D32);    // Green
+  static const occupied = Color(0xFFC62828);     // Red
+  static const cleaning = Color(0xFFF9A825);     // Amber
+
+  // Text colors
+  static const textPrimary = Color(0xFF212121);  // Dark gray
+  static const textSecondary = Color(0xFF616161);// Medium gray
+
+  // Error states
+  static const error = Color(0xFFD32F2F);        // Red
+  static const errorBackground = Color(0xFFFFEBEE);
+}
+```
+
+### Touch Accessibility
+
+#### Touch Targets
+```dart
+// Minimum 48x48 dp touch targets
+class HotelButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 56,  // Larger than minimum for older users
+      child: ElevatedButton(
+        onPressed: onPressed,
+        child: Text(label, style: TextStyle(fontSize: 16)),
+      ),
+    );
+  }
+}
+
+// Room status buttons - extra large for easy tapping
+class RoomStatusCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 80,
+      height: 80,  // Large touch target
+      child: Card(
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(roomNumber, style: TextStyle(fontSize: 24)),
+              Icon(statusIcon, size: 28),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+#### Gesture Simplicity
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Gesture Guidelines                                          │
+├─────────────────────────────────────────────────────────────┤
+│  ✓ Single tap for all primary actions                       │
+│  ✓ Avoid swipe-to-delete (use explicit delete button)       │
+│  ✓ No complex gestures (pinch, rotate)                      │
+│  ✓ Pull-to-refresh with clear visual indicator              │
+│  ✓ Long-press only for optional shortcuts                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Navigation Simplicity
+
+#### Clear Navigation Structure
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Navigation Principles                                       │
+├─────────────────────────────────────────────────────────────┤
+│  • Maximum 2 levels deep from home                          │
+│  • Always visible back button                               │
+│  • Clear page titles in Vietnamese                          │
+│  • Bottom navigation always accessible                      │
+│  • No hidden menus or hamburger menus                       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Confirmation Dialogs
+```dart
+// Important actions require confirmation
+Future<bool> confirmCheckout(BuildContext context, Booking booking) {
+  return showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Xác nhận trả phòng?', style: TextStyle(fontSize: 20)),
+      content: Text(
+        'Phòng ${booking.roomNumber} - ${booking.guestName}\n'
+        'Bạn có chắc muốn trả phòng?',
+        style: TextStyle(fontSize: 16),
+      ),
+      actions: [
+        TextButton(
+          child: Text('Hủy', style: TextStyle(fontSize: 16)),
+          onPressed: () => Navigator.pop(context, false),
+        ),
+        ElevatedButton(
+          child: Text('Xác nhận', style: TextStyle(fontSize: 16)),
+          onPressed: () => Navigator.pop(context, true),
+        ),
+      ],
+    ),
+  ).then((value) => value ?? false);
+}
+```
+
+### Feedback & Assistance
+
+#### Clear Feedback
+```dart
+// Success/error feedback with Vietnamese messages
+void showSuccessSnackbar(BuildContext context, String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Row(
+        children: [
+          Icon(Icons.check_circle, color: Colors.white, size: 24),
+          SizedBox(width: 12),
+          Text(message, style: TextStyle(fontSize: 16)),
+        ],
+      ),
+      backgroundColor: Colors.green,
+      duration: Duration(seconds: 3),
+    ),
+  );
+}
+
+// Usage
+showSuccessSnackbar(context, 'Đã lưu đặt phòng thành công!');
+```
+
+#### Help Text
+```dart
+// Inline help for complex fields
+TextFormField(
+  decoration: InputDecoration(
+    labelText: 'Số CCCD',
+    labelStyle: TextStyle(fontSize: 16),
+    helperText: 'Nhập 12 số trên căn cước công dân',
+    helperStyle: TextStyle(fontSize: 14),
+    hintText: '001234567890',
+  ),
+)
+```
+
+### Offline Mode Indicator
+
+```dart
+// Clear offline status indicator
+class OfflineBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.orange,
+      padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.wifi_off, color: Colors.white, size: 20),
+          SizedBox(width: 8),
+          Text(
+            'Đang offline - Dữ liệu sẽ đồng bộ khi có mạng',
+            style: TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+}
+```
+
+---
+
+## 14. Development Phases
+
 
 ### Phase 1: Foundation (MVP)
 **Duration estimate removed per guidelines - focus on deliverables**
@@ -932,7 +1739,7 @@ class ExchangeRate(models.Model):
 
 ---
 
-## 10. Deployment Strategy
+## 15. Deployment Strategy
 
 ### Development Environment
 ```
