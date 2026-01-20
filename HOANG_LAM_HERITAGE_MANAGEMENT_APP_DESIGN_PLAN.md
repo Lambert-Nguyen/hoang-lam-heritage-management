@@ -44,14 +44,14 @@ Build a simple, intuitive hotel management app for a 7-room family hotel that en
 
 ### Repository Structure
 ```
-NEW REPOSITORY: hotel-management/
-├── hotel_app/              # Flutter mobile app
+REPOSITORY: hoang-lam-heritage-management/
+├── hoang_lam_app/          # Flutter mobile app
 │   ├── lib/
 │   ├── android/
 │   ├── ios/
 │   └── pubspec.yaml
-├── hotel_backend/          # Django REST API (can be added to cosmo_backend later)
-│   ├── hotel_api/
+├── hoang_lam_backend/      # Django REST API
+│   ├── hoang_lam_api/
 │   ├── manage.py
 │   └── requirements.txt
 ├── docs/
@@ -61,10 +61,10 @@ NEW REPOSITORY: hotel-management/
 ### Relationship with Cosmo Management
 | Aspect | Approach |
 |--------|----------|
-| **Flutter App** | Separate repository, copy patterns from cosmo_app |
-| **Backend** | Start separate, optionally merge into cosmo_backend later |
+| **Flutter App** | Separate repository (`hoang_lam_app`), copy patterns from cosmo_app |
+| **Backend** | Start separate (`hoang_lam_backend`), optionally merge into cosmo_backend later |
 | **Authentication** | Can share JWT infrastructure if backends merge |
-| **Database** | Separate PostgreSQL database |
+| **Database** | Separate PostgreSQL database (`hoang_lam_db`) |
 | **Deployment** | Can share server, different ports/subdomains |
 
 ---
@@ -157,23 +157,29 @@ NEW REPOSITORY: hotel-management/
 | User Authentication | P0 | Login for mom and brother (JWT) |
 | Room Management | P0 | View/edit 7 rooms, status, rates |
 | Manual Booking | P0 | Create walk-in and phone bookings |
-| Booking Calendar | P0 | Visual calendar of occupancy |
-| Check-in/Check-out | P0 | Mark guests as arrived/departed |
-| Guest Information | P1 | Name, phone, ID number (CCCD) |
+| Booking Calendar | P0 | Visual calendar of occupancy (monthly timeline view) |
+| Check-in/Check-out | P0 | Mark guests as arrived/departed with timestamps |
+| Guest Information | P0 | Name, phone, ID/passport number (CCCD), nationality |
+| ID/Passport Scanning | P1 | Camera capture of guest ID with OCR auto-fill (ezCloud-inspired) |
 | Dashboard | P0 | Today's overview: rooms, check-ins/outs, revenue |
+| Temporary Residence Declaration | P1 | Export guest data for police reporting (Vietnamese legal requirement) |
+| Night Audit | P1 | End-of-day summary, auto-close day, pending payments report |
 
 ### Phase 2: Financial Tracking
 **Goal:** Income and expense management (like ezCloud's revenue tools)
 
 | Feature | Priority | Description |
 |---------|----------|-------------|
-| Income Recording | P0 | Room revenue, extra services |
-| Expense Recording | P0 | Utilities, supplies, wages |
-| Daily Summary | P0 | Today's income/expenses |
-| Monthly Report | P1 | Revenue, expenses, profit |
+| Income Recording | P0 | Room revenue, extra services, deposits |
+| Expense Recording | P0 | Utilities, supplies, wages, categorized |
+| Daily Summary | P0 | Today's income/expenses with cash drawer balance |
+| Monthly Report | P1 | Revenue, expenses, profit margins |
 | Multi-Currency | P1 | VND, USD support with exchange rates |
-| Receipt/Invoice | P2 | Generate simple receipts |
-| Payment Methods | P1 | Cash, bank transfer, MoMo, VNPay |
+| Receipt/Invoice | P1 | Generate receipts, optional e-invoice integration (like ezInvoice) |
+| Payment Methods | P0 | Cash, bank transfer, MoMo, VNPay, card |
+| Deposit Management | P0 | Track deposits, partial payments, outstanding balances |
+| Split Payments | P1 | Allow payment across multiple methods for single booking |
+| Refund Processing | P1 | Handle cancellation refunds and adjustments |
 
 ### Phase 3: Operations & Housekeeping
 **Goal:** Complete hotel operations (ezCloud-inspired)
@@ -181,55 +187,95 @@ NEW REPOSITORY: hotel-management/
 | Feature | Priority | Description |
 |---------|----------|-------------|
 | Housekeeping Tasks | P1 | Auto-create cleaning tasks on checkout |
-| Room Status Tracking | P1 | Available → Occupied → Cleaning → Available |
-| Minibar/POS | P2 | Sell items, charge to room |
-| Minibar Inventory | P2 | Track minibar stock per room |
-| Task Assignment | P2 | Assign cleaning tasks to staff |
-| Maintenance Requests | P2 | Track room maintenance issues |
+| Room Status Tracking | P0 | Available → Occupied → Cleaning → Maintenance → Available |
+| Minibar/POS | P1 | Sell items, charge to room folio (like ezCloud front desk POS) |
+| Minibar Inventory | P2 | Track minibar stock per room, auto-replenishment alerts |
+| Task Assignment | P1 | Assign cleaning/maintenance tasks to staff with notifications |
+| Maintenance Requests | P1 | Track room maintenance issues, priority levels, history |
+| Room Inspection | P2 | Checklist for room inspections, photo documentation |
+| Lost & Found | P2 | Track items left by guests with guest notification |
+| Extra Bed/Amenities | P1 | Add extra beds, cots, amenities with charges |
+| Early Check-in/Late Check-out | P1 | Handle early arrivals and late departures with pricing |
+| Hourly Room Rates | P1 | Support hourly bookings (common in Vietnam) |
 
 ### Phase 4: Reports & Analytics
-**Goal:** Business intelligence (like ezBi)
+**Goal:** Business intelligence (like ezBi with Power BI integration)
 
 | Feature | Priority | Description |
 |---------|----------|-------------|
-| Occupancy Reports | P1 | Room utilization %, trends |
-| Revenue Analytics | P1 | By room, by source, by month |
-| RevPAR Calculation | P1 | Revenue per available room |
-| Expense Analysis | P1 | Categorized spending breakdown |
-| Export to Excel | P2 | Download reports |
-| Comparative Reports | P2 | This month vs last month |
+| Occupancy Reports | P0 | Room utilization %, daily/weekly/monthly trends |
+| Revenue Analytics | P0 | By room, by source, by period, by room type |
+| RevPAR Calculation | P1 | Revenue per available room with benchmarks |
+| ADR Calculation | P1 | Average Daily Rate tracking |
+| Expense Analysis | P1 | Categorized spending breakdown, budget vs actual |
+| Export to Excel | P1 | Download reports in Excel/CSV format |
+| Comparative Reports | P1 | Period-over-period comparison (MoM, YoY) |
+| Guest Demographics | P1 | Nationality breakdown, guest sources, repeat guests |
+| Channel Performance | P1 | Revenue by booking source (OTA vs direct) |
+| Booking Lead Time | P2 | Days between booking and check-in analysis |
+| Cancellation Report | P2 | Cancellation rate, reasons, revenue impact |
+| Dashboard Widgets | P1 | Customizable KPI widgets for real-time monitoring |
 
-### Phase 5: Guest Communication
+### Phase 5: Guest Communication & Experience
 **Goal:** Customer experience (like ezMessage/ezGuest)
 
 | Feature | Priority | Description |
 |---------|----------|-------------|
-| Booking Confirmations | P1 | Auto-send confirmation via SMS/email |
+| Booking Confirmations | P0 | Auto-send confirmation via SMS/Zalo/email |
+| Pre-Arrival Messages | P1 | Send directions, WiFi info, check-in time before arrival |
 | Check-out Reminders | P1 | Push notifications for upcoming checkouts |
-| Guest History | P2 | Track returning guests |
-| Birthday/Special Dates | P3 | Send greetings (future) |
+| Guest History | P1 | Track returning guests with preferences and stay history |
+| Guest Profiles | P1 | Store preferences: room type, floor, special requests |
+| Loyalty/VIP Tagging | P2 | Mark frequent guests, offer special rates |
+| Review Request | P2 | Auto-send review request after checkout |
+| Feedback Collection | P2 | In-app feedback form, track satisfaction |
+| Birthday/Anniversary | P3 | Auto-greetings on special dates |
+| Pre-Check-in | P2 | Allow guests to submit info before arrival (ezCloud-style) |
+| Digital Room Service | P3 | Guests can order services via shared link/web |
 
 ### Phase 6: OTA Integration (Channel Manager)
-**Goal:** Connect with booking platforms (like ezCms)
+**Goal:** Connect with booking platforms (like ezCms - connects to 200+ OTAs)
 
 | Feature | Priority | Description |
 |---------|----------|-------------|
 | iCal Sync | P1 | Simple calendar sync (Airbnb, Booking.com) |
-| Booking.com API | P2 | Full channel manager integration |
-| Agoda API | P2 | Southeast Asia bookings |
-| Traveloka | P2 | Vietnam/SEA OTA |
-| Rate Management | P2 | Sync prices across platforms |
-| Availability Sync | P2 | Real-time room availability |
-| Smart Pricing | P3 | Auto-adjust rates based on demand |
+| Google Hotel Integration | P1 | Connect to Google Hotel search (ezCloud feature) |
+| Booking.com API | P2 | Full channel manager integration, 2-way sync |
+| Agoda API | P2 | Southeast Asia bookings via YCS |
+| Traveloka | P2 | Vietnam/SEA OTA integration |
+| Expedia | P2 | Global OTA connectivity |
+| Rate Management | P1 | Sync prices across all platforms from single interface |
+| Availability Sync | P1 | Real-time room availability across all channels |
+| Rate Shopping | P2 | Monitor competitor pricing (ezCloud ezRMS feature) |
+| Dynamic Pricing | P2 | Auto-adjust rates based on demand/occupancy |
+| Minimum Stay Rules | P1 | Set min/max night requirements by channel/date |
+| Closed to Arrival | P1 | Block check-ins on specific dates |
+| Channel Performance | P1 | Track bookings and revenue by channel |
+| Overbooking Prevention | P0 | Real-time inventory sync to prevent double-bookings |
 
-### Phase 7: Direct Booking (Future)
-**Goal:** Reduce OTA commissions (like ezBe)
+### Phase 7: Direct Booking (Booking Engine)
+**Goal:** Reduce OTA commissions (like ezBe - can increase revenue by 23%)
 
 | Feature | Priority | Description |
 |---------|----------|-------------|
-| Booking Widget | P3 | Embeddable for website/Facebook |
-| Online Payments | P3 | VNPay, MoMo integration |
-| Promotions | P3 | Discount codes, special offers |
+| Booking Widget | P2 | Embeddable widget for website/Facebook |
+| Online Payments | P2 | VNPay, MoMo, card payment integration |
+| Promotions | P2 | Discount codes, promo campaigns, flash deals |
+| Package Deals | P2 | Room + breakfast, room + tour bundles |
+| Direct Booking Incentives | P2 | Best price guarantee for direct bookings |
+| Social Media Integration | P3 | Book via Facebook Messenger, Zalo |
+| QR Code Booking | P3 | QR codes for walk-in guests to book directly |
+
+### Phase 8: Smart Device Integration (Future)
+**Goal:** IoT and smart property management (ezCloud feature)
+
+| Feature | Priority | Description |
+|---------|----------|-------------|
+| Smart Lock Integration | P3 | Digital door locks, keyless entry |
+| Electricity Management | P3 | Auto on/off based on check-in/out (save 25% electricity) |
+| Digital Key | P3 | Mobile app door unlock for guests |
+| Room Sensors | P3 | Occupancy detection, energy optimization |
+| Minibar Sensors | P3 | Auto-detect minibar consumption |
 
 ---
 
@@ -256,38 +302,118 @@ class RoomType(models.Model):
     max_guests = models.IntegerField(default=2)
     description = models.TextField(blank=True)
 
+# Guest Model (separate for reusability and history tracking)
+class Guest(models.Model):
+    name = models.CharField(max_length=100)
+    phone = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
+    id_type = models.CharField(choices=ID_TYPE)  # cccd, passport, driver_license
+    id_number = models.CharField(max_length=30, blank=True)  # CCCD/Passport number
+    id_image = models.ImageField(null=True, blank=True)      # Scanned ID photo (ezCloud feature)
+    nationality = models.CharField(max_length=50, default='Vietnam')
+    date_of_birth = models.DateField(null=True, blank=True)
+    gender = models.CharField(choices=GENDER, blank=True)
+    address = models.TextField(blank=True)
+
+    # Guest preferences (ezCloud guest profile feature)
+    preferred_room_type = models.ForeignKey('RoomType', null=True, blank=True)
+    preferred_floor = models.IntegerField(null=True, blank=True)
+    special_requests = models.TextField(blank=True)
+
+    # Loyalty tracking
+    is_vip = models.BooleanField(default=False)
+    total_stays = models.IntegerField(default=0)
+    total_spent = models.DecimalField(default=0)
+    first_stay = models.DateField(null=True, blank=True)
+    last_stay = models.DateField(null=True, blank=True)
+
+    notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
 # Booking Model
 class Booking(models.Model):
     room = models.ForeignKey('Room')
-    guest_name = models.CharField(max_length=100)
-    guest_phone = models.CharField(max_length=20, blank=True)
-    guest_id_number = models.CharField(max_length=20, blank=True)  # CCCD/Passport
+    guest = models.ForeignKey('Guest')  # Link to guest profile
+    additional_guests = models.ManyToManyField('Guest', blank=True)  # Other guests in room
     guest_count = models.IntegerField(default=1)
+
+    # Group booking support
+    group = models.ForeignKey('GroupBooking', null=True, blank=True)
 
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     actual_check_in = models.DateTimeField(null=True)   # When they actually arrived
     actual_check_out = models.DateTimeField(null=True)  # When they actually left
 
+    # Hourly booking support (Vietnamese hotel feature)
+    is_hourly = models.BooleanField(default=False)
+    hours_booked = models.IntegerField(null=True, blank=True)
+
+    # Early/Late handling
+    early_check_in = models.BooleanField(default=False)
+    late_check_out = models.BooleanField(default=False)
+    early_check_in_fee = models.DecimalField(default=0)
+    late_check_out_fee = models.DecimalField(default=0)
+
     status = models.CharField(choices=BOOKING_STATUS)
     # BOOKING_STATUS: pending, confirmed, checked_in, checked_out, cancelled, no_show
 
     source = models.CharField(choices=BOOKING_SOURCE)
-    # BOOKING_SOURCE: walk_in, phone, booking_com, agoda, airbnb, other
+    # BOOKING_SOURCE: walk_in, phone, website, booking_com, agoda, airbnb, expedia,
+    #                 traveloka, google_hotel, other
 
     ota_reference = models.CharField(max_length=50, blank=True)  # OTA booking ID
+    ota_commission = models.DecimalField(default=0)              # Commission amount
 
     # Pricing
     nightly_rate = models.DecimalField()
     currency = models.CharField(max_length=3, default='VND')
+    total_room_charge = models.DecimalField()
+    extra_charges = models.DecimalField(default=0)   # Minibar, services, etc.
     total_amount = models.DecimalField()
+    discount_amount = models.DecimalField(default=0)
+    discount_reason = models.CharField(max_length=100, blank=True)
+
+    # Payment tracking
     deposit_amount = models.DecimalField(default=0)
     deposit_paid = models.BooleanField(default=False)
+    deposit_method = models.CharField(choices=PAYMENT_METHOD, blank=True)
+    amount_paid = models.DecimalField(default=0)
+    balance_due = models.DecimalField(default=0)
+
+    # Temporary residence declaration (Vietnamese legal requirement)
+    declaration_submitted = models.BooleanField(default=False)
+    declaration_submitted_at = models.DateTimeField(null=True, blank=True)
 
     notes = models.TextField(blank=True)
+    internal_notes = models.TextField(blank=True)  # Staff-only notes
     created_by = models.ForeignKey('User')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+# Group Booking Model (for tour groups, events)
+class GroupBooking(models.Model):
+    name = models.CharField(max_length=100)  # "Tour ABC", "Wedding Party"
+    contact_name = models.CharField(max_length=100)
+    contact_phone = models.CharField(max_length=20)
+    contact_email = models.EmailField(blank=True)
+
+    check_in_date = models.DateField()
+    check_out_date = models.DateField()
+    room_count = models.IntegerField()
+    guest_count = models.IntegerField()
+
+    # Pricing
+    total_amount = models.DecimalField()
+    deposit_amount = models.DecimalField(default=0)
+    deposit_paid = models.BooleanField(default=False)
+    special_rate = models.DecimalField(null=True, blank=True)  # Group discount rate
+
+    status = models.CharField(choices=GROUP_STATUS)  # tentative, confirmed, cancelled
+    notes = models.TextField(blank=True)
+    created_by = models.ForeignKey('User')
+    created_at = models.DateTimeField(auto_now_add=True)
 
 # Financial Models
 class FinancialEntry(models.Model):
@@ -324,9 +450,128 @@ class FinancialCategory(models.Model):
 # User Model
 class HotelUser(models.Model):
     user = models.OneToOneField('auth.User')
-    role = models.CharField(choices=USER_ROLE)  # owner, manager, staff
+    role = models.CharField(choices=USER_ROLE)  # owner, manager, staff, housekeeping
     phone = models.CharField(max_length=20)
     is_active = models.BooleanField(default=True)
+    can_view_finance = models.BooleanField(default=False)
+    can_edit_rates = models.BooleanField(default=False)
+    can_manage_bookings = models.BooleanField(default=True)
+    receive_notifications = models.BooleanField(default=True)
+
+# Housekeeping Task Model
+class HousekeepingTask(models.Model):
+    room = models.ForeignKey('Room')
+    task_type = models.CharField(choices=TASK_TYPE)  # cleaning, turndown, inspection, maintenance
+    priority = models.CharField(choices=PRIORITY)    # low, normal, high, urgent
+    status = models.CharField(choices=TASK_STATUS)   # pending, in_progress, completed, cancelled
+    assigned_to = models.ForeignKey('HotelUser', null=True, blank=True)
+    scheduled_date = models.DateField()
+    completed_at = models.DateTimeField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    inspection_checklist = models.JSONField(default=dict)  # {"bed": true, "bathroom": true, ...}
+    photos = models.JSONField(default=list)  # List of photo URLs for documentation
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# Maintenance Request Model
+class MaintenanceRequest(models.Model):
+    room = models.ForeignKey('Room', null=True, blank=True)  # Can be hotel-wide
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    priority = models.CharField(choices=PRIORITY)
+    status = models.CharField(choices=MAINTENANCE_STATUS)  # reported, in_progress, completed, deferred
+    reported_by = models.ForeignKey('HotelUser')
+    assigned_to = models.CharField(max_length=100, blank=True)  # Can be external vendor
+    estimated_cost = models.DecimalField(null=True, blank=True)
+    actual_cost = models.DecimalField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    photos_before = models.JSONField(default=list)
+    photos_after = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# Night Audit Model
+class NightAudit(models.Model):
+    audit_date = models.DateField(unique=True)
+    performed_by = models.ForeignKey('HotelUser')
+    performed_at = models.DateTimeField()
+
+    # Summary data
+    rooms_occupied = models.IntegerField()
+    rooms_available = models.IntegerField()
+    occupancy_rate = models.DecimalField()
+
+    total_revenue = models.DecimalField()
+    room_revenue = models.DecimalField()
+    other_revenue = models.DecimalField()
+    total_expenses = models.DecimalField()
+
+    cash_on_hand = models.DecimalField()
+    pending_payments = models.DecimalField()
+
+    check_ins_today = models.IntegerField()
+    check_outs_today = models.IntegerField()
+    no_shows = models.IntegerField()
+    cancellations = models.IntegerField()
+
+    notes = models.TextField(blank=True)
+    is_closed = models.BooleanField(default=False)
+
+# Rate Plan Model (for dynamic pricing)
+class RatePlan(models.Model):
+    name = models.CharField(max_length=50)          # "Standard", "Early Bird", "Last Minute"
+    room_type = models.ForeignKey('RoomType')
+    base_rate = models.DecimalField()
+    is_active = models.BooleanField(default=True)
+
+    # Rate rules
+    min_stay = models.IntegerField(default=1)
+    max_stay = models.IntegerField(null=True, blank=True)
+    advance_booking_days = models.IntegerField(null=True)  # Book X days ahead
+    cancellation_policy = models.TextField(blank=True)
+
+    # Date restrictions
+    valid_from = models.DateField(null=True, blank=True)
+    valid_to = models.DateField(null=True, blank=True)
+    blackout_dates = models.JSONField(default=list)
+
+    # Channel distribution
+    channels = models.JSONField(default=list)  # ["booking_com", "agoda", "direct"]
+
+# Date Rate Override (for specific date pricing)
+class DateRateOverride(models.Model):
+    room_type = models.ForeignKey('RoomType')
+    date = models.DateField()
+    rate = models.DecimalField()
+    reason = models.CharField(max_length=100, blank=True)  # "Tet Holiday", "Weekend"
+    closed_to_arrival = models.BooleanField(default=False)
+    closed_to_departure = models.BooleanField(default=False)
+    min_stay = models.IntegerField(null=True, blank=True)
+
+# Room Folio Item (charges to room)
+class FolioItem(models.Model):
+    booking = models.ForeignKey('Booking')
+    item_type = models.CharField(choices=FOLIO_TYPE)  # room, minibar, service, tax, discount
+    description = models.CharField(max_length=200)
+    quantity = models.IntegerField(default=1)
+    unit_price = models.DecimalField()
+    total_price = models.DecimalField()
+    date = models.DateField()
+    posted_by = models.ForeignKey('HotelUser')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+# Payment Model
+class Payment(models.Model):
+    booking = models.ForeignKey('Booking', null=True, blank=True)
+    financial_entry = models.ForeignKey('FinancialEntry', null=True, blank=True)
+    amount = models.DecimalField()
+    currency = models.CharField(max_length=3, default='VND')
+    payment_method = models.CharField(choices=PAYMENT_METHOD)
+    # PAYMENT_METHOD: cash, bank_transfer, momo, vnpay, card, other
+    reference_number = models.CharField(max_length=50, blank=True)  # Transaction ID
+    payment_date = models.DateTimeField()
+    is_refund = models.BooleanField(default=False)
+    notes = models.TextField(blank=True)
+    received_by = models.ForeignKey('HotelUser')
+    created_at = models.DateTimeField(auto_now_add=True)
 ```
 
 ### Predefined Data
@@ -336,7 +581,38 @@ class HotelUser(models.Model):
 ROOM_TYPES = [
     {"name": "Phòng Đơn", "name_en": "Single Room", "max_guests": 1},
     {"name": "Phòng Đôi", "name_en": "Double Room", "max_guests": 2},
+    {"name": "Phòng Twin", "name_en": "Twin Room", "max_guests": 2},
     {"name": "Phòng Gia Đình", "name_en": "Family Room", "max_guests": 4},
+    {"name": "Phòng VIP", "name_en": "VIP Room", "max_guests": 2},
+]
+
+# ID Types (for guest registration)
+ID_TYPES = [
+    {"code": "cccd", "name": "CCCD", "name_en": "Citizen ID Card"},
+    {"code": "passport", "name": "Hộ chiếu", "name_en": "Passport"},
+    {"code": "driver_license", "name": "GPLX", "name_en": "Driver's License"},
+    {"code": "other", "name": "Khác", "name_en": "Other"},
+]
+
+# Booking Sources (OTA channels)
+BOOKING_SOURCES = [
+    {"code": "walk_in", "name": "Khách vãng lai", "name_en": "Walk-in"},
+    {"code": "phone", "name": "Điện thoại", "name_en": "Phone"},
+    {"code": "website", "name": "Website", "name_en": "Direct Website"},
+    {"code": "booking_com", "name": "Booking.com", "name_en": "Booking.com"},
+    {"code": "agoda", "name": "Agoda", "name_en": "Agoda"},
+    {"code": "airbnb", "name": "Airbnb", "name_en": "Airbnb"},
+    {"code": "expedia", "name": "Expedia", "name_en": "Expedia"},
+    {"code": "traveloka", "name": "Traveloka", "name_en": "Traveloka"},
+    {"code": "google_hotel", "name": "Google Hotel", "name_en": "Google Hotel"},
+    {"code": "other", "name": "Khác", "name_en": "Other"},
+]
+
+# Nationalities (common in Vietnam tourism)
+NATIONALITIES = [
+    "Vietnam", "China", "South Korea", "Japan", "USA", "France",
+    "UK", "Australia", "Germany", "Russia", "Thailand", "Singapore",
+    "Malaysia", "Taiwan", "Hong Kong", "Other"
 ]
 
 # Default Financial Categories
@@ -345,38 +621,80 @@ EXPENSE_CATEGORIES = [
     {"name": "Tiền nước", "name_en": "Water", "icon": "water_drop"},
     {"name": "Internet/TV", "name_en": "Internet/TV", "icon": "wifi"},
     {"name": "Vật tư phòng", "name_en": "Room Supplies", "icon": "inventory"},
+    {"name": "Đồ dùng vệ sinh", "name_en": "Toiletries", "icon": "soap"},
     {"name": "Giặt là", "name_en": "Laundry", "icon": "local_laundry_service"},
     {"name": "Bảo trì", "name_en": "Maintenance", "icon": "build"},
     {"name": "Lương nhân viên", "name_en": "Staff Wages", "icon": "payments"},
     {"name": "Thuế/Phí", "name_en": "Tax/Fees", "icon": "receipt"},
+    {"name": "Hoa hồng OTA", "name_en": "OTA Commission", "icon": "percent"},
+    {"name": "Marketing", "name_en": "Marketing", "icon": "campaign"},
     {"name": "Khác", "name_en": "Other", "icon": "more_horiz"},
 ]
 
 INCOME_CATEGORIES = [
     {"name": "Tiền phòng", "name_en": "Room Revenue", "icon": "hotel"},
-    {"name": "Dịch vụ thêm", "name_en": "Extra Services", "icon": "room_service"},
+    {"name": "Phụ thu giờ", "name_en": "Hourly Surcharge", "icon": "schedule"},
+    {"name": "Check-in sớm", "name_en": "Early Check-in", "icon": "login"},
+    {"name": "Check-out muộn", "name_en": "Late Check-out", "icon": "logout"},
+    {"name": "Minibar", "name_en": "Minibar", "icon": "local_bar"},
+    {"name": "Dịch vụ giặt ủi", "name_en": "Laundry Service", "icon": "dry_cleaning"},
     {"name": "Đồ ăn/Thức uống", "name_en": "Food/Beverage", "icon": "restaurant"},
+    {"name": "Thuê xe", "name_en": "Vehicle Rental", "icon": "directions_bike"},
+    {"name": "Tour/Vé", "name_en": "Tours/Tickets", "icon": "confirmation_number"},
     {"name": "Khác", "name_en": "Other", "icon": "more_horiz"},
+]
+
+# Room Statuses
+ROOM_STATUSES = [
+    {"code": "available", "name": "Trống", "name_en": "Available", "color": "#4CAF50"},
+    {"code": "occupied", "name": "Có khách", "name_en": "Occupied", "color": "#F44336"},
+    {"code": "cleaning", "name": "Đang dọn", "name_en": "Cleaning", "color": "#FFC107"},
+    {"code": "maintenance", "name": "Bảo trì", "name_en": "Maintenance", "color": "#9E9E9E"},
+    {"code": "blocked", "name": "Khóa phòng", "name_en": "Blocked", "color": "#795548"},
+]
+
+# Payment Methods
+PAYMENT_METHODS = [
+    {"code": "cash", "name": "Tiền mặt", "name_en": "Cash", "icon": "payments"},
+    {"code": "bank_transfer", "name": "Chuyển khoản", "name_en": "Bank Transfer", "icon": "account_balance"},
+    {"code": "momo", "name": "MoMo", "name_en": "MoMo", "icon": "phone_android"},
+    {"code": "vnpay", "name": "VNPay", "name_en": "VNPay", "icon": "qr_code"},
+    {"code": "zalopay", "name": "ZaloPay", "name_en": "ZaloPay", "icon": "phone_android"},
+    {"code": "card", "name": "Thẻ", "name_en": "Card", "icon": "credit_card"},
+    {"code": "ota_collect", "name": "OTA thu hộ", "name_en": "OTA Collect", "icon": "business"},
 ]
 ```
 
 ### Database Schema Diagram
+
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────────┐
-│  RoomType   │────<│    Room     │────<│    Booking      │
-├─────────────┤     ├─────────────┤     ├─────────────────┤
-│ id          │     │ id          │     │ id              │
-│ name        │     │ number      │     │ room_id (FK)    │
-│ name_en     │     │ name        │     │ guest_name      │
-│ base_rate   │     │ room_type_id│     │ check_in_date   │
-│ max_guests  │     │ floor       │     │ check_out_date  │
-└─────────────┘     │ status      │     │ status          │
-                    │ amenities   │     │ source          │
-                    └─────────────┘     │ total_amount    │
-                                        │ created_by (FK) │
-                                        └────────┬────────┘
-                                                 │
-┌───────────────────┐     ┌─────────────────────┴────────┐
+┌─────────────┐     ┌─────────────┐     ┌─────────────────┐     ┌─────────────┐
+│  RoomType   │────<│    Room     │────<│    Booking      │>────│    Guest    │
+├─────────────┤     ├─────────────┤     ├─────────────────┤     ├─────────────┤
+│ id          │     │ id          │     │ id              │     │ id          │
+│ name        │     │ number      │     │ room_id (FK)    │     │ name        │
+│ name_en     │     │ name        │     │ guest_id (FK)   │     │ phone       │
+│ base_rate   │     │ room_type_id│     │ group_id (FK)   │     │ id_number   │
+│ max_guests  │     │ floor       │     │ check_in_date   │     │ nationality │
+└─────────────┘     │ status      │     │ check_out_date  │     │ is_vip      │
+                    │ amenities   │     │ status          │     │ total_stays │
+                    └─────────────┘     │ source          │     └─────────────┘
+                                        │ total_amount    │
+                           ┌────────────│ balance_due     │
+                           │            └────────┬────────┘
+                           │                     │
+┌──────────────────┐       │    ┌────────────────┴────────┐
+│  GroupBooking    │<──────┘    │      FolioItem          │
+├──────────────────┤            ├─────────────────────────┤
+│ id               │            │ id                      │
+│ name             │            │ booking_id (FK)         │
+│ contact_name     │            │ item_type               │
+│ check_in_date    │            │ description             │
+│ room_count       │            │ total_price             │
+│ total_amount     │            └─────────────────────────┘
+└──────────────────┘
+
+┌───────────────────┐     ┌──────────────────────────────┐
 │ FinancialCategory │────<│      FinancialEntry          │
 ├───────────────────┤     ├──────────────────────────────┤
 │ id                │     │ id                           │
@@ -386,18 +704,40 @@ INCOME_CATEGORIES = [
 │ icon              │     │ currency                     │
 └───────────────────┘     │ date                         │
                           │ booking_id (FK, nullable)    │
-                          │ payment_method               │
-                          │ created_by (FK)              │
                           └──────────────────────────────┘
 
-┌─────────────┐
-│ HotelUser   │
-├─────────────┤
-│ id          │
-│ user_id(FK) │ ──> Django auth.User
-│ role        │
-│ phone       │
-└─────────────┘
+┌─────────────────┐     ┌──────────────────┐     ┌───────────────────┐
+│   HotelUser     │     │ HousekeepingTask │     │ MaintenanceRequest│
+├─────────────────┤     ├──────────────────┤     ├───────────────────┤
+│ id              │     │ id               │     │ id                │
+│ user_id (FK)    │     │ room_id (FK)     │     │ room_id (FK)      │
+│ role            │     │ task_type        │     │ title             │
+│ phone           │     │ status           │     │ priority          │
+│ can_view_finance│     │ assigned_to (FK) │     │ status            │
+│ can_edit_rates  │     │ scheduled_date   │     │ estimated_cost    │
+└─────────────────┘     └──────────────────┘     └───────────────────┘
+
+┌─────────────────┐     ┌──────────────────┐     ┌───────────────────┐
+│   NightAudit    │     │    RatePlan      │     │ DateRateOverride  │
+├─────────────────┤     ├──────────────────┤     ├───────────────────┤
+│ id              │     │ id               │     │ id                │
+│ audit_date      │     │ name             │     │ room_type_id (FK) │
+│ performed_by    │     │ room_type_id (FK)│     │ date              │
+│ rooms_occupied  │     │ base_rate        │     │ rate              │
+│ total_revenue   │     │ min_stay         │     │ closed_to_arrival │
+│ is_closed       │     │ channels         │     │ min_stay          │
+└─────────────────┘     └──────────────────┘     └───────────────────┘
+
+┌─────────────────┐
+│    Payment      │
+├─────────────────┤
+│ id              │
+│ booking_id (FK) │
+│ amount          │
+│ payment_method  │
+│ reference_number│
+│ is_refund       │
+└─────────────────┘
 ```
 
 ---
@@ -1090,9 +1430,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run Django tests
         run: |
-          cd hotel_backend
+          cd hoang_lam_backend
           pip install -r requirements-dev.txt
-          pytest --cov=hotel_api --cov-report=xml
+          pytest --cov=hoang_lam_api --cov-report=xml
 
   flutter-tests:
     runs-on: ubuntu-latest
@@ -1101,7 +1441,7 @@ jobs:
       - uses: subosito/flutter-action@v2
       - name: Run Flutter tests
         run: |
-          cd hotel_app
+          cd hoang_lam_app
           flutter test --coverage
 ```
 
@@ -1113,7 +1453,7 @@ jobs:
 
 #### Exception Hierarchy
 ```python
-# hotel_api/exceptions.py
+# hoang_lam_api/exceptions.py
 class HotelAPIException(Exception):
     """Base exception for all hotel API errors"""
     status_code = 500
@@ -1213,17 +1553,17 @@ LOGGING = {
         'console': {'class': 'logging.StreamHandler'},
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'logs/hotel_api.log',
+            'filename': 'logs/hoang_lam_api.log',
             'maxBytes': 10485760,  # 10MB
             'backupCount': 5,
         },
     },
     'loggers': {
-        'hotel_api': {
+        'hoang_lam_api': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         },
-        'hotel_api.security': {  # Sensitive data access
+        'hoang_lam_api.security': {  # Sensitive data access
             'handlers': ['file'],
             'level': 'INFO',
         },
@@ -1244,7 +1584,7 @@ LOGGING = {
 {
   "timestamp": "2026-01-19T10:30:00Z",
   "level": "INFO",
-  "logger": "hotel_api.bookings",
+  "logger": "hoang_lam_api.bookings",
   "message": "Booking created",
   "context": {
     "booking_id": 123,
@@ -1303,11 +1643,11 @@ logger.e('Error: Failed to sync', error: e, stackTrace: stack);
 # scripts/backup.sh
 
 # PostgreSQL backup
-BACKUP_DIR="/backups/hotel_db"
+BACKUP_DIR="/backups/hoang_lam_db"
 DATE=$(date +%Y%m%d_%H%M%S)
 FILENAME="hotel_backup_${DATE}.sql.gz"
 
-pg_dump hotel_db | gzip > "${BACKUP_DIR}/${FILENAME}"
+pg_dump hoang_lam_db | gzip > "${BACKUP_DIR}/${FILENAME}"
 
 # Upload to cloud storage (optional)
 aws s3 cp "${BACKUP_DIR}/${FILENAME}" s3://hotel-backups/daily/
@@ -1328,10 +1668,10 @@ find ${BACKUP_DIR} -name "*.sql.gz" -mtime +30 -delete
 #### Database Recovery
 ```bash
 # Restore from backup
-gunzip -c hotel_backup_20260119.sql.gz | psql hotel_db
+gunzip -c hotel_backup_20260119.sql.gz | psql hoang_lam_db
 
 # Point-in-time recovery (if WAL archiving enabled)
-pg_restore --target-time="2026-01-19 10:00:00" -d hotel_db
+pg_restore --target-time="2026-01-19 10:00:00" -d hoang_lam_db
 ```
 
 #### Recovery Time Objectives
@@ -1759,7 +2099,7 @@ Option A: Shared with Cosmo (Recommended)
 │  │   └── /hotel-api → Django:8001   │
 │  ├── PostgreSQL                     │
 │  │   ├── cosmo_db                   │
-│  │   └── hotel_db                   │
+│  │   └── hoang_lam_db                   │
 │  └── Redis (shared)                 │
 └─────────────────────────────────────┘
 
@@ -1789,37 +2129,92 @@ Android:
 ## Summary & Next Steps
 
 ### Recommended Approach
-1. **Create new repository**: `hotel-management`
-2. **Start with Phase 1**: Core booking functionality
+
+1. **Use existing repository**: `hoang-lam-heritage-management`
+2. **Start with Phase 1**: Core booking functionality with guest management
 3. **Copy patterns from cosmo_app**: Auth, state management, offline sync
-4. **Simple UI**: Focus on ease of use for non-technical users
+4. **Simple UI**: Focus on ease of use for non-technical users (Mom in her 50s)
 5. **Vietnamese-first**: Primary language, English optional
+6. **ezCloud-inspired**: Modern hotel management features adapted for small scale
 
 ### Key Success Metrics
-- Mom and brother can create bookings in < 30 seconds
-- Financial summary visible on home screen
-- Works offline, syncs when connected
-- No training needed - intuitive UI
 
-### File Structure to Create
+- Mom and brother can create bookings in < 30 seconds
+- Guest ID scanning saves manual data entry
+- Financial summary and night audit visible on home screen
+- Works offline, syncs when connected
+- No training needed - intuitive UI with large touch targets
+- Temporary residence declaration export for legal compliance
+
+### Feature Comparison with ezCloud
+
+| ezCloud Feature | Our Implementation | Phase |
+| --------------- | ------------------- | ----- |
+| PMS Core | Full booking, room, guest management | 1 |
+| Front Desk POS | Minibar/services charged to room folio | 3 |
+| Housekeeping | Task management with assignments | 3 |
+| ezCms (Channel Manager) | OTA integration, iCal, API sync | 6 |
+| ezRMS (Revenue) | Rate plans, dynamic pricing, rate shopping | 6 |
+| ezBe (Booking Engine) | Direct booking widget, online payments | 7 |
+| ezMessage | Guest communication, confirmations | 5 |
+| ezBi (Analytics) | Reports, dashboards, KPIs | 4 |
+| Smart Devices | Lock/electricity integration (future) | 8 |
+| ID Scanning | Camera OCR for guest registration | 1 |
+| Night Audit | End-of-day reconciliation | 1 |
+
+### File Structure
+
 ```
-hotel-management/           # New repository
-├── hotel_app/              # Flutter app
+hoang-lam-heritage-management/
+├── hoang_lam_app/              # Flutter mobile app
 │   ├── lib/
 │   │   ├── main.dart
-│   │   ├── core/           # Copy from cosmo_app
-│   │   ├── data/
-│   │   └── features/
+│   │   ├── core/               # Theme, constants, utils
+│   │   ├── data/               # Models, repositories, API
+│   │   │   ├── models/
+│   │   │   ├── repositories/
+│   │   │   └── providers/
+│   │   └── features/           # Feature modules
+│   │       ├── auth/
+│   │       ├── dashboard/
+│   │       ├── bookings/
+│   │       ├── rooms/
+│   │       ├── guests/
+│   │       ├── finance/
+│   │       ├── housekeeping/
+│   │       ├── reports/
+│   │       └── settings/
 │   ├── pubspec.yaml
-│   └── ...
-├── hotel_backend/          # Django backend
-│   ├── hotel_api/
+│   ├── android/
+│   └── ios/
+├── hoang_lam_backend/          # Django REST API
+│   ├── hoang_lam_api/
+│   │   ├── bookings/
+│   │   ├── rooms/
+│   │   ├── guests/
+│   │   ├── finance/
+│   │   ├── housekeeping/
+│   │   ├── reports/
+│   │   └── ota/
 │   ├── manage.py
 │   └── requirements.txt
 ├── docs/
 ├── README.md
 └── .gitignore
 ```
+
+### Phase Priority Summary
+
+| Phase | Focus | Priority Features |
+| ----- | ----- | ----------------- |
+| **1** | Core MVP | Auth, Rooms, Bookings, Guests, ID Scan, Night Audit |
+| **2** | Finance | Income/Expense, Payments, Deposits, Reports |
+| **3** | Operations | Housekeeping, POS, Maintenance, Hourly Rates |
+| **4** | Analytics | Occupancy, RevPAR, Channel Performance, Export |
+| **5** | Guest Experience | Confirmations, Pre-arrival, Loyalty, Reviews |
+| **6** | Distribution | iCal, OTAs, Rate Management, Dynamic Pricing |
+| **7** | Direct Booking | Widget, Online Payments, Promotions |
+| **8** | IoT (Future) | Smart Locks, Electricity, Digital Keys |
 
 ---
 
