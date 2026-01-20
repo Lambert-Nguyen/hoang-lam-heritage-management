@@ -1,6 +1,7 @@
 # Hoang Lam Heritage Management - Task Breakdown
 
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
+**Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
 ## How to Use This File
 
@@ -8,10 +9,13 @@
 - **Progress:** Mark `[ ]` as `[x]` when complete
 - **Dependencies:** Tasks with `[BLOCKED BY: X.X.X]` cannot start until dependency is complete
 - **Parallel Work:** Tasks without dependencies can be worked on simultaneously
+- **Critical Path:** Phase 0 must complete before Phase 1 begins
 
 ---
 
 ## Phase 0: Project Setup
+
+> **Note:** All Phase 0 tasks must complete before starting Phase 1
 
 ### 0.1 Backend Setup
 - [ ] **0.1.1** Create Django project structure (`hoang_lam_backend/`)
@@ -24,6 +28,8 @@
 - [ ] **0.1.8** Set up logging configuration
 - [ ] **0.1.9** Create API versioning structure (`/api/v1/`)
 - [ ] **0.1.10** Write initial database migrations
+- [ ] **0.1.11** Create `.env.example` with all required variables
+- [ ] **0.1.12** Set up drf-spectacular for API documentation
 
 ### 0.2 Frontend Setup
 - [ ] **0.2.1** Create Flutter project structure (`hoang_lam_app/`)
@@ -36,36 +42,49 @@
 - [ ] **0.2.8** Configure flutter_localizations (vi, en)
 - [ ] **0.2.9** Create app theme (colors, typography, spacing)
 - [ ] **0.2.10** Set up environment configuration (dev, prod)
+- [ ] **0.2.11** Create bottom navigation scaffold
+- [ ] **0.2.12** Create base screen template with AppBar
+- [ ] **0.2.13** Create common widgets (buttons, cards, inputs)
 
 ### 0.3 DevOps Setup
 - [ ] **0.3.1** Create GitHub Actions for backend tests
 - [ ] **0.3.2** Create GitHub Actions for Flutter tests
-- [ ] **0.3.3** Set up linting rules (backend)
-- [ ] **0.3.4** Set up linting rules (frontend)
+- [ ] **0.3.3** Set up linting rules (backend - black, isort, flake8)
+- [ ] **0.3.4** Set up linting rules (frontend - dart analyze)
 - [ ] **0.3.5** Create docker-compose for local development
+- [ ] **0.3.6** Create `.gitignore` for both projects
+- [ ] **0.3.7** Set up pre-commit hooks (backend)
+- [ ] **0.3.8** Create Makefile for common commands
 
 ---
 
 ## Phase 1: Core MVP
 
+> **Prerequisite:** Phase 0 must be complete
+
 ### 1.1 Authentication (Backend)
+`[BLOCKED BY: 0.1.1-0.1.10]`
 - [ ] **1.1.1** Create login endpoint (`POST /api/v1/auth/login/`)
 - [ ] **1.1.2** Create token refresh endpoint (`POST /api/v1/auth/refresh/`)
 - [ ] **1.1.3** Create logout endpoint (`POST /api/v1/auth/logout/`)
 - [ ] **1.1.4** Create user profile endpoint (`GET /api/v1/auth/me/`)
-- [ ] **1.1.5** Add role-based permissions (owner, manager, staff)
-- [ ] **1.1.6** Create initial admin user seeder
-- [ ] **1.1.7** Write authentication tests
+- [ ] **1.1.5** Create password change endpoint (`POST /api/v1/auth/password/change/`)
+- [ ] **1.1.6** Add role-based permissions (owner, manager, staff, housekeeping)
+- [ ] **1.1.7** Create permission decorators for views
+- [ ] **1.1.8** Create initial admin user seeder (mom, brother accounts)
+- [ ] **1.1.9** Write authentication tests
 
 ### 1.2 Authentication (Frontend)
-`[BLOCKED BY: 1.1.1-1.1.4]`
-- [ ] **1.2.1** Create login screen UI
+`[BLOCKED BY: 1.1.1-1.1.5, 0.2.1-0.2.10]`
+- [ ] **1.2.1** Create login screen UI (Vietnamese-first)
 - [ ] **1.2.2** Create auth provider (Riverpod)
-- [ ] **1.2.3** Implement secure token storage
+- [ ] **1.2.3** Implement secure token storage (flutter_secure_storage)
 - [ ] **1.2.4** Create auth interceptor for Dio
 - [ ] **1.2.5** Implement auto-logout on token expiry
 - [ ] **1.2.6** Create splash screen with auth check
-- [ ] **1.2.7** Write authentication widget tests
+- [ ] **1.2.7** Create biometric authentication option (fingerprint/face)
+- [ ] **1.2.8** Create password change screen
+- [ ] **1.2.9** Write authentication widget tests
 
 ### 1.3 Room Management (Backend)
 - [ ] **1.3.1** Create `RoomType` model and migrations
@@ -114,14 +133,17 @@
 - [ ] **1.6.9** Write guest widget tests
 
 ### 1.7 ID Scanning (Frontend)
-- [ ] **1.7.1** Integrate camera package
-- [ ] **1.7.2** Create ID capture screen
+`[BLOCKED BY: 1.6.4]` _(integrates with guest registration form)_
+
+- [ ] **1.7.1** Integrate camera package (camera, image_picker)
+- [ ] **1.7.2** Create ID capture screen with camera preview
 - [ ] **1.7.3** Integrate OCR package (google_mlkit_text_recognition)
-- [ ] **1.7.4** Create CCCD number parser
-- [ ] **1.7.5** Create passport parser
-- [ ] **1.7.6** Auto-fill guest form from OCR
-- [ ] **1.7.7** Store ID image locally
-- [ ] **1.7.8** Write ID scanning tests
+- [ ] **1.7.4** Create CCCD number parser (12-digit Vietnamese ID)
+- [ ] **1.7.5** Create passport parser (MRZ reading)
+- [ ] **1.7.6** Auto-fill guest form from OCR results
+- [ ] **1.7.7** Store ID image in Hive (encrypted)
+- [ ] **1.7.8** Upload ID image to backend on sync
+- [ ] **1.7.9** Write ID scanning tests
 
 ### 1.8 Booking Management (Backend)
 `[BLOCKED BY: 1.3.1-1.3.2, 1.5.1]`
@@ -203,13 +225,37 @@
 
 ### 1.15 Offline Support (Frontend)
 `[BLOCKED BY: 1.4.1-1.4.4, 1.6.1-1.6.3, 1.9.1-1.9.3]`
+
 - [ ] **1.15.1** Create Hive adapters for all models
 - [ ] **1.15.2** Create offline booking queue
-- [ ] **1.15.3** Create sync manager
-- [ ] **1.15.4** Create offline indicator widget
+- [ ] **1.15.3** Create sync manager with retry logic
+- [ ] **1.15.4** Create offline indicator widget (banner)
 - [ ] **1.15.5** Create sync status widget
 - [ ] **1.15.6** Create conflict resolution dialog
-- [ ] **1.15.7** Write offline sync tests
+- [ ] **1.15.7** Implement background sync on connectivity change
+- [ ] **1.15.8** Write offline sync tests
+
+### 1.16 Settings & Profile (Frontend)
+`[BLOCKED BY: 1.2.1-1.2.6]`
+
+- [ ] **1.16.1** Create settings screen layout
+- [ ] **1.16.2** Create user profile section
+- [ ] **1.16.3** Create language selector (vi/en)
+- [ ] **1.16.4** Create theme settings (light/dark - future)
+- [ ] **1.16.5** Create text size adjustment (accessibility)
+- [ ] **1.16.6** Create notification preferences
+- [ ] **1.16.7** Create about/version info section
+- [ ] **1.16.8** Create logout button with confirmation
+- [ ] **1.16.9** Write settings widget tests
+
+### 1.17 Navigation Structure (Frontend)
+`[BLOCKED BY: 0.2.6, 0.2.11]`
+
+- [ ] **1.17.1** Implement bottom navigation (Home, Bookings, Finance, Settings)
+- [ ] **1.17.2** Configure GoRouter routes for all screens
+- [ ] **1.17.3** Implement deep linking support
+- [ ] **1.17.4** Create navigation guards (auth check)
+- [ ] **1.17.5** Write navigation tests
 
 ---
 
@@ -507,18 +553,45 @@ When claiming a task, add your agent ID:
 
 ## Progress Summary
 
-| Phase | Total Tasks | Completed | In Progress | Blocked |
-| ----- | ----------- | --------- | ----------- | ------- |
-| 0 | 20 | 0 | 0 | 0 |
-| 1 | 75 | 0 | 0 | 0 |
-| 2 | 32 | 0 | 0 | 0 |
-| 3 | 28 | 0 | 0 | 0 |
-| 4 | 20 | 0 | 0 | 0 |
-| 5 | 17 | 0 | 0 | 0 |
-| 6 | 17 | 0 | 0 | 0 |
-| 7 | 9 | 0 | 0 | 0 |
-| 8 | 9 | 0 | 0 | 0 |
-| **Total** | **227** | **0** | **0** | **0** |
+| Phase | Description | Total Tasks | Completed | In Progress | Blocked |
+| ----- | ----------- | ----------- | --------- | ----------- | ------- |
+| 0 | Project Setup | 33 | 0 | 0 | 0 |
+| 1 | Core MVP | 95 | 0 | 0 | 0 |
+| 2 | Financial Tracking | 32 | 0 | 0 | 0 |
+| 3 | Operations & Housekeeping | 28 | 0 | 0 | 0 |
+| 4 | Reports & Analytics | 20 | 0 | 0 | 0 |
+| 5 | Guest Communication | 17 | 0 | 0 | 0 |
+| 6 | OTA Integration | 17 | 0 | 0 | 0 |
+| 7 | Direct Booking | 9 | 0 | 0 | 0 |
+| 8 | Smart Devices (Future) | 9 | 0 | 0 | 0 |
+| **Total** | | **260** | **0** | **0** | **0** |
+
+## Parallel Work Streams
+
+```
+Timeline (parallel execution possible):
+
+BACKEND AGENT                    FRONTEND AGENT                  DEVOPS AGENT
+─────────────────────────────────────────────────────────────────────────────
+Phase 0:
+├── 0.1 Backend Setup ──────────►├── 0.2 Frontend Setup ────────►├── 0.3 DevOps
+│                                │                                │
+Phase 1 (after Phase 0):
+├── 1.1 Auth Backend            ├── 1.17 Navigation             │
+├── 1.3 Room Backend            │   (can start immediately)     │
+├── 1.5 Guest Backend           │                                │
+│   ↓                           │   ↓                            │
+├── 1.8 Booking Backend ────────►├── 1.2 Auth Frontend           │
+├── 1.11 Night Audit Backend    ├── 1.4 Room Frontend           │
+├── 1.13 Declaration Backend    ├── 1.6 Guest Frontend          │
+│                               ├── 1.7 ID Scanning             │
+│                               ├── 1.9 Booking Frontend        │
+│                               ├── 1.10 Dashboard              │
+│                               ├── 1.12 Night Audit Frontend   │
+│                               ├── 1.14 Declaration Frontend   │
+│                               ├── 1.15 Offline Support        │
+│                               └── 1.16 Settings               │
+```
 
 ---
 

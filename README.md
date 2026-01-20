@@ -1,124 +1,183 @@
 # Hoang Lam Heritage Management
 
-A mobile-first hotel management application designed for small family-run hotels (7 rooms). Built with Flutter for cross-platform mobile support (iOS + Android) and Django REST Framework for the backend.
+A mobile-first hotel management application designed for small family-run hotels. Built with Flutter for cross-platform mobile support (iOS + Android) and Django REST Framework for the backend.
+
 
 ## Overview
 
 | Aspect | Details |
-|--------|---------|
+| ------ | ------- |
 | **Target Users** | Family members (Mom on iOS, Brother on Android) |
 | **Scale** | 7 rooms, small family-run hotel |
 | **Languages** | Vietnamese (primary), English (optional) |
 | **Offline Support** | Yes - works without internet, syncs when connected |
+| **Accessibility** | Large touch targets, adjustable text size for older users |
 
-## Features
+## Documentation
 
-### Phase 1: Core MVP (Current)
+| Document | Description |
+| -------- | ----------- |
+| [Design Plan](docs/HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md) | Comprehensive project specification |
+| [Task Breakdown](docs/TASKS.md) | Detailed tasks for development agents |
 
-- **Authentication**: JWT-based login for owner and manager
+## Features by Phase
+
+### Phase 1: Core MVP
+
+- **Authentication**: JWT-based login with role permissions (owner, manager, staff)
 - **Room Management**: View/edit 7 rooms with status tracking (available, occupied, cleaning, maintenance)
-- **Booking Calendar**: Visual calendar showing occupancy
-- **Manual Booking**: Create walk-in and phone reservations
-- **Check-in/Check-out**: Mark guests as arrived/departed
-- **Guest Information**: Name, phone, ID number (CCCD)
-- **Dashboard**: Today's overview - rooms, check-ins/outs, revenue
+- **Booking Calendar**: Visual monthly calendar showing occupancy
+- **Manual Booking**: Create walk-in, phone, and hourly reservations
+- **Check-in/Check-out**: Mark guests as arrived/departed with timestamps
+- **Guest Management**: Name, phone, ID/passport, nationality with returning guest detection
+- **ID Scanning**: Camera OCR to auto-fill guest info from CCCD/passport 
+- **Night Audit**: End-of-day summary, close day, pending payments report
+- **Temporary Residence Declaration**: Export guest data for police reporting (Vietnamese legal requirement)
+- **Dashboard**: Today's overview - rooms, check-ins/outs, revenue, occupancy %
+- **Offline Support**: Works without internet, syncs when connected
 
 ### Phase 2: Financial Tracking
 
-- **Income Recording**: Room revenue, extra services
-- **Expense Tracking**: Utilities, supplies, wages
-- **Multi-Currency**: VND (primary), USD support with exchange rates
-- **Payment Methods**: Cash, bank transfer, MoMo, VNPay
-- **Daily/Monthly Summaries**: Revenue, expenses, profit
+- **Income Recording**: Room revenue, extra services, deposits
+- **Expense Tracking**: Utilities, supplies, wages, categorized
+- **Multi-Currency**: VND (primary), USD with exchange rates
+- **Payment Methods**: Cash, bank transfer, MoMo, VNPay, ZaloPay, card
+- **Deposit Management**: Track partial payments, outstanding balances
+- **Receipt Generation**: PDF receipts with sequential numbering
+- **Daily/Monthly Summaries**: Revenue, expenses, profit margins
 
-### Phase 3: Reports & Analytics
+### Phase 3: Operations & Housekeeping
 
-- **Revenue Reports**: By room, by source, by month
-- **Expense Analysis**: Categorized spending breakdown
-- **Occupancy Rate**: Room utilization percentage and trends
-- **Export**: Download reports to Excel
+- **Housekeeping Tasks**: Auto-create cleaning tasks on checkout
+- **Task Assignment**: Assign tasks to staff with notifications
+- **Maintenance Requests**: Track issues with priority levels
+- **Minibar/POS**: Sell items, charge to room folio
+- **Room Folio**: Track all charges per booking
+- **Early Check-in/Late Check-out**: Handle with automatic fee calculation
+- **Hourly Rates**: Support hourly bookings (common in Vietnam)
 
-### Phase 4: OTA Integration (Future)
+### Phase 4: Reports & Analytics
+
+- **Occupancy Reports**: Room utilization %, daily/weekly/monthly trends
+- **Revenue Analytics**: By room, by source, by period
+- **KPI Tracking**: RevPAR, ADR, occupancy rate
+- **Channel Performance**: Revenue by booking source
+- **Guest Demographics**: Nationality breakdown, repeat guests
+- **Export**: Download reports to Excel/CSV
+
+### Phase 5: Guest Communication
+
+- **Booking Confirmations**: Auto-send via SMS/Zalo/email
+- **Pre-arrival Messages**: Directions, WiFi info, check-in time
+- **Check-out Reminders**: Push notifications
+- **Guest Profiles**: Store preferences, stay history
+- **Review Requests**: Auto-send after checkout
+
+### Phase 6: OTA Integration (Channel Manager)
 
 - **iCal Sync**: Calendar sync with Airbnb, Booking.com
-- **Channel Manager**: Booking.com, Agoda API integration
+- **Google Hotel**: Integration with Google Hotel search
 - **Rate Management**: Sync prices across platforms
+- **Dynamic Pricing**: Auto-adjust rates based on demand
+- **Availability Sync**: Real-time inventory across channels
+- **Overbooking Prevention**: Real-time sync to prevent double-bookings
 
-### Phase 5: Advanced Features (Future)
+### Phase 7: Direct Booking (Booking Engine)
 
-- **Housekeeping**: Auto-create cleaning tasks on checkout
-- **Minibar/POS**: Sell items, charge to room
-- **Guest Communication**: Email confirmations, SMS notifications
-- **Push Notifications**: Check-out reminders
+- **Booking Widget**: Embeddable for website/Facebook
+- **Online Payments**: VNPay, MoMo integration
+- **Promotions**: Discount codes, special offers
+
+### Phase 8: Smart Device Integration (Future)
+
+- **Smart Locks**: Digital door locks, keyless entry
+- **Electricity Management**: Auto on/off based on check-in/out
+- **Digital Keys**: Mobile app door unlock
 
 ## Tech Stack
 
 ### Mobile App (Flutter)
 
 | Component | Technology | Purpose |
-|-----------|------------|---------|
+| --------- | ---------- | ------- |
 | Framework | Flutter 3.x | Cross-platform (iOS + Android) |
 | State Management | Riverpod 2.x | Type-safe, testable state |
 | HTTP Client | Dio 5.x | API calls with interceptors |
 | Local Storage | Hive 2.x | Offline support, encrypted |
+| Secure Storage | flutter_secure_storage | Token storage |
 | Navigation | GoRouter | Deep linking |
 | Models | Freezed + json_serializable | Immutable, type-safe |
 | Charts | fl_chart | Financial visualizations |
 | Calendar | table_calendar | Booking calendar view |
+| Camera/OCR | google_mlkit_text_recognition | ID scanning |
+| i18n | flutter_localizations | Vietnamese/English |
 
 ### Backend (Django)
 
 | Component | Technology | Purpose |
-|-----------|------------|---------|
+| --------- | ---------- | ------- |
 | Framework | Django 5.x + DRF | REST API |
 | Database | PostgreSQL 15+ | Primary data store |
 | Authentication | SimpleJWT | Stateless JWT auth |
 | Task Queue | Celery + Redis | Background jobs (OTA sync) |
 | API Docs | drf-spectacular | OpenAPI/Swagger |
+| PDF Generation | WeasyPrint | Receipts, reports |
 
 ## Project Structure
 
 ```
 hoang-lam-heritage-management/
-├── hotel_app/                    # Flutter mobile app
+├── hoang_lam_app/               # Flutter mobile app
 │   ├── lib/
 │   │   ├── main.dart
-│   │   ├── core/                 # Shared utilities, theme, constants
+│   │   ├── core/                # Shared utilities, theme, constants
 │   │   │   ├── theme/
 │   │   │   ├── utils/
+│   │   │   ├── constants/
 │   │   │   └── errors/
-│   │   ├── data/                 # Data layer
+│   │   ├── data/                # Data layer
 │   │   │   ├── models/
 │   │   │   ├── repositories/
-│   │   │   └── datasources/
-│   │   └── features/             # Feature modules
+│   │   │   ├── datasources/
+│   │   │   └── providers/
+│   │   └── features/            # Feature modules
 │   │       ├── auth/
 │   │       ├── dashboard/
 │   │       ├── bookings/
 │   │       ├── rooms/
+│   │       ├── guests/
 │   │       ├── finance/
+│   │       ├── housekeeping/
+│   │       ├── reports/
 │   │       └── settings/
-│   ├── test/                     # Tests
+│   ├── test/
 │   ├── android/
 │   ├── ios/
 │   └── pubspec.yaml
-├── hotel_backend/                # Django REST API
-│   ├── backend/                  # Django project settings
-│   │   ├── settings.py
+├── hoang_lam_backend/           # Django REST API
+│   ├── config/                  # Django project settings
+│   │   ├── settings/
+│   │   │   ├── base.py
+│   │   │   ├── dev.py
+│   │   │   └── prod.py
 │   │   ├── urls.py
 │   │   └── wsgi.py
-│   ├── hotel_api/                # Main API app
-│   │   ├── models/
-│   │   ├── views/
-│   │   ├── serializers/
-│   │   ├── services/
-│   │   └── tests/
+│   ├── hoang_lam_api/           # Main API app
+│   │   ├── bookings/
+│   │   ├── rooms/
+│   │   ├── guests/
+│   │   ├── finance/
+│   │   ├── housekeeping/
+│   │   ├── reports/
+│   │   └── ota/
 │   ├── manage.py
 │   ├── requirements.txt
 │   └── requirements-dev.txt
-├── docs/                         # Documentation
-├── scripts/                      # Utility scripts (backup, deploy)
-├── docker-compose.yml            # Docker setup
+├── docs/                        # Documentation
+│   ├── HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md
+│   └── TASKS.md
+├── scripts/                     # Utility scripts (backup, deploy)
+├── docker-compose.yml
 └── README.md
 ```
 
@@ -133,10 +192,8 @@ hoang-lam-heritage-management/
 
 ### Backend Setup
 
-#### Option 1: Local Development
-
 ```bash
-cd hotel_backend
+cd hoang_lam_backend
 
 # Create virtual environment
 python -m venv venv
@@ -148,7 +205,7 @@ pip install -r requirements-dev.txt  # For testing
 
 # Copy environment file and configure
 cp .env.example .env
-# Edit .env with your settings (see Environment Variables below)
+# Edit .env with your settings
 
 # Run migrations
 python manage.py migrate
@@ -163,83 +220,47 @@ python manage.py loaddata initial_data
 python manage.py runserver
 ```
 
-#### Option 2: Docker Development
-
-```bash
-# Start all services (Django, PostgreSQL, Redis)
-docker-compose up -d
-
-# Run migrations
-docker-compose exec backend python manage.py migrate
-
-# Create superuser
-docker-compose exec backend python manage.py createsuperuser
-
-# View logs
-docker-compose logs -f backend
-```
-
 ### Flutter App Setup
 
 ```bash
-cd hotel_app
+cd hoang_lam_app
 
 # Get dependencies
 flutter pub get
 
 # Generate code (Freezed models, Riverpod)
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 
 # Run on device/emulator
 flutter run
-
-# Run on specific device
-flutter run -d <device_id>
 ```
 
 ### Environment Variables
 
-Create a `.env` file in `hotel_backend/` with the following:
+Create a `.env` file in `hoang_lam_backend/`:
 
 ```env
 # Django Settings
 DEBUG=True
-SECRET_KEY=your-secret-key-here-change-in-production
+SECRET_KEY=your-secret-key-here
 ALLOWED_HOSTS=localhost,127.0.0.1
 
-# Database (PostgreSQL)
-DATABASE_URL=postgres://user:password@localhost:5432/hotel_db
-# Or for SQLite (development only):
-# DATABASE_URL=sqlite:///db.sqlite3
+# Database
+DATABASE_URL=postgres://user:password@localhost:5432/hoang_lam_db
 
 # JWT Settings
-JWT_ACCESS_TOKEN_LIFETIME=15        # minutes
-JWT_REFRESH_TOKEN_LIFETIME=10080    # minutes (7 days)
+JWT_ACCESS_TOKEN_LIFETIME=15
+JWT_REFRESH_TOKEN_LIFETIME=10080
 
 # Redis (for Celery)
 REDIS_URL=redis://localhost:6379/0
-
-# Email (optional - for notifications)
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_HOST_USER=your-email@gmail.com
-EMAIL_HOST_PASSWORD=your-app-password
-EMAIL_USE_TLS=True
-
-# Sentry (optional - for error tracking)
-SENTRY_DSN=
-
-# OTA Integration (Phase 4+)
-BOOKING_COM_API_KEY=
-AGODA_API_KEY=
 ```
 
-For the Flutter app, create `hotel_app/lib/core/config/env.dart`:
+For the Flutter app, create `hoang_lam_app/lib/core/config/env.dart`:
 
 ```dart
 class Env {
   static const String apiBaseUrl = 'http://localhost:8000/api/v1';
-  // For production: 'https://your-domain.com/api/v1'
 }
 ```
 
@@ -248,7 +269,7 @@ class Env {
 When the backend is running:
 
 | Documentation | URL |
-|---------------|-----|
+| ------------- | --- |
 | Swagger UI | http://localhost:8000/api/docs/ |
 | ReDoc | http://localhost:8000/api/redoc/ |
 | OpenAPI Schema | http://localhost:8000/api/schema/ |
@@ -257,32 +278,48 @@ When the backend is running:
 
 ```
 Authentication:
-  POST   /api/v1/auth/login/          # Login, get tokens
-  POST   /api/v1/auth/refresh/        # Refresh access token
-  POST   /api/v1/auth/logout/         # Logout, blacklist token
+  POST   /api/v1/auth/login/              # Login, get tokens
+  POST   /api/v1/auth/refresh/            # Refresh access token
+  POST   /api/v1/auth/logout/             # Logout
+  GET    /api/v1/auth/me/                 # Current user profile
+  POST   /api/v1/auth/password/change/    # Change password
 
 Rooms:
-  GET    /api/v1/rooms/               # List all rooms
-  GET    /api/v1/rooms/{id}/          # Room details
-  PATCH  /api/v1/rooms/{id}/          # Update room status
+  GET    /api/v1/rooms/                   # List all rooms
+  GET    /api/v1/rooms/{id}/              # Room details
+  PATCH  /api/v1/rooms/{id}/status/       # Update room status
+
+Guests:
+  GET    /api/v1/guests/                  # List guests
+  POST   /api/v1/guests/                  # Create guest
+  GET    /api/v1/guests/search/           # Search by name/phone/ID
 
 Bookings:
-  GET    /api/v1/bookings/            # List bookings (filterable)
-  POST   /api/v1/bookings/            # Create booking
-  GET    /api/v1/bookings/{id}/       # Booking details
-  PATCH  /api/v1/bookings/{id}/       # Update booking
-  DELETE /api/v1/bookings/{id}/       # Cancel booking
-  POST   /api/v1/bookings/{id}/checkin/   # Check-in guest
-  POST   /api/v1/bookings/{id}/checkout/  # Check-out guest
+  GET    /api/v1/bookings/                # List bookings
+  POST   /api/v1/bookings/                # Create booking
+  GET    /api/v1/bookings/calendar/       # Calendar view (date range)
+  GET    /api/v1/bookings/today/          # Today's bookings
+  POST   /api/v1/bookings/{id}/checkin/   # Check-in
+  POST   /api/v1/bookings/{id}/checkout/  # Check-out
 
 Finance:
-  GET    /api/v1/finance/entries/     # List financial entries
-  POST   /api/v1/finance/entries/     # Create entry (income/expense)
-  GET    /api/v1/finance/summary/     # Daily/monthly summary
-  GET    /api/v1/finance/reports/     # Detailed reports
+  GET    /api/v1/finance/entries/         # List transactions
+  POST   /api/v1/finance/income/          # Record income
+  POST   /api/v1/finance/expense/         # Record expense
+  GET    /api/v1/finance/summary/daily/   # Daily summary
+  GET    /api/v1/finance/summary/monthly/ # Monthly summary
+
+Night Audit:
+  GET    /api/v1/night-audit/             # Get current audit
+  POST   /api/v1/night-audit/close/       # Close day
+
+Reports:
+  GET    /api/v1/reports/occupancy/       # Occupancy report
+  GET    /api/v1/reports/revenue/         # Revenue report
+  GET    /api/v1/reports/export/          # Export to Excel
 
 Dashboard:
-  GET    /api/v1/dashboard/           # Today's overview
+  GET    /api/v1/dashboard/               # Today's overview
 ```
 
 ## Testing
@@ -290,176 +327,44 @@ Dashboard:
 ### Backend Tests
 
 ```bash
-cd hotel_backend
-
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=hotel_api --cov-report=html
-
-# Run specific test file
-pytest hotel_api/tests/test_bookings.py
-
-# Run with verbose output
-pytest -v
+cd hoang_lam_backend
+pytest --cov=hoang_lam_api --cov-report=html
 ```
 
 ### Flutter Tests
 
 ```bash
-cd hotel_app
-
-# Run all tests
-flutter test
-
-# Run with coverage
+cd hoang_lam_app
 flutter test --coverage
-
-# Run specific test file
-flutter test test/unit/models/booking_test.dart
-
-# Run integration tests (requires device/emulator)
-flutter test integration_test/
 ```
 
-## Development Workflow
+## User Roles
+
+| Role | Access Level | Capabilities |
+| ---- | ------------ | ------------ |
+| **Owner** | Full | All features, settings, user management, full reports |
+| **Manager** | Operational | Bookings, check-in/out, daily finance, basic reports |
+| **Staff** | Limited | View bookings, room status updates |
+| **Housekeeping** | Tasks only | Housekeeping tasks, room status |
+
+## Development
+
+See [TASKS.md](docs/TASKS.md) for the complete task breakdown with dependencies.
 
 ### Git Branch Strategy
 
 ```
 main              # Production-ready code
 ├── develop       # Development branch
-├── feature/*     # New features (feature/booking-calendar)
-├── bugfix/*      # Bug fixes (bugfix/checkout-error)
-└── release/*     # Release preparation (release/v1.0.0)
+├── feature/*     # New features
+├── bugfix/*      # Bug fixes
+└── release/*     # Release preparation
 ```
 
 ### Code Style
 
-**Backend (Python)**:
-- Follow PEP 8
-- Use `black` for formatting
-- Use `isort` for import sorting
-- Use `flake8` for linting
-
-```bash
-# Format code
-black hotel_api/
-isort hotel_api/
-flake8 hotel_api/
-```
-
-**Frontend (Dart)**:
-- Follow [Effective Dart](https://dart.dev/guides/language/effective-dart)
-- Use `dart format` for formatting
-- Use `dart analyze` for linting
-
-```bash
-# Format code
-dart format lib/
-dart analyze
-```
-
-## Troubleshooting
-
-### Common Issues
-
-#### Backend Issues
-
-**"ModuleNotFoundError: No module named 'xxx'"**
-```bash
-# Ensure virtual environment is activated
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-**"django.db.utils.OperationalError: could not connect to server"**
-```bash
-# Check PostgreSQL is running
-sudo systemctl status postgresql
-# Or start it
-sudo systemctl start postgresql
-```
-
-**"CORS error" from Flutter app**
-```python
-# Ensure CORS is configured in settings.py
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-]
-# Or for development:
-CORS_ALLOW_ALL_ORIGINS = True  # Don't use in production!
-```
-
-#### Flutter Issues
-
-**"Could not find a file named 'pubspec.yaml'"**
-```bash
-# Ensure you're in the hotel_app directory
-cd hotel_app
-flutter pub get
-```
-
-**"Error: ADB exited with exit code 1"**
-```bash
-# Restart ADB
-adb kill-server
-adb start-server
-flutter devices
-```
-
-**"Null check operator used on a null value"**
-```bash
-# Regenerate code
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-**Build fails after updating dependencies**
-```bash
-flutter clean
-flutter pub get
-flutter pub run build_runner build --delete-conflicting-outputs
-```
-
-### Logs Location
-
-| Service | Log Location |
-|---------|--------------|
-| Django | `hotel_backend/logs/hotel_api.log` |
-| Celery | `hotel_backend/logs/celery.log` |
-| Flutter | Device console / `flutter logs` |
-
-## User Roles
-
-| Role | Access Level | Capabilities |
-|------|--------------|--------------|
-| **Owner** | Full | All features, settings, user management, full financial reports |
-| **Manager** | Operational | Bookings, check-in/out, daily finance, basic reports |
-| **Staff** | Limited | View bookings, housekeeping tasks, room status updates |
-
-## Deployment
-
-See [HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md](HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md#15-deployment-strategy) for detailed deployment instructions.
-
-### Quick Deploy Checklist
-
-- [ ] Set `DEBUG=False` in production
-- [ ] Configure proper `SECRET_KEY`
-- [ ] Set up SSL/HTTPS
-- [ ] Configure production database
-- [ ] Set up database backups
-- [ ] Configure email for notifications
-- [ ] Build release APK/IPA
-
-## Documentation
-
-- [Design Plan](HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md) - Comprehensive project plan
-- [API Documentation](http://localhost:8000/api/docs/) - Interactive API docs (when running)
-
-## Contributing
-
-This is a private project for Hoang Lam Heritage Hotel. For questions or issues, contact the development team.
+**Backend**: `black`, `isort`, `flake8`
+**Frontend**: `dart format`, `dart analyze`
 
 ## License
 
