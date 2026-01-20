@@ -13,6 +13,8 @@ A mobile-first hotel management application designed for small family-run hotels
 | **Offline Support** | Yes - works without internet, syncs when connected |
 | **Accessibility** | Large touch targets, adjustable text size for older users |
 
+> Status note: Repo naming now follows `hoang_lam_app/` and `hoang_lam_backend/`. Core code is still skeletal; features/endpoints remain planned and require implementation.
+
 ## Documentation
 
 | Document | Description |
@@ -109,7 +111,7 @@ A mobile-first hotel management application designed for small family-run hotels
 | Models | Freezed + json_serializable | Immutable, type-safe |
 | Charts | fl_chart | Financial visualizations |
 | Calendar | table_calendar | Booking calendar view |
-| Camera/OCR | google_mlkit_text_recognition | ID scanning |
+| Camera/OCR | google_mlkit_text_recognition | ID scanning (planned) |
 | i18n | flutter_localizations | Vietnamese/English |
 
 ### Backend (Django)
@@ -121,65 +123,22 @@ A mobile-first hotel management application designed for small family-run hotels
 | Authentication | SimpleJWT | Stateless JWT auth |
 | Task Queue | Celery + Redis | Background jobs (OTA sync) |
 | API Docs | drf-spectacular | OpenAPI/Swagger |
-| PDF Generation | WeasyPrint | Receipts, reports |
+| PDF Generation | (TBD) | Add when receipt/report work begins |
 
 ## Project Structure
 
 ```
 hoang-lam-heritage-management/
-├── hoang_lam_app/               # Flutter mobile app
-│   ├── lib/
-│   │   ├── main.dart
-│   │   ├── core/                # Shared utilities, theme, constants
-│   │   │   ├── theme/
-│   │   │   ├── utils/
-│   │   │   ├── constants/
-│   │   │   └── errors/
-│   │   ├── data/                # Data layer
-│   │   │   ├── models/
-│   │   │   ├── repositories/
-│   │   │   ├── datasources/
-│   │   │   └── providers/
-│   │   └── features/            # Feature modules
-│   │       ├── auth/
-│   │       ├── dashboard/
-│   │       ├── bookings/
-│   │       ├── rooms/
-│   │       ├── guests/
-│   │       ├── finance/
-│   │       ├── housekeeping/
-│   │       ├── reports/
-│   │       └── settings/
-│   ├── test/
-│   ├── android/
-│   ├── ios/
-│   └── pubspec.yaml
-├── hoang_lam_backend/           # Django REST API
-│   ├── config/                  # Django project settings
-│   │   ├── settings/
-│   │   │   ├── base.py
-│   │   │   ├── dev.py
-│   │   │   └── prod.py
-│   │   ├── urls.py
-│   │   └── wsgi.py
-│   ├── hoang_lam_api/           # Main API app
-│   │   ├── bookings/
-│   │   ├── rooms/
-│   │   ├── guests/
-│   │   ├── finance/
-│   │   ├── housekeeping/
-│   │   ├── reports/
-│   │   └── ota/
-│   ├── manage.py
-│   ├── requirements.txt
-│   └── requirements-dev.txt
-├── docs/                        # Documentation
+├── hoang_lam_app/            # Flutter mobile app (skeleton: lib/main.dart only)
+├── hoang_lam_backend/        # Django REST API (skeleton: settings, models, urls)
+├── docs/
 │   ├── HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md
 │   └── TASKS.md
-├── scripts/                     # Utility scripts (backup, deploy)
-├── docker-compose.yml
+├── docker-compose.yml        # Local dev (Django/Postgres/Redis)
 └── README.md
 ```
+
+Still pending: feature module folders under `hoang_lam_app/lib/`, Django views/serializers/tests under `hoang_lam_backend/hotel_api/`. These must be added before the planned endpoints become available.
 
 ## Getting Started
 
@@ -201,7 +160,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
-pip install -r requirements-dev.txt  # For testing
+pip install -r requirements-dev.txt
 
 # Copy environment file and configure
 cp .env.example .env
@@ -213,7 +172,7 @@ python manage.py migrate
 # Create superuser (admin account)
 python manage.py createsuperuser
 
-# Load seed data (7 rooms, categories)
+# Load seed data (ships with initial_data.json)
 python manage.py loaddata initial_data
 
 # Run development server
@@ -228,8 +187,8 @@ cd hoang_lam_app
 # Get dependencies
 flutter pub get
 
-# Generate code (Freezed models, Riverpod)
-dart run build_runner build --delete-conflicting-outputs
+# Generate code (Freezed models, Riverpod) after codegen is added
+# dart run build_runner build --delete-conflicting-outputs
 
 # Run on device/emulator
 flutter run
@@ -256,7 +215,7 @@ JWT_REFRESH_TOKEN_LIFETIME=10080
 REDIS_URL=redis://localhost:6379/0
 ```
 
-For the Flutter app, create `hoang_lam_app/lib/core/config/env.dart`:
+For the Flutter app, once `lib/core/config/` exists, create `hoang_lam_app/lib/core/config/env.dart`:
 
 ```dart
 class Env {
@@ -274,69 +233,47 @@ When the backend is running:
 | ReDoc | http://localhost:8000/api/redoc/ |
 | OpenAPI Schema | http://localhost:8000/api/schema/ |
 
-### Main API Endpoints
+### Main API Endpoints (planned)
+
+Back-end endpoints are not yet implemented; build them following the design plan. Proposed surface:
 
 ```
 Authentication:
-  POST   /api/v1/auth/login/              # Login, get tokens
-  POST   /api/v1/auth/refresh/            # Refresh access token
-  POST   /api/v1/auth/logout/             # Logout
-  GET    /api/v1/auth/me/                 # Current user profile
-  POST   /api/v1/auth/password/change/    # Change password
+  POST   /api/v1/auth/login/
+  POST   /api/v1/auth/refresh/
+  POST   /api/v1/auth/logout/
+  GET    /api/v1/auth/me/
 
 Rooms:
-  GET    /api/v1/rooms/                   # List all rooms
-  GET    /api/v1/rooms/{id}/              # Room details
-  PATCH  /api/v1/rooms/{id}/status/       # Update room status
-
-Guests:
-  GET    /api/v1/guests/                  # List guests
-  POST   /api/v1/guests/                  # Create guest
-  GET    /api/v1/guests/search/           # Search by name/phone/ID
+  GET    /api/v1/rooms/
+  GET    /api/v1/rooms/{id}/
+  PATCH  /api/v1/rooms/{id}/status/
 
 Bookings:
-  GET    /api/v1/bookings/                # List bookings
-  POST   /api/v1/bookings/                # Create booking
-  GET    /api/v1/bookings/calendar/       # Calendar view (date range)
-  GET    /api/v1/bookings/today/          # Today's bookings
-  POST   /api/v1/bookings/{id}/checkin/   # Check-in
-  POST   /api/v1/bookings/{id}/checkout/  # Check-out
+  GET    /api/v1/bookings/
+  POST   /api/v1/bookings/
+  POST   /api/v1/bookings/{id}/checkin/
+  POST   /api/v1/bookings/{id}/checkout/
 
-Finance:
-  GET    /api/v1/finance/entries/         # List transactions
-  POST   /api/v1/finance/income/          # Record income
-  POST   /api/v1/finance/expense/         # Record expense
-  GET    /api/v1/finance/summary/daily/   # Daily summary
-  GET    /api/v1/finance/summary/monthly/ # Monthly summary
+Finance (Phase 2):
+  GET    /api/v1/finance/entries/
+  POST   /api/v1/finance/income/
+  POST   /api/v1/finance/expense/
 
-Night Audit:
-  GET    /api/v1/night-audit/             # Get current audit
-  POST   /api/v1/night-audit/close/       # Close day
-
-Reports:
-  GET    /api/v1/reports/occupancy/       # Occupancy report
-  GET    /api/v1/reports/revenue/         # Revenue report
-  GET    /api/v1/reports/export/          # Export to Excel
-
-Dashboard:
-  GET    /api/v1/dashboard/               # Today's overview
+Night Audit (Phase 1 P1):
+  GET    /api/v1/night-audit/
+  POST   /api/v1/night-audit/close/
 ```
 
 ## Testing
 
 ### Backend Tests
 
-```bash
-cd hoang_lam_backend
-pytest --cov=hoang_lam_api --cov-report=html
-```
+Add once test suite exists (expected command: `cd hoang_lam_backend && pytest`).
 
 ### Flutter Tests
 
-```bash
-cd hoang_lam_app
-flutter test --coverage
-```
+Add once Flutter tests exist (expected command: `cd hoang_lam_app && flutter test`).
 
 ## User Roles
 

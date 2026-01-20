@@ -1,0 +1,38 @@
+version: '3.9'
+
+services:
+  web:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./hoang_lam_backend:/app
+    command: >
+      bash -c "pip install -r requirements.txt -r requirements-dev.txt && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - hoang_lam_backend/.env
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/hoang_lam_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=hoang_lam_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:

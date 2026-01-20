@@ -3,6 +3,8 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
+> Note (2026-01-20): Projects are now named `hoang_lam_app/` and `hoang_lam_backend/`. Dev assets (requirements-dev.txt, docker-compose.yml, initial_data fixture) were added, but feature modules and API/view/tests are still pending—cover them in Phase 0 before later tasks.
+
 ## How to Use This File
 
 - **Agents:** Claim tasks by adding your agent ID next to the task

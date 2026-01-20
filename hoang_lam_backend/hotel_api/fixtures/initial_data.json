@@ -1,0 +1,215 @@
+[
+  {
+    "model": "hotel_api.roomtype",
+    "pk": 1,
+    "fields": {
+      "name": "Phòng Đơn",
+      "name_en": "Single",
+      "base_rate": "500000",
+      "max_guests": 1,
+      "description": "",
+      "amenities": [],
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.roomtype",
+    "pk": 2,
+    "fields": {
+      "name": "Phòng Đôi",
+      "name_en": "Double",
+      "base_rate": "700000",
+      "max_guests": 2,
+      "description": "",
+      "amenities": [],
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.roomtype",
+    "pk": 3,
+    "fields": {
+      "name": "Phòng Gia Đình",
+      "name_en": "Family",
+      "base_rate": "900000",
+      "max_guests": 4,
+      "description": "",
+      "amenities": [],
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.room",
+    "pk": 1,
+    "fields": {
+      "number": "101",
+      "name": "Phòng Đơn 101",
+      "room_type": 1,
+      "floor": 1,
+      "status": "available",
+      "amenities": [],
+      "notes": "",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.room",
+    "pk": 2,
+    "fields": {
+      "number": "102",
+      "name": "Phòng Đơn 102",
+      "room_type": 1,
+      "floor": 1,
+      "status": "available",
+      "amenities": [],
+      "notes": "",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.room",
+    "pk": 3,
+    "fields": {
+      "number": "103",
+      "name": "Phòng Đôi 103",
+      "room_type": 2,
+      "floor": 1,
+      "status": "available",
+      "amenities": [],
+      "notes": "",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.room",
+    "pk": 4,
+    "fields": {
+      "number": "104",
+      "name": "Phòng Đôi 104",
+      "room_type": 2,
+      "floor": 1,
+      "status": "available",
+      "amenities": [],
+      "notes": "",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.room",
+    "pk": 5,
+    "fields": {
+      "number": "201",
+      "name": "Phòng Gia Đình 201",
+      "room_type": 3,
+      "floor": 2,
+      "status": "available",
+      "amenities": [],
+      "notes": "",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.room",
+    "pk": 6,
+    "fields": {
+      "number": "202",
+      "name": "Phòng Gia Đình 202",
+      "room_type": 3,
+      "floor": 2,
+      "status": "available",
+      "amenities": [],
+      "notes": "",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.room",
+    "pk": 7,
+    "fields": {
+      "number": "203",
+      "name": "Phòng Gia Đình 203",
+      "room_type": 3,
+      "floor": 2,
+      "status": "available",
+      "amenities": [],
+      "notes": "",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "hotel_api.financialcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Tiền phòng",
+      "name_en": "Room Revenue",
+      "category_type": "income",
+      "icon": "hotel",
+      "color": "#4CAF50",
+      "is_default": true,
+      "is_active": true,
+      "sort_order": 1
+    }
+  },
+  {
+    "model": "hotel_api.financialcategory",
+    "pk": 2,
+    "fields": {
+      "name": "Dịch vụ",
+      "name_en": "Services",
+      "category_type": "income",
+      "icon": "miscellaneous_services",
+      "color": "#4CAF50",
+      "is_default": true,
+      "is_active": true,
+      "sort_order": 2
+    }
+  },
+  {
+    "model": "hotel_api.financialcategory",
+    "pk": 3,
+    "fields": {
+      "name": "Điện",
+      "name_en": "Electricity",
+      "category_type": "expense",
+      "icon": "bolt",
+      "color": "#FFC107",
+      "is_default": true,
+      "is_active": true,
+      "sort_order": 1
+    }
+  },
+  {
+    "model": "hotel_api.financialcategory",
+    "pk": 4,
+    "fields": {
+      "name": "Nước",
+      "name_en": "Water",
+      "category_type": "expense",
+      "icon": "water_drop",
+      "color": "#03A9F4",
+      "is_default": true,
+      "is_active": true,
+      "sort_order": 2
+    }
+  }
+]

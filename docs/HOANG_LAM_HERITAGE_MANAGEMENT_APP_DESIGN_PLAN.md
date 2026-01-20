@@ -45,18 +45,24 @@ Build a simple, intuitive hotel management app for a 7-room family hotel that en
 ### Repository Structure
 ```
 REPOSITORY: hoang-lam-heritage-management/
-├── hoang_lam_app/          # Flutter mobile app
+├── hoang_lam_app/          # Flutter mobile app (renamed)
 │   ├── lib/
+│   │   └── main.dart   # only file present today; feature modules to be added
 │   ├── android/
 │   ├── ios/
 │   └── pubspec.yaml
-├── hoang_lam_backend/      # Django REST API
-│   ├── hoang_lam_api/
+├── hoang_lam_backend/      # Django REST API (renamed)
+│   ├── backend/        # settings/urls
+│   ├── hotel_api/      # models/urls; views/serializers/tests pending
 │   ├── manage.py
-│   └── requirements.txt
+│   ├── requirements.txt
+│   └── requirements-dev.txt
 ├── docs/
+├── docker-compose.yml      # Local dev stack (Django/Postgres/Redis)
 └── README.md
 ```
+
+Note: Feature modules, views/serializers/tests, and full app scaffolding remain to be implemented. Use Phase 0 tasks to add them.
 
 ### Relationship with Cosmo Management
 | Aspect | Approach |
