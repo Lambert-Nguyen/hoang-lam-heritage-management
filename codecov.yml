@@ -1,0 +1,57 @@
+# Codecov Configuration
+# https://docs.codecov.com/docs/codecov-yaml
+
+# Coverage thresholds
+coverage:
+  precision: 2
+  round: down
+  range: "70...100"
+  
+  status:
+    # Overall project coverage
+    project:
+      default:
+        target: 70%
+        threshold: 2%
+        if_not_found: success
+        if_ci_failed: error
+    
+    # Pull request coverage
+    patch:
+      default:
+        target: 70%
+        threshold: 5%
+        if_not_found: success
+        if_ci_failed: error
+
+# Files to ignore in coverage reports
+ignore:
+  - "hoang_lam_backend/*/migrations/**"
+  - "hoang_lam_backend/*/tests/**"
+  - "hoang_lam_backend/manage.py"
+  - "hoang_lam_backend/backend/asgi.py"
+  - "hoang_lam_backend/backend/wsgi.py"
+  - "hoang_lam_app/test/**"
+  - "hoang_lam_app/**/*_test.dart"
+  - "hoang_lam_app/**/*.g.dart"
+  - "hoang_lam_app/**/*.freezed.dart"
+
+# Comment configuration for pull requests
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false
+  require_base: no
+  require_head: yes
+
+# Flags for different components
+flags:
+  backend:
+    paths:
+      - hoang_lam_backend/
+    carryforward: true
+  
+  flutter:
+    paths:
+      - hoang_lam_app/
+    carryforward: true

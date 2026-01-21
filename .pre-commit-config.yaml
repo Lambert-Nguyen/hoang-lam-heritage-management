@@ -1,0 +1,65 @@
+# Pre-commit hooks configuration
+# See https://pre-commit.com for more information
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(.*\.md|.*\.txt)$
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: mixed-line-ending
+
+  # Python code formatting with Black
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        language_version: python3.11
+        args: ['--config', 'hoang_lam_backend/pyproject.toml']
+        files: ^hoang_lam_backend/
+
+  # Python import sorting with isort
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ['--settings-path', 'hoang_lam_backend/pyproject.toml']
+        files: ^hoang_lam_backend/
+
+  # Python linting with flake8
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: ['--config', 'hoang_lam_backend/.flake8']
+        additional_dependencies: [
+          'flake8-docstrings',
+          'flake8-bugbear',
+        ]
+        files: ^hoang_lam_backend/
+
+  # Django-specific checks
+  - repo: local
+    hooks:
+      - id: django-check
+        name: Django Check
+        entry: bash -c 'cd hoang_lam_backend && DJANGO_SETTINGS_MODULE=backend.settings.development python manage.py check --deploy --fail-level WARNING'
+        language: system
+        pass_filenames: false
+        files: \.py$
+
+      - id: django-migrations-check
+        name: Django Migrations Check
+        entry: bash -c 'cd hoang_lam_backend && DJANGO_SETTINGS_MODULE=backend.settings.development python manage.py makemigrations --dry-run --check'
+        language: system
+        pass_filenames: false
+        files: ^hoang_lam_backend/(hotel_api|backend)/.*\.py$

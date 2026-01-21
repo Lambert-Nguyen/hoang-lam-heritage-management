@@ -1,0 +1,31 @@
+# Code Owners for Hoang Lam Heritage Management
+# These owners will be requested for review when someone opens a pull request
+# that modifies files in the specified paths
+
+# Default owners for everything in the repo
+* @duylam1407
+
+# Backend (Django/Python)
+/hoang_lam_backend/ @duylam1407
+/hoang_lam_backend/hotel_api/ @duylam1407
+/hoang_lam_backend/backend/settings/ @duylam1407
+
+# Frontend (Flutter/Dart)
+/hoang_lam_app/ @duylam1407
+/hoang_lam_app/lib/ @duylam1407
+
+# Infrastructure & DevOps
+/.github/ @duylam1407
+/docker-compose.yml @duylam1407
+/Makefile @duylam1407
+
+# Configuration files
+*.yml @duylam1407
+*.yaml @duylam1407
+.gitignore @duylam1407
+.editorconfig @duylam1407
+.pre-commit-config.yaml @duylam1407
+
+# Documentation
+/docs/ @duylam1407
+*.md @duylam1407

@@ -16,11 +16,11 @@ Usage:
 import os
 
 # Default to development settings if not specified
-ENVIRONMENT = os.getenv('DJANGO_ENVIRONMENT', 'development')
+ENVIRONMENT = os.getenv("DJANGO_ENVIRONMENT", "development")
 
-if ENVIRONMENT == 'production':
+if ENVIRONMENT == "production":
     from .production import *
-elif ENVIRONMENT == 'staging':
+elif ENVIRONMENT == "staging":
     from .staging import *
 else:
     from .development import *

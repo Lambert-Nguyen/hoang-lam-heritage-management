@@ -1,0 +1,136 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'hoang_lam_backend/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'hoang_lam_backend/**'
+
+jobs:
+  lint:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'hoang_lam_backend/requirements*.txt'
+    
+    - name: Install dependencies
+      working-directory: ./hoang_lam_backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt -r requirements-dev.txt
+    
+    - name: Run Black (format check)
+      working-directory: ./hoang_lam_backend
+      run: black --check .
+    
+    - name: Run isort (import order check)
+      working-directory: ./hoang_lam_backend
+      run: isort --check-only .
+    
+    - name: Run Flake8 (linting)
+      working-directory: ./hoang_lam_backend
+      run: flake8 .
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_hoang_lam_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_hoang_lam_db
+      DJANGO_SETTINGS_MODULE: backend.settings.development
+      DJANGO_SECRET_KEY: test-secret-key-for-ci
+      DEBUG: "False"
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'hoang_lam_backend/requirements*.txt'
+    
+    - name: Install dependencies
+      working-directory: ./hoang_lam_backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt -r requirements-dev.txt
+    
+    - name: Run migrations
+      working-directory: ./hoang_lam_backend
+      run: python manage.py migrate
+    
+    - name: Run tests with coverage
+      working-directory: ./hoang_lam_backend
+      run: pytest --cov --cov-report=xml --cov-report=term
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./hoang_lam_backend/coverage.xml
+        flags: backend
+        name: backend-coverage
+        token: ${{ secrets.CODECOV_TOKEN }}
+      if: always()
+
+  django-check:
+    name: Django System Check
+    runs-on: ubuntu-latest
+    
+    env:
+      DJANGO_SETTINGS_MODULE: backend.settings.development
+      DJANGO_SECRET_KEY: test-secret-key-for-ci
+      USE_SQLITE: "True"
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'hoang_lam_backend/requirements*.txt'
+    
+    - name: Install dependencies
+      working-directory: ./hoang_lam_backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run Django system check
+      working-directory: ./hoang_lam_backend
+      run: python manage.py check --deploy --fail-level WARNING
+    
+    - name: Check for missing migrations
+      working-directory: ./hoang_lam_backend
+      run: python manage.py makemigrations --dry-run --check

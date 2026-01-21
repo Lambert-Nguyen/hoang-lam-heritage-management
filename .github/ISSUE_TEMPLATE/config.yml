@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📚 Documentation
+    url: https://github.com/duylam1407/hoang-lam-heritage-management/blob/main/docs/
+    about: Check the documentation for guides and API references
+  - name: 💬 Discussions
+    url: https://github.com/duylam1407/hoang-lam-heritage-management/discussions
+    about: Ask questions and discuss ideas with the community

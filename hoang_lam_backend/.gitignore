@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+
+# Media files (user uploads)
+media/
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Logs directory (but keep .gitkeep)
+logs/*.log
+logs/*.log.*
+!logs/.gitkeep
+
+# Migrations (keep migration files, ignore __pycache__)
+**/migrations/__pycache__/
+
+# Test coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.pytest_cache/
+*.cover
+.hypothesis/
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
