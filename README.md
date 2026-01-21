@@ -13,7 +13,14 @@ A mobile-first hotel management application designed for small family-run hotels
 | **Offline Support** | Yes - works without internet, syncs when connected |
 | **Accessibility** | Large touch targets, adjustable text size for older users |
 
-> Status note: Repo naming now follows `hoang_lam_app/` and `hoang_lam_backend/`. Core code is still skeletal; features/endpoints remain planned and require implementation.
+> **Status (2026-01-20):** Folder naming follows `hoang_lam_app/` and `hoang_lam_backend/`. However:
+>
+> - `pubspec.yaml` still says `hotel_app` (needs rename)
+> - Django app is `hotel_api` not `hoang_lam_api` (needs rename)
+> - 10 models drafted in `models.py` but no migrations run yet
+> - Guest data is embedded in Booking model (needs refactor to separate Guest model)
+>
+> See [TASKS.md](docs/TASKS.md) for detailed status.
 
 ## Documentation
 
@@ -129,16 +136,22 @@ A mobile-first hotel management application designed for small family-run hotels
 
 ```
 hoang-lam-heritage-management/
-├── hoang_lam_app/            # Flutter mobile app (skeleton: lib/main.dart only)
-├── hoang_lam_backend/        # Django REST API (skeleton: settings, models, urls)
+├── hoang_lam_app/            # Flutter mobile app (skeleton)
+│   └── pubspec.yaml          # ⚠️ Still named "hotel_app" - needs rename
+├── hoang_lam_backend/        # Django REST API
+│   ├── backend/              # Django project settings
+│   └── hotel_api/            # ⚠️ Named "hotel_api" - needs rename to hoang_lam_api
+│       ├── models.py         # ✅ 10 models drafted (no migrations yet)
+│       ├── views.py          # ❌ Not created
+│       └── serializers.py    # ❌ Not created
 ├── docs/
 │   ├── HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md
 │   └── TASKS.md
-├── docker-compose.yml        # Local dev (Django/Postgres/Redis)
+├── docker-compose.yml        # ✅ Local dev (Django/Postgres/Redis)
 └── README.md
 ```
 
-Still pending: feature module folders under `hoang_lam_app/lib/`, Django views/serializers/tests under `hoang_lam_backend/hotel_api/`. These must be added before the planned endpoints become available.
+**Next Steps:** Run `makemigrations` + `migrate`, create separate Guest model, then build serializers/views.
 
 ## Getting Started
 

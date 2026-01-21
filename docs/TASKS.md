@@ -3,7 +3,15 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
-> Note (2026-01-20): Projects are now named `hoang_lam_app/` and `hoang_lam_backend/`. Dev assets (requirements-dev.txt, docker-compose.yml, initial_data fixture) were added, but feature modules and API/view/tests are still pending—cover them in Phase 0 before later tasks.
+> **Code Review (2026-01-20):** Reality check performed. Key findings:
+>
+> - **Naming mismatch**: `pubspec.yaml` still says `hotel_app`; Django app is `hotel_api` not `hoang_lam_api`
+> - **Models drafted**: 10 models exist in `models.py` (RoomType, Room, Booking, FinancialCategory, FinancialEntry, HotelUser, Housekeeping, MinibarItem, MinibarSale, ExchangeRate)
+> - **Guest embedded**: Guest fields are embedded in Booking model - **must be refactored to separate Guest model** for history tracking
+> - **No migrations**: `migrations/` folder is empty - must run `makemigrations` before Phase 1
+> - **No views/serializers**: API endpoints not yet implemented
+>
+> Tasks below updated to reflect "Drafted" vs "Pending" status.
 
 ## How to Use This File
 
@@ -20,41 +28,54 @@
 > **Note:** All Phase 0 tasks must complete before starting Phase 1
 
 ### 0.1 Backend Setup
-- [ ] **0.1.1** Create Django project structure (`hoang_lam_backend/`)
+
+> **Status**: Project structure exists. Models drafted. Migrations and APIs pending.
+
+- [x] **0.1.1** Create Django project structure (`hoang_lam_backend/`) — ✅ EXISTS
 - [ ] **0.1.2** Configure PostgreSQL database connection
 - [ ] **0.1.3** Set up Django REST Framework
 - [ ] **0.1.4** Configure JWT authentication (SimpleJWT)
 - [ ] **0.1.5** Create base settings (dev, staging, production)
 - [ ] **0.1.6** Set up CORS configuration
-- [ ] **0.1.7** Create custom user model (`HotelUser`)
+- [x] **0.1.7** Create custom user model (`HotelUser`) — ✅ DRAFTED in models.py
 - [ ] **0.1.8** Set up logging configuration
 - [ ] **0.1.9** Create API versioning structure (`/api/v1/`)
-- [ ] **0.1.10** Write initial database migrations
-- [ ] **0.1.11** Create `.env.example` with all required variables
+- [ ] **0.1.10** Run `makemigrations` and `migrate` to initialize schema ⚠️ **HIGH PRIORITY**
+- [x] **0.1.11** Create `.env.example` with all required variables — ✅ EXISTS
 - [ ] **0.1.12** Set up drf-spectacular for API documentation
+- [ ] **0.1.13** Rename Django app `hotel_api` → `hoang_lam_api` (align with docs)
+- [ ] **0.1.14** Create `Guest` model (refactor from embedded Booking fields) ⚠️ **ARCHITECTURE FIX**
 
 ### 0.2 Frontend Setup
-- [ ] **0.2.1** Create Flutter project structure (`hoang_lam_app/`)
-- [ ] **0.2.2** Configure pubspec.yaml with dependencies
-- [ ] **0.2.3** Set up Riverpod for state management
-- [ ] **0.2.4** Configure Dio HTTP client with interceptors
-- [ ] **0.2.5** Set up Hive for local storage
-- [ ] **0.2.6** Configure GoRouter for navigation
-- [ ] **0.2.7** Set up Freezed for models
-- [ ] **0.2.8** Configure flutter_localizations (vi, en)
-- [ ] **0.2.9** Create app theme (colors, typography, spacing)
-- [ ] **0.2.10** Set up environment configuration (dev, prod)
-- [ ] **0.2.11** Create bottom navigation scaffold
-- [ ] **0.2.12** Create base screen template with AppBar
-- [ ] **0.2.13** Create common widgets (buttons, cards, inputs)
+
+> **Status**: Skeleton project exists. pubspec.yaml needs all dependencies added.
+
+- [x] **0.2.1** Create Flutter project structure (`hoang_lam_app/`) — ✅ EXISTS (skeleton)
+- [ ] **0.2.2** Rename app in pubspec.yaml (`hotel_app` → `hoang_lam_app`) ⚠️ **NAMING FIX**
+- [ ] **0.2.3** Configure pubspec.yaml with all dependencies (riverpod, dio, hive, go_router, freezed, etc.)
+- [ ] **0.2.4** Set up build_runner and code generation (freezed, riverpod_generator) ⚠️ **CRITICAL**
+- [ ] **0.2.5** Set up Riverpod for state management
+- [ ] **0.2.6** Configure Dio HTTP client with interceptors
+- [ ] **0.2.7** Set up Hive for local storage
+- [ ] **0.2.8** Configure GoRouter for navigation
+- [ ] **0.2.9** Set up Freezed for models
+- [ ] **0.2.10** Configure flutter_localizations (vi, en)
+- [ ] **0.2.11** Create app theme (colors, typography, spacing)
+- [ ] **0.2.12** Set up environment configuration (dev, prod)
+- [ ] **0.2.13** Create bottom navigation scaffold
+- [ ] **0.2.14** Create base screen template with AppBar
+- [ ] **0.2.15** Create common widgets (buttons, cards, inputs)
 
 ### 0.3 DevOps Setup
+
+> **Status**: docker-compose exists. CI/CD and linting pending.
+
 - [ ] **0.3.1** Create GitHub Actions for backend tests
 - [ ] **0.3.2** Create GitHub Actions for Flutter tests
 - [ ] **0.3.3** Set up linting rules (backend - black, isort, flake8)
 - [ ] **0.3.4** Set up linting rules (frontend - dart analyze)
-- [ ] **0.3.5** Create docker-compose for local development
-- [ ] **0.3.6** Create `.gitignore` for both projects
+- [x] **0.3.5** Create docker-compose for local development — ✅ EXISTS
+- [ ] **0.3.6** Create `.gitignore` for both projects (ensure .env not committed)
 - [ ] **0.3.7** Set up pre-commit hooks (backend)
 - [ ] **0.3.8** Create Makefile for common commands
 
@@ -89,10 +110,13 @@
 - [ ] **1.2.9** Write authentication widget tests
 
 ### 1.3 Room Management (Backend)
-- [ ] **1.3.1** Create `RoomType` model and migrations
-- [ ] **1.3.2** Create `Room` model and migrations
-- [ ] **1.3.3** Create RoomType CRUD endpoints
-- [ ] **1.3.4** Create Room CRUD endpoints
+
+> **Model Status**: `RoomType` and `Room` DRAFTED in models.py. Needs migration + API.
+
+- [x] **1.3.1** Create `RoomType` model — ✅ DRAFTED (verify fields match Design Plan)
+- [x] **1.3.2** Create `Room` model — ✅ DRAFTED (verify fields match Design Plan)
+- [ ] **1.3.3** Create RoomType serializer and CRUD endpoints
+- [ ] **1.3.4** Create Room serializer and CRUD endpoints
 - [ ] **1.3.5** Create room status update endpoint
 - [ ] **1.3.6** Create room availability check endpoint
 - [ ] **1.3.7** Seed default room types
@@ -113,14 +137,20 @@
 - [ ] **1.4.10** Write room widget tests
 
 ### 1.5 Guest Management (Backend)
-- [ ] **1.5.1** Create `Guest` model with all fields
-- [ ] **1.5.2** Create Guest CRUD endpoints
-- [ ] **1.5.3** Create guest search endpoint (by name, phone, ID)
-- [ ] **1.5.4** Create guest history endpoint
-- [ ] **1.5.5** Create returning guest detection logic
-- [ ] **1.5.6** Seed nationality list
-- [ ] **1.5.7** Seed ID types list
-- [ ] **1.5.8** Write guest management tests
+`[BLOCKED BY: 0.1.14]` _(Guest model refactoring)_
+
+> **Architecture Note**: Guest is currently EMBEDDED in Booking (guest_name, guest_phone, etc.).
+> Must refactor to separate `Guest` model per Design Plan for history tracking and VIP status.
+
+- [ ] **1.5.1** Create `Guest` model with all fields (id_type, id_image, nationality, is_vip, total_stays)
+- [ ] **1.5.2** Refactor `Booking` model to use ForeignKey to `Guest`
+- [ ] **1.5.3** Create Guest serializer and CRUD endpoints
+- [ ] **1.5.4** Create guest search endpoint (by name, phone, ID)
+- [ ] **1.5.5** Create guest history endpoint
+- [ ] **1.5.6** Create returning guest detection logic
+- [ ] **1.5.7** Seed nationality list
+- [ ] **1.5.8** Seed ID types list
+- [ ] **1.5.9** Write guest management tests
 
 ### 1.6 Guest Management (Frontend)
 `[BLOCKED BY: 1.5.1-1.5.4]`
@@ -148,10 +178,13 @@
 - [ ] **1.7.9** Write ID scanning tests
 
 ### 1.8 Booking Management (Backend)
-`[BLOCKED BY: 1.3.1-1.3.2, 1.5.1]`
-- [ ] **1.8.1** Create `Booking` model with all fields
+`[BLOCKED BY: 1.3.1-1.3.2, 1.5.1-1.5.2]`
+
+> **Model Status**: `Booking` DRAFTED in models.py. Needs Guest FK refactor + migration + API.
+
+- [x] **1.8.1** Create `Booking` model — ✅ DRAFTED (needs Guest FK after 1.5.2)
 - [ ] **1.8.2** Create `GroupBooking` model
-- [ ] **1.8.3** Create booking CRUD endpoints
+- [ ] **1.8.3** Create Booking serializer and CRUD endpoints
 - [ ] **1.8.4** Create booking status update endpoint
 - [ ] **1.8.5** Create check-in endpoint with timestamp
 - [ ] **1.8.6** Create check-out endpoint with timestamp
@@ -264,8 +297,11 @@
 ## Phase 2: Financial Tracking
 
 ### 2.1 Financial Models (Backend)
-- [ ] **2.1.1** Create `FinancialCategory` model
-- [ ] **2.1.2** Create `FinancialEntry` model
+
+> **Model Status**: `FinancialCategory` and `FinancialEntry` DRAFTED. Payment, FolioItem pending.
+
+- [x] **2.1.1** Create `FinancialCategory` model — ✅ DRAFTED
+- [x] **2.1.2** Create `FinancialEntry` model — ✅ DRAFTED
 - [ ] **2.1.3** Create `Payment` model
 - [ ] **2.1.4** Create `FolioItem` model
 - [ ] **2.1.5** Seed default expense categories
@@ -316,8 +352,11 @@
 - [ ] **2.5.4** Write deposit widget tests
 
 ### 2.6 Multi-Currency (Backend)
-- [ ] **2.6.1** Create `ExchangeRate` model
-- [ ] **2.6.2** Create exchange rate endpoint
+
+> **Model Status**: `ExchangeRate` DRAFTED in models.py.
+
+- [x] **2.6.1** Create `ExchangeRate` model — ✅ DRAFTED
+- [ ] **2.6.2** Create exchange rate serializer and endpoint
 - [ ] **2.6.3** Create currency conversion utility
 - [ ] **2.6.4** Write currency tests
 
@@ -347,7 +386,10 @@
 ## Phase 3: Operations & Housekeeping
 
 ### 3.1 Housekeeping Models (Backend)
-- [ ] **3.1.1** Create `HousekeepingTask` model
+
+> **Model Status**: `Housekeeping` DRAFTED (named differently - rename to `HousekeepingTask`). MaintenanceRequest pending.
+
+- [x] **3.1.1** Create `HousekeepingTask` model — ✅ DRAFTED as `Housekeeping` (consider rename)
 - [ ] **3.1.2** Create `MaintenanceRequest` model
 - [ ] **3.1.3** Seed task types
 - [ ] **3.1.4** Seed priority levels
@@ -378,13 +420,17 @@
 
 ### 3.4 Minibar/POS (Backend)
 `[BLOCKED BY: 1.8.1, 2.1.4]`
-- [ ] **3.4.1** Create `MinibarItem` model
-- [ ] **3.4.2** Create `RoomMinibar` model (inventory per room)
-- [ ] **3.4.3** Create minibar item CRUD endpoints
-- [ ] **3.4.4** Create charge to room endpoint
-- [ ] **3.4.5** Create minibar inventory update
-- [ ] **3.4.6** Seed default minibar items
-- [ ] **3.4.7** Write minibar tests
+
+> **Model Status**: `MinibarItem` and `MinibarSale` DRAFTED. RoomMinibar (per-room inventory) pending.
+
+- [x] **3.4.1** Create `MinibarItem` model — ✅ DRAFTED
+- [x] **3.4.2** Create `MinibarSale` model — ✅ DRAFTED (charges to booking)
+- [ ] **3.4.3** Create `RoomMinibar` model (inventory per room) — if needed
+- [ ] **3.4.4** Create minibar serializers and CRUD endpoints
+- [ ] **3.4.5** Create charge to room endpoint
+- [ ] **3.4.6** Create minibar inventory update
+- [ ] **3.4.7** Seed default minibar items
+- [ ] **3.4.8** Write minibar tests
 
 ### 3.5 Minibar/POS (Frontend)
 `[BLOCKED BY: 3.4.1-3.4.5]`
@@ -555,18 +601,23 @@ When claiming a task, add your agent ID:
 
 ## Progress Summary
 
-| Phase | Description | Total Tasks | Completed | In Progress | Blocked |
-| ----- | ----------- | ----------- | --------- | ----------- | ------- |
-| 0 | Project Setup | 33 | 0 | 0 | 0 |
-| 1 | Core MVP | 95 | 0 | 0 | 0 |
-| 2 | Financial Tracking | 32 | 0 | 0 | 0 |
-| 3 | Operations & Housekeeping | 28 | 0 | 0 | 0 |
-| 4 | Reports & Analytics | 20 | 0 | 0 | 0 |
-| 5 | Guest Communication | 17 | 0 | 0 | 0 |
-| 6 | OTA Integration | 17 | 0 | 0 | 0 |
-| 7 | Direct Booking | 9 | 0 | 0 | 0 |
-| 8 | Smart Devices (Future) | 9 | 0 | 0 | 0 |
-| **Total** | | **260** | **0** | **0** | **0** |
+| Phase | Description | Total Tasks | Completed | Drafted | Pending |
+| ----- | ----------- | ----------- | --------- | ------- | ------- |
+| 0 | Project Setup | 37 | 4 | 0 | 33 |
+| 1 | Core MVP | 97 | 3 | 0 | 94 |
+| 2 | Financial Tracking | 32 | 2 | 0 | 30 |
+| 3 | Operations & Housekeeping | 30 | 3 | 0 | 27 |
+| 4 | Reports & Analytics | 20 | 0 | 0 | 20 |
+| 5 | Guest Communication | 17 | 0 | 0 | 17 |
+| 6 | OTA Integration | 17 | 0 | 0 | 17 |
+| 7 | Direct Booking | 9 | 0 | 0 | 9 |
+| 8 | Smart Devices (Future) | 9 | 0 | 0 | 9 |
+| **Total** | | **268** | **12** | **0** | **256** |
+
+**Legend:**
+
+- ✅ Completed = Code exists and is verified
+- DRAFTED = Model code exists in models.py but not migrated or verified against Design Plan
 
 ## Parallel Work Streams
 
@@ -597,4 +648,4 @@ Phase 1 (after Phase 0):
 
 ---
 
-**Last Updated:** 2026-01-20
+**Last Updated:** 2026-01-20 (Reality check update)
