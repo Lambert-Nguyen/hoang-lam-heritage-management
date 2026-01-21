@@ -61,7 +61,7 @@ jobs:
       run: flutter test --coverage
     
     - name: Upload coverage reports
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         file: ./hoang_lam_app/coverage/lcov.info
         flags: flutter
