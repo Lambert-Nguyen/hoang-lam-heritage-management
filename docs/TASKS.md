@@ -87,15 +87,15 @@
 
 ### 1.1 Authentication (Backend)
 `[BLOCKED BY: 0.1.1-0.1.10]`
-- [ ] **1.1.1** Create login endpoint (`POST /api/v1/auth/login/`)
-- [ ] **1.1.2** Create token refresh endpoint (`POST /api/v1/auth/refresh/`)
-- [ ] **1.1.3** Create logout endpoint (`POST /api/v1/auth/logout/`)
-- [ ] **1.1.4** Create user profile endpoint (`GET /api/v1/auth/me/`)
-- [ ] **1.1.5** Create password change endpoint (`POST /api/v1/auth/password/change/`)
-- [ ] **1.1.6** Add role-based permissions (owner, manager, staff, housekeeping)
-- [ ] **1.1.7** Create permission decorators for views
-- [ ] **1.1.8** Create initial admin user seeder (mom, brother accounts)
-- [ ] **1.1.9** Write authentication tests
+- [x] **1.1.1** Create login endpoint (`POST /api/v1/auth/login/`) ✅
+- [x] **1.1.2** Create token refresh endpoint (`POST /api/v1/auth/refresh/`) ✅
+- [x] **1.1.3** Create logout endpoint (`POST /api/v1/auth/logout/`) ✅
+- [x] **1.1.4** Create user profile endpoint (`GET /api/v1/auth/me/`) ✅
+- [x] **1.1.5** Create password change endpoint (`POST /api/v1/auth/password/change/`) ✅
+- [x] **1.1.6** Add role-based permissions (owner, manager, staff, housekeeping) ✅
+- [x] **1.1.7** Create permission decorators for views ✅
+- [x] **1.1.8** Create initial admin user seeder (mom, brother accounts) ✅
+- [x] **1.1.9** Write authentication tests ✅ (19 tests passed, 81% coverage)
 
 ### 1.2 Authentication (Frontend)
 `[BLOCKED BY: 1.1.1-1.1.5, 0.2.1-0.2.10]`
@@ -604,7 +604,7 @@ When claiming a task, add your agent ID:
 | Phase | Description | Total Tasks | Completed | Drafted | Pending |
 | ----- | ----------- | ----------- | --------- | ------- | ------- |
 | 0 | Project Setup | 37 | 37 | 0 | 0 |
-| 1 | Core MVP | 97 | 3 | 8 | 86 |
+| 1 | Core MVP | 97 | 12 | 8 | 77 |
 | 2 | Financial Tracking | 32 | 2 | 3 | 27 |
 | 3 | Operations & Housekeeping | 30 | 3 | 2 | 25 |
 | 4 | Reports & Analytics | 20 | 0 | 0 | 20 |
@@ -612,7 +612,7 @@ When claiming a task, add your agent ID:
 | 6 | OTA Integration | 17 | 0 | 0 | 17 |
 | 7 | Direct Booking | 9 | 0 | 0 | 9 |
 | 8 | Smart Devices (Future) | 9 | 0 | 0 | 9 |
-| **Total** | | **268** | **45** | **13** | **210** |
+| **Total** | | **268** | **63** | **13** | **192** |
 
 **Legend:**
 
@@ -624,7 +624,8 @@ When claiming a task, add your agent ID:
   - Phase 0.1: Django backend (database, settings, JWT, DRF, API docs)
   - Phase 0.2: Flutter app (Riverpod, Dio, Hive, GoRouter, 121 dependencies, WCAG AA UI)
   - Phase 0.3: DevOps (CI/CD pipelines, linting, pre-commit hooks, Makefile)
-- 🚀 Ready for Phase 1: Core MVP Development
+- ✅ Phase 1.1 COMPLETE: Authentication backend with 5 endpoints, role-based permissions, admin users, 19 tests
+- 🔨 Next: Phase 1.2 (Authentication Frontend)
 
 ## Parallel Work Streams
 
@@ -654,5 +655,5 @@ Phase 1 (after Phase 0):
 ```
 
 ---
- Complete - Backend, Frontend, DevOps
-**Last Updated:** 2026-01-20 (Phase 0.1 Backend + Phase 0.2 Frontend Setup Complete)
+
+**Last Updated:** 2026-01-20 (Phase 0 + Phase 1.1 Authentication Backend Complete)
