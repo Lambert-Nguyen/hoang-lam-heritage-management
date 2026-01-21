@@ -16,6 +16,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Uses settings from .env file (PostgreSQL) or SQLite if USE_SQLITE=True
 
 # Logging
+# Ensure logs directory exists
+import os
+LOGS_DIR = BASE_DIR / 'logs'
+if not LOGS_DIR.exists():
+    LOGS_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -37,7 +43,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'development.log',
+            'filename': LOGS_DIR / 'development.log',
             'formatter': 'verbose',
         },
     },

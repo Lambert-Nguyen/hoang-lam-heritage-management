@@ -194,8 +194,9 @@ class Booking(models.Model):
     # Additional guest details for this booking
     guest_count = models.PositiveIntegerField(default=1, verbose_name='Số khách')
     
-    # Deprecated guest fields (kept for backward compatibility during migration)
-    # These will be removed in a future migration after data is migrated to Guest model
+    # DEPRECATED FIELDS - kept for backward compatibility during migration
+    # TODO: Remove these fields after migrating all existing bookings to use Guest FK
+    # These will be removed in a future migration (target: Phase 2.0)
     guest_name = models.CharField(max_length=100, blank=True, verbose_name='Tên khách (deprecated)')
     guest_phone = models.CharField(max_length=20, blank=True, verbose_name='Số điện thoại (deprecated)')
     guest_email = models.EmailField(blank=True, verbose_name='Email (deprecated)')
@@ -379,6 +380,7 @@ class HotelUser(models.Model):
         OWNER = 'owner', 'Chủ khách sạn'
         MANAGER = 'manager', 'Quản lý'
         STAFF = 'staff', 'Nhân viên'
+        HOUSEKEEPING = 'housekeeping', 'Buồng phòng'
 
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name='hotel_profile'

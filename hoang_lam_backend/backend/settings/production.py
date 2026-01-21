@@ -26,6 +26,12 @@ if not ALLOWED_HOSTS or ALLOWED_HOSTS == ['*']:
     raise ValueError("ALLOWED_HOSTS must be explicitly set in production")
 
 # Logging
+# Ensure logs directory exists
+import os
+LOGS_DIR = BASE_DIR / 'logs'
+if not LOGS_DIR.exists():
+    LOGS_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -47,14 +53,14 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs' / 'production.log',
+            'filename': LOGS_DIR / 'production.log',
             'maxBytes': 1024 * 1024 * 50,  # 50 MB
             'backupCount': 10,
             'formatter': 'verbose',
         },
         'error_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs' / 'production_errors.log',
+            'filename': LOGS_DIR / 'production_errors.log',
             'maxBytes': 1024 * 1024 * 50,  # 50 MB
             'backupCount': 10,
             'formatter': 'verbose',

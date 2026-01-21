@@ -19,6 +19,12 @@ CORS_ALLOW_ALL_ORIGINS = False
 # CORS_ALLOWED_ORIGINS configured in base.py from environment variable
 
 # Logging
+# Ensure logs directory exists
+import os
+LOGS_DIR = BASE_DIR / 'logs'
+if not LOGS_DIR.exists():
+    LOGS_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -36,14 +42,14 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs' / 'staging.log',
+            'filename': LOGS_DIR / 'staging.log',
             'maxBytes': 1024 * 1024 * 10,  # 10 MB
             'backupCount': 5,
             'formatter': 'verbose',
         },
         'error_file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs' / 'staging_errors.log',
+            'filename': LOGS_DIR / 'staging_errors.log',
             'maxBytes': 1024 * 1024 * 10,  # 10 MB
             'backupCount': 5,
             'formatter': 'verbose',
