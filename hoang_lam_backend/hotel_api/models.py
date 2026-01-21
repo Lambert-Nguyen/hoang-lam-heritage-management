@@ -77,6 +77,73 @@ class Room(models.Model):
         return f"{self.number} - {self.room_type.name}"
 
 
+class Guest(models.Model):
+    """Guest information for tracking history and preferences"""
+
+    class IDType(models.TextChoices):
+        CCCD = 'cccd', 'CCCD (Căn cước công dân)'
+        PASSPORT = 'passport', 'Hộ chiếu'
+        CMND = 'cmnd', 'CMND (Chứng minh nhân dân)'
+        OTHER = 'other', 'Khác'
+
+    # Personal information
+    full_name = models.CharField(max_length=100, verbose_name='Họ và tên')
+    phone = models.CharField(max_length=20, db_index=True, verbose_name='Số điện thoại')
+    email = models.EmailField(blank=True, verbose_name='Email')
+    
+    # ID information
+    id_type = models.CharField(
+        max_length=20, choices=IDType.choices, default=IDType.CCCD,
+        verbose_name='Loại giấy tờ'
+    )
+    id_number = models.CharField(max_length=20, blank=True, db_index=True, verbose_name='Số CCCD/Passport')
+    id_issue_date = models.DateField(null=True, blank=True, verbose_name='Ngày cấp')
+    id_issue_place = models.CharField(max_length=100, blank=True, verbose_name='Nơi cấp')
+    id_image = models.ImageField(upload_to='guest_ids/', null=True, blank=True, verbose_name='Ảnh CCCD/Passport')
+    
+    # Demographics
+    nationality = models.CharField(max_length=50, default='Vietnam', verbose_name='Quốc tịch')
+    date_of_birth = models.DateField(null=True, blank=True, verbose_name='Ngày sinh')
+    gender = models.CharField(
+        max_length=10, 
+        choices=[('male', 'Nam'), ('female', 'Nữ'), ('other', 'Khác')],
+        blank=True,
+        verbose_name='Giới tính'
+    )
+    
+    # Address
+    address = models.TextField(blank=True, verbose_name='Địa chỉ')
+    city = models.CharField(max_length=100, blank=True, verbose_name='Thành phố')
+    country = models.CharField(max_length=100, blank=True, verbose_name='Quốc gia')
+    
+    # Guest status and preferences
+    is_vip = models.BooleanField(default=False, verbose_name='Khách VIP')
+    total_stays = models.PositiveIntegerField(default=0, verbose_name='Số lần ở')
+    preferences = models.JSONField(default=dict, blank=True, verbose_name='Sở thích')
+    notes = models.TextField(blank=True, verbose_name='Ghi chú')
+    
+    # Audit
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Khách hàng'
+        verbose_name_plural = 'Khách hàng'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['phone', 'id_number']),
+            models.Index(fields=['full_name']),
+        ]
+
+    def __str__(self):
+        return f"{self.full_name} - {self.phone}"
+
+    @property
+    def is_returning_guest(self):
+        """Check if guest has stayed before"""
+        return self.total_stays > 0
+
+
 class Booking(models.Model):
     """Guest booking/reservation"""
 
@@ -118,13 +185,22 @@ class Booking(models.Model):
     actual_check_in = models.DateTimeField(null=True, blank=True, verbose_name='Giờ nhận thực tế')
     actual_check_out = models.DateTimeField(null=True, blank=True, verbose_name='Giờ trả thực tế')
 
-    # Guest info
-    guest_name = models.CharField(max_length=100, verbose_name='Tên khách')
-    guest_phone = models.CharField(max_length=20, blank=True, verbose_name='Số điện thoại')
-    guest_email = models.EmailField(blank=True, verbose_name='Email')
-    guest_id_number = models.CharField(max_length=20, blank=True, verbose_name='Số CCCD/Passport')
+    # Guest reference (foreign key to Guest model)
+    guest = models.ForeignKey(
+        Guest, on_delete=models.PROTECT, related_name='bookings',
+        verbose_name='Khách hàng'
+    )
+    
+    # Additional guest details for this booking
     guest_count = models.PositiveIntegerField(default=1, verbose_name='Số khách')
-    guest_nationality = models.CharField(max_length=50, blank=True, default='Vietnam', verbose_name='Quốc tịch')
+    
+    # Deprecated guest fields (kept for backward compatibility during migration)
+    # These will be removed in a future migration after data is migrated to Guest model
+    guest_name = models.CharField(max_length=100, blank=True, verbose_name='Tên khách (deprecated)')
+    guest_phone = models.CharField(max_length=20, blank=True, verbose_name='Số điện thoại (deprecated)')
+    guest_email = models.EmailField(blank=True, verbose_name='Email (deprecated)')
+    guest_id_number = models.CharField(max_length=20, blank=True, verbose_name='Số CCCD/Passport (deprecated)')
+    guest_nationality = models.CharField(max_length=50, blank=True, default='Vietnam', verbose_name='Quốc tịch (deprecated)')
 
     # Status and source
     status = models.CharField(
@@ -181,7 +257,7 @@ class Booking(models.Model):
         ordering = ['-check_in_date', '-created_at']
 
     def __str__(self):
-        return f"{self.room.number} - {self.guest_name} ({self.check_in_date})"
+        return f"{self.room.number} - {self.guest.full_name} ({self.check_in_date})"
 
     @property
     def nights(self):

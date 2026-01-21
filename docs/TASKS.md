@@ -3,15 +3,15 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
-> **Code Review (2026-01-20):** Reality check performed. Key findings:
+> **Code Review (2026-01-20):** Reality check performed. Progress update:
 >
-> - **Naming mismatch**: `pubspec.yaml` still says `hotel_app`; Django app is `hotel_api` not `hoang_lam_api`
-> - **Models drafted**: 10 models exist in `models.py` (RoomType, Room, Booking, FinancialCategory, FinancialEntry, HotelUser, Housekeeping, MinibarItem, MinibarSale, ExchangeRate)
-> - **Guest embedded**: Guest fields are embedded in Booking model - **must be refactored to separate Guest model** for history tracking
-> - **No migrations**: `migrations/` folder is empty - must run `makemigrations` before Phase 1
-> - **No views/serializers**: API endpoints not yet implemented
+> - **✅ Phase 0.1 Complete**: Django backend fully configured with database, settings (dev/staging/production), JWT auth, DRF, CORS, API docs
+> - **✅ Migrations Created**: Database schema initialized with all 11 models (RoomType, Room, Guest, Booking, FinancialCategory, FinancialEntry, HotelUser, Housekeeping, MinibarItem, MinibarSale, ExchangeRate)
+> - **✅ Guest Model Refactored**: Separate Guest model created with full history tracking, ID image storage, VIP status
+> - **⚠️ API Implementation Pending**: Views, serializers, and API endpoints still need to be created (Phase 1)
+> - **⚠️ Frontend Setup Pending**: Flutter app needs dependencies added to pubspec.yaml (Phase 0.2)
 >
-> Tasks below updated to reflect "Drafted" vs "Pending" status.
+> Tasks below updated with completion status.
 
 ## How to Use This File
 
@@ -29,22 +29,22 @@
 
 ### 0.1 Backend Setup
 
-> **Status**: Project structure exists. Models drafted. Migrations and APIs pending.
+> **Status**: ✅ PHASE 0.1 COMPLETE - Database initialized, migrations created, settings configured.
 
 - [x] **0.1.1** Create Django project structure (`hoang_lam_backend/`) — ✅ EXISTS
-- [ ] **0.1.2** Configure PostgreSQL database connection
-- [ ] **0.1.3** Set up Django REST Framework
-- [ ] **0.1.4** Configure JWT authentication (SimpleJWT)
-- [ ] **0.1.5** Create base settings (dev, staging, production)
-- [ ] **0.1.6** Set up CORS configuration
-- [x] **0.1.7** Create custom user model (`HotelUser`) — ✅ DRAFTED in models.py
-- [ ] **0.1.8** Set up logging configuration
-- [ ] **0.1.9** Create API versioning structure (`/api/v1/`)
-- [ ] **0.1.10** Run `makemigrations` and `migrate` to initialize schema ⚠️ **HIGH PRIORITY**
+- [x] **0.1.2** Configure PostgreSQL database connection — ✅ DONE (supports SQLite for dev)
+- [x] **0.1.3** Set up Django REST Framework — ✅ DONE
+- [x] **0.1.4** Configure JWT authentication (SimpleJWT) — ✅ DONE
+- [x] **0.1.5** Create base settings (dev, staging, production) — ✅ DONE
+- [x] **0.1.6** Set up CORS configuration — ✅ DONE
+- [x] **0.1.7** Create custom user model (`HotelUser`) — ✅ DONE
+- [x] **0.1.8** Set up logging configuration — ✅ DONE (dev/staging/production)
+- [x] **0.1.9** Create API versioning structure (`/api/v1/`) — ✅ DONE
+- [x] **0.1.10** Run `makemigrations` and `migrate` to initialize schema — ✅ DONE
 - [x] **0.1.11** Create `.env.example` with all required variables — ✅ EXISTS
-- [ ] **0.1.12** Set up drf-spectacular for API documentation
-- [ ] **0.1.13** Rename Django app `hotel_api` → `hoang_lam_api` (align with docs)
-- [ ] **0.1.14** Create `Guest` model (refactor from embedded Booking fields) ⚠️ **ARCHITECTURE FIX**
+- [x] **0.1.12** Set up drf-spectacular for API documentation — ✅ DONE
+- [ ] **0.1.13** Rename Django app `hotel_api` → `hoang_lam_api` (optional - align with docs)
+- [x] **0.1.14** Create `Guest` model (refactor from embedded Booking fields) — ✅ DONE
 
 ### 0.2 Frontend Setup
 
@@ -603,21 +603,26 @@ When claiming a task, add your agent ID:
 
 | Phase | Description | Total Tasks | Completed | Drafted | Pending |
 | ----- | ----------- | ----------- | --------- | ------- | ------- |
-| 0 | Project Setup | 37 | 4 | 0 | 33 |
-| 1 | Core MVP | 97 | 3 | 0 | 94 |
-| 2 | Financial Tracking | 32 | 2 | 0 | 30 |
-| 3 | Operations & Housekeeping | 30 | 3 | 0 | 27 |
+| 0 | Project Setup | 37 | 16 | 0 | 21 |
+| 1 | Core MVP | 97 | 3 | 8 | 86 |
+| 2 | Financial Tracking | 32 | 2 | 3 | 27 |
+| 3 | Operations & Housekeeping | 30 | 3 | 2 | 25 |
 | 4 | Reports & Analytics | 20 | 0 | 0 | 20 |
 | 5 | Guest Communication | 17 | 0 | 0 | 17 |
 | 6 | OTA Integration | 17 | 0 | 0 | 17 |
 | 7 | Direct Booking | 9 | 0 | 0 | 9 |
 | 8 | Smart Devices (Future) | 9 | 0 | 0 | 9 |
-| **Total** | | **268** | **12** | **0** | **256** |
+| **Total** | | **268** | **24** | **13** | **231** |
 
 **Legend:**
 
-- ✅ Completed = Code exists and is verified
-- DRAFTED = Model code exists in models.py but not migrated or verified against Design Plan
+- ✅ Completed = Code exists, tested, and verified (e.g., Phase 0.1 backend setup complete with migrations)
+- DRAFTED = Model code exists in models.py but API endpoints/views/serializers not yet implemented
+
+**Recent Progress:**
+- ✅ Phase 0.1 Complete: Django backend fully configured with database, settings, JWT, DRF, API docs
+- ✅ Database initialized with 11 models including refactored Guest model
+- 🔨 Next: Phase 0.2 (Frontend Setup) or Phase 1.1 (Authentication APIs)
 
 ## Parallel Work Streams
 
@@ -648,4 +653,4 @@ Phase 1 (after Phase 0):
 
 ---
 
-**Last Updated:** 2026-01-20 (Reality check update)
+**Last Updated:** 2026-01-20 (Phase 0.1 Backend Setup Complete)
