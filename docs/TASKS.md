@@ -8,8 +8,8 @@
 > - **✅ Phase 0.1 Complete**: Django backend fully configured with database, settings (dev/staging/production), JWT auth, DRF, CORS, API docs
 > - **✅ Migrations Created**: Database schema initialized with all 11 models (RoomType, Room, Guest, Booking, FinancialCategory, FinancialEntry, HotelUser, Housekeeping, MinibarItem, MinibarSale, ExchangeRate)
 > - **✅ Guest Model Refactored**: Separate Guest model created with full history tracking, ID image storage, VIP status
+> - **✅ Phase 0.2 Complete**: Flutter app fully set up with Riverpod, Dio, Hive, GoRouter, Freezed, localization (vi/en), WCAG AA theme, bottom navigation, and common widgets
 > - **⚠️ API Implementation Pending**: Views, serializers, and API endpoints still need to be created (Phase 1)
-> - **⚠️ Frontend Setup Pending**: Flutter app needs dependencies added to pubspec.yaml (Phase 0.2)
 >
 > Tasks below updated with completion status.
 
@@ -48,23 +48,23 @@
 
 ### 0.2 Frontend Setup
 
-> **Status**: Skeleton project exists. pubspec.yaml needs all dependencies added.
+> **Status**: ✅ PHASE 0.2 COMPLETE - Flutter app fully configured with all dependencies, theme, navigation, and common widgets.
 
-- [x] **0.2.1** Create Flutter project structure (`hoang_lam_app/`) — ✅ EXISTS (skeleton)
-- [ ] **0.2.2** Rename app in pubspec.yaml (`hotel_app` → `hoang_lam_app`) ⚠️ **NAMING FIX**
-- [ ] **0.2.3** Configure pubspec.yaml with all dependencies (riverpod, dio, hive, go_router, freezed, etc.)
-- [ ] **0.2.4** Set up build_runner and code generation (freezed, riverpod_generator) ⚠️ **CRITICAL**
-- [ ] **0.2.5** Set up Riverpod for state management
-- [ ] **0.2.6** Configure Dio HTTP client with interceptors
-- [ ] **0.2.7** Set up Hive for local storage
-- [ ] **0.2.8** Configure GoRouter for navigation
-- [ ] **0.2.9** Set up Freezed for models
-- [ ] **0.2.10** Configure flutter_localizations (vi, en)
-- [ ] **0.2.11** Create app theme (colors, typography, spacing)
-- [ ] **0.2.12** Set up environment configuration (dev, prod)
-- [ ] **0.2.13** Create bottom navigation scaffold
-- [ ] **0.2.14** Create base screen template with AppBar
-- [ ] **0.2.15** Create common widgets (buttons, cards, inputs)
+- [x] **0.2.1** Create Flutter project structure (`hoang_lam_app/`) — ✅ DONE
+- [x] **0.2.2** Rename app in pubspec.yaml (`hotel_app` → `hoang_lam_app`) — ✅ DONE
+- [x] **0.2.3** Configure pubspec.yaml with all dependencies (riverpod, dio, hive, go_router, freezed, etc.) — ✅ DONE
+- [x] **0.2.4** Set up build_runner and code generation (freezed, riverpod_generator) — ✅ DONE
+- [x] **0.2.5** Set up Riverpod for state management — ✅ DONE
+- [x] **0.2.6** Configure Dio HTTP client with interceptors — ✅ DONE (auth, logging, error interceptors)
+- [x] **0.2.7** Set up Hive for local storage — ✅ DONE
+- [x] **0.2.8** Configure GoRouter for navigation — ✅ DONE (ShellRoute for bottom nav)
+- [x] **0.2.9** Set up Freezed for models — ✅ DONE (ready for code generation)
+- [x] **0.2.10** Configure flutter_localizations (vi, en) — ✅ DONE
+- [x] **0.2.11** Create app theme (colors, typography, spacing) — ✅ DONE (WCAG AA compliant)
+- [x] **0.2.12** Set up environment configuration (dev, prod) — ✅ DONE (dev/staging/prod)
+- [x] **0.2.13** Create bottom navigation scaffold — ✅ DONE (MainScaffold with 4 tabs)
+- [x] **0.2.14** Create base screen template with AppBar — ✅ DONE (5 screens)
+- [x] **0.2.15** Create common widgets (buttons, cards, inputs) — ✅ DONE
 
 ### 0.3 DevOps Setup
 
@@ -603,7 +603,7 @@ When claiming a task, add your agent ID:
 
 | Phase | Description | Total Tasks | Completed | Drafted | Pending |
 | ----- | ----------- | ----------- | --------- | ------- | ------- |
-| 0 | Project Setup | 37 | 16 | 0 | 21 |
+| 0 | Project Setup | 37 | 30 | 0 | 7 |
 | 1 | Core MVP | 97 | 3 | 8 | 86 |
 | 2 | Financial Tracking | 32 | 2 | 3 | 27 |
 | 3 | Operations & Housekeeping | 30 | 3 | 2 | 25 |
@@ -612,7 +612,7 @@ When claiming a task, add your agent ID:
 | 6 | OTA Integration | 17 | 0 | 0 | 17 |
 | 7 | Direct Booking | 9 | 0 | 0 | 9 |
 | 8 | Smart Devices (Future) | 9 | 0 | 0 | 9 |
-| **Total** | | **268** | **24** | **13** | **231** |
+| **Total** | | **268** | **38** | **13** | **217** |
 
 **Legend:**
 
@@ -621,8 +621,9 @@ When claiming a task, add your agent ID:
 
 **Recent Progress:**
 - ✅ Phase 0.1 Complete: Django backend fully configured with database, settings, JWT, DRF, API docs
-- ✅ Database initialized with 11 models including refactored Guest model
-- 🔨 Next: Phase 0.2 (Frontend Setup) or Phase 1.1 (Authentication APIs)
+- ✅ Phase 0.2 Complete: Flutter app fully set up with Riverpod, Dio, Hive, GoRouter, theme, localization, and common widgets
+- ✅ 121 dependencies installed, WCAG AA accessible UI components created
+- 🔨 Next: Phase 0.3 (DevOps Setup) or Phase 1 (Core MVP - Authentication APIs)
 
 ## Parallel Work Streams
 
@@ -653,4 +654,4 @@ Phase 1 (after Phase 0):
 
 ---
 
-**Last Updated:** 2026-01-20 (Phase 0.1 Backend Setup Complete)
+**Last Updated:** 2026-01-20 (Phase 0.1 Backend + Phase 0.2 Frontend Setup Complete)
