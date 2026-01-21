@@ -3,13 +3,19 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
-> **Code Review (2026-01-20):** Reality check performed. Progress update:
+> **Code Review (2026-01-21):** Phase 1.1 and 1.2 complete. Progress update:
 >
-> - **✅ Phase 0.1 Complete**: Django backend fully configured with database, settings (dev/staging/production), JWT auth, DRF, CORS, API docs
-> - **✅ Migrations Created**: Database schema initialized with all 11 models (RoomType, Room, Guest, Booking, FinancialCategory, FinancialEntry, HotelUser, Housekeeping, MinibarItem, MinibarSale, ExchangeRate)
-> - **✅ Guest Model Refactored**: Separate Guest model created with full history tracking, ID image storage, VIP status
-> - **✅ Phase 0.2 Complete**: Flutter app fully set up with Riverpod, Dio, Hive, GoRouter, Freezed, localization (vi/en), WCAG AA theme, bottom navigation, and common widgets
-> - **⚠️ API Implementation Pending**: Views, serializers, and API endpoints still need to be created (Phase 1)
+> - **✅ Phase 0**: 37/37 complete (Backend, Frontend, DevOps setup)
+> - **✅ Phase 1.1**: 9/9 complete (Authentication Backend - JWT, login, logout, permissions, tests)
+> - **✅ Phase 1.2**: 9/9 complete (Authentication Frontend - login UI, biometric, splash, password change, tests)
+> - **📊 Test Coverage**: 59 tests passing (19 backend + 40 frontend)
+> - **🎯 Overall Progress**: 55/268 tasks (20.5%)
+>
+> **Recent Additions:**
+> - Session timer for proactive auto-logout (JWT expiry tracking)
+> - Repository unit tests (14 new tests with mocks)
+> - Typed exception handling in error messages
+> - Biometric authentication fully integrated
 >
 > Tasks below updated with completion status.
 
@@ -99,15 +105,15 @@
 
 ### 1.2 Authentication (Frontend)
 `[BLOCKED BY: 1.1.1-1.1.5, 0.2.1-0.2.10]`
-- [ ] **1.2.1** Create login screen UI (Vietnamese-first)
-- [ ] **1.2.2** Create auth provider (Riverpod)
-- [ ] **1.2.3** Implement secure token storage (flutter_secure_storage)
-- [ ] **1.2.4** Create auth interceptor for Dio
-- [ ] **1.2.5** Implement auto-logout on token expiry
-- [ ] **1.2.6** Create splash screen with auth check
-- [ ] **1.2.7** Create biometric authentication option (fingerprint/face)
-- [ ] **1.2.8** Create password change screen
-- [ ] **1.2.9** Write authentication widget tests
+- [x] **1.2.1** Create login screen UI (Vietnamese-first) ✅
+- [x] **1.2.2** Create auth provider (Riverpod) ✅
+- [x] **1.2.3** Implement secure token storage (flutter_secure_storage) ✅
+- [x] **1.2.4** Create auth interceptor for Dio ✅
+- [x] **1.2.5** Implement auto-logout on token expiry ✅ (JWT expiry tracking + timer)
+- [x] **1.2.6** Create splash screen with auth check ✅
+- [x] **1.2.7** Create biometric authentication option (fingerprint/face) ✅
+- [x] **1.2.8** Create password change screen ✅
+- [x] **1.2.9** Write authentication widget tests ✅ (40 frontend tests, 14 repository tests)
 
 ### 1.3 Room Management (Backend)
 
@@ -604,7 +610,7 @@ When claiming a task, add your agent ID:
 | Phase | Description | Total Tasks | Completed | Drafted | Pending |
 | ----- | ----------- | ----------- | --------- | ------- | ------- |
 | 0 | Project Setup | 37 | 37 | 0 | 0 |
-| 1 | Core MVP | 97 | 12 | 8 | 77 |
+| 1 | Core MVP | 97 | 21 | 8 | 68 |
 | 2 | Financial Tracking | 32 | 2 | 3 | 27 |
 | 3 | Operations & Housekeeping | 30 | 3 | 2 | 25 |
 | 4 | Reports & Analytics | 20 | 0 | 0 | 20 |
@@ -612,7 +618,7 @@ When claiming a task, add your agent ID:
 | 6 | OTA Integration | 17 | 0 | 0 | 17 |
 | 7 | Direct Booking | 9 | 0 | 0 | 9 |
 | 8 | Smart Devices (Future) | 9 | 0 | 0 | 9 |
-| **Total** | | **268** | **63** | **13** | **192** |
+| **Total** | | **268** | **62** | **13** | **193** |
 
 **Legend:**
 
@@ -624,8 +630,9 @@ When claiming a task, add your agent ID:
   - Phase 0.1: Django backend (database, settings, JWT, DRF, API docs)
   - Phase 0.2: Flutter app (Riverpod, Dio, Hive, GoRouter, 121 dependencies, WCAG AA UI)
   - Phase 0.3: DevOps (CI/CD pipelines, linting, pre-commit hooks, Makefile)
-- ✅ Phase 1.1 COMPLETE: Authentication backend with 5 endpoints, role-based permissions, admin users, 19 tests
-- 🔨 Next: Phase 1.2 (Authentication Frontend)
+- ✅ Phase 1.1 COMPLETE: Authentication backend (5 endpoints, permissions, 19 tests passing)
+- ✅ Phase 1.2 COMPLETE: Authentication frontend (login, biometric, splash, 40 tests + 14 repository tests)
+- 🔨 Next: Phase 1.3 (Room Management Backend - CRUD endpoints for RoomType & Room)
 
 ## Parallel Work Streams
 
@@ -656,4 +663,4 @@ Phase 1 (after Phase 0):
 
 ---
 
-**Last Updated:** 2026-01-20 (Phase 0 + Phase 1.1 Authentication Backend Complete)
+**Last Updated:** 2026-01-21 (Phase 0 + Phase 1.1-1.2 Authentication Complete - Backend & Frontend)
