@@ -30,6 +30,9 @@ dependencies:
   # Secure Storage (for tokens)
   flutter_secure_storage: ^9.2.4
 
+  # Biometric Authentication
+  local_auth: ^2.3.0
+
   # Navigation
   go_router: ^14.8.1
 
