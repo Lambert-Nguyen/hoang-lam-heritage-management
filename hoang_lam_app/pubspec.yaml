@@ -38,7 +38,7 @@ dependencies:
   json_annotation: ^4.9.0
 
   # Internationalization
-  intl: any  # Version pinned by flutter_localizations
+  intl: 0.20.2  # Version pinned by flutter_localizations
 
   # Charts
   fl_chart: ^0.70.2
