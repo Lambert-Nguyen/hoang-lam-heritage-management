@@ -3,21 +3,23 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
-> **Code Review (2026-01-21):** Phase 1.3 complete. Progress update:
+> **Code Review (2026-01-21):** Phase 1.3 gaps fixed, Phase 1.4 in progress.
 >
 > - **✅ Phase 0**: 37/37 complete (Backend, Frontend, DevOps setup)
 > - **✅ Phase 1.1**: 9/9 complete (Authentication Backend - JWT, login, logout, permissions, tests)
 > - **✅ Phase 1.2**: 9/9 complete (Authentication Frontend - login UI, biometric, splash, password change, tests)
 > - **✅ Phase 1.3**: 9/9 complete (Room Management Backend - CRUD, status updates, availability checks, tests)
-> - **📊 Test Coverage**: 89 tests passing (49 backend + 40 frontend), 75.4% backend coverage
+> - **🔨 Phase 1.4**: In progress (Room Management Frontend)
+> - **📊 Test Coverage**: 89 tests passing (49 backend + 40 frontend), 75.5% backend coverage
 > - **🎯 Overall Progress**: 64/268 tasks (23.9%)
 >
-> **Phase 1.3 Additions:**
+> **Phase 1.3 Additions & Fixes (2026-01-21):**
 > - RoomType and Room serializers with computed fields (room counts)
 > - ViewSets with filtering (status, type, floor), search, and custom actions
 > - Room status update endpoint with validation
-> - Availability check endpoint with date range validation
-> - Seed commands for room types (4 types) and rooms (7 rooms)
+> - Availability check endpoint with date range validation and `total_available` count
+> - Seed commands for room types (5 types: Single, Double, Twin, Family, VIP) and rooms (7 rooms)
+> - Added GPLX (Driver's License) to Guest ID types per Design Plan
 > - 30 comprehensive tests covering CRUD, permissions, and edge cases
 >
 > Tasks below updated with completion status.
@@ -128,7 +130,7 @@
 - [x] **1.3.4** Create Room serializer and CRUD endpoints — ✅ DONE (with filtering, search)
 - [x] **1.3.5** Create room status update endpoint — ✅ DONE (validates duplicate status)
 - [x] **1.3.6** Create room availability check endpoint — ✅ DONE (date range validation)
-- [x] **1.3.7** Seed default room types — ✅ DONE (4 types: Single, Double, Family, VIP)
+- [x] **1.3.7** Seed default room types — ✅ DONE (5 types: Single, Double, Twin, Family, VIP)
 - [x] **1.3.8** Seed 7 rooms for Hoang Lam Heritage — ✅ DONE (floors 1-3)
 - [x] **1.3.9** Write room management tests — ✅ DONE (30 tests, 75.4% coverage)
 

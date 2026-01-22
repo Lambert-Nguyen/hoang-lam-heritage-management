@@ -408,6 +408,7 @@ class RoomViewSet(viewsets.ModelViewSet):
                     "type": "object",
                     "properties": {
                         "available_rooms": {"type": "array", "items": {"$ref": "#/components/schemas/RoomList"}},
+                        "total_available": {"type": "integer", "description": "Total number of available rooms"},
                         "check_in": {"type": "string", "format": "date"},
                         "check_out": {"type": "string", "format": "date"},
                         "room_type": {"type": "integer", "nullable": True},
@@ -440,6 +441,7 @@ class RoomViewSet(viewsets.ModelViewSet):
         return Response(
             {
                 "available_rooms": RoomListSerializer(available_rooms, many=True).data,
+                "total_available": available_rooms.count(),
                 "check_in": check_in,
                 "check_out": check_out,
                 "room_type": room_type.id if room_type else None,

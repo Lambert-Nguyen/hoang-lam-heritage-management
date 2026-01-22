@@ -6,7 +6,11 @@
       "Bash(flutter analyze:*)",
       "Bash(flutter clean:*)",
       "Bash(flutter build:*)",
-      "Bash(flutter test:*)"
+      "Bash(flutter test:*)",
+      "Bash(python manage.py test:*)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(find:*)",
+      "Bash(env)"
     ]
   }
 }

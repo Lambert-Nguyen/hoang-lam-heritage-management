@@ -86,6 +86,7 @@ class Guest(models.Model):
         CCCD = "cccd", "CCCD (Căn cước công dân)"
         PASSPORT = "passport", "Hộ chiếu"
         CMND = "cmnd", "CMND (Chứng minh nhân dân)"
+        GPLX = "gplx", "GPLX (Giấy phép lái xe)"
         OTHER = "other", "Khác"
 
     # Personal information

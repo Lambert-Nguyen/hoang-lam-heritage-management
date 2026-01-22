@@ -36,7 +36,22 @@ class Command(BaseCommand):
                 "name_en": "Double Room",
                 "base_rate": Decimal("400000"),
                 "max_guests": 2,
-                "description": "Phòng đôi tiêu chuẩn với 1 giường đôi hoặc 2 giường đơn",
+                "description": "Phòng đôi tiêu chuẩn với 1 giường đôi lớn",
+                "amenities": [
+                    "WiFi miễn phí",
+                    "Điều hòa",
+                    "TV màn hình phẳng",
+                    "Nước nóng",
+                    "Tủ lạnh mini",
+                    "Bàn làm việc",
+                ],
+            },
+            {
+                "name": "Phòng Twin",
+                "name_en": "Twin Room",
+                "base_rate": Decimal("400000"),
+                "max_guests": 2,
+                "description": "Phòng twin tiêu chuẩn với 2 giường đơn riêng biệt",
                 "amenities": [
                     "WiFi miễn phí",
                     "Điều hòa",
