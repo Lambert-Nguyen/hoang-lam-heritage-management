@@ -3,19 +3,22 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
-> **Code Review (2026-01-21):** Phase 1.1 and 1.2 complete. Progress update:
+> **Code Review (2026-01-21):** Phase 1.3 complete. Progress update:
 >
 > - **✅ Phase 0**: 37/37 complete (Backend, Frontend, DevOps setup)
 > - **✅ Phase 1.1**: 9/9 complete (Authentication Backend - JWT, login, logout, permissions, tests)
 > - **✅ Phase 1.2**: 9/9 complete (Authentication Frontend - login UI, biometric, splash, password change, tests)
-> - **📊 Test Coverage**: 59 tests passing (19 backend + 40 frontend)
-> - **🎯 Overall Progress**: 55/268 tasks (20.5%)
+> - **✅ Phase 1.3**: 9/9 complete (Room Management Backend - CRUD, status updates, availability checks, tests)
+> - **📊 Test Coverage**: 89 tests passing (49 backend + 40 frontend), 75.4% backend coverage
+> - **🎯 Overall Progress**: 64/268 tasks (23.9%)
 >
-> **Recent Additions:**
-> - Session timer for proactive auto-logout (JWT expiry tracking)
-> - Repository unit tests (14 new tests with mocks)
-> - Typed exception handling in error messages
-> - Biometric authentication fully integrated
+> **Phase 1.3 Additions:**
+> - RoomType and Room serializers with computed fields (room counts)
+> - ViewSets with filtering (status, type, floor), search, and custom actions
+> - Room status update endpoint with validation
+> - Availability check endpoint with date range validation
+> - Seed commands for room types (4 types) and rooms (7 rooms)
+> - 30 comprehensive tests covering CRUD, permissions, and edge cases
 >
 > Tasks below updated with completion status.
 
@@ -117,17 +120,17 @@
 
 ### 1.3 Room Management (Backend)
 
-> **Model Status**: `RoomType` and `Room` DRAFTED in models.py. Needs migration + API.
+> **Status**: ✅ PHASE 1.3 COMPLETE - Full CRUD, filtering, status updates, availability checks, seed commands, and comprehensive tests.
 
-- [x] **1.3.1** Create `RoomType` model — ✅ DRAFTED (verify fields match Design Plan)
-- [x] **1.3.2** Create `Room` model — ✅ DRAFTED (verify fields match Design Plan)
-- [ ] **1.3.3** Create RoomType serializer and CRUD endpoints
-- [ ] **1.3.4** Create Room serializer and CRUD endpoints
-- [ ] **1.3.5** Create room status update endpoint
-- [ ] **1.3.6** Create room availability check endpoint
-- [ ] **1.3.7** Seed default room types
-- [ ] **1.3.8** Seed 7 rooms for Hoang Lam Heritage
-- [ ] **1.3.9** Write room management tests
+- [x] **1.3.1** Create `RoomType` model — ✅ DONE (verified fields match Design Plan)
+- [x] **1.3.2** Create `Room` model — ✅ DONE (verified fields match Design Plan)
+- [x] **1.3.3** Create RoomType serializer and CRUD endpoints — ✅ DONE (with room counts)
+- [x] **1.3.4** Create Room serializer and CRUD endpoints — ✅ DONE (with filtering, search)
+- [x] **1.3.5** Create room status update endpoint — ✅ DONE (validates duplicate status)
+- [x] **1.3.6** Create room availability check endpoint — ✅ DONE (date range validation)
+- [x] **1.3.7** Seed default room types — ✅ DONE (4 types: Single, Double, Family, VIP)
+- [x] **1.3.8** Seed 7 rooms for Hoang Lam Heritage — ✅ DONE (floors 1-3)
+- [x] **1.3.9** Write room management tests — ✅ DONE (30 tests, 75.4% coverage)
 
 ### 1.4 Room Management (Frontend)
 `[BLOCKED BY: 1.3.3-1.3.6]`
