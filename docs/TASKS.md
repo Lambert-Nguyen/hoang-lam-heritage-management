@@ -130,7 +130,7 @@
 - [x] **1.3.4** Create Room serializer and CRUD endpoints — ✅ DONE (with filtering, search)
 - [x] **1.3.5** Create room status update endpoint — ✅ DONE (validates duplicate status)
 - [x] **1.3.6** Create room availability check endpoint — ✅ DONE (date range validation)
-- [x] **1.3.7** Seed default room types — ✅ DONE (5 types: Single, Double, Twin, Family, VIP)
+- [x] **1.3.7** Seed default room types — ✅ DONE (4 types: Single, Double, Family, VIP)
 - [x] **1.3.8** Seed 7 rooms for Hoang Lam Heritage — ✅ DONE (floors 1-3)
 - [x] **1.3.9** Write room management tests — ✅ DONE (30 tests, 75.4% coverage)
 
