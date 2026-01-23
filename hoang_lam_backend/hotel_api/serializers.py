@@ -329,17 +329,23 @@ class GuestSerializer(serializers.ModelSerializer):
 
     def validate_phone(self, value):
         """Validate phone number format and uniqueness, normalize input."""
+        import re
+        
         if not value:
             raise serializers.ValidationError("Phone number is required.")
-        # Remove spaces and special characters, normalize
-        cleaned = "".join(filter(str.isdigit, value))
-        if len(cleaned) < 9:
-            raise serializers.ValidationError("Phone number must have at least 9 digits.")
+        
+        # Normalize: remove all non-digit characters
+        cleaned = re.sub(r"\D", "", value)
+        
+        # Validate length (Vietnamese phone numbers: 10-11 digits)
+        if len(cleaned) < 10 or len(cleaned) > 11:
+            raise serializers.ValidationError("Phone number must be 10-11 digits.")
+        
         # Check for uniqueness
         instance = self.instance
         if Guest.objects.filter(phone=cleaned).exclude(pk=instance.pk if instance else None).exists():
             raise serializers.ValidationError("This phone number already exists.")
-        # Return normalized phone number
+        
         return cleaned
 
     def validate_id_number(self, value):

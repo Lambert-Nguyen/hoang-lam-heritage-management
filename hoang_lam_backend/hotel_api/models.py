@@ -297,9 +297,8 @@ class Booking(models.Model):
 
     @property
     def balance_due(self):
-        """Calculate remaining balance"""
-        paid = self.deposit_amount if self.deposit_paid else Decimal("0")
-        return self.total_amount - paid
+        """Calculate remaining balance including additional charges"""
+        return self.total_amount + self.additional_charges - self.deposit_amount
 
 
 class FinancialCategory(models.Model):

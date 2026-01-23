@@ -34,7 +34,7 @@ class RoomAdmin(admin.ModelAdmin):
 class BookingAdmin(admin.ModelAdmin):
     list_display = [
         "room",
-        "guest_name",
+        "get_guest_name",
         "check_in_date",
         "check_out_date",
         "status",
@@ -43,9 +43,15 @@ class BookingAdmin(admin.ModelAdmin):
         "is_paid",
     ]
     list_filter = ["status", "source", "is_paid", "check_in_date"]
-    search_fields = ["guest_name", "guest_phone", "ota_reference"]
+    search_fields = ["guest__full_name", "guest__phone", "ota_reference"]
     date_hierarchy = "check_in_date"
-    raw_id_fields = ["room", "created_by"]
+    raw_id_fields = ["room", "guest", "created_by"]
+
+    def get_guest_name(self, obj):
+        """Display guest full name from Guest FK or deprecated field."""
+        return obj.guest.full_name if obj.guest else obj.guest_name
+    get_guest_name.short_description = "Guest"
+    get_guest_name.admin_order_field = "guest__full_name"
 
 
 @admin.register(FinancialCategory)
