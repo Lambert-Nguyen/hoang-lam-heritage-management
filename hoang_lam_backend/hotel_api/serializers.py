@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
-from .models import HotelUser, Room, RoomType
+from .models import Booking, Guest, HotelUser, Room, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -281,3 +281,271 @@ class RoomAvailabilitySerializer(serializers.Serializer):
         if attrs["check_out"] <= attrs["check_in"]:
             raise serializers.ValidationError({"check_out": "Ngày trả phòng phải sau ngày nhận phòng."})
         return attrs
+
+
+# ==================== Guest Management Serializers ====================
+
+
+class GuestSerializer(serializers.ModelSerializer):
+    """Guest serializer with full details."""
+
+    is_returning_guest = serializers.ReadOnlyField()
+    booking_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Guest
+        fields = [
+            "id",
+            "full_name",
+            "phone",
+            "email",
+            "id_type",
+            "id_number",
+            "id_issue_date",
+            "id_issue_place",
+            "id_image",
+            "nationality",
+            "date_of_birth",
+            "gender",
+            "address",
+            "city",
+            "country",
+            "is_vip",
+            "total_stays",
+            "preferences",
+            "notes",
+            "is_returning_guest",
+            "booking_count",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "total_stays", "created_at", "updated_at"]
+
+    def get_booking_count(self, obj):
+        """Get total number of bookings for this guest."""
+        return obj.bookings.count()
+
+    def validate_phone(self, value):
+        """Validate phone number format and uniqueness."""
+        if not value:
+            raise serializers.ValidationError("Số điện thoại không được để trống.")
+        # Remove spaces and special characters
+        cleaned = "".join(filter(str.isdigit, value))
+        if len(cleaned) < 9:
+            raise serializers.ValidationError("Số điện thoại phải có ít nhất 9 chữ số.")
+        # Check for uniqueness
+        instance = self.instance
+        if Guest.objects.filter(phone=value).exclude(pk=instance.pk if instance else None).exists():
+            raise serializers.ValidationError("Số điện thoại này đã tồn tại.")
+        return value
+
+    def validate_id_number(self, value):
+        """Validate ID number if provided."""
+        if value:
+            # Check if ID number already exists (for other guests)
+            instance = self.instance
+            if Guest.objects.filter(id_number=value).exclude(pk=instance.pk if instance else None).exists():
+                raise serializers.ValidationError("Số CCCD/Passport này đã tồn tại.")
+        return value
+
+
+class GuestListSerializer(serializers.ModelSerializer):
+    """Simplified Guest serializer for list views."""
+
+    is_returning_guest = serializers.ReadOnlyField()
+    booking_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Guest
+        fields = [
+            "id",
+            "full_name",
+            "phone",
+            "email",
+            "nationality",
+            "id_number",
+            "is_vip",
+            "total_stays",
+            "is_returning_guest",
+            "booking_count",
+            "created_at",
+        ]
+
+    def get_booking_count(self, obj):
+        """Get total number of bookings for this guest."""
+        return obj.bookings.count()
+
+
+class GuestSearchSerializer(serializers.Serializer):
+    """Serializer for guest search request."""
+
+    query = serializers.CharField(required=True, min_length=2)
+    search_by = serializers.ChoiceField(
+        choices=["name", "phone", "id_number", "all"], default="all", required=False
+    )
+
+    def validate_query(self, value):
+        """Validate search query."""
+        if len(value.strip()) < 2:
+            raise serializers.ValidationError("Từ khóa tìm kiếm phải có ít nhất 2 ký tự.")
+        return value.strip()
+
+
+# ==================== Booking Management Serializers ====================
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    """Booking serializer with full details."""
+
+    guest_details = GuestListSerializer(source="guest", read_only=True)
+    room_number = serializers.CharField(source="room.number", read_only=True)
+    room_type_name = serializers.CharField(source="room.room_type.name", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    source_display = serializers.CharField(source="get_source_display", read_only=True)
+    nights = serializers.ReadOnlyField()
+    balance_due = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Booking
+        fields = [
+            "id",
+            "room",
+            "room_number",
+            "room_type_name",
+            "check_in_date",
+            "check_out_date",
+            "actual_check_in",
+            "actual_check_out",
+            "guest",
+            "guest_details",
+            "guest_count",
+            "status",
+            "status_display",
+            "source",
+            "source_display",
+            "ota_reference",
+            "nightly_rate",
+            "total_amount",
+            "currency",
+            "deposit_amount",
+            "deposit_paid",
+            "payment_method",
+            "is_paid",
+            "notes",
+            "special_requests",
+            "nights",
+            "balance_due",
+            "created_by",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_by", "created_at", "updated_at"]
+
+    def validate(self, attrs):
+        """Validate booking data."""
+        check_in = attrs.get("check_in_date")
+        check_out = attrs.get("check_out_date")
+
+        # Only validate dates if both are provided (not for partial updates)
+        if check_in and check_out:
+            if check_out <= check_in:
+                raise serializers.ValidationError({"check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."})
+
+        # Check for overlapping bookings
+        room = attrs.get("room")
+        instance = self.instance
+
+        if room and check_in and check_out:
+            overlapping = Booking.objects.filter(
+                room=room,
+                status__in=[Booking.Status.CONFIRMED, Booking.Status.CHECKED_IN],
+            ).exclude(pk=instance.pk if instance else None)
+
+            # Check if new booking overlaps with existing ones
+            for booking in overlapping:
+                if not (check_out <= booking.check_in_date or check_in >= booking.check_out_date):
+                    raise serializers.ValidationError(
+                        {
+                            "room": f"Phòng đã có khách từ {booking.check_in_date} đến {booking.check_out_date}."
+                        }
+                    )
+
+        return attrs
+
+    def create(self, validated_data):
+        """Create booking with user tracking."""
+        validated_data["created_by"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+class BookingListSerializer(serializers.ModelSerializer):
+    """Simplified Booking serializer for list views."""
+
+    guest_name = serializers.CharField(source="guest.full_name", read_only=True)
+    guest_phone = serializers.CharField(source="guest.phone", read_only=True)
+    room_number = serializers.CharField(source="room.number", read_only=True)
+    room_type_name = serializers.CharField(source="room.room_type.name", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    nights = serializers.ReadOnlyField()
+
+    class Meta:
+        model = Booking
+        fields = [
+            "id",
+            "room",
+            "room_number",
+            "room_type_name",
+            "check_in_date",
+            "check_out_date",
+            "guest",
+            "guest_name",
+            "guest_phone",
+            "guest_count",
+            "status",
+            "status_display",
+            "source",
+            "nightly_rate",
+            "total_amount",
+            "is_paid",
+            "nights",
+            "created_at",
+        ]
+
+
+class BookingStatusUpdateSerializer(serializers.Serializer):
+    """Serializer for updating booking status."""
+
+    status = serializers.ChoiceField(choices=Booking.Status.choices, required=True)
+    notes = serializers.CharField(required=False, allow_blank=True)
+
+    def validate_status(self, value):
+        """Validate status transition."""
+        booking = self.context.get("booking")
+        if booking and booking.status == value:
+            raise serializers.ValidationError("Đặt phòng đã ở trạng thái này rồi.")
+        return value
+
+    def update(self, instance, validated_data):
+        """Update booking status."""
+        instance.status = validated_data.get("status", instance.status)
+        if validated_data.get("notes"):
+            instance.notes = validated_data["notes"]
+        instance.save()
+        return instance
+
+
+class CheckInSerializer(serializers.Serializer):
+    """Serializer for check-in action."""
+
+    actual_check_in = serializers.DateTimeField(required=False)
+    notes = serializers.CharField(required=False, allow_blank=True)
+
+
+class CheckOutSerializer(serializers.Serializer):
+    """Serializer for check-out action."""
+
+    actual_check_out = serializers.DateTimeField(required=False)
+    notes = serializers.CharField(required=False, allow_blank=True)
+    additional_charges = serializers.DecimalField(
+        max_digits=12, decimal_places=0, default=0, required=False
+    )

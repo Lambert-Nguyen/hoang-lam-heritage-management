@@ -5,6 +5,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
+    BookingViewSet,
+    GuestViewSet,
     LoginView,
     LogoutView,
     PasswordChangeView,
@@ -17,8 +19,9 @@ from .views import (
 router = DefaultRouter()
 router.register(r"room-types", RoomTypeViewSet, basename="roomtype")
 router.register(r"rooms", RoomViewSet, basename="room")
+router.register(r"guests", GuestViewSet, basename="guest")
+router.register(r"bookings", BookingViewSet, basename="booking")
 # To be added:
-# router.register(r'bookings', BookingViewSet, basename='booking')
 # router.register(r'finance', FinancialEntryViewSet, basename='finance')
 
 urlpatterns = [

@@ -12,9 +12,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Room, RoomType
+from .models import Booking, Guest, Room, RoomType
 from .permissions import IsManager, IsStaff
 from .serializers import (
+    BookingListSerializer,
+    BookingSerializer,
+    BookingStatusUpdateSerializer,
+    CheckInSerializer,
+    CheckOutSerializer,
+    GuestListSerializer,
+    GuestSearchSerializer,
+    GuestSerializer,
     LoginSerializer,
     PasswordChangeSerializer,
     RoomAvailabilitySerializer,
@@ -445,6 +453,538 @@ class RoomViewSet(viewsets.ModelViewSet):
                 "check_in": check_in,
                 "check_out": check_out,
                 "room_type": room_type.id if room_type else None,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# ==================== Guest Management Views ====================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List guests",
+        description="Get list of all guests with filtering options.",
+        parameters=[
+            OpenApiParameter(
+                name="is_vip",
+                type=bool,
+                description="Filter by VIP status",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="nationality",
+                type=str,
+                description="Filter by nationality",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="search",
+                type=str,
+                description="Search by name, phone, or ID number",
+                required=False,
+            ),
+        ],
+        responses={200: GuestListSerializer(many=True)},
+        tags=["Guest Management"],
+    ),
+    retrieve=extend_schema(
+        summary="Get guest details",
+        description="Get detailed information about a specific guest.",
+        responses={200: GuestSerializer},
+        tags=["Guest Management"],
+    ),
+    create=extend_schema(
+        summary="Create new guest",
+        description="Create a new guest record.",
+        request=GuestSerializer,
+        responses={201: GuestSerializer},
+        tags=["Guest Management"],
+    ),
+    update=extend_schema(
+        summary="Update guest",
+        description="Update a guest's information.",
+        request=GuestSerializer,
+        responses={200: GuestSerializer},
+        tags=["Guest Management"],
+    ),
+    partial_update=extend_schema(
+        summary="Partial update guest",
+        description="Partially update a guest's information.",
+        request=GuestSerializer,
+        responses={200: GuestSerializer},
+        tags=["Guest Management"],
+    ),
+    destroy=extend_schema(
+        summary="Delete guest",
+        description="Delete a guest record. This is a soft delete that deactivates the guest.",
+        responses={204: OpenApiResponse(description="Guest deleted successfully")},
+        tags=["Guest Management"],
+    ),
+)
+class GuestViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing guests."""
+
+    permission_classes = [IsAuthenticated, IsStaff]
+    serializer_class = GuestSerializer
+    filterset_fields = ["is_vip", "nationality"]
+    search_fields = ["full_name", "phone", "id_number"]
+    ordering_fields = ["created_at", "full_name", "total_stays"]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        """Get queryset with optional filtering."""
+        queryset = Guest.objects.all()
+
+        # Filter by VIP status
+        is_vip = self.request.query_params.get("is_vip")
+        if is_vip is not None:
+            queryset = queryset.filter(is_vip=is_vip.lower() == "true")
+
+        # Filter by nationality
+        nationality = self.request.query_params.get("nationality")
+        if nationality:
+            queryset = queryset.filter(nationality=nationality)
+
+        # Search by name, phone, or ID number
+        search = self.request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(full_name__icontains=search)
+                | Q(phone__icontains=search)
+                | Q(id_number__icontains=search)
+            )
+
+        return queryset.order_by(*self.ordering)
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class."""
+        if self.action == "list":
+            return GuestListSerializer
+        elif self.action == "search":
+            return GuestSearchSerializer
+        return GuestSerializer
+
+    def get_permissions(self):
+        """Set permissions based on action."""
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAuthenticated(), IsManager()]
+        return [IsAuthenticated(), IsStaff()]
+
+    @extend_schema(
+        summary="Search guests",
+        description="Search for guests by name, phone, or ID number.",
+        request=GuestSearchSerializer,
+        responses={200: GuestListSerializer(many=True)},
+        tags=["Guest Management"],
+    )
+    @action(detail=False, methods=["post"], url_path="search")
+    def search(self, request):
+        """Search for guests."""
+        serializer = GuestSearchSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        query = serializer.validated_data["query"]
+        guests = Guest.objects.filter(
+            Q(full_name__icontains=query) | Q(phone__icontains=query) | Q(id_number__icontains=query)
+        )
+
+        return Response(
+            GuestListSerializer(guests, many=True).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Get guest booking history",
+        description="Get all bookings for a specific guest.",
+        responses={
+            200: OpenApiResponse(
+                description="Guest booking history",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "guest": {"$ref": "#/components/schemas/Guest"},
+                        "bookings": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
+                        "total_bookings": {"type": "integer"},
+                        "total_stays": {"type": "integer"},
+                    },
+                },
+            )
+        },
+        tags=["Guest Management"],
+    )
+    @action(detail=True, methods=["get"], url_path="history")
+    def history(self, request, pk=None):
+        """Get booking history for a guest."""
+        guest = self.get_object()
+        bookings = Booking.objects.filter(guest=guest).select_related("room", "room__room_type").order_by(
+            "-check_in_date"
+        )
+
+        return Response(
+            {
+                "guest": GuestSerializer(guest).data,
+                "bookings": BookingListSerializer(bookings, many=True).data,
+                "total_bookings": bookings.count(),
+                "total_stays": guest.total_stays,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# ==================== Booking Management Views ====================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List bookings",
+        description="Get list of all bookings with filtering options.",
+        parameters=[
+            OpenApiParameter(
+                name="status",
+                type=str,
+                description="Filter by booking status",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="source",
+                type=str,
+                description="Filter by booking source",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="room",
+                type=int,
+                description="Filter by room ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="guest",
+                type=int,
+                description="Filter by guest ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="check_in_from",
+                type=str,
+                description="Filter bookings with check-in date from this date (YYYY-MM-DD)",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="check_in_to",
+                type=str,
+                description="Filter bookings with check-in date until this date (YYYY-MM-DD)",
+                required=False,
+            ),
+        ],
+        responses={200: BookingListSerializer(many=True)},
+        tags=["Booking Management"],
+    ),
+    retrieve=extend_schema(
+        summary="Get booking details",
+        description="Get detailed information about a specific booking.",
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    ),
+    create=extend_schema(
+        summary="Create new booking",
+        description="Create a new booking. Automatically checks for room availability and overlaps.",
+        request=BookingSerializer,
+        responses={201: BookingSerializer},
+        tags=["Booking Management"],
+    ),
+    update=extend_schema(
+        summary="Update booking",
+        description="Update a booking's information. Checks for room availability if dates or room changed.",
+        request=BookingSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    ),
+    partial_update=extend_schema(
+        summary="Partial update booking",
+        description="Partially update a booking's information.",
+        request=BookingSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    ),
+    destroy=extend_schema(
+        summary="Delete booking",
+        description="Delete a booking record. This is a hard delete.",
+        responses={204: OpenApiResponse(description="Booking deleted successfully")},
+        tags=["Booking Management"],
+    ),
+)
+class BookingViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing bookings."""
+
+    permission_classes = [IsAuthenticated, IsStaff]
+    serializer_class = BookingSerializer
+    filterset_fields = ["status", "source", "room", "guest"]
+    ordering_fields = ["created_at", "check_in_date", "check_out_date"]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        """Get queryset with optional filtering."""
+        queryset = Booking.objects.select_related("guest", "room", "room__room_type").all()
+
+        # Filter by date range
+        check_in_from = self.request.query_params.get("check_in_from")
+        if check_in_from:
+            queryset = queryset.filter(check_in_date__gte=check_in_from)
+
+        check_in_to = self.request.query_params.get("check_in_to")
+        if check_in_to:
+            queryset = queryset.filter(check_in_date__lte=check_in_to)
+
+        return queryset.order_by(*self.ordering)
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class."""
+        if self.action == "list":
+            return BookingListSerializer
+        elif self.action == "update_status":
+            return BookingStatusUpdateSerializer
+        elif self.action == "check_in":
+            return CheckInSerializer
+        elif self.action == "check_out":
+            return CheckOutSerializer
+        return BookingSerializer
+
+    @extend_schema(
+        summary="Update booking status",
+        description="Update the status of a booking (e.g., confirm, cancel, no-show).",
+        request=BookingStatusUpdateSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    )
+    @action(detail=True, methods=["post"], url_path="update-status")
+    def update_status(self, request, pk=None):
+        """Update booking status."""
+        booking = self.get_object()
+        serializer = BookingStatusUpdateSerializer(booking, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Check in guest",
+        description="Check in a guest for their booking. Updates status to CHECKED_IN.",
+        request=CheckInSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    )
+    @action(detail=True, methods=["post"], url_path="check-in")
+    def check_in(self, request, pk=None):
+        """Check in a guest."""
+        from django.utils import timezone
+
+        booking = self.get_object()
+
+        if booking.status == Booking.Status.CHECKED_IN:
+            return Response(
+                {"detail": "Khách đã check-in rồi."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if booking.status not in [Booking.Status.PENDING, Booking.Status.CONFIRMED]:
+            return Response(
+                {"detail": f"Không thể check-in booking với trạng thái {booking.get_status_display()}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = CheckInSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        booking.status = Booking.Status.CHECKED_IN
+        booking.actual_check_in = serializer.validated_data.get("actual_check_in", timezone.now())
+        booking.notes = serializer.validated_data.get("notes", booking.notes or "")
+        booking.save()
+
+        # Update room status to OCCUPIED
+        room = booking.room
+        room.status = Room.Status.OCCUPIED
+        room.save()
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Check out guest",
+        description="Check out a guest from their booking. Updates status to CHECKED_OUT.",
+        request=CheckOutSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    )
+    @action(detail=True, methods=["post"], url_path="check-out")
+    def check_out(self, request, pk=None):
+        """Check out a guest."""
+        from django.utils import timezone
+
+        booking = self.get_object()
+
+        if booking.status == Booking.Status.CHECKED_OUT:
+            return Response(
+                {"detail": "Khách đã check-out rồi."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if booking.status != Booking.Status.CHECKED_IN:
+            return Response(
+                {"detail": f"Không thể check-out booking với trạng thái {booking.get_status_display()}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = CheckOutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        booking.status = Booking.Status.CHECKED_OUT
+        booking.actual_check_out = serializer.validated_data.get("actual_check_out", timezone.now())
+        # Append to existing notes if provided
+        additional_notes = serializer.validated_data.get("notes", "")
+        if additional_notes:
+            booking.notes = f"{booking.notes}\n{additional_notes}" if booking.notes else additional_notes
+        # Additional charges field doesn't exist in model, skip it
+        booking.save()
+
+        # Update room status to CLEANING
+        room = booking.room
+        room.status = Room.Status.CLEANING
+        room.save()
+
+        # Increment guest's total stays
+        guest = booking.guest
+        guest.total_stays += 1
+        guest.save()
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Get today's bookings",
+        description="Get all bookings for today (check-ins and check-outs).",
+        responses={
+            200: OpenApiResponse(
+                description="Today's bookings",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "check_ins": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
+                        "check_outs": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
+                        "total_check_ins": {"type": "integer"},
+                        "total_check_outs": {"type": "integer"},
+                    },
+                },
+            )
+        },
+        tags=["Booking Management"],
+    )
+    @action(detail=False, methods=["get"], url_path="today")
+    def today(self, request):
+        """Get today's bookings."""
+        from datetime import date
+
+        today = date.today()
+
+        check_ins = (
+            Booking.objects.filter(check_in_date=today)
+            .select_related("guest", "room", "room__room_type")
+            .order_by("check_in_date")
+        )
+
+        check_outs = (
+            Booking.objects.filter(check_out_date=today)
+            .select_related("guest", "room", "room__room_type")
+            .order_by("check_out_date")
+        )
+
+        return Response(
+            {
+                "check_ins": BookingListSerializer(check_ins, many=True).data,
+                "check_outs": BookingListSerializer(check_outs, many=True).data,
+                "total_check_ins": check_ins.count(),
+                "total_check_outs": check_outs.count(),
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Get calendar view",
+        description="Get bookings for a date range, useful for calendar view.",
+        parameters=[
+            OpenApiParameter(
+                name="start_date",
+                type=str,
+                description="Start date (YYYY-MM-DD)",
+                required=True,
+            ),
+            OpenApiParameter(
+                name="end_date",
+                type=str,
+                description="End date (YYYY-MM-DD)",
+                required=True,
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(
+                description="Bookings in date range",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "bookings": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
+                        "total": {"type": "integer"},
+                        "start_date": {"type": "string", "format": "date"},
+                        "end_date": {"type": "string", "format": "date"},
+                    },
+                },
+            )
+        },
+        tags=["Booking Management"],
+    )
+    @action(detail=False, methods=["get"], url_path="calendar")
+    def calendar(self, request):
+        """Get bookings for calendar view."""
+        from datetime import datetime
+
+        start_date = request.query_params.get("start_date")
+        end_date = request.query_params.get("end_date")
+
+        if not start_date or not end_date:
+            return Response(
+                {"detail": "Cần cung cấp start_date và end_date."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        except ValueError:
+            return Response(
+                {"detail": "Định dạng ngày không hợp lệ. Sử dụng YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        bookings = (
+            Booking.objects.filter(
+                Q(check_in_date__range=[start_date, end_date]) | Q(check_out_date__range=[start_date, end_date])
+            )
+            .select_related("guest", "room", "room__room_type")
+            .order_by("check_in_date")
+        )
+
+        return Response(
+            {
+                "bookings": BookingListSerializer(bookings, many=True).data,
+                "total": bookings.count(),
+                "start_date": start_date,
+                "end_date": end_date,
             },
             status=status.HTTP_200_OK,
         )
