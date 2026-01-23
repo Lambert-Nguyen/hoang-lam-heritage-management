@@ -533,8 +533,10 @@ class GuestViewSet(viewsets.ModelViewSet):
     ordering = ["-created_at"]
 
     def get_queryset(self):
-        """Get queryset with optional filtering."""
-        queryset = Guest.objects.all()
+        """Get queryset with optional filtering and optimized annotations."""
+        from django.db.models import Count
+        
+        queryset = Guest.objects.annotate(booking_count=Count("bookings")).all()
 
         # Filter by VIP status
         is_vip = self.request.query_params.get("is_vip")
@@ -780,34 +782,37 @@ class BookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="check-in")
     def check_in(self, request, pk=None):
         """Check in a guest."""
+        from django.db import transaction
         from django.utils import timezone
 
         booking = self.get_object()
 
         if booking.status == Booking.Status.CHECKED_IN:
             return Response(
-                {"detail": "Khách đã check-in rồi."},
+                {"detail": "Guest is already checked in."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         if booking.status not in [Booking.Status.PENDING, Booking.Status.CONFIRMED]:
             return Response(
-                {"detail": f"Không thể check-in booking với trạng thái {booking.get_status_display()}."},
+                {"detail": f"Cannot check in booking with status {booking.get_status_display()}."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         serializer = CheckInSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        booking.status = Booking.Status.CHECKED_IN
-        booking.actual_check_in = serializer.validated_data.get("actual_check_in", timezone.now())
-        booking.notes = serializer.validated_data.get("notes", booking.notes or "")
-        booking.save()
+        # Use atomic transaction to ensure consistency
+        with transaction.atomic():
+            booking.status = Booking.Status.CHECKED_IN
+            booking.actual_check_in = serializer.validated_data.get("actual_check_in", timezone.now())
+            booking.notes = serializer.validated_data.get("notes", booking.notes or "")
+            booking.save()
 
-        # Update room status to OCCUPIED
-        room = booking.room
-        room.status = Room.Status.OCCUPIED
-        room.save()
+            # Update room status to OCCUPIED
+            room = booking.room
+            room.status = Room.Status.OCCUPIED
+            room.save()
 
         return Response(
             BookingSerializer(booking).data,
@@ -824,43 +829,47 @@ class BookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="check-out")
     def check_out(self, request, pk=None):
         """Check out a guest."""
+        from django.db import transaction
         from django.utils import timezone
 
         booking = self.get_object()
 
         if booking.status == Booking.Status.CHECKED_OUT:
             return Response(
-                {"detail": "Khách đã check-out rồi."},
+                {"detail": "Guest is already checked out."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         if booking.status != Booking.Status.CHECKED_IN:
             return Response(
-                {"detail": f"Không thể check-out booking với trạng thái {booking.get_status_display()}."},
+                {"detail": f"Cannot check out booking with status {booking.get_status_display()}."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         serializer = CheckOutSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        booking.status = Booking.Status.CHECKED_OUT
-        booking.actual_check_out = serializer.validated_data.get("actual_check_out", timezone.now())
-        # Append to existing notes if provided
-        additional_notes = serializer.validated_data.get("notes", "")
-        if additional_notes:
-            booking.notes = f"{booking.notes}\n{additional_notes}" if booking.notes else additional_notes
-        # Additional charges field doesn't exist in model, skip it
-        booking.save()
+        # Use atomic transaction to ensure consistency
+        with transaction.atomic():
+            booking.status = Booking.Status.CHECKED_OUT
+            booking.actual_check_out = serializer.validated_data.get("actual_check_out", timezone.now())
+            # Append to existing notes if provided
+            additional_notes = serializer.validated_data.get("notes", "")
+            if additional_notes:
+                booking.notes = f"{booking.notes}\n{additional_notes}" if booking.notes else additional_notes
+            # Store additional charges
+            booking.additional_charges = serializer.validated_data.get("additional_charges", 0)
+            booking.save()
 
-        # Update room status to CLEANING
-        room = booking.room
-        room.status = Room.Status.CLEANING
-        room.save()
+            # Update room status to CLEANING
+            room = booking.room
+            room.status = Room.Status.CLEANING
+            room.save()
 
-        # Increment guest's total stays
-        guest = booking.guest
-        guest.total_stays += 1
-        guest.save()
+            # Increment guest's total stays
+            guest = booking.guest
+            guest.total_stays += 1
+            guest.save()
 
         return Response(
             BookingSerializer(booking).data,

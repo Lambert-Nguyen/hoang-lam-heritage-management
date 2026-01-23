@@ -5,6 +5,7 @@ Serializers for API endpoints.
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from .models import Booking, Guest, HotelUser, Room, RoomType
@@ -321,23 +322,25 @@ class GuestSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "total_stays", "created_at", "updated_at"]
 
+    @extend_schema_field(serializers.IntegerField)
     def get_booking_count(self, obj):
         """Get total number of bookings for this guest."""
         return obj.bookings.count()
 
     def validate_phone(self, value):
-        """Validate phone number format and uniqueness."""
+        """Validate phone number format and uniqueness, normalize input."""
         if not value:
-            raise serializers.ValidationError("Số điện thoại không được để trống.")
-        # Remove spaces and special characters
+            raise serializers.ValidationError("Phone number is required.")
+        # Remove spaces and special characters, normalize
         cleaned = "".join(filter(str.isdigit, value))
         if len(cleaned) < 9:
-            raise serializers.ValidationError("Số điện thoại phải có ít nhất 9 chữ số.")
+            raise serializers.ValidationError("Phone number must have at least 9 digits.")
         # Check for uniqueness
         instance = self.instance
-        if Guest.objects.filter(phone=value).exclude(pk=instance.pk if instance else None).exists():
-            raise serializers.ValidationError("Số điện thoại này đã tồn tại.")
-        return value
+        if Guest.objects.filter(phone=cleaned).exclude(pk=instance.pk if instance else None).exists():
+            raise serializers.ValidationError("This phone number already exists.")
+        # Return normalized phone number
+        return cleaned
 
     def validate_id_number(self, value):
         """Validate ID number if provided."""
@@ -345,7 +348,7 @@ class GuestSerializer(serializers.ModelSerializer):
             # Check if ID number already exists (for other guests)
             instance = self.instance
             if Guest.objects.filter(id_number=value).exclude(pk=instance.pk if instance else None).exists():
-                raise serializers.ValidationError("Số CCCD/Passport này đã tồn tại.")
+                raise serializers.ValidationError("This ID number already exists.")
         return value
 
 
@@ -353,7 +356,7 @@ class GuestListSerializer(serializers.ModelSerializer):
     """Simplified Guest serializer for list views."""
 
     is_returning_guest = serializers.ReadOnlyField()
-    booking_count = serializers.SerializerMethodField()
+    booking_count = serializers.IntegerField(read_only=True)  # From annotation
 
     class Meta:
         model = Guest
@@ -371,9 +374,7 @@ class GuestListSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-    def get_booking_count(self, obj):
-        """Get total number of bookings for this guest."""
-        return obj.bookings.count()
+    # Remove get_booking_count method as we use annotation
 
 
 class GuestSearchSerializer(serializers.Serializer):
@@ -405,6 +406,14 @@ class BookingSerializer(serializers.ModelSerializer):
     nights = serializers.ReadOnlyField()
     balance_due = serializers.ReadOnlyField()
 
+    @extend_schema_field(serializers.IntegerField)
+    def nights(self, obj):
+        return obj.nights
+    
+    @extend_schema_field(serializers.DecimalField)
+    def balance_due(self, obj):
+        return obj.balance_due
+
     class Meta:
         model = Booking
         fields = [
@@ -429,6 +438,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "currency",
             "deposit_amount",
             "deposit_paid",
+            "additional_charges",
             "payment_method",
             "is_paid",
             "notes",
@@ -443,30 +453,52 @@ class BookingSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         """Validate booking data."""
+        from datetime import date
         check_in = attrs.get("check_in_date")
         check_out = attrs.get("check_out_date")
+        room = attrs.get("room")
+        guest_count = attrs.get("guest_count", 1)
+        deposit_amount = attrs.get("deposit_amount", 0)
+        total_amount = attrs.get("total_amount")
 
         # Only validate dates if both are provided (not for partial updates)
         if check_in and check_out:
+            # Validate check-out is after check-in
             if check_out <= check_in:
-                raise serializers.ValidationError({"check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."})
+                raise serializers.ValidationError({"check_out_date": "Check-out date must be after check-in date."})
+            
+            # Validate check-in is not in the past (for new bookings only)
+            if not self.instance and check_in < date.today():
+                raise serializers.ValidationError({"check_in_date": "Check-in date cannot be in the past."})
+        
+        # Validate guest count does not exceed room capacity
+        if room and guest_count:
+            max_guests = room.room_type.max_guests
+            if guest_count > max_guests:
+                raise serializers.ValidationError(
+                    {"guest_count": f"Guest count ({guest_count}) exceeds room capacity ({max_guests})."}
+                )
+        
+        # Validate deposit does not exceed total amount
+        if deposit_amount and total_amount and deposit_amount > total_amount:
+            raise serializers.ValidationError(
+                {"deposit_amount": "Deposit amount cannot exceed total amount."}
+            )
 
-        # Check for overlapping bookings
-        room = attrs.get("room")
-        instance = self.instance
-
+        # Check for overlapping bookings with row-level locking to prevent race conditions
         if room and check_in and check_out:
-            overlapping = Booking.objects.filter(
+            # Use select_for_update() within a transaction to lock the room
+            overlapping = Booking.objects.select_for_update().filter(
                 room=room,
                 status__in=[Booking.Status.CONFIRMED, Booking.Status.CHECKED_IN],
-            ).exclude(pk=instance.pk if instance else None)
+            ).exclude(pk=self.instance.pk if self.instance else None)
 
             # Check if new booking overlaps with existing ones
             for booking in overlapping:
                 if not (check_out <= booking.check_in_date or check_in >= booking.check_out_date):
                     raise serializers.ValidationError(
                         {
-                            "room": f"Phòng đã có khách từ {booking.check_in_date} đến {booking.check_out_date}."
+                            "room": f"Room is already booked from {booking.check_in_date} to {booking.check_out_date}."
                         }
                     )
 

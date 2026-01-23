@@ -91,7 +91,7 @@ class Guest(models.Model):
 
     # Personal information
     full_name = models.CharField(max_length=100, verbose_name="Họ và tên")
-    phone = models.CharField(max_length=20, db_index=True, verbose_name="Số điện thoại")
+    phone = models.CharField(max_length=20, unique=True, db_index=True, verbose_name="Số điện thoại")
     email = models.EmailField(blank=True, verbose_name="Email")
 
     # ID information
@@ -99,7 +99,7 @@ class Guest(models.Model):
         max_length=20, choices=IDType.choices, default=IDType.CCCD, verbose_name="Loại giấy tờ"
     )
     id_number = models.CharField(
-        max_length=20, blank=True, db_index=True, verbose_name="Số CCCD/Passport"
+        max_length=20, blank=True, null=True, unique=True, db_index=True, verbose_name="Số CCCD/Passport"
     )
     id_issue_date = models.DateField(null=True, blank=True, verbose_name="Ngày cấp")
     id_issue_place = models.CharField(max_length=100, blank=True, verbose_name="Nơi cấp")
@@ -246,6 +246,13 @@ class Booking(models.Model):
         verbose_name="Tiền cọc",
     )
     deposit_paid = models.BooleanField(default=False, verbose_name="Đã đặt cọc")
+    additional_charges = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        default=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Chi phí phát sinh",
+    )
     payment_method = models.CharField(
         max_length=20,
         choices=PaymentMethod.choices,
@@ -273,6 +280,12 @@ class Booking(models.Model):
         verbose_name = "Đặt phòng"
         verbose_name_plural = "Đặt phòng"
         ordering = ["-check_in_date", "-created_at"]
+        indexes = [
+            models.Index(fields=["check_in_date", "check_out_date"]),
+            models.Index(fields=["status", "room"]),
+            models.Index(fields=["guest", "check_in_date"]),
+            models.Index(fields=["-created_at"]),
+        ]
 
     def __str__(self):
         return f"{self.room.number} - {self.guest.full_name} ({self.check_in_date})"
