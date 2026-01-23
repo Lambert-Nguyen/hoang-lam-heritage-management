@@ -8,7 +8,7 @@ from django.contrib.auth.password_validation import validate_password
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, Guest, HotelUser, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, Room, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -587,3 +587,148 @@ class CheckOutSerializer(serializers.Serializer):
     additional_charges = serializers.DecimalField(
         max_digits=12, decimal_places=0, default=0, required=False
     )
+
+
+# ==================== Financial Serializers ====================
+
+
+class FinancialCategorySerializer(serializers.ModelSerializer):
+    """Serializer for FinancialCategory model."""
+
+    entry_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FinancialCategory
+        fields = [
+            "id",
+            "name",
+            "name_en",
+            "category_type",
+            "icon",
+            "color",
+            "is_default",
+            "is_active",
+            "sort_order",
+            "entry_count",
+        ]
+        read_only_fields = ["id"]
+
+    @extend_schema_field(int)
+    def get_entry_count(self, obj):
+        """Get number of entries in this category."""
+        if hasattr(obj, "entry_count"):
+            return obj.entry_count
+        return obj.entries.count()
+
+
+class FinancialCategoryListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing financial categories."""
+
+    class Meta:
+        model = FinancialCategory
+        fields = ["id", "name", "name_en", "category_type", "icon", "color", "is_default"]
+
+
+class FinancialEntrySerializer(serializers.ModelSerializer):
+    """Serializer for FinancialEntry model."""
+
+    category_details = FinancialCategoryListSerializer(source="category", read_only=True)
+    booking_details = serializers.SerializerMethodField()
+    amount_vnd = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FinancialEntry
+        fields = [
+            "id",
+            "entry_type",
+            "category",
+            "category_details",
+            "amount",
+            "currency",
+            "exchange_rate",
+            "amount_vnd",
+            "date",
+            "description",
+            "booking",
+            "booking_details",
+            "payment_method",
+            "receipt_number",
+            "attachment",
+            "created_by",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_by", "created_at", "updated_at"]
+
+    @extend_schema_field(serializers.DictField)
+    def get_booking_details(self, obj):
+        """Get linked booking details if exists."""
+        if obj.booking:
+            return {
+                "id": obj.booking.id,
+                "room_number": obj.booking.room.number,
+                "guest_name": obj.booking.guest.full_name,
+                "check_in_date": obj.booking.check_in_date,
+                "check_out_date": obj.booking.check_out_date,
+            }
+        return None
+
+    @extend_schema_field(serializers.DecimalField(max_digits=15, decimal_places=0))
+    def get_amount_vnd(self, obj):
+        """Get amount converted to VND."""
+        return obj.amount * obj.exchange_rate
+
+    def validate(self, attrs):
+        """Validate that category type matches entry type."""
+        category = attrs.get("category")
+        entry_type = attrs.get("entry_type")
+
+        if category and entry_type:
+            if category.category_type != entry_type:
+                raise serializers.ValidationError(
+                    {
+                        "category": f"Danh mục {category.name} không phải loại {entry_type}. "
+                        f"Vui lòng chọn danh mục {entry_type}."
+                    }
+                )
+
+        return attrs
+
+
+class FinancialEntryListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing financial entries."""
+
+    category_name = serializers.CharField(source="category.name", read_only=True)
+    category_icon = serializers.CharField(source="category.icon", read_only=True)
+    category_color = serializers.CharField(source="category.color", read_only=True)
+    room_number = serializers.CharField(source="booking.room.number", read_only=True, allow_null=True)
+
+    class Meta:
+        model = FinancialEntry
+        fields = [
+            "id",
+            "entry_type",
+            "category",
+            "category_name",
+            "category_icon",
+            "category_color",
+            "amount",
+            "currency",
+            "date",
+            "description",
+            "payment_method",
+            "room_number",
+            "created_at",
+        ]
+
+
+class FinancialSummarySerializer(serializers.Serializer):
+    """Serializer for financial summary data."""
+
+    period_start = serializers.DateField()
+    period_end = serializers.DateField()
+    total_income = serializers.DecimalField(max_digits=15, decimal_places=0)
+    total_expense = serializers.DecimalField(max_digits=15, decimal_places=0)
+    net_profit = serializers.DecimalField(max_digits=15, decimal_places=0)
+    income_by_category = serializers.ListField(child=serializers.DictField())
+    expense_by_category = serializers.ListField(child=serializers.DictField())

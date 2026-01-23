@@ -6,6 +6,9 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
     BookingViewSet,
+    DashboardView,
+    FinancialCategoryViewSet,
+    FinancialEntryViewSet,
     GuestViewSet,
     LoginView,
     LogoutView,
@@ -21,8 +24,8 @@ router.register(r"room-types", RoomTypeViewSet, basename="roomtype")
 router.register(r"rooms", RoomViewSet, basename="room")
 router.register(r"guests", GuestViewSet, basename="guest")
 router.register(r"bookings", BookingViewSet, basename="booking")
-# To be added:
-# router.register(r'finance', FinancialEntryViewSet, basename='finance')
+router.register(r"finance/categories", FinancialCategoryViewSet, basename="financialcategory")
+router.register(r"finance/entries", FinancialEntryViewSet, basename="financialentry")
 
 urlpatterns = [
     # JWT Authentication
@@ -31,6 +34,8 @@ urlpatterns = [
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("auth/me/", UserProfileView.as_view(), name="user_profile"),
     path("auth/password/change/", PasswordChangeView.as_view(), name="password_change"),
+    # Dashboard
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
     # API endpoints
     path("", include(router.urls)),
 ]

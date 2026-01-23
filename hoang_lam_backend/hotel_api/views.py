@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, Guest, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, Room, RoomType
 from .permissions import IsManager, IsStaff
 from .serializers import (
     BookingListSerializer,
@@ -20,6 +20,10 @@ from .serializers import (
     BookingStatusUpdateSerializer,
     CheckInSerializer,
     CheckOutSerializer,
+    FinancialCategoryListSerializer,
+    FinancialCategorySerializer,
+    FinancialEntryListSerializer,
+    FinancialEntrySerializer,
     GuestListSerializer,
     GuestSearchSerializer,
     GuestSerializer,
@@ -994,6 +998,592 @@ class BookingViewSet(viewsets.ModelViewSet):
                 "total": bookings.count(),
                 "start_date": start_date,
                 "end_date": end_date,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# ==================== Dashboard Views ====================
+
+
+@extend_schema_view(
+    get=extend_schema(
+        summary="Get dashboard summary",
+        description="Get aggregated dashboard metrics including room status, today's stats, and revenue summary.",
+        responses={
+            200: OpenApiResponse(
+                description="Dashboard summary",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "room_status": {
+                            "type": "object",
+                            "properties": {
+                                "total": {"type": "integer"},
+                                "available": {"type": "integer"},
+                                "occupied": {"type": "integer"},
+                                "cleaning": {"type": "integer"},
+                                "maintenance": {"type": "integer"},
+                                "blocked": {"type": "integer"},
+                            },
+                        },
+                        "today": {
+                            "type": "object",
+                            "properties": {
+                                "date": {"type": "string", "format": "date"},
+                                "check_ins": {"type": "integer"},
+                                "check_outs": {"type": "integer"},
+                                "pending_arrivals": {"type": "integer"},
+                                "pending_departures": {"type": "integer"},
+                            },
+                        },
+                        "occupancy": {
+                            "type": "object",
+                            "properties": {
+                                "rate": {"type": "number", "format": "float"},
+                                "occupied_rooms": {"type": "integer"},
+                                "total_rooms": {"type": "integer"},
+                            },
+                        },
+                        "bookings": {
+                            "type": "object",
+                            "properties": {
+                                "pending": {"type": "integer"},
+                                "confirmed": {"type": "integer"},
+                                "checked_in": {"type": "integer"},
+                            },
+                        },
+                    },
+                },
+            )
+        },
+        tags=["Dashboard"],
+    )
+)
+class DashboardView(APIView):
+    """Dashboard summary endpoint for hotel overview."""
+
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    def get(self, request):
+        """Get dashboard summary metrics."""
+        from datetime import date
+
+        from django.db.models import Count
+
+        today = date.today()
+
+        # Room status summary
+        room_status = (
+            Room.objects.filter(is_active=True)
+            .values("status")
+            .annotate(count=Count("id"))
+        )
+        room_status_dict = {item["status"]: item["count"] for item in room_status}
+        total_rooms = Room.objects.filter(is_active=True).count()
+
+        # Today's check-ins and check-outs
+        today_check_ins = Booking.objects.filter(
+            check_in_date=today,
+            status__in=[Booking.Status.PENDING, Booking.Status.CONFIRMED],
+        ).count()
+        today_check_outs = Booking.objects.filter(
+            check_out_date=today,
+            status=Booking.Status.CHECKED_IN,
+        ).count()
+
+        # Already checked in/out today
+        completed_check_ins = Booking.objects.filter(
+            check_in_date=today,
+            status=Booking.Status.CHECKED_IN,
+        ).count()
+        completed_check_outs = Booking.objects.filter(
+            check_out_date=today,
+            status=Booking.Status.CHECKED_OUT,
+        ).count()
+
+        # Booking status counts
+        pending_bookings = Booking.objects.filter(status=Booking.Status.PENDING).count()
+        confirmed_bookings = Booking.objects.filter(status=Booking.Status.CONFIRMED).count()
+        checked_in_bookings = Booking.objects.filter(status=Booking.Status.CHECKED_IN).count()
+
+        # Calculate occupancy
+        occupied_rooms = room_status_dict.get(Room.Status.OCCUPIED, 0)
+        occupancy_rate = (occupied_rooms / total_rooms * 100) if total_rooms > 0 else 0
+
+        return Response(
+            {
+                "room_status": {
+                    "total": total_rooms,
+                    "available": room_status_dict.get(Room.Status.AVAILABLE, 0),
+                    "occupied": occupied_rooms,
+                    "cleaning": room_status_dict.get(Room.Status.CLEANING, 0),
+                    "maintenance": room_status_dict.get(Room.Status.MAINTENANCE, 0),
+                    "blocked": room_status_dict.get(Room.Status.BLOCKED, 0),
+                },
+                "today": {
+                    "date": today.isoformat(),
+                    "check_ins": today_check_ins + completed_check_ins,
+                    "check_outs": today_check_outs + completed_check_outs,
+                    "pending_arrivals": today_check_ins,
+                    "pending_departures": today_check_outs,
+                },
+                "occupancy": {
+                    "rate": round(occupancy_rate, 1),
+                    "occupied_rooms": occupied_rooms,
+                    "total_rooms": total_rooms,
+                },
+                "bookings": {
+                    "pending": pending_bookings,
+                    "confirmed": confirmed_bookings,
+                    "checked_in": checked_in_bookings,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# ==================== Financial Management Views ====================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List financial categories",
+        description="Get list of all financial categories.",
+        parameters=[
+            OpenApiParameter(
+                name="category_type",
+                type=str,
+                description="Filter by category type (income/expense)",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="is_active",
+                type=bool,
+                description="Filter by active status",
+                required=False,
+            ),
+        ],
+        responses={200: FinancialCategoryListSerializer(many=True)},
+        tags=["Financial Management"],
+    ),
+    retrieve=extend_schema(
+        summary="Get financial category details",
+        description="Get detailed information about a specific financial category.",
+        responses={200: FinancialCategorySerializer},
+        tags=["Financial Management"],
+    ),
+    create=extend_schema(
+        summary="Create financial category",
+        description="Create a new financial category. Requires manager role.",
+        request=FinancialCategorySerializer,
+        responses={201: FinancialCategorySerializer},
+        tags=["Financial Management"],
+    ),
+    update=extend_schema(
+        summary="Update financial category",
+        description="Update a financial category. Requires manager role.",
+        request=FinancialCategorySerializer,
+        responses={200: FinancialCategorySerializer},
+        tags=["Financial Management"],
+    ),
+    partial_update=extend_schema(
+        summary="Partially update financial category",
+        description="Partially update a financial category. Requires manager role.",
+        request=FinancialCategorySerializer,
+        responses={200: FinancialCategorySerializer},
+        tags=["Financial Management"],
+    ),
+    destroy=extend_schema(
+        summary="Delete financial category",
+        description="Delete a financial category. Requires manager role.",
+        responses={204: None},
+        tags=["Financial Management"],
+    ),
+)
+class FinancialCategoryViewSet(viewsets.ModelViewSet):
+    """ViewSet for FinancialCategory CRUD operations."""
+
+    queryset = FinancialCategory.objects.all()
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class."""
+        if self.action == "list":
+            return FinancialCategoryListSerializer
+        return FinancialCategorySerializer
+
+    def get_permissions(self):
+        """Set permissions based on action."""
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsAuthenticated(), IsManager()]
+        return [IsAuthenticated(), IsStaff()]
+
+    def get_queryset(self):
+        """Filter queryset based on query parameters."""
+        from django.db.models import Count
+
+        queryset = super().get_queryset().annotate(entry_count=Count("entries"))
+
+        # Filter by category type
+        category_type = self.request.query_params.get("category_type")
+        if category_type:
+            queryset = queryset.filter(category_type=category_type)
+
+        # Filter by active status
+        is_active = self.request.query_params.get("is_active")
+        if is_active is not None:
+            is_active_bool = is_active.lower() in ["true", "1", "yes"]
+            queryset = queryset.filter(is_active=is_active_bool)
+
+        return queryset
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List financial entries",
+        description="Get list of financial entries with filtering options.",
+        parameters=[
+            OpenApiParameter(
+                name="entry_type",
+                type=str,
+                description="Filter by entry type (income/expense)",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="category",
+                type=int,
+                description="Filter by category ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="date_from",
+                type=str,
+                description="Filter entries from this date (YYYY-MM-DD)",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="date_to",
+                type=str,
+                description="Filter entries until this date (YYYY-MM-DD)",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="payment_method",
+                type=str,
+                description="Filter by payment method",
+                required=False,
+            ),
+        ],
+        responses={200: FinancialEntryListSerializer(many=True)},
+        tags=["Financial Management"],
+    ),
+    retrieve=extend_schema(
+        summary="Get financial entry details",
+        description="Get detailed information about a specific financial entry.",
+        responses={200: FinancialEntrySerializer},
+        tags=["Financial Management"],
+    ),
+    create=extend_schema(
+        summary="Create financial entry",
+        description="Create a new financial entry (income or expense).",
+        request=FinancialEntrySerializer,
+        responses={201: FinancialEntrySerializer},
+        tags=["Financial Management"],
+    ),
+    update=extend_schema(
+        summary="Update financial entry",
+        description="Update a financial entry. Requires manager role.",
+        request=FinancialEntrySerializer,
+        responses={200: FinancialEntrySerializer},
+        tags=["Financial Management"],
+    ),
+    partial_update=extend_schema(
+        summary="Partially update financial entry",
+        description="Partially update a financial entry. Requires manager role.",
+        request=FinancialEntrySerializer,
+        responses={200: FinancialEntrySerializer},
+        tags=["Financial Management"],
+    ),
+    destroy=extend_schema(
+        summary="Delete financial entry",
+        description="Delete a financial entry. Requires manager role.",
+        responses={204: None},
+        tags=["Financial Management"],
+    ),
+)
+class FinancialEntryViewSet(viewsets.ModelViewSet):
+    """ViewSet for FinancialEntry CRUD operations."""
+
+    queryset = FinancialEntry.objects.all()
+    permission_classes = [IsAuthenticated, IsStaff]
+
+    def get_serializer_class(self):
+        """Return appropriate serializer class."""
+        if self.action == "list":
+            return FinancialEntryListSerializer
+        return FinancialEntrySerializer
+
+    def get_permissions(self):
+        """Set permissions based on action."""
+        if self.action in ["update", "partial_update", "destroy"]:
+            return [IsAuthenticated(), IsManager()]
+        return [IsAuthenticated(), IsStaff()]
+
+    def get_queryset(self):
+        """Filter queryset based on query parameters."""
+        queryset = super().get_queryset().select_related(
+            "category", "booking", "booking__room", "booking__guest", "created_by"
+        )
+
+        # Filter by entry type
+        entry_type = self.request.query_params.get("entry_type")
+        if entry_type:
+            queryset = queryset.filter(entry_type=entry_type)
+
+        # Filter by category
+        category = self.request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category_id=category)
+
+        # Filter by date range
+        date_from = self.request.query_params.get("date_from")
+        if date_from:
+            queryset = queryset.filter(date__gte=date_from)
+
+        date_to = self.request.query_params.get("date_to")
+        if date_to:
+            queryset = queryset.filter(date__lte=date_to)
+
+        # Filter by payment method
+        payment_method = self.request.query_params.get("payment_method")
+        if payment_method:
+            queryset = queryset.filter(payment_method=payment_method)
+
+        return queryset.order_by("-date", "-created_at")
+
+    def perform_create(self, serializer):
+        """Set created_by to current user."""
+        serializer.save(created_by=self.request.user)
+
+    @extend_schema(
+        summary="Get daily financial summary",
+        description="Get financial summary for a specific day.",
+        parameters=[
+            OpenApiParameter(
+                name="date",
+                type=str,
+                description="Date for summary (YYYY-MM-DD). Defaults to today.",
+                required=False,
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(
+                description="Daily financial summary",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "date": {"type": "string", "format": "date"},
+                        "total_income": {"type": "number"},
+                        "total_expense": {"type": "number"},
+                        "net_profit": {"type": "number"},
+                        "income_entries": {"type": "integer"},
+                        "expense_entries": {"type": "integer"},
+                        "income_by_category": {"type": "array"},
+                        "expense_by_category": {"type": "array"},
+                    },
+                },
+            )
+        },
+        tags=["Financial Management"],
+    )
+    @action(detail=False, methods=["get"], url_path="daily-summary")
+    def daily_summary(self, request):
+        """Get financial summary for a day."""
+        from datetime import date, datetime
+
+        from django.db.models import Sum
+
+        date_param = request.query_params.get("date")
+        if date_param:
+            try:
+                summary_date = datetime.strptime(date_param, "%Y-%m-%d").date()
+            except ValueError:
+                return Response(
+                    {"detail": "Định dạng ngày không hợp lệ. Sử dụng YYYY-MM-DD."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            summary_date = date.today()
+
+        # Get totals
+        entries = FinancialEntry.objects.filter(date=summary_date)
+
+        total_income = (
+            entries.filter(entry_type=FinancialEntry.EntryType.INCOME).aggregate(total=Sum("amount"))[
+                "total"
+            ]
+            or 0
+        )
+
+        total_expense = (
+            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).aggregate(total=Sum("amount"))[
+                "total"
+            ]
+            or 0
+        )
+
+        # Get breakdown by category
+        income_by_category = list(
+            entries.filter(entry_type=FinancialEntry.EntryType.INCOME)
+            .values("category__name", "category__icon", "category__color")
+            .annotate(total=Sum("amount"))
+            .order_by("-total")
+        )
+
+        expense_by_category = list(
+            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE)
+            .values("category__name", "category__icon", "category__color")
+            .annotate(total=Sum("amount"))
+            .order_by("-total")
+        )
+
+        return Response(
+            {
+                "date": summary_date.isoformat(),
+                "total_income": total_income,
+                "total_expense": total_expense,
+                "net_profit": total_income - total_expense,
+                "income_entries": entries.filter(entry_type=FinancialEntry.EntryType.INCOME).count(),
+                "expense_entries": entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).count(),
+                "income_by_category": income_by_category,
+                "expense_by_category": expense_by_category,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Get monthly financial summary",
+        description="Get financial summary for a specific month.",
+        parameters=[
+            OpenApiParameter(
+                name="year",
+                type=int,
+                description="Year for summary. Defaults to current year.",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="month",
+                type=int,
+                description="Month for summary (1-12). Defaults to current month.",
+                required=False,
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(
+                description="Monthly financial summary",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "year": {"type": "integer"},
+                        "month": {"type": "integer"},
+                        "total_income": {"type": "number"},
+                        "total_expense": {"type": "number"},
+                        "net_profit": {"type": "number"},
+                        "profit_margin": {"type": "number"},
+                        "income_by_category": {"type": "array"},
+                        "expense_by_category": {"type": "array"},
+                        "daily_totals": {"type": "array"},
+                    },
+                },
+            )
+        },
+        tags=["Financial Management"],
+    )
+    @action(detail=False, methods=["get"], url_path="monthly-summary")
+    def monthly_summary(self, request):
+        """Get financial summary for a month."""
+        from datetime import date
+
+        from django.db.models import Sum
+        from django.db.models.functions import TruncDate
+
+        # Get year and month parameters
+        year = request.query_params.get("year")
+        month = request.query_params.get("month")
+
+        today = date.today()
+        year = int(year) if year else today.year
+        month = int(month) if month else today.month
+
+        if not (1 <= month <= 12):
+            return Response(
+                {"detail": "Tháng phải từ 1 đến 12."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Get entries for the month
+        entries = FinancialEntry.objects.filter(date__year=year, date__month=month)
+
+        total_income = (
+            entries.filter(entry_type=FinancialEntry.EntryType.INCOME).aggregate(total=Sum("amount"))[
+                "total"
+            ]
+            or 0
+        )
+
+        total_expense = (
+            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).aggregate(total=Sum("amount"))[
+                "total"
+            ]
+            or 0
+        )
+
+        net_profit = total_income - total_expense
+        profit_margin = (net_profit / total_income * 100) if total_income > 0 else 0
+
+        # Get breakdown by category
+        income_by_category = list(
+            entries.filter(entry_type=FinancialEntry.EntryType.INCOME)
+            .values("category__name", "category__icon", "category__color")
+            .annotate(total=Sum("amount"))
+            .order_by("-total")
+        )
+
+        expense_by_category = list(
+            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE)
+            .values("category__name", "category__icon", "category__color")
+            .annotate(total=Sum("amount"))
+            .order_by("-total")
+        )
+
+        # Get daily totals for chart - manual grouping for SQLite compatibility
+        from collections import defaultdict
+
+        daily_data = defaultdict(lambda: {"income": 0, "expense": 0})
+        for entry in entries:
+            day_str = entry.date.isoformat()
+            if entry.entry_type == FinancialEntry.EntryType.INCOME:
+                daily_data[day_str]["income"] += entry.amount
+            else:
+                daily_data[day_str]["expense"] += entry.amount
+
+        daily_totals = [
+            {"day": day, "income": data["income"], "expense": data["expense"]}
+            for day, data in sorted(daily_data.items())
+        ]
+
+        return Response(
+            {
+                "year": year,
+                "month": month,
+                "total_income": total_income,
+                "total_expense": total_expense,
+                "net_profit": net_profit,
+                "profit_margin": round(profit_margin, 1),
+                "income_by_category": income_by_category,
+                "expense_by_category": expense_by_category,
+                "daily_totals": daily_totals,
             },
             status=status.HTTP_200_OK,
         )

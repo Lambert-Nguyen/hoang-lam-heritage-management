@@ -10,7 +10,13 @@
       "Bash(python manage.py test:*)",
       "Bash(source .venv/bin/activate)",
       "Bash(find:*)",
-      "Bash(env)"
+      "Bash(env)",
+      "Bash(python -m pytest:*)",
+      "Bash(pip install:*)",
+      "Bash(.venv/bin/python -m pytest:*)",
+      "Bash(.venv/bin/pip install:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development .venv/bin/python -m pytest:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development ../.venv/bin/python -m pytest:*)"
     ]
   }
 }
