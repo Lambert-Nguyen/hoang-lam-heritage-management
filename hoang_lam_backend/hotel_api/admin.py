@@ -8,7 +8,7 @@ from .models import (
     FinancialCategory,
     FinancialEntry,
     HotelUser,
-    Housekeeping,
+    HousekeepingTask,
     MinibarItem,
     MinibarSale,
     Room,
@@ -76,7 +76,7 @@ class HotelUserAdmin(admin.ModelAdmin):
     search_fields = ["user__username", "user__first_name", "user__last_name", "phone"]
 
 
-@admin.register(Housekeeping)
+@admin.register(HousekeepingTask)
 class HousekeepingAdmin(admin.ModelAdmin):
     list_display = ["room", "task_type", "status", "scheduled_date", "assigned_to"]
     list_filter = ["status", "task_type", "scheduled_date"]

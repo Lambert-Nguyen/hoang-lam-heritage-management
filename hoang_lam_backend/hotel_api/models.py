@@ -6,7 +6,7 @@ Models:
 - Booking: Guest reservations
 - FinancialEntry, FinancialCategory: Income and expense tracking
 - HotelUser: User profiles with roles
-- Housekeeping: Room cleaning tasks
+- HousekeepingTask: Room cleaning tasks
 - MinibarItem, MinibarSale: Minibar inventory and sales
 - ExchangeRate: Currency conversion
 """
@@ -430,7 +430,7 @@ class HotelUser(models.Model):
         return f"{self.user.get_full_name() or self.user.username} ({self.get_role_display()})"
 
 
-class Housekeeping(models.Model):
+class HousekeepingTask(models.Model):
     """Room cleaning and maintenance tasks"""
 
     class TaskType(models.TextChoices):
