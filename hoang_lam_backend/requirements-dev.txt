@@ -2,7 +2,7 @@
 
 # Code formatting and linting
 black==24.4.2
-isort==5.13.2
+isort==7.0.0
 flake8==7.0.0
 flake8-docstrings>=1.7.0
 flake8-bugbear>=23.0.0
