@@ -16,7 +16,8 @@
       "Bash(.venv/bin/python -m pytest:*)",
       "Bash(.venv/bin/pip install:*)",
       "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development .venv/bin/python -m pytest:*)",
-      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development ../.venv/bin/python -m pytest:*)"
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development ../.venv/bin/python -m pytest:*)",
+      "Bash(flutter pub run build_runner build:*)"
     ]
   }
 }
