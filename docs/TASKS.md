@@ -3,7 +3,7 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
-> **Code Review (2026-01-22):** Phase 1 Backend + Phase 2.2 Financial complete. 111 backend tests passing.
+> **Code Review (2026-01-25):** Phase 1 Backend + Phase 1.6 Frontend + Phase 2.2 Financial complete. 111 backend tests passing.
 >
 > - **✅ Phase 0**: 37/37 complete (Backend, Frontend, DevOps setup)
 > - **✅ Phase 1.1**: 9/9 complete (Authentication Backend - JWT, login, logout, permissions, tests)
@@ -11,11 +11,12 @@
 > - **✅ Phase 1.3**: 9/9 complete (Room Management Backend - CRUD, status updates, availability checks, tests)
 > - **✅ Phase 1.4**: 10/10 complete (Room Management Frontend - models, repository, providers, widgets, tests)
 > - **✅ Phase 1.5**: 9/9 complete (Guest Management Backend - CRUD, search, history, VIP tracking, 17 tests)
+> - **✅ Phase 1.6**: 9/9 complete (Guest Management Frontend - Freezed models, repository, providers, forms, search, profile, history, nationality dropdown, tests)
 > - **✅ Phase 1.8**: 11/13 complete (Booking Management Backend - CRUD, check-in/out, calendar, 21 tests)
 > - **✅ Phase 2.2**: 8/9 complete (Financial CRUD Backend - income/expense, daily/monthly summaries, 20 tests)
 > - **✅ Dashboard**: Added /api/v1/dashboard/ endpoint for aggregated hotel metrics (4 tests)
-> - **📊 Test Coverage**: 191 tests passing (111 backend + 80 frontend)
-> - **🎯 Overall Progress**: 101/268 tasks (37.7%)
+> - **📊 Test Coverage**: 191+ tests passing (111 backend + 80+ frontend)
+> - **🎯 Overall Progress**: 110/268 tasks (41.0%)
 >
 > **Phase 1.3 Additions & Fixes (2026-01-21):**
 > - RoomType and Room serializers with computed fields (room counts)
@@ -168,16 +169,18 @@
 - [x] **1.5.9** Write guest management tests ✅ (17 tests passing)
 
 ### 1.6 Guest Management (Frontend)
-`[BLOCKED BY: 1.5.1-1.5.4]`
-- [ ] **1.6.1** Create Guest model (Freezed)
-- [ ] **1.6.2** Create guest repository
-- [ ] **1.6.3** Create guest provider (Riverpod)
-- [ ] **1.6.4** Create guest registration form
-- [ ] **1.6.5** Create guest search widget
-- [ ] **1.6.6** Create guest profile screen
-- [ ] **1.6.7** Create guest history view
-- [ ] **1.6.8** Implement nationality dropdown
-- [ ] **1.6.9** Write guest widget tests
+
+> **Status**: ✅ PHASE 1.6 COMPLETE - Freezed models, repository, Riverpod providers, forms, search, profile screen, history widget, nationality dropdown, and comprehensive tests.
+
+- [x] **1.6.1** Create Guest model (Freezed) ✅ (lib/models/guest.dart - Guest, IDType, Gender, Nationalities, GuestListResponse, GuestSearchRequest, GuestBookingSummary, GuestHistoryResponse)
+- [x] **1.6.2** Create guest repository ✅ (lib/repositories/guest_repository.dart - CRUD, search, history, VIP toggle, convenience methods)
+- [x] **1.6.3** Create guest provider (Riverpod) ✅ (lib/providers/guest_provider.dart - guestsProvider, vipGuestsProvider, guestHistoryProvider, GuestNotifier, filters)
+- [x] **1.6.4** Create guest registration form ✅ (lib/screens/guests/guest_form_screen.dart - create/edit mode, validation, VIP toggle)
+- [x] **1.6.5** Create guest search widget ✅ (lib/widgets/guests/guest_search_bar.dart - GuestSearchBar with filters, GuestQuickSearch for inline lookup)
+- [x] **1.6.6** Create guest profile screen ✅ (lib/screens/guests/guest_detail_screen.dart - tabs for info/history, VIP toggle, quick actions)
+- [x] **1.6.7** Create guest history view ✅ (lib/widgets/guests/guest_history_widget.dart - GuestHistoryWidget, GuestStatsSummary)
+- [x] **1.6.8** Implement nationality dropdown ✅ (NationalityDropdown widget in guest_form_screen.dart with custom nationality support)
+- [x] **1.6.9** Write guest widget tests ✅ (test/models/guest_test.dart - 30+ tests, test/widgets/guests/guest_card_test.dart - 20+ tests)
 
 ### 1.7 ID Scanning (Frontend)
 `[BLOCKED BY: 1.6.4]` _(integrates with guest registration form)_
@@ -620,7 +623,7 @@ When claiming a task, add your agent ID:
 | Phase | Description | Total Tasks | Completed | Drafted | Pending |
 | ----- | ----------- | ----------- | --------- | ------- | ------- |
 | 0 | Project Setup | 37 | 37 | 0 | 0 |
-| 1 | Core MVP | 97 | 51 | 0 | 46 |
+| 1 | Core MVP | 97 | 60 | 0 | 37 |
 | 2 | Financial Tracking | 32 | 10 | 0 | 22 |
 | 3 | Operations & Housekeeping | 30 | 3 | 2 | 25 |
 | 4 | Reports & Analytics | 20 | 0 | 0 | 20 |
@@ -628,7 +631,7 @@ When claiming a task, add your agent ID:
 | 6 | OTA Integration | 17 | 0 | 0 | 17 |
 | 7 | Direct Booking | 9 | 0 | 0 | 9 |
 | 8 | Smart Devices (Future) | 9 | 0 | 0 | 9 |
-| **Total** | | **268** | **101** | **2** | **165** |
+| **Total** | | **268** | **110** | **2** | **156** |
 
 **Legend:**
 
@@ -645,10 +648,11 @@ When claiming a task, add your agent ID:
 - ✅ Phase 1.3 COMPLETE: Room Management backend (CRUD, status updates, availability checks, 30 tests)
 - ✅ Phase 1.4 COMPLETE: Room Management frontend (Freezed models, repository, providers, widgets, 40 tests)
 - ✅ Phase 1.5 COMPLETE: Guest Management backend (CRUD, search, history, VIP tracking, 17 tests)
+- ✅ Phase 1.6 COMPLETE: Guest Management frontend (Freezed models, repository, providers, forms, search, profile, history, 50+ tests)
 - ✅ Phase 1.8 MOSTLY COMPLETE: Booking Management backend (CRUD, check-in/out, calendar, 21 tests)
 - ✅ Phase 2.2 COMPLETE: Financial CRUD backend (income/expense entries, daily/monthly summaries, 20 tests)
 - ✅ Dashboard endpoint: GET /api/v1/dashboard/ for aggregated hotel metrics (4 tests)
-- 🔨 Next: Phase 1.6 (Guest Management Frontend) and Phase 1.9 (Booking Management Frontend)
+- 🔨 Next: Phase 1.9 (Booking Management Frontend) and Phase 1.10 (Dashboard Frontend)
 
 ## Parallel Work Streams
 
@@ -679,4 +683,4 @@ Phase 1 (after Phase 0):
 
 ---
 
-**Last Updated:** 2026-01-22 (Phase 0-1 Backend + Phase 2.2 Financial CRUD complete - 111 backend tests, Frontend pending)
+**Last Updated:** 2026-01-25 (Phase 1.6 Guest Management Frontend complete - 110/268 tasks done, 41% progress)
