@@ -34,6 +34,11 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Generated Dart files (freezed, json_serializable, etc.)
+*.freezed.dart
+*.g.dart
+*.mocks.dart
+
 # Symbolication related
 app.*.symbols
 
@@ -70,7 +75,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# Python lib/ directories (NOT Flutter's lib/ directory)
+**/hoang_lam_backend/lib/
 lib64/
 parts/
 sdist/

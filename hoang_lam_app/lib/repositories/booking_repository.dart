@@ -1,0 +1,295 @@
+import '../core/config/app_constants.dart';
+import '../core/network/api_client.dart';
+import '../models/booking.dart';
+
+/// Repository for booking management operations
+class BookingRepository {
+  final ApiClient _apiClient;
+
+  BookingRepository({ApiClient? apiClient})
+      : _apiClient = apiClient ?? ApiClient();
+
+  // ==================== Booking CRUD ====================
+
+  /// Get all bookings with optional filters
+  Future<List<Booking>> getBookings({
+    String? status,
+    int? roomId,
+    int? guestId,
+    String? source,
+    DateTime? checkInFrom,
+    DateTime? checkInTo,
+    DateTime? checkOutFrom,
+    DateTime? checkOutTo,
+    String? ordering,
+  }) async {
+    final queryParams = <String, dynamic>{};
+
+    if (status != null && status.isNotEmpty) {
+      queryParams['status'] = status;
+    }
+    if (roomId != null) {
+      queryParams['room'] = roomId.toString();
+    }
+    if (guestId != null) {
+      queryParams['guest'] = guestId.toString();
+    }
+    if (source != null && source.isNotEmpty) {
+      queryParams['source'] = source;
+    }
+    if (checkInFrom != null) {
+      queryParams['check_in_date_from'] =
+          checkInFrom.toIso8601String().split('T')[0];
+    }
+    if (checkInTo != null) {
+      queryParams['check_in_date_to'] =
+          checkInTo.toIso8601String().split('T')[0];
+    }
+    if (checkOutFrom != null) {
+      queryParams['check_out_date_from'] =
+          checkOutFrom.toIso8601String().split('T')[0];
+    }
+    if (checkOutTo != null) {
+      queryParams['check_out_date_to'] =
+          checkOutTo.toIso8601String().split('T')[0];
+    }
+    if (ordering != null && ordering.isNotEmpty) {
+      queryParams['ordering'] = ordering;
+    }
+
+    final response = await _apiClient.get<Map<String, dynamic>>(
+      AppConstants.bookingsEndpoint,
+      queryParameters: queryParams.isNotEmpty ? queryParams : null,
+    );
+
+    // Handle both paginated and non-paginated responses
+    if (response.data!.containsKey('results')) {
+      final listResponse = BookingListResponse.fromJson(response.data!);
+      return listResponse.results;
+    } else {
+      // Non-paginated response (list directly)
+      final list = response.data! as List<dynamic>;
+      return list
+          .map((json) => Booking.fromJson(json as Map<String, dynamic>))
+          .toList();
+    }
+  }
+
+  /// Get a single booking by ID
+  Future<Booking> getBooking(int id) async {
+    final response = await _apiClient.get<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/',
+    );
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Create a new booking
+  Future<Booking> createBooking(BookingCreate booking) async {
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      AppConstants.bookingsEndpoint,
+      data: booking.toJson(),
+    );
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Update an existing booking
+  Future<Booking> updateBooking(int id, BookingUpdate booking) async {
+    final response = await _apiClient.put<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/',
+      data: booking.toJson(),
+    );
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Partial update of a booking
+  Future<Booking> patchBooking(int id, Map<String, dynamic> updates) async {
+    final response = await _apiClient.patch<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/',
+      data: updates,
+    );
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Delete a booking
+  Future<void> deleteBooking(int id) async {
+    await _apiClient.delete('${AppConstants.bookingsEndpoint}$id/');
+  }
+
+  // ==================== Booking Status ====================
+
+  /// Update booking status
+  Future<Booking> updateBookingStatus(
+    int id,
+    BookingStatus status, {
+    String? notes,
+  }) async {
+    final data = {
+      'status': status.name,
+      if (notes != null) 'notes': notes,
+    };
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/update-status/',
+      data: data,
+    );
+    return Booking.fromJson(response.data!);
+  }
+
+  // ==================== Check-in/Check-out ====================
+
+  /// Check-in a booking
+  Future<Booking> checkIn(
+    int id, {
+    String? actualCheckInNotes,
+  }) async {
+    final data = <String, dynamic>{};
+    if (actualCheckInNotes != null) {
+      data['actual_check_in_notes'] = actualCheckInNotes;
+    }
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/check-in/',
+      data: data.isNotEmpty ? data : null,
+    );
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Check-out a booking
+  Future<Booking> checkOut(
+    int id, {
+    String? actualCheckOutNotes,
+    double? finalAmount,
+  }) async {
+    final data = <String, dynamic>{};
+    if (actualCheckOutNotes != null) {
+      data['actual_check_out_notes'] = actualCheckOutNotes;
+    }
+    if (finalAmount != null) {
+      data['final_amount'] = finalAmount;
+    }
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/check-out/',
+      data: data.isNotEmpty ? data : null,
+    );
+    return Booking.fromJson(response.data!);
+  }
+
+  // ==================== Calendar & Today ====================
+
+  /// Get bookings for calendar view
+  Future<List<Booking>> getCalendarBookings({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    final queryParams = {
+      'start_date': startDate.toIso8601String().split('T')[0],
+      'end_date': endDate.toIso8601String().split('T')[0],
+    };
+
+    final response = await _apiClient.get<List<dynamic>>(
+      '${AppConstants.bookingsEndpoint}calendar/',
+      queryParameters: queryParams,
+    );
+
+    return response.data!
+        .map((json) => Booking.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Get today's bookings (check-ins and check-outs)
+  Future<TodayBookingsResponse> getTodayBookings() async {
+    final response = await _apiClient.get<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}today/',
+    );
+    return TodayBookingsResponse.fromJson(response.data!);
+  }
+
+  // ==================== Convenience Methods ====================
+
+  /// Get all active bookings (confirmed or checked-in)
+  Future<List<Booking>> getActiveBookings() async {
+    return getBookings(
+      ordering: '-check_in_date',
+    ).then((bookings) => bookings
+        .where((b) =>
+            b.status == BookingStatus.confirmed ||
+            b.status == BookingStatus.checkedIn)
+        .toList());
+  }
+
+  /// Get upcoming check-ins
+  Future<List<Booking>> getUpcomingCheckIns({int days = 7}) async {
+    final now = DateTime.now();
+    final future = now.add(Duration(days: days));
+
+    return getBookings(
+      status: 'confirmed',
+      checkInFrom: now,
+      checkInTo: future,
+      ordering: 'check_in_date',
+    );
+  }
+
+  /// Get upcoming check-outs
+  Future<List<Booking>> getUpcomingCheckOuts({int days = 7}) async {
+    final now = DateTime.now();
+    final future = now.add(Duration(days: days));
+
+    return getBookings(
+      status: 'checked_in',
+      checkOutFrom: now,
+      checkOutTo: future,
+      ordering: 'check_out_date',
+    );
+  }
+
+  /// Get bookings by room for a date range
+  Future<List<Booking>> getBookingsByRoom(
+    int roomId, {
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    return getBookings(
+      roomId: roomId,
+      checkInFrom: from,
+      checkOutTo: to,
+      ordering: '-check_in_date',
+    );
+  }
+
+  /// Get bookings by guest
+  Future<List<Booking>> getBookingsByGuest(
+    int guestId, {
+    String? ordering,
+  }) async {
+    return getBookings(
+      guestId: guestId,
+      ordering: ordering ?? '-check_in_date',
+    );
+  }
+
+  /// Cancel a booking
+  Future<Booking> cancelBooking(
+    int id, {
+    String? cancellationReason,
+  }) async {
+    return updateBookingStatus(
+      id,
+      BookingStatus.cancelled,
+      notes: cancellationReason,
+    );
+  }
+
+  /// Mark as no-show
+  Future<Booking> markAsNoShow(
+    int id, {
+    String? notes,
+  }) async {
+    return updateBookingStatus(
+      id,
+      BookingStatus.noShow,
+      notes: notes,
+    );
+  }
+}

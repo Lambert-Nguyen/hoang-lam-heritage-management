@@ -233,13 +233,13 @@
 
 ### 1.10 Dashboard (Frontend)
 `[BLOCKED BY: 1.4.4, 1.9.3]`
-- [ ] **1.10.1** Create dashboard screen layout
-- [ ] **1.10.2** Create today's overview widget
-- [ ] **1.10.3** Create room status grid widget
-- [ ] **1.10.4** Create upcoming check-ins widget
-- [ ] **1.10.5** Create upcoming check-outs widget
-- [ ] **1.10.6** Create quick stats widget (occupancy %)
-- [ ] **1.10.7** Create FAB for new booking
+- [x] **1.10.1** Create dashboard screen layout ✅ (integrated with HomeScreen)
+- [x] **1.10.2** Create today's overview widget ✅ (DashboardRevenueCard, stat cards)
+- [x] **1.10.3** Create room status grid widget ✅ (existing RoomStatusCard)
+- [x] **1.10.4** Create upcoming check-ins widget ✅ (integrated in home_screen)
+- [x] **1.10.5** Create upcoming check-outs widget ✅ (integrated in home_screen)
+- [x] **1.10.6** Create quick stats widget (occupancy %) ✅ (DashboardOccupancyWidget, StatCard)
+- [x] **1.10.7** Create FAB for new booking ✅ (HomeScreen FAB)
 - [ ] **1.10.8** Write dashboard widget tests
 
 ### 1.11 Night Audit (Backend)
