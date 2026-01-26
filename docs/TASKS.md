@@ -3,7 +3,7 @@
 **Reference:** [Design Plan](./HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md)
 **Inspired by:** [ezCloud Ezhotel](https://ezcloud.vn/san-pham/ezcloudhotel)
 
-> **Code Review (2026-01-26):** Phase 1 Backend + Phase 1.6 & 1.9 (partial) Frontend + Phase 2.2 Financial complete. 111 backend tests passing.
+> **Code Review (2026-01-26):** Phase 1 Backend + Phase 1.6 & 1.9 (majority) Frontend + Phase 2.2 Financial complete. 111 backend tests passing.
 >
 > - **✅ Phase 0**: 37/37 complete (Backend, Frontend, DevOps setup)
 > - **✅ Phase 1.1**: 9/9 complete (Authentication Backend - JWT, login, logout, permissions, tests)
@@ -13,11 +13,11 @@
 > - **✅ Phase 1.5**: 9/9 complete (Guest Management Backend - CRUD, search, history, VIP tracking, 17 tests)
 > - **✅ Phase 1.6**: 9/9 complete (Guest Management Frontend - Freezed models, repository, providers, forms, search, profile, history, nationality dropdown, tests)
 > - **✅ Phase 1.8**: 11/13 complete (Booking Management Backend - CRUD, check-in/out, calendar, 21 tests)
-> - **⚡ Phase 1.9**: 3/14 complete (Booking Management Frontend - repository, provider, models; screens pending)
+> - **⚡ Phase 1.9**: 11/14 complete (Booking Management Frontend - repository, provider, models, calendar, form, detail, check-in/out flows; list view and tests pending)
 > - **✅ Phase 2.2**: 8/9 complete (Financial CRUD Backend - income/expense, daily/monthly summaries, 20 tests)
 > - **✅ Dashboard**: Added /api/v1/dashboard/ endpoint for aggregated hotel metrics (4 tests)
 > - **📊 Test Coverage**: 191+ tests passing (111 backend + 80+ frontend)
-> - **🎯 Overall Progress**: 113/268 tasks (42.2%)
+> - **🎯 Overall Progress**: 121/268 tasks (45.1%)
 >
 > **Phase 1.3 Additions & Fixes (2026-01-21):**
 > - RoomType and Room serializers with computed fields (room counts)
@@ -219,14 +219,14 @@
 - [x] **1.9.1** Create Booking model (Freezed) ✅ (lib/models/booking.dart - already existed with full model)
 - [x] **1.9.2** Create booking repository ✅ (lib/repositories/booking_repository.dart - CRUD, calendar, check-in/out, filters)
 - [x] **1.9.3** Create booking provider (Riverpod) ✅ (lib/providers/booking_provider.dart - StateNotifier, filters, stats)
-- [ ] **1.9.4** Create booking calendar screen (table_calendar)
+- [x] **1.9.4** Create booking calendar screen (table_calendar) ✅ (lib/screens/bookings/booking_calendar_screen.dart - calendar view, filters, grouped bookings)
 - [ ] **1.9.5** Create booking list view
-- [ ] **1.9.6** Create new booking screen
-- [ ] **1.9.7** Create booking detail screen
-- [ ] **1.9.8** Create check-in flow
-- [ ] **1.9.9** Create check-out flow
-- [ ] **1.9.10** Create booking edit screen
-- [ ] **1.9.11** Create booking cancellation flow
+- [x] **1.9.6** Create new booking screen ✅ (lib/screens/bookings/booking_form_screen.dart - create/edit, room/guest/date selection, validation)
+- [x] **1.9.7** Create booking detail screen ✅ (lib/screens/bookings/booking_detail_screen.dart - full details, action buttons)
+- [x] **1.9.8** Create check-in flow ✅ (integrated in booking_detail_screen with confirmation dialog)
+- [x] **1.9.9** Create check-out flow ✅ (integrated in booking_detail_screen with confirmation dialog)
+- [x] **1.9.10** Create booking edit screen ✅ (reuses booking_form_screen.dart in edit mode)
+- [x] **1.9.11** Create booking cancellation flow ✅ (integrated in booking_detail_screen)
 - [ ] **1.9.12** Create booking source selector
 - [ ] **1.9.13** Create hourly booking option
 - [ ] **1.9.14** Write booking widget tests
