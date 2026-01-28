@@ -1,401 +1,435 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_spacing.dart';
-import '../../core/utils/currency_formatter.dart';
-import '../../l10n/app_localizations.dart';
-import '../../widgets/common/app_card.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-/// Bookings screen with calendar and list
-class BookingsScreen extends StatefulWidget {
+import '../../models/booking.dart';
+import '../../providers/booking_provider.dart';
+import '../../widgets/bookings/booking_card.dart';
+import 'booking_form_screen.dart';
+import 'booking_detail_screen.dart';
+
+class BookingsScreen extends ConsumerStatefulWidget {
   const BookingsScreen({super.key});
 
   @override
-  State<BookingsScreen> createState() => _BookingsScreenState();
+  ConsumerState<BookingsScreen> createState() => _BookingsScreenState();
 }
 
-class _BookingsScreenState extends State<BookingsScreen> {
+class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   DateTime _selectedDate = DateTime.now();
-  String _filterStatus = 'all';
+  BookingStatus? _selectedStatus;
+  BookingSource? _selectedSource;
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
+    // Build filter for provider
+    final filter = BookingFilter(
+      status: _selectedStatus,
+      source: _selectedSource,
+      startDate: _searchQuery.isEmpty ? _getMonthStart() : null,
+      endDate: _searchQuery.isEmpty ? _getMonthEnd() : null,
+      ordering: '-check_in_date',
+    );
+
+    // Watch filtered bookings
+    final bookingsAsync = ref.watch(filteredBookingsProvider(filter));
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.bookings),
+        title: const Text('Danh sách đặt phòng'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // TODO: Show search
-            },
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.invalidate(filteredBookingsProvider(filter)),
           ),
           IconButton(
-            icon: const Icon(Icons.calendar_month),
-            onPressed: () {
-              // TODO: Show full calendar
-            },
+            icon: const Icon(Icons.filter_list),
+            onPressed: () => _showFilterDialog(context),
           ),
         ],
       ),
       body: Column(
         children: [
           // Mini calendar
-          _buildMiniCalendar(context),
-
+          _buildMiniCalendar(),
+          
           // Filter chips
-          _buildFilterChips(context),
+          _buildFilterChips(),
+          
+          // Search bar
+          _buildSearchBar(),
 
-          // Booking list
+          const Divider(height: 1),
+
+          // Bookings list
           Expanded(
-            child: _buildBookingList(context),
+            child: bookingsAsync.when(
+              data: (bookings) {
+                final filteredBookings = _applySearchFilter(bookings);
+                
+                if (filteredBookings.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    ref.invalidate(filteredBookingsProvider(filter));
+                  },
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: filteredBookings.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final booking = filteredBookings[index];
+                      return BookingCard(
+                        booking: booking,
+                        onTap: () => _navigateToDetail(booking),
+                        showRoom: true,
+                        showGuest: true,
+                      );
+                    },
+                  ),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (error, stack) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Lỗi tải dữ liệu',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      error.toString(),
+                      style: Theme.of(context).textTheme.bodySmall,
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () => ref.invalidate(filteredBookingsProvider(filter)),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Thử lại'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Navigate to new booking
-        },
+        onPressed: () => _navigateToCreateBooking(),
         icon: const Icon(Icons.add),
         label: const Text('Đặt phòng'),
       ),
     );
   }
 
-  Widget _buildMiniCalendar(BuildContext context) {
-    final now = DateTime.now();
-    final days = List.generate(7, (i) {
-      return now.add(Duration(days: i - 3));
-    });
-
+  Widget _buildMiniCalendar() {
     return Container(
-      color: AppColors.surface,
-      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          // Month/Year header
-          Padding(
-            padding: AppSpacing.paddingHorizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.chevron_left),
-                  onPressed: () {
-                    setState(() {
-                      _selectedDate = _selectedDate.subtract(const Duration(days: 7));
-                    });
-                  },
-                ),
-                Text(
-                  'Tháng ${_selectedDate.month}, ${_selectedDate.year}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chevron_right),
-                  onPressed: () {
-                    setState(() {
-                      _selectedDate = _selectedDate.add(const Duration(days: 7));
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-          AppSpacing.gapVerticalSm,
-
-          // Days row
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: days.map((day) {
-              final isSelected = day.day == _selectedDate.day &&
-                  day.month == _selectedDate.month;
-              final isToday = day.day == now.day &&
-                  day.month == now.month &&
-                  day.year == now.year;
-
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedDate = day;
-                  });
-                },
-                child: Container(
-                  width: 44,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : null,
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                    border: isToday && !isSelected
-                        ? Border.all(color: AppColors.primary, width: 2)
-                        : null,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                DateFormat('MMMM yyyy', 'vi').format(_selectedDate),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.chevron_left),
+                    onPressed: () {
+                      setState(() {
+                        _selectedDate = DateTime(
+                          _selectedDate.year,
+                          _selectedDate.month - 1,
+                        );
+                      });
+                    },
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _getDayName(day.weekday),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isSelected
-                              ? AppColors.onPrimary
-                              : AppColors.textSecondary,
-                        ),
-                      ),
-                      AppSpacing.gapVerticalXs,
-                      Text(
-                        '${day.day}',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: isSelected
-                              ? AppColors.onPrimary
-                              : AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
+                  IconButton(
+                    icon: const Icon(Icons.chevron_right),
+                    onPressed: () {
+                      setState(() {
+                        _selectedDate = DateTime(
+                          _selectedDate.year,
+                          _selectedDate.month + 1,
+                        );
+                      });
+                    },
                   ),
-                ),
-              );
-            }).toList(),
+                ],
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
-  String _getDayName(int weekday) {
-    const names = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
-    return names[weekday - 1];
-  }
-
-  Widget _buildFilterChips(BuildContext context) {
-    final filters = [
-      ('all', 'Tất cả'),
-      ('checked_in', 'Đang ở'),
-      ('upcoming', 'Sắp đến'),
-      ('checked_out', 'Đã trả'),
-    ];
-
+  Widget _buildFilterChips() {
     return Container(
-      color: AppColors.surface,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.md,
-        vertical: AppSpacing.sm,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: filters.map((filter) {
-            final isSelected = _filterStatus == filter.$1;
-            return Padding(
-              padding: const EdgeInsets.only(right: AppSpacing.sm),
-              child: FilterChip(
-                label: Text(filter.$2),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    _filterStatus = filter.$1;
-                  });
-                },
-                selectedColor: AppColors.primaryLight,
-                checkmarkColor: AppColors.primary,
-              ),
-            );
-          }).toList(),
+          children: [
+            FilterChip(
+              label: const Text('Tất cả'),
+              selected: _selectedStatus == null,
+              onSelected: (selected) {
+                setState(() {
+                  _selectedStatus = null;
+                });
+              },
+            ),
+            const SizedBox(width: 8),
+            ...BookingStatus.values.map((status) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  label: Text(status.displayName),
+                  selected: _selectedStatus == status,
+                  onSelected: (selected) {
+                    setState(() {
+                      _selectedStatus = selected ? status : null;
+                    });
+                  },
+                  avatar: Icon(
+                    status.icon,
+                    size: 16,
+                    color: _selectedStatus == status
+                        ? Colors.white
+                        : status.color,
+                  ),
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildBookingList(BuildContext context) {
-    // Sample data - will be replaced with actual data
-    final bookings = [
-      _BookingItem(
-        roomNumber: '102',
-        guestName: 'Nguyễn Văn C',
-        checkIn: DateTime.now(),
-        checkOut: DateTime.now().add(const Duration(days: 2)),
-        source: 'Booking.com',
-        amount: 1200000,
-        status: 'check_in',
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Tìm theo tên khách, số phòng...',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    setState(() {
+                      _searchQuery = '';
+                    });
+                  },
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        ),
+        onChanged: (value) {
+          setState(() {
+            _searchQuery = value;
+          });
+        },
       ),
-      _BookingItem(
-        roomNumber: '103',
-        guestName: 'Trần Thị B',
-        checkIn: DateTime.now().subtract(const Duration(days: 2)),
-        checkOut: DateTime.now(),
-        source: 'Walk-in',
-        amount: 800000,
-        status: 'check_out',
-      ),
-      _BookingItem(
-        roomNumber: '201',
-        guestName: 'Lê Văn D',
-        checkIn: DateTime.now().subtract(const Duration(days: 1)),
-        checkOut: DateTime.now().add(const Duration(days: 3)),
-        source: 'Agoda',
-        amount: 2400000,
-        status: 'checked_in',
-      ),
-    ];
-
-    return ListView.builder(
-      padding: AppSpacing.paddingScreen,
-      itemCount: bookings.length,
-      itemBuilder: (context, index) {
-        final booking = bookings[index];
-        return _buildBookingCard(context, booking);
-      },
     );
   }
 
-  Widget _buildBookingCard(BuildContext context, _BookingItem booking) {
-    final statusColor = _getStatusColor(booking.status);
-    final statusText = _getStatusText(booking.status);
-
-    return AppCard(
-      margin: const EdgeInsets.only(bottom: AppSpacing.md),
-      onTap: () {
-        // TODO: Navigate to booking detail
-      },
+  Widget _buildEmptyState() {
+    return Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.sm,
-                  vertical: AppSpacing.xs,
-                ),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                ),
-                child: Text(
-                  statusText,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: statusColor,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              Text(
-                booking.source,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
+          Icon(
+            Icons.event_busy,
+            size: 64,
+            color: Colors.grey[400],
           ),
-          AppSpacing.gapVerticalMd,
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          const SizedBox(height: 16),
+          Text(
+            'Không có đặt phòng',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.grey[600],
                 ),
-                child: Center(
-                  child: Text(
-                    booking.roomNumber,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
-                  ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Chưa có đặt phòng nào cho bộ lọc này',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.grey[500],
                 ),
-              ),
-              AppSpacing.gapHorizontalMd,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      booking.guestName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    Text(
-                      '${booking.checkIn.day}/${booking.checkIn.month} → ${booking.checkOut.day}/${booking.checkOut.month}',
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                CurrencyFormatter.formatCompact(booking.amount),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                  color: AppColors.primary,
-                ),
-              ),
-            ],
           ),
         ],
       ),
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'check_in':
-        return AppColors.available;
-      case 'check_out':
-        return AppColors.occupied;
-      case 'checked_in':
-        return AppColors.primary;
-      default:
-        return AppColors.textSecondary;
-    }
+  List<Booking> _applySearchFilter(List<Booking> bookings) {
+    if (_searchQuery.isEmpty) return bookings;
+
+    final query = _searchQuery.toLowerCase();
+    return bookings.where((booking) {
+      return booking.guestName.toLowerCase().contains(query) ||
+          (booking.roomNumber?.toLowerCase().contains(query) ?? false) ||
+          booking.id.toString().contains(query);
+    }).toList();
   }
 
-  String _getStatusText(String status) {
-    switch (status) {
-      case 'check_in':
-        return 'Check-in';
-      case 'check_out':
-        return 'Check-out';
-      case 'checked_in':
-        return 'Đang ở';
-      default:
-        return status;
-    }
+  void _showFilterDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Bộ lọc nâng cao'),
+        content: StatefulBuilder(
+          builder: (context, setDialogState) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Trạng thái',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Tất cả'),
+                      selected: _selectedStatus == null,
+                      onSelected: (selected) {
+                        setDialogState(() {
+                          _selectedStatus = null;
+                        });
+                      },
+                    ),
+                    ...BookingStatus.values.map((status) {
+                      return ChoiceChip(
+                        label: Text(status.displayName),
+                        selected: _selectedStatus == status,
+                        onSelected: (selected) {
+                          setDialogState(() {
+                            _selectedStatus = selected ? status : null;
+                          });
+                        },
+                      );
+                    }),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Nguồn đặt phòng',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Tất cả'),
+                      selected: _selectedSource == null,
+                      onSelected: (selected) {
+                        setDialogState(() {
+                          _selectedSource = null;
+                        });
+                      },
+                    ),
+                    ...BookingSource.values.map((source) {
+                      return ChoiceChip(
+                        label: Text(source.displayName),
+                        selected: _selectedSource == source,
+                        onSelected: (selected) {
+                          setDialogState(() {
+                            _selectedSource = selected ? source : null;
+                          });
+                        },
+                      );
+                    }),
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _selectedStatus = null;
+                _selectedSource = null;
+              });
+              Navigator.pop(context);
+            },
+            child: const Text('Xóa bộ lọc'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    ).then((_) {
+      // Trigger rebuild after dialog closes
+      setState(() {});
+    });
   }
-}
 
-class _BookingItem {
-  final String roomNumber;
-  final String guestName;
-  final DateTime checkIn;
-  final DateTime checkOut;
-  final String source;
-  final num amount;
-  final String status;
+  void _navigateToDetail(Booking booking) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BookingDetailScreen(bookingId: booking.id),
+      ),
+    );
+  }
 
-  _BookingItem({
-    required this.roomNumber,
-    required this.guestName,
-    required this.checkIn,
-    required this.checkOut,
-    required this.source,
-    required this.amount,
-    required this.status,
-  });
+  void _navigateToCreateBooking() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const BookingFormScreen(),
+      ),
+    );
+  }
+
+  DateTime _getMonthStart() {
+    return DateTime(_selectedDate.year, _selectedDate.month, 1);
+  }
+
+  DateTime _getMonthEnd() {
+    return DateTime(_selectedDate.year, _selectedDate.month + 1, 0);
+  }
 }
