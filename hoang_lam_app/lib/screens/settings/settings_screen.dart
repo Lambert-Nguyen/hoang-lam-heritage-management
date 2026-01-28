@@ -120,7 +120,7 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Ngôn ngữ',
             subtitle: 'Tiếng Việt',
             onTap: () {
-              // TODO: Show language picker
+              _showLanguagePicker(context, ref);
             },
           ),
           _buildSettingsTile(
@@ -129,7 +129,7 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Cỡ chữ',
             subtitle: 'Bình thường',
             onTap: () {
-              // TODO: Show text size picker
+              _showTextSizePicker(context);
             },
           ),
           _buildSettingsTile(
@@ -138,7 +138,7 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Thông báo',
             subtitle: 'Bật',
             onTap: () {
-              // TODO: Show notification settings
+              _showNotificationSettings(context);
             },
           ),
 
@@ -392,6 +392,145 @@ class SettingsScreen extends ConsumerWidget {
               backgroundColor: AppColors.error,
             ),
             child: Text(l10n.logout),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Chọn ngôn ngữ'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: const Text('Tiếng Việt'),
+              value: 'vi',
+              groupValue: 'vi', // TODO: Get from locale provider
+              onChanged: (value) {
+                // TODO: Update locale
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('English'),
+              value: 'en',
+              groupValue: 'vi', // TODO: Get from locale provider
+              onChanged: (value) {
+                // TODO: Update locale
+                Navigator.pop(dialogContext);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTextSizePicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Cỡ chữ'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<double>(
+              title: const Text('Nhỏ', style: TextStyle(fontSize: 12)),
+              value: 0.85,
+              groupValue: 1.0, // TODO: Get from settings
+              onChanged: (value) {
+                // TODO: Update text scale
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<double>(
+              title: const Text('Bình thường', style: TextStyle(fontSize: 14)),
+              value: 1.0,
+              groupValue: 1.0, // TODO: Get from settings
+              onChanged: (value) {
+                // TODO: Update text scale
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<double>(
+              title: const Text('Lớn', style: TextStyle(fontSize: 16)),
+              value: 1.15,
+              groupValue: 1.0, // TODO: Get from settings
+              onChanged: (value) {
+                // TODO: Update text scale
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<double>(
+              title: const Text('Rất lớn', style: TextStyle(fontSize: 18)),
+              value: 1.3,
+              groupValue: 1.0, // TODO: Get from settings
+              onChanged: (value) {
+                // TODO: Update text scale
+                Navigator.pop(dialogContext);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationSettings(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Cài đặt thông báo'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SwitchListTile(
+              title: const Text('Nhắc nhở check-in'),
+              subtitle: const Text('Thông báo khi có khách check-in hôm nay'),
+              value: true, // TODO: Get from settings
+              onChanged: (value) {
+                // TODO: Update setting
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Nhắc nhở check-out'),
+              subtitle: const Text('Thông báo khi có khách check-out hôm nay'),
+              value: true, // TODO: Get from settings
+              onChanged: (value) {
+                // TODO: Update setting
+              },
+            ),
+            SwitchListTile(
+              title: const Text('Nhắc nhở dọn phòng'),
+              subtitle: const Text('Thông báo khi có phòng cần dọn dẹp'),
+              value: false, // TODO: Get from settings
+              onChanged: (value) {
+                // TODO: Update setting
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
           ),
         ],
       ),
