@@ -11,8 +11,8 @@ void main() {
     setUp(() {
       mockOccupancy = OccupancySummary(
         rate: 75.5,
-        occupied: 6,
-        total: 8,
+        occupiedRooms: 6,
+        totalRooms: 8,
       );
 
       mockRoomStatus = RoomStatusSummary(
@@ -21,7 +21,7 @@ void main() {
         occupied: 6,
         cleaning: 0,
         maintenance: 0,
-        reserved: 0,
+        blocked: 0,
       );
     });
 
@@ -78,8 +78,8 @@ void main() {
     testWidgets('handles 100% occupancy', (WidgetTester tester) async {
       final fullOccupancy = OccupancySummary(
         rate: 100.0,
-        occupied: 8,
-        total: 8,
+        occupiedRooms: 8,
+        totalRooms: 8,
       );
 
       final fullRoomStatus = RoomStatusSummary(
@@ -88,7 +88,7 @@ void main() {
         occupied: 8,
         cleaning: 0,
         maintenance: 0,
-        reserved: 0,
+        blocked: 0,
       );
 
       await tester.pumpWidget(
@@ -110,8 +110,8 @@ void main() {
     testWidgets('handles 0% occupancy', (WidgetTester tester) async {
       final emptyOccupancy = OccupancySummary(
         rate: 0.0,
-        occupied: 0,
-        total: 8,
+        occupiedRooms: 0,
+        totalRooms: 8,
       );
 
       final emptyRoomStatus = RoomStatusSummary(
@@ -120,7 +120,7 @@ void main() {
         occupied: 0,
         cleaning: 0,
         maintenance: 0,
-        reserved: 0,
+        blocked: 0,
       );
 
       await tester.pumpWidget(
@@ -146,7 +146,7 @@ void main() {
         occupied: 4,
         cleaning: 2,
         maintenance: 0,
-        reserved: 0,
+        blocked: 0,
       );
 
       await tester.pumpWidget(
@@ -171,7 +171,7 @@ void main() {
         occupied: 4,
         cleaning: 0,
         maintenance: 1,
-        reserved: 1,
+        blocked: 1,
       );
 
       await tester.pumpWidget(
@@ -186,7 +186,7 @@ void main() {
       );
 
       expect(find.text('Bảo trì'), findsOneWidget);
-      expect(find.text('Đã đặt'), findsOneWidget);
+      expect(find.text('Khóa'), findsOneWidget);
     });
 
     testWidgets('displays pie chart icon', (WidgetTester tester) async {
@@ -207,8 +207,8 @@ void main() {
     testWidgets('formats decimal occupancy rate correctly', (WidgetTester tester) async {
       final decimalOccupancy = OccupancySummary(
         rate: 66.67,
-        occupied: 4,
-        total: 6,
+        occupiedRooms: 4,
+        totalRooms: 6,
       );
 
       await tester.pumpWidget(

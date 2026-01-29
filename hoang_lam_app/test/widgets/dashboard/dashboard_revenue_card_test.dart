@@ -10,10 +10,11 @@ void main() {
 
     setUp(() {
       mockTodaySummary = TodaySummary(
+        date: '2026-01-28',
         checkIns: 2,
         checkOuts: 1,
-        arrivals: 3,
-        departures: 2,
+        pendingArrivals: 3,
+        pendingDepartures: 2,
       );
     });
 
