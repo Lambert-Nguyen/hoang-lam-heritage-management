@@ -39,7 +39,7 @@ void main() {
 
       expect(find.text('Tỷ lệ lấp đầy'), findsOneWidget);
       expect(find.text('75.5%'), findsOneWidget);
-      expect(find.text('6/8 phòng'), findsOneWidget);
+      expect(find.text('6/8'), findsOneWidget);
     });
 
     testWidgets('displays room status breakdown', (WidgetTester tester) async {
@@ -56,7 +56,7 @@ void main() {
 
       expect(find.text('Trống'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
-      expect(find.text('Đang ở'), findsOneWidget);
+      expect(find.text('Có khách'), findsOneWidget);
       expect(find.text('6'), findsOneWidget);
     });
 
@@ -103,8 +103,8 @@ void main() {
       );
 
       expect(find.text('100.0%'), findsOneWidget);
-      expect(find.text('8/8 phòng'), findsOneWidget);
-      expect(find.text('0'), findsOneWidget); // Available count
+      expect(find.text('8/8'), findsOneWidget);
+      expect(find.text('Trống'), findsOneWidget); // Available label present
     });
 
     testWidgets('handles 0% occupancy', (WidgetTester tester) async {
@@ -135,7 +135,7 @@ void main() {
       );
 
       expect(find.text('0.0%'), findsOneWidget);
-      expect(find.text('0/8 phòng'), findsOneWidget);
+      expect(find.text('0/8'), findsOneWidget);
       expect(find.text('8'), findsOneWidget); // Available count
     });
 

@@ -5,7 +5,7 @@ part 'dashboard.g.dart';
 
 /// Dashboard summary data
 @freezed
-class DashboardSummary with _$DashboardSummary {
+sealed class DashboardSummary with _$DashboardSummary {
   const factory DashboardSummary({
     @JsonKey(name: 'room_status') required RoomStatusSummary roomStatus,
     required TodaySummary today,
@@ -19,7 +19,7 @@ class DashboardSummary with _$DashboardSummary {
 
 /// Room status summary
 @freezed
-class RoomStatusSummary with _$RoomStatusSummary {
+sealed class RoomStatusSummary with _$RoomStatusSummary {
   const factory RoomStatusSummary({
     required int total,
     required int available,
@@ -35,7 +35,7 @@ class RoomStatusSummary with _$RoomStatusSummary {
 
 /// Today's summary
 @freezed
-class TodaySummary with _$TodaySummary {
+sealed class TodaySummary with _$TodaySummary {
   const factory TodaySummary({
     required String date,
     @JsonKey(name: 'check_ins') required int checkIns,
@@ -50,7 +50,7 @@ class TodaySummary with _$TodaySummary {
 
 /// Occupancy summary
 @freezed
-class OccupancySummary with _$OccupancySummary {
+sealed class OccupancySummary with _$OccupancySummary {
   const factory OccupancySummary({
     required double rate,
     @JsonKey(name: 'occupied_rooms') required int occupiedRooms,
@@ -63,7 +63,7 @@ class OccupancySummary with _$OccupancySummary {
 
 /// Bookings summary
 @freezed
-class BookingsSummary with _$BookingsSummary {
+sealed class BookingsSummary with _$BookingsSummary {
   const factory BookingsSummary({
     required int pending,
     required int confirmed,
