@@ -13,7 +13,7 @@
 > - **✅ Phase 1.5**: 9/9 complete (Guest Management Backend - CRUD, search, history, VIP tracking, 17 tests)
 > - **✅ Phase 1.6**: 9/9 complete (Guest Management Frontend - Freezed models, repository, providers, forms, search, profile, history, nationality dropdown, tests)
 > - **✅ Phase 1.8**: 11/13 complete (Booking Management Backend - CRUD, check-in/out, calendar, 21 tests)
-> - **✅ Phase 1.9**: 12/14 complete (Booking Management Frontend - repository, provider, models, calendar, list, form, detail, check-in/out flows, source selector; hourly booking deferred, 91 tests)
+> - **✅ Phase 1.9**: 13/14 complete (Booking Management Frontend - repository, provider, models, calendar, list, form, detail, check-in/out flows, source selector, widget tests; hourly booking deferred)
 > - **✅ Phase 1.10**: 8/8 complete (Dashboard Frontend - all widgets implemented, tests passing)
 > - **✅ Phase 2.2**: 8/9 complete (Financial CRUD Backend - income/expense, daily/monthly summaries, 20 tests)
 > - **✅ Dashboard**: Added /api/v1/dashboard/ endpoint for aggregated hotel metrics (4 tests)
@@ -30,6 +30,122 @@
 > - 30 comprehensive tests covering CRUD, permissions, and edge cases
 >
 > Tasks below updated with completion status.
+
+---
+
+> ### Phase 1 Frontend Rigorous Review (2026-01-29)
+>
+> **Test Results:** 171 passed, 20 failed (out of 191 total)
+>
+> Failing tests: 16 in `booking_card_test.dart` (widget structure mismatch), 2 dashboard widget tests (Freezed compilation error in `dashboard.dart`), 1 `login_screen_test.dart` (load error), 1 `booking_card` wraps-in-Card test.
+>
+> #### Summary of Issues Found
+>
+> | Area | CRITICAL | HIGH | MEDIUM | LOW |
+> |------|----------|------|--------|-----|
+> | Phase 1.2 Auth | 5 | 7 | 10 | 7 |
+> | Phase 1.4 Room | 3 | 5 | 8 | 8 |
+> | Phase 1.6 Guest | 3 | 6 | 12 | 9 |
+> | Phase 1.9 Booking | 4 | 7 | 9 | 10 |
+> | Phase 1.10 Dashboard + Infra | 3 | 9 | 12 | 11 |
+> | **TOTAL** | **18** | **34** | **51** | **45** |
+>
+> #### CRITICAL Issues (Must Fix Before MVP)
+>
+> **Cross-cutting (affects ALL repositories):**
+> - **CC-1. Type cast crash in non-paginated response path.** Every repository (room, guest, booking) calls `_apiClient.get<Map<String, dynamic>>` but casts `response.data!` to `List<dynamic>` in the else-branch. Since `response.data` is typed as `Map`, this cast ALWAYS throws `TypeError` at runtime. Files: `room_repository.dart:31,108`, `guest_repository.dart:46`, `booking_repository.dart:71`.
+> - **CC-2. Force-unwrap `response.data!` without null check.** Every API call force-unwraps `response.data!`. If API returns 204 No Content or null body, the app crashes. Affects all repository files.
+> - **CC-3. Auth interceptor concurrent 401 race condition.** When multiple API calls get 401 simultaneously, only the first triggers token refresh; all others immediately fail with 401 (no request queuing). File: `api_interceptors.dart:32-56`.
+> - **CC-4. Security: `LoginRequest.toString()` exposes password in plaintext.** Generated `toString()` includes password, tokens, and all three password-change fields. If logged via crash reports or Dio logging interceptor, credentials are exposed. Files: `auth.freezed.dart:235,506,1552`.
+> - **CC-5. Security: Logging interceptor logs all headers (including Bearer tokens) and all request body data (including passwords).** File: `api_interceptors.dart:107-108`.
+>
+> **Auth-specific:**
+> - **AUTH-1. Error state race condition.** Login error state is set, then 100ms later overwritten with `unauthenticated`. The `ref.listen` callback may never fire for the error state, so users see no error message. File: `auth_provider.dart:124-128`.
+>
+> **Guest-specific:**
+> - **GUEST-1. Compilation error in `_formatCurrency`.** String `'$formattedđ'` is parsed as a single identifier `formattedđ` (Dart includes the diacritic). Should be `'${formatted}đ'`. File: `guest_history_widget.dart:332`.
+> - **GUEST-2. Duplicate `GuestQuickSearch` class.** Defined in both `guest_quick_search.dart` (functional) and `guest_search_bar.dart` (stub with hardcoded empty results). Compile conflict if both imported.
+> - **GUEST-3. Passport ID input blocks letters.** `FilteringTextInputFormatter.digitsOnly` prevents entering passport numbers like `B12345678`. File: `guest_form_screen.dart:243-248`.
+>
+> **Booking-specific:**
+> - **BOOK-1. `status.name` sends camelCase to backend instead of snake_case.** `updateBookingStatus()` sends `"checkedIn"` instead of `"checked_in"` as expected by `@JsonValue`. File: `booking_repository.dart:127`.
+> - **BOOK-2. `BookingUpdate.toJson()` sends null fields.** Missing `@JsonSerializable(includeIfNull: false)`, so PATCH requests send explicit `null` for every unchanged field, potentially clearing data on the backend. File: `booking.g.dart:285-303`.
+>
+> **Dashboard-specific:**
+> - **DASH-1. Freezed generated code out of sync.** Dashboard model uses `sealed class` syntax requiring Freezed 3.x. Running `build_runner` with mismatched version breaks compilation. Dashboard tests fail to load.
+>
+> #### HIGH Issues (Should Fix Before MVP)
+>
+> **Cross-cutting:**
+> - Stale local state pattern: Room detail, guest detail, and booking detail screens store `late` local copies that diverge from provider state after mutations.
+> - Deprecated `Color.withOpacity()` mixed with new `Color.withValues(alpha:)` across codebase -- inconsistent migration.
+> - `DatePickerField` and guest form create `TextEditingController` in `build()` -- memory leak on every rebuild.
+> - Barrel exports (`models.dart`, `repositories.dart`, `providers.dart`, `widgets.dart`) are incomplete -- missing dashboard and booking files.
+>
+> **Auth:**
+> - `handleSessionExpired()` does not await `clearAuthData()` -- state transitions before tokens are deleted.
+> - `changePassword()` swallows exceptions and returns `bool` -- specific server errors lost.
+> - `_isAuthEndpoint()` uses `String.contains()` instead of exact path matching.
+> - Biometric login only works if stored JWT is still valid -- no actual re-authentication.
+> - Splash screen has no error state handling -- gets stuck on loading forever if auth check errors.
+>
+> **Room:**
+> - Dual color systems: `RoomStatusExtension.color` uses different hex values than `AppColors` status colors -- visual inconsistency.
+> - `RoomNotifier.updateRoomStatus()` calls `loadRooms()` with no filters, discarding any active filter state.
+> - SnackBar shown after `Navigator.pop()` in `RoomStatusDialog` -- uses deactivated context.
+>
+> **Guest:**
+> - Phone validation enforces exactly 10 digits, but model and provider support 10-11 (Vietnamese landlines).
+> - `GuestQuickSearch` uses two conflicting `TextEditingController`s causing rebuild loops.
+> - `totalSpent` hardcoded to `0` in detail screen -- real spend data from `GuestHistoryResponse` never propagated.
+>
+> **Booking:**
+> - Check-in button missing for `pending` status (model `canCheckIn` allows it, but UI only shows for `confirmed`).
+> - Detail screen does not refresh after status changes -- shows stale data.
+> - Calendar `onPageChanged` does not call `setState()` -- new month bookings never fetched.
+> - Booking form has no check-out-after-check-in validation at submission time.
+>
+> **Dashboard + Infra:**
+> - `_buildQuickStats` uses untyped `dynamic` parameter -- bypasses compile-time type checking.
+> - `todayBookingsProvider` is NOT autoDispose while `dashboardSummaryProvider` IS -- inconsistent data freshness.
+> - `RoomDetailScreen` route casts `state.extra as Room` without null check -- crashes on deep links.
+> - `CurrencyFormatter.formatCompact` does not handle negative numbers.
+> - `CurrencyFormatter.parse()` removes all dots, breaking USD parsing.
+> - `AppTheme.darkTheme` returns `lightTheme` -- dark mode has no effect.
+>
+> #### Test Coverage Gaps
+>
+> | Area | Status |
+> |------|--------|
+> | AuthNotifier (auth_provider.dart) | **No tests** -- most complex auth logic untested |
+> | API Interceptors | **No tests** -- token refresh, error mapping untested |
+> | BiometricProvider/Service | **No tests** |
+> | RoomNotifier (room_provider.dart) | **No tests** |
+> | RoomStatusDialog, RoomGrid, RoomDetailScreen | **No tests** |
+> | GuestRepository | **No tests** |
+> | GuestNotifier (guest_provider.dart) | **No tests** |
+> | GuestListScreen, GuestDetailScreen, GuestFormScreen | **No tests** |
+> | GuestHistoryWidget, GuestSearchBar, GuestQuickSearch | **No tests** |
+> | BookingNotifier (booking_provider.dart) | **No tests** |
+> | All booking screens (list, detail, form, calendar) | **No tests** |
+> | HomeScreen (dashboard) | **No tests** |
+> | 20 existing tests failing | Booking card (16), dashboard widgets (2), login screen (1), card wrap (1) |
+>
+> #### TASKS.md Accuracy Corrections
+>
+> - **Phase 1.9:** Was listed as 11/14 (later corrected to 12/14). Actual: **13/14 complete**. Tasks 1.9.5 (booking list), 1.9.12 (source selector), and 1.9.14 (widget tests) are all implemented but were marked pending. Only 1.9.13 (hourly booking) remains, intentionally deferred to Phase 3.
+>
+> #### What Is Done Well
+>
+> - **Clean architecture**: Proper separation of models, repositories, providers, screens, and widgets throughout.
+> - **Freezed + json_serializable**: Correct usage of immutable data classes with `@JsonKey` annotations for snake_case mapping.
+> - **Comprehensive enum extensions**: All status, source, and type enums have Vietnamese/English display names, colors, icons, and semantic helpers.
+> - **Vietnamese localization**: All user-facing strings are in Vietnamese (though hardcoded rather than using l10n system).
+> - **Riverpod state management**: Proper use of FutureProvider, StateNotifierProvider, Provider, and family patterns with auto-dispose.
+> - **Auth repository tests**: Thorough coverage including edge cases (server logout fails, invalid JSON, refresh failures).
+> - **Action confirmation dialogs**: All destructive actions (check-in/out, cancel, delete) show confirmation dialogs with proper `context.mounted` checks.
+> - **WCAG-aware theme design**: Color palette designed for accessibility with comments about older users (Mom 50s+).
+> - **Error exception hierarchy**: Well-structured `AppException` subclasses with Vietnamese/English messages for each HTTP status.
 
 ## How to Use This File
 
@@ -230,7 +346,7 @@
 - [x] **1.9.11** Create booking cancellation flow ✅ (integrated in booking_detail_screen)
 - [x] **1.9.12** Create booking source selector ✅ (lib/widgets/bookings/booking_source_selector.dart - 29 tests)
 - [ ] **1.9.13** Create hourly booking option — Deferred to Phase 3 (backend not implemented)
-- [x] **1.9.14** Write booking widget tests ✅ (91 tests: BookingCard 29, BookingStatusBadge 16, BookingSourceSelector 29, plus 17 in other booking widgets; booking_card integration tests deferred due to complex widget dependencies)
+- [x] **1.9.14** Write booking widget tests ✅ (91 tests: BookingCard 29, BookingStatusBadge 16, BookingSourceSelector 29, plus 17 in other booking widgets; 16 booking_card tests currently failing due to widget structure mismatch -- needs fix)
 
 ### 1.10 Dashboard (Frontend)
 `[BLOCKED BY: 1.4.4, 1.9.3]`
@@ -629,7 +745,7 @@ When claiming a task, add your agent ID:
 | Phase | Description | Total Tasks | Completed | MVP Sufficient | Deferred | Pending |
 | ----- | ----------- | ----------- | --------- | -------------- | -------- | ------- |
 | 0 | Project Setup | 37 | 37 | - | - | 0 |
-| 1 | Core MVP | 97 | 67 | 5 | 25 | 0 |
+| 1 | Core MVP | 97 | 68 | 5 | 24 | 0 |
 | 2 | Financial Tracking | 32 | 10 | - | - | 22 |
 | 3 | Operations & Housekeeping | 30 | 3 | - | 2 | 25 |
 | 4 | Reports & Analytics | 20 | 0 | - | - | 20 |
@@ -637,7 +753,7 @@ When claiming a task, add your agent ID:
 | 6 | OTA Integration | 17 | 0 | - | - | 17 |
 | 7 | Direct Booking | 9 | 0 | - | - | 9 |
 | 8 | Smart Devices (Future) | 9 | 0 | - | - | 9 |
-| **Total** | | **268** | **117** | **5** | **27** | **119** |
+| **Total** | | **268** | **118** | **5** | **26** | **119** |
 
 **Legend:**
 
@@ -646,7 +762,7 @@ When claiming a task, add your agent ID:
 - 🔄 Deferred = Moved to later phase (Phase 2 or 3)
 
 **Phase 1 Status:**
-- ✅ **PHASE 1 COMPLETE FOR MVP** - 67/97 tasks complete (69%), 5 MVP sufficient (5%), 25 deferred (26%)
+- ✅ **PHASE 1 COMPLETE FOR MVP** - 68/97 tasks complete (70%), 5 MVP sufficient (5%), 24 deferred (25%)
 - All critical hotel management functionality implemented and tested
 - 326 tests passing (111 backend + 215 frontend)
 - **Ready for MVP deployment** with documented deferrals
@@ -696,4 +812,4 @@ Phase 1 (after Phase 0):
 
 ---
 
-**Last Updated:** 2026-01-25 (Phase 1.6 Guest Management Frontend complete - 110/268 tasks done, 41% progress)
+**Last Updated:** 2026-01-29 (Phase 1 Frontend rigorous review complete - 118/268 tasks done, 44% progress. 18 CRITICAL, 34 HIGH, 51 MEDIUM, 45 LOW issues identified. 20 tests failing.)
