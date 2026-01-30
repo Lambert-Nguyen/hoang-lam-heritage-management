@@ -32,22 +32,34 @@ class GuestRepository {
       queryParams['ordering'] = ordering;
     }
 
-    final response = await _apiClient.get<Map<String, dynamic>>(
+    final response = await _apiClient.get<dynamic>(
       AppConstants.guestsEndpoint,
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
     );
 
+    // Ensure response.data exists
+    if (response.data == null) {
+      return [];
+    }
+
     // Handle both paginated and non-paginated responses
-    if (response.data!.containsKey('results')) {
-      final listResponse = GuestListResponse.fromJson(response.data!);
-      return listResponse.results;
-    } else {
-      // Non-paginated response (list directly)
-      final list = response.data! as List<dynamic>;
+    if (response.data is Map<String, dynamic>) {
+      final dataMap = response.data as Map<String, dynamic>;
+      if (dataMap.containsKey('results')) {
+        final listResponse = GuestListResponse.fromJson(dataMap);
+        return listResponse.results;
+      }
+    }
+
+    // Non-paginated response (list directly)
+    if (response.data is List) {
+      final list = response.data as List<dynamic>;
       return list
           .map((json) => Guest.fromJson(json as Map<String, dynamic>))
           .toList();
     }
+
+    return [];
   }
 
   /// Get a single guest by ID
@@ -55,6 +67,9 @@ class GuestRepository {
     final response = await _apiClient.get<Map<String, dynamic>>(
       '${AppConstants.guestsEndpoint}$id/',
     );
+    if (response.data == null) {
+      throw Exception('Guest not found');
+    }
     return Guest.fromJson(response.data!);
   }
 
@@ -65,6 +80,9 @@ class GuestRepository {
       AppConstants.guestsEndpoint,
       data: data,
     );
+    if (response.data == null) {
+      throw Exception('Failed to create guest');
+    }
     return Guest.fromJson(response.data!);
   }
 
@@ -75,6 +93,9 @@ class GuestRepository {
       '${AppConstants.guestsEndpoint}${guest.id}/',
       data: data,
     );
+    if (response.data == null) {
+      throw Exception('Failed to update guest');
+    }
     return Guest.fromJson(response.data!);
   }
 
@@ -84,6 +105,9 @@ class GuestRepository {
       '${AppConstants.guestsEndpoint}$id/',
       data: data,
     );
+    if (response.data == null) {
+      throw Exception('Failed to patch guest');
+    }
     return Guest.fromJson(response.data!);
   }
 
@@ -107,22 +131,33 @@ class GuestRepository {
       },
     );
 
+    if (response.data == null) {
+      return [];
+    }
+
     // Handle response format
-    if (response.data!.containsKey('results')) {
-      final listResponse = GuestListResponse.fromJson(response.data!);
-      return listResponse.results;
-    } else if (response.data!.containsKey('guests')) {
-      final list = response.data!['guests'] as List<dynamic>;
-      return list
-          .map((json) => Guest.fromJson(json as Map<String, dynamic>))
-          .toList();
-    } else {
-      // Direct list response
-      final list = response.data! as List<dynamic>;
+    if (response.data is Map<String, dynamic>) {
+      final dataMap = response.data as Map<String, dynamic>;
+      if (dataMap.containsKey('results')) {
+        final listResponse = GuestListResponse.fromJson(dataMap);
+        return listResponse.results;
+      } else if (dataMap.containsKey('guests')) {
+        final list = dataMap['guests'] as List<dynamic>;
+        return list
+            .map((json) => Guest.fromJson(json as Map<String, dynamic>))
+            .toList();
+      }
+    }
+
+    // Direct list response
+    if (response.data is List) {
+      final list = response.data as List<dynamic>;
       return list
           .map((json) => Guest.fromJson(json as Map<String, dynamic>))
           .toList();
     }
+
+    return [];
   }
 
   // ==================== Guest History ====================
@@ -132,6 +167,9 @@ class GuestRepository {
     final response = await _apiClient.get<Map<String, dynamic>>(
       '${AppConstants.guestsEndpoint}$guestId/history/',
     );
+    if (response.data == null) {
+      throw Exception('Failed to get guest history');
+    }
     return GuestHistoryResponse.fromJson(response.data!);
   }
 

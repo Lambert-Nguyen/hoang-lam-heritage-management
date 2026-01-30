@@ -10,6 +10,7 @@ class AuthInterceptor extends Interceptor {
   final Dio _dio;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
   bool _isRefreshing = false;
+  final List<RequestOptions> _requestQueue = [];
 
   AuthInterceptor(this._dio);
 
@@ -30,29 +31,86 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401 && !_isRefreshing) {
-      _isRefreshing = true;
-
-      try {
-        final refreshed = await _refreshToken();
-        if (refreshed) {
-          // Retry the original request
+    if (err.response?.statusCode == 401) {
+      // If already refreshing, queue this request
+      if (_isRefreshing) {
+        _requestQueue.add(err.requestOptions);
+        // Wait for refresh to complete
+        await _waitForRefresh();
+        
+        // Retry with new token
+        try {
           final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
-          err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
-
-          final response = await _dio.fetch(err.requestOptions);
-          _isRefreshing = false;
-          return handler.resolve(response);
+          if (accessToken != null) {
+            err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
+            final response = await _dio.fetch(err.requestOptions);
+            return handler.resolve(response);
+          }
+        } catch (e) {
+          // Retry failed, pass error through
+          return handler.next(err);
         }
-      } catch (e) {
-        // Refresh failed, clear tokens
-        await _clearTokens();
-      }
+      } else {
+        // First 401, start refresh process
+        _isRefreshing = true;
 
-      _isRefreshing = false;
+        try {
+          final refreshed = await _refreshToken();
+          if (refreshed) {
+            // Retry the original request
+            final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
+            err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
+
+            final response = await _dio.fetch(err.requestOptions);
+            
+            // Process queued requests
+            await _retryQueuedRequests();
+            
+            _isRefreshing = false;
+            return handler.resolve(response);
+          }
+        } catch (e) {
+          // Refresh failed, clear tokens
+          await _clearTokens();
+        }
+
+        _isRefreshing = false;
+        _requestQueue.clear();
+      }
     }
 
     handler.next(err);
+  }
+
+  Future<void> _waitForRefresh() async {
+    // Poll until refresh is complete (max 5 seconds)
+    int attempts = 0;
+    while (_isRefreshing && attempts < 50) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      attempts++;
+    }
+  }
+
+  Future<void> _retryQueuedRequests() async {
+    if (_requestQueue.isEmpty) return;
+    
+    final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
+    if (accessToken == null) return;
+
+    // Copy queue and clear it
+    final requests = List<RequestOptions>.from(_requestQueue);
+    _requestQueue.clear();
+
+    // Retry all queued requests
+    for (final request in requests) {
+      try {
+        request.headers['Authorization'] = 'Bearer $accessToken';
+        await _dio.fetch(request);
+      } catch (e) {
+        // Individual request failed, but don't block others
+        debugPrint('Queued request failed: $e');
+      }
+    }
   }
 
   Future<bool> _refreshToken() async {
@@ -98,14 +156,54 @@ class AuthInterceptor extends Interceptor {
 
 /// Logging interceptor for debugging
 class LoggingInterceptor extends Interceptor {
+  /// Sanitize headers to hide sensitive information
+  Map<String, dynamic> _sanitizeHeaders(Map<String, dynamic> headers) {
+    final sanitized = Map<String, dynamic>.from(headers);
+    // Hide Authorization token
+    if (sanitized.containsKey('Authorization')) {
+      final auth = sanitized['Authorization'].toString();
+      if (auth.startsWith('Bearer ')) {
+        sanitized['Authorization'] = 'Bearer ***';
+      } else {
+        sanitized['Authorization'] = '***';
+      }
+    }
+    return sanitized;
+  }
+
+  /// Sanitize request data to hide passwords
+  dynamic _sanitizeData(dynamic data) {
+    if (data == null) return null;
+    
+    if (data is Map<String, dynamic>) {
+      final sanitized = Map<String, dynamic>.from(data);
+      // Hide password fields
+      if (sanitized.containsKey('password')) {
+        sanitized['password'] = '***';
+      }
+      if (sanitized.containsKey('old_password')) {
+        sanitized['old_password'] = '***';
+      }
+      if (sanitized.containsKey('new_password')) {
+        sanitized['new_password'] = '***';
+      }
+      if (sanitized.containsKey('confirm_password')) {
+        sanitized['confirm_password'] = '***';
+      }
+      return sanitized;
+    }
+    
+    return data;
+  }
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (EnvConfig.current.enableLogging) {
       debugPrint('┌─────────────────────────────────────────────────────────');
       debugPrint('│ REQUEST: ${options.method} ${options.uri}');
-      debugPrint('│ Headers: ${options.headers}');
+      debugPrint('│ Headers: ${_sanitizeHeaders(options.headers)}');
       if (options.data != null) {
-        debugPrint('│ Data: ${options.data}');
+        debugPrint('│ Data: ${_sanitizeData(options.data)}');
       }
       debugPrint('└─────────────────────────────────────────────────────────');
     }
@@ -117,7 +215,8 @@ class LoggingInterceptor extends Interceptor {
     if (EnvConfig.current.enableLogging) {
       debugPrint('┌─────────────────────────────────────────────────────────');
       debugPrint('│ RESPONSE: ${response.statusCode} ${response.requestOptions.uri}');
-      debugPrint('│ Data: ${response.data}');
+      // Don't log response data as it may contain tokens
+      debugPrint('│ Data: <response data hidden for security>');
       debugPrint('└─────────────────────────────────────────────────────────');
     }
     handler.next(response);
@@ -131,7 +230,7 @@ class LoggingInterceptor extends Interceptor {
       debugPrint('│ Message: ${err.message}');
       if (err.response != null) {
         debugPrint('│ Status: ${err.response?.statusCode}');
-        debugPrint('│ Data: ${err.response?.data}');
+        debugPrint('│ Data: ${_sanitizeData(err.response?.data)}');
       }
       debugPrint('└─────────────────────────────────────────────────────────');
     }

@@ -239,9 +239,12 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             label: 'Số giấy tờ',
             prefixIcon: Icons.numbers,
             textInputAction: TextInputAction.next,
-            keyboardType: TextInputType.number,
+            keyboardType: _idType == IDType.passport
+                ? TextInputType.text
+                : TextInputType.number,
             inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
+              if (_idType != IDType.passport)
+                FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(
                 _idType == IDType.passport ? 20 : 12,
               ),

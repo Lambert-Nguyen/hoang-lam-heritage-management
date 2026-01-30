@@ -123,9 +123,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       _startSessionTimer(response.access);
     } catch (e) {
       state = AuthState.error(message: _getErrorMessage(e));
-      // Reset to unauthenticated after error
-      await Future.delayed(const Duration(milliseconds: 100));
-      state = const AuthState.unauthenticated();
+      // Don't auto-reset to unauthenticated - let UI handle error display
+      // UI should call clearError() when user dismisses the error or retries
     }
   }
 
@@ -139,6 +138,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Ignore logout errors
     } finally {
       _sessionTimer?.cancel();
+      state = const AuthState.unauthenticated();
+    }
+  }
+
+  /// Clear error state and return to unauthenticated
+  void clearError() {
+    if (state is AuthStateError) {
       state = const AuthState.unauthenticated();
     }
   }

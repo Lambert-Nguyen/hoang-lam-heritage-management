@@ -26,6 +26,10 @@ class AuthRepository {
       data: request.toJson(),
     );
 
+    if (response.data == null) {
+      throw Exception('Login failed: No response data');
+    }
+
     final loginResponse = LoginResponse.fromJson(response.data!);
 
     // Store tokens securely
@@ -75,6 +79,11 @@ class AuthRepository {
         data: RefreshTokenRequest(refresh: refreshToken).toJson(),
       );
 
+      if (response.data == null) {
+        await clearAuthData();
+        return null;
+      }
+
       final refreshResponse = RefreshTokenResponse.fromJson(response.data!);
 
       // Update stored tokens
@@ -103,6 +112,10 @@ class AuthRepository {
     final response = await _apiClient.get<Map<String, dynamic>>(
       AppConstants.authMeEndpoint,
     );
+
+    if (response.data == null) {
+      throw Exception('Failed to get user profile');
+    }
 
     final user = User.fromJson(response.data!);
 

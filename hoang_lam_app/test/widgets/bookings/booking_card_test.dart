@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import '../../../lib/models/booking.dart';
 import '../../../lib/widgets/bookings/booking_card.dart';
@@ -8,6 +9,11 @@ import '../../../lib/widgets/bookings/booking_status_badge.dart';
 void main() {
   group('BookingCard Widget Tests', () {
     late Booking testBooking;
+
+    setUpAll(() async {
+      // Initialize Vietnamese locale for date formatting
+      await initializeDateFormatting('vi', null);
+    });
 
     setUp(() {
       testBooking = Booking(

@@ -131,6 +131,24 @@ extension BookingStatusExtension on BookingStatus {
       this == BookingStatus.checkedOut ||
       this == BookingStatus.cancelled ||
       this == BookingStatus.noShow;
+
+  /// Get the snake_case API value for this status
+  String get toApiValue {
+    switch (this) {
+      case BookingStatus.pending:
+        return 'pending';
+      case BookingStatus.confirmed:
+        return 'confirmed';
+      case BookingStatus.checkedIn:
+        return 'checked_in';
+      case BookingStatus.checkedOut:
+        return 'checked_out';
+      case BookingStatus.cancelled:
+        return 'cancelled';
+      case BookingStatus.noShow:
+        return 'no_show';
+    }
+  }
 }
 
 /// Booking source matching backend Booking.Source choices
@@ -750,25 +768,25 @@ sealed class BookingCreate with _$BookingCreate {
 }
 
 /// Model for updating an existing booking
-@freezed
+@Freezed(toJson: true)
 sealed class BookingUpdate with _$BookingUpdate {
   const factory BookingUpdate({
-    int? room,
-    int? guest,
-    @JsonKey(name: 'check_in_date') DateTime? checkInDate,
-    @JsonKey(name: 'check_out_date') DateTime? checkOutDate,
-    @JsonKey(name: 'guest_count') int? guestCount,
-    BookingStatus? status,
-    BookingSource? source,
-    @JsonKey(name: 'ota_reference') String? otaReference,
-    @JsonKey(name: 'nightly_rate') int? nightlyRate,
-    @JsonKey(name: 'deposit_amount') int? depositAmount,
-    @JsonKey(name: 'deposit_paid') bool? depositPaid,
-    @JsonKey(name: 'additional_charges') int? additionalCharges,
-    @JsonKey(name: 'payment_method') PaymentMethod? paymentMethod,
-    @JsonKey(name: 'is_paid') bool? isPaid,
-    String? notes,
-    @JsonKey(name: 'special_requests') String? specialRequests,
+    @JsonKey(includeIfNull: false) int? room,
+    @JsonKey(includeIfNull: false) int? guest,
+    @JsonKey(name: 'check_in_date', includeIfNull: false) DateTime? checkInDate,
+    @JsonKey(name: 'check_out_date', includeIfNull: false) DateTime? checkOutDate,
+    @JsonKey(name: 'guest_count', includeIfNull: false) int? guestCount,
+    @JsonKey(includeIfNull: false) BookingStatus? status,
+    @JsonKey(includeIfNull: false) BookingSource? source,
+    @JsonKey(name: 'ota_reference', includeIfNull: false) String? otaReference,
+    @JsonKey(name: 'nightly_rate', includeIfNull: false) int? nightlyRate,
+    @JsonKey(name: 'deposit_amount', includeIfNull: false) int? depositAmount,
+    @JsonKey(name: 'deposit_paid', includeIfNull: false) bool? depositPaid,
+    @JsonKey(name: 'additional_charges', includeIfNull: false) int? additionalCharges,
+    @JsonKey(name: 'payment_method', includeIfNull: false) PaymentMethod? paymentMethod,
+    @JsonKey(name: 'is_paid', includeIfNull: false) bool? isPaid,
+    @JsonKey(includeIfNull: false) String? notes,
+    @JsonKey(name: 'special_requests', includeIfNull: false) String? specialRequests,
   }) = _BookingUpdate;
 
   factory BookingUpdate.fromJson(Map<String, dynamic> json) =>

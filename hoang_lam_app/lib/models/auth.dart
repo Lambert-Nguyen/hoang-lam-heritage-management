@@ -12,8 +12,13 @@ sealed class LoginRequest with _$LoginRequest {
     required String password,
   }) = _LoginRequest;
 
+  const LoginRequest._();
+
   factory LoginRequest.fromJson(Map<String, dynamic> json) =>
       _$LoginRequestFromJson(json);
+
+  @override
+  String toString() => 'LoginRequest(username: $username, password: ***)';
 }
 
 /// Login response from server
@@ -72,8 +77,13 @@ sealed class PasswordChangeRequest with _$PasswordChangeRequest {
     @JsonKey(name: 'confirm_password') required String confirmPassword,
   }) = _PasswordChangeRequest;
 
+  const PasswordChangeRequest._();
+
   factory PasswordChangeRequest.fromJson(Map<String, dynamic> json) =>
       _$PasswordChangeRequestFromJson(json);
+
+  @override
+  String toString() => 'PasswordChangeRequest(oldPassword: ***, newPassword: ***, confirmPassword: ***)';
 }
 
 /// Authentication state

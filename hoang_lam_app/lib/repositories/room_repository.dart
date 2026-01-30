@@ -17,22 +17,34 @@ class RoomRepository {
       queryParams['is_active'] = isActive.toString();
     }
 
-    final response = await _apiClient.get<Map<String, dynamic>>(
+    final response = await _apiClient.get<dynamic>(
       AppConstants.roomTypesEndpoint,
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
     );
 
+    // Ensure response.data exists
+    if (response.data == null) {
+      return [];
+    }
+
     // Handle both paginated and non-paginated responses
-    if (response.data!.containsKey('results')) {
-      final listResponse = RoomTypeListResponse.fromJson(response.data!);
-      return listResponse.results;
-    } else {
-      // Non-paginated response (list directly)
-      final list = response.data! as List<dynamic>;
+    if (response.data is Map<String, dynamic>) {
+      final dataMap = response.data as Map<String, dynamic>;
+      if (dataMap.containsKey('results')) {
+        final listResponse = RoomTypeListResponse.fromJson(dataMap);
+        return listResponse.results;
+      }
+    }
+    
+    // Non-paginated response (list directly)
+    if (response.data is List) {
+      final list = response.data as List<dynamic>;
       return list
           .map((json) => RoomType.fromJson(json as Map<String, dynamic>))
           .toList();
     }
+
+    return [];
   }
 
   /// Get a single room type by ID
@@ -40,6 +52,9 @@ class RoomRepository {
     final response = await _apiClient.get<Map<String, dynamic>>(
       '${AppConstants.roomTypesEndpoint}$id/',
     );
+    if (response.data == null) {
+      throw Exception('Room type not found');
+    }
     return RoomType.fromJson(response.data!);
   }
 
@@ -49,6 +64,9 @@ class RoomRepository {
       AppConstants.roomTypesEndpoint,
       data: roomType.toJson(),
     );
+    if (response.data == null) {
+      throw Exception('Failed to create room type');
+    }
     return RoomType.fromJson(response.data!);
   }
 
@@ -58,6 +76,9 @@ class RoomRepository {
       '${AppConstants.roomTypesEndpoint}${roomType.id}/',
       data: roomType.toJson(),
     );
+    if (response.data == null) {
+      throw Exception('Failed to update room type');
+    }
     return RoomType.fromJson(response.data!);
   }
 
@@ -94,22 +115,34 @@ class RoomRepository {
       queryParams['search'] = search;
     }
 
-    final response = await _apiClient.get<Map<String, dynamic>>(
+    final response = await _apiClient.get<dynamic>(
       AppConstants.roomsEndpoint,
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
     );
 
+    // Ensure response.data exists
+    if (response.data == null) {
+      return [];
+    }
+
     // Handle both paginated and non-paginated responses
-    if (response.data!.containsKey('results')) {
-      final listResponse = RoomListResponse.fromJson(response.data!);
-      return listResponse.results;
-    } else {
-      // Non-paginated response (list directly)
-      final list = response.data! as List<dynamic>;
+    if (response.data is Map<String, dynamic>) {
+      final dataMap = response.data as Map<String, dynamic>;
+      if (dataMap.containsKey('results')) {
+        final listResponse = RoomListResponse.fromJson(dataMap);
+        return listResponse.results;
+      }
+    }
+
+    // Non-paginated response (list directly)
+    if (response.data is List) {
+      final list = response.data as List<dynamic>;
       return list
           .map((json) => Room.fromJson(json as Map<String, dynamic>))
           .toList();
     }
+
+    return [];
   }
 
   /// Get a single room by ID
@@ -117,6 +150,9 @@ class RoomRepository {
     final response = await _apiClient.get<Map<String, dynamic>>(
       '${AppConstants.roomsEndpoint}$id/',
     );
+    if (response.data == null) {
+      throw Exception('Room not found');
+    }
     return Room.fromJson(response.data!);
   }
 
@@ -126,6 +162,9 @@ class RoomRepository {
       AppConstants.roomsEndpoint,
       data: room.toJson(),
     );
+    if (response.data == null) {
+      throw Exception('Failed to create room');
+    }
     return Room.fromJson(response.data!);
   }
 
@@ -135,6 +174,9 @@ class RoomRepository {
       '${AppConstants.roomsEndpoint}${room.id}/',
       data: room.toJson(),
     );
+    if (response.data == null) {
+      throw Exception('Failed to update room');
+    }
     return Room.fromJson(response.data!);
   }
 
@@ -149,6 +191,9 @@ class RoomRepository {
       '${AppConstants.roomsEndpoint}$roomId/update-status/',
       data: request.toJson(),
     );
+    if (response.data == null) {
+      throw Exception('Failed to update room status');
+    }
     return Room.fromJson(response.data!);
   }
 
@@ -164,6 +209,9 @@ class RoomRepository {
         if (request.roomTypeId != null) 'room_type': request.roomTypeId,
       },
     );
+    if (response.data == null) {
+      throw Exception('Failed to check availability');
+    }
     return RoomAvailabilityResponse.fromJson(response.data!);
   }
 

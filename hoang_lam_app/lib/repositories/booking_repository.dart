@@ -57,22 +57,34 @@ class BookingRepository {
       queryParams['ordering'] = ordering;
     }
 
-    final response = await _apiClient.get<Map<String, dynamic>>(
+    final response = await _apiClient.get<dynamic>(
       AppConstants.bookingsEndpoint,
       queryParameters: queryParams.isNotEmpty ? queryParams : null,
     );
 
+    // Ensure response.data exists
+    if (response.data == null) {
+      return [];
+    }
+
     // Handle both paginated and non-paginated responses
-    if (response.data!.containsKey('results')) {
-      final listResponse = BookingListResponse.fromJson(response.data!);
-      return listResponse.results;
-    } else {
-      // Non-paginated response (list directly)
-      final list = response.data! as List<dynamic>;
+    if (response.data is Map<String, dynamic>) {
+      final dataMap = response.data as Map<String, dynamic>;
+      if (dataMap.containsKey('results')) {
+        final listResponse = BookingListResponse.fromJson(dataMap);
+        return listResponse.results;
+      }
+    }
+
+    // Non-paginated response (list directly)
+    if (response.data is List) {
+      final list = response.data as List<dynamic>;
       return list
           .map((json) => Booking.fromJson(json as Map<String, dynamic>))
           .toList();
     }
+
+    return [];
   }
 
   /// Get a single booking by ID
@@ -80,6 +92,9 @@ class BookingRepository {
     final response = await _apiClient.get<Map<String, dynamic>>(
       '${AppConstants.bookingsEndpoint}$id/',
     );
+    if (response.data == null) {
+      throw Exception('Booking not found');
+    }
     return Booking.fromJson(response.data!);
   }
 
@@ -89,6 +104,9 @@ class BookingRepository {
       AppConstants.bookingsEndpoint,
       data: booking.toJson(),
     );
+    if (response.data == null) {
+      throw Exception('Failed to create booking');
+    }
     return Booking.fromJson(response.data!);
   }
 
@@ -98,6 +116,9 @@ class BookingRepository {
       '${AppConstants.bookingsEndpoint}$id/',
       data: booking.toJson(),
     );
+    if (response.data == null) {
+      throw Exception('Failed to update booking');
+    }
     return Booking.fromJson(response.data!);
   }
 
@@ -107,6 +128,9 @@ class BookingRepository {
       '${AppConstants.bookingsEndpoint}$id/',
       data: updates,
     );
+    if (response.data == null) {
+      throw Exception('Failed to patch booking');
+    }
     return Booking.fromJson(response.data!);
   }
 
@@ -124,7 +148,7 @@ class BookingRepository {
     String? notes,
   }) async {
     final data = {
-      'status': status.name,
+      'status': status.toApiValue,
       if (notes != null) 'notes': notes,
     };
 
@@ -132,6 +156,9 @@ class BookingRepository {
       '${AppConstants.bookingsEndpoint}$id/update-status/',
       data: data,
     );
+    if (response.data == null) {
+      throw Exception('Failed to update booking status');
+    }
     return Booking.fromJson(response.data!);
   }
 
@@ -151,6 +178,9 @@ class BookingRepository {
       '${AppConstants.bookingsEndpoint}$id/check-in/',
       data: data.isNotEmpty ? data : null,
     );
+    if (response.data == null) {
+      throw Exception('Failed to check in');
+    }
     return Booking.fromJson(response.data!);
   }
 
@@ -172,6 +202,9 @@ class BookingRepository {
       '${AppConstants.bookingsEndpoint}$id/check-out/',
       data: data.isNotEmpty ? data : null,
     );
+    if (response.data == null) {
+      throw Exception('Failed to check out');
+    }
     return Booking.fromJson(response.data!);
   }
 
@@ -192,6 +225,10 @@ class BookingRepository {
       queryParameters: queryParams,
     );
 
+    if (response.data == null) {
+      return [];
+    }
+
     return response.data!
         .map((json) => Booking.fromJson(json as Map<String, dynamic>))
         .toList();
@@ -202,6 +239,9 @@ class BookingRepository {
     final response = await _apiClient.get<Map<String, dynamic>>(
       '${AppConstants.bookingsEndpoint}today/',
     );
+    if (response.data == null) {
+      throw Exception('Failed to get today bookings');
+    }
     return TodayBookingsResponse.fromJson(response.data!);
   }
 
