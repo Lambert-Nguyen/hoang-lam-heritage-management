@@ -49,7 +49,9 @@ enum NightAuditStatus {
 
 /// Night Audit model - Full detail
 @freezed
-class NightAudit with _$NightAudit {
+sealed class NightAudit with _$NightAudit {
+  const NightAudit._();
+
   const factory NightAudit({
     required int id,
     @JsonKey(name: 'audit_date') required DateTime auditDate,
@@ -101,7 +103,7 @@ class NightAudit with _$NightAudit {
 
 /// Night Audit list item (lightweight)
 @freezed
-class NightAuditListItem with _$NightAuditListItem {
+sealed class NightAuditListItem with _$NightAuditListItem {
   const factory NightAuditListItem({
     required int id,
     @JsonKey(name: 'audit_date') required DateTime auditDate,
@@ -123,7 +125,7 @@ class NightAuditListItem with _$NightAuditListItem {
 
 /// Request to create a night audit
 @freezed
-class NightAuditRequest with _$NightAuditRequest {
+sealed class NightAuditRequest with _$NightAuditRequest {
   const factory NightAuditRequest({
     @JsonKey(name: 'audit_date') required DateTime auditDate,
     @Default('') String notes,

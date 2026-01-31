@@ -28,7 +28,8 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final monthlySummaryAsync = ref.watch(currentMonthSummaryProvider);
-    final entriesAsync = ref.watch(filteredEntriesProvider(_filterType));
+    final filter = FinancialEntryFilter(entryType: _filterType);
+    final entriesAsync = ref.watch(filteredEntriesProvider(filter));
 
     return Scaffold(
       appBar: AppBar(
@@ -304,7 +305,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
 
   Widget _buildTransactionList(
     BuildContext context,
-    AsyncValue<List<FinancialEntry>> entriesAsync,
+    AsyncValue<List<FinancialEntryListItem>> entriesAsync,
   ) {
     return entriesAsync.when(
       data: (entries) {
@@ -368,10 +369,10 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     );
   }
 
-  Map<String, List<FinancialEntry>> _groupEntriesByDate(List<FinancialEntry> entries) {
-    final groups = <String, List<FinancialEntry>>{};
+  Map<String, List<FinancialEntryListItem>> _groupEntriesByDate(List<FinancialEntryListItem> entries) {
+    final groups = <String, List<FinancialEntryListItem>>{};
     for (final entry in entries) {
-      final key = _getDateKey(entry.entryDate);
+      final key = _getDateKey(entry.date);
       groups.putIfAbsent(key, () => []).add(entry);
     }
     return groups;
@@ -387,7 +388,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
-  Widget _buildTransactionCard(BuildContext context, FinancialEntry entry) {
+  Widget _buildTransactionCard(BuildContext context, FinancialEntryListItem entry) {
     final isIncome = entry.entryType == EntryType.income;
 
     return AppCard(
@@ -404,7 +405,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              entry.categoryIcon ?? (isIncome ? Icons.arrow_downward : Icons.arrow_upward),
+              entry.iconData,
               color: isIncome ? AppColors.income : AppColors.expense,
               size: 20,
             ),
@@ -446,7 +447,11 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     );
   }
 
-  void _showEntryDetail(FinancialEntry entry) {
+  void _showEntryDetail(FinancialEntryListItem listItem) async {
+    // Fetch full entry details
+    final entry = await ref.read(financialEntryByIdProvider(listItem.id).future);
+    if (!mounted) return;
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,

@@ -5,6 +5,6 @@ export 'room.dart';
 export 'guest.dart';
 export 'booking.dart';
 export 'dashboard.dart';
-export 'finance.dart' hide PaymentMethod;  // Use PaymentMethod from booking.dart
+export 'finance.dart' hide PaymentMethod, PaymentMethodExtension;  // Use PaymentMethod from booking.dart
 export 'night_audit.dart';
 export 'declaration.dart';

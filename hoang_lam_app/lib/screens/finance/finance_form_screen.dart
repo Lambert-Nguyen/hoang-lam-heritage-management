@@ -60,7 +60,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
     _referenceController.text = entry.reference;
     _notesController.text = entry.notes;
     _selectedCategoryId = entry.category;
-    _entryDate = entry.entryDate;
+    _entryDate = entry.date;
     _paymentMethod = entry.paymentMethod;
   }
 
@@ -255,7 +255,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      category.icon,
+                      category.iconData,
                       size: 18,
                       color: isSelected ? Colors.white : AppColors.textPrimary,
                     ),
@@ -474,15 +474,23 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
 
     try {
       final amount = _parseAmount(_amountController.text);
+      final notes = _notesController.text.trim();
+      final description = _descriptionController.text.trim();
+      // Combine description and notes if notes are provided
+      final fullDescription = notes.isNotEmpty
+          ? '$description\n\nGhi chú: $notes'
+          : description;
+
       final request = FinancialEntryRequest(
         category: _selectedCategoryId!,
         entryType: widget.entryType,
         amount: amount,
-        entryDate: _entryDate,
-        description: _descriptionController.text.trim(),
+        date: _entryDate,
+        description: fullDescription,
         paymentMethod: _paymentMethod,
-        reference: _referenceController.text.trim(),
-        notes: _notesController.text.trim(),
+        receiptNumber: _referenceController.text.trim().isNotEmpty
+            ? _referenceController.text.trim()
+            : null,
       );
 
       final notifier = ref.read(financeNotifierProvider.notifier);

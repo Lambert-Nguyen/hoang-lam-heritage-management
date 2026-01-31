@@ -58,7 +58,7 @@ class NightAuditMonthYear {
 
 /// State for NightAuditNotifier
 @freezed
-class NightAuditState with _$NightAuditState {
+sealed class NightAuditState with _$NightAuditState {
   const factory NightAuditState({
     @Default(false) bool isLoading,
     @Default(false) bool isCreating,
@@ -126,7 +126,12 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
   Future<NightAudit?> updateAuditNotes(int id, String notes) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final audit = await _repository.updateAudit(id, notes: notes);
+      // Create request with updated notes
+      final request = NightAuditRequest(
+        auditDate: state.currentAudit?.auditDate ?? DateTime.now(),
+        notes: notes,
+      );
+      final audit = await _repository.updateAudit(id, request);
       state = state.copyWith(isLoading: false, currentAudit: audit);
       return audit;
     } catch (e) {

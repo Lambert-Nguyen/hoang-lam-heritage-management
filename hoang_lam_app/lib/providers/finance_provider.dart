@@ -374,6 +374,13 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
     return entry;
   }
 
+  /// Create entry from request (generic)
+  Future<FinancialEntry> createEntry(FinancialEntryRequest request) async {
+    final entry = await _repository.createEntry(request);
+    await refresh();
+    return entry;
+  }
+
   /// Update entry
   Future<FinancialEntry> updateEntry(int id, FinancialEntryRequest request) async {
     final entry = await _repository.updateEntry(id, request);

@@ -155,7 +155,7 @@ extension PaymentMethodExtension on PaymentMethod {
 
 /// Financial category model matching backend FinancialCategory
 @freezed
-class FinancialCategory with _$FinancialCategory {
+sealed class FinancialCategory with _$FinancialCategory {
   const FinancialCategory._();
 
   const factory FinancialCategory({
@@ -216,7 +216,7 @@ class FinancialCategory with _$FinancialCategory {
 
 /// Booking details embedded in financial entry
 @freezed
-class FinancialBookingDetails with _$FinancialBookingDetails {
+sealed class FinancialBookingDetails with _$FinancialBookingDetails {
   const factory FinancialBookingDetails({
     required int id,
     @JsonKey(name: 'room_number') required String roomNumber,
@@ -231,7 +231,7 @@ class FinancialBookingDetails with _$FinancialBookingDetails {
 
 /// Financial entry model matching backend FinancialEntry
 @freezed
-class FinancialEntry with _$FinancialEntry {
+sealed class FinancialEntry with _$FinancialEntry {
   const FinancialEntry._();
 
   const factory FinancialEntry({
@@ -266,11 +266,29 @@ class FinancialEntry with _$FinancialEntry {
 
   /// Check if this is an expense entry
   bool get isExpense => entryType == EntryType.expense;
+
+  /// Alias for date field (backward compatibility)
+  DateTime get entryDate => date;
+
+  /// Get category name from details
+  String? get categoryName => categoryDetails?.name;
+
+  /// Get category icon from details
+  IconData? get categoryIcon => categoryDetails?.iconData;
+
+  /// Get category color from details
+  Color? get categoryColor => categoryDetails?.colorValue;
+
+  /// Reference field - not stored in backend but needed for UI compatibility
+  String get reference => receiptNumber ?? '';
+
+  /// Notes field - alias for description
+  String get notes => description;
 }
 
 /// List entry for financial entries (lightweight)
 @freezed
-class FinancialEntryListItem with _$FinancialEntryListItem {
+sealed class FinancialEntryListItem with _$FinancialEntryListItem {
   const FinancialEntryListItem._();
 
   const factory FinancialEntryListItem({
@@ -316,7 +334,7 @@ class FinancialEntryListItem with _$FinancialEntryListItem {
 
 /// Category breakdown item for summaries
 @freezed
-class CategoryBreakdown with _$CategoryBreakdown {
+sealed class CategoryBreakdown with _$CategoryBreakdown {
   const factory CategoryBreakdown({
     @JsonKey(name: 'category__name') required String categoryName,
     @JsonKey(name: 'category__icon') String? categoryIcon,
@@ -330,7 +348,7 @@ class CategoryBreakdown with _$CategoryBreakdown {
 
 /// Daily financial summary
 @freezed
-class DailyFinancialSummary with _$DailyFinancialSummary {
+sealed class DailyFinancialSummary with _$DailyFinancialSummary {
   const DailyFinancialSummary._();
 
   const factory DailyFinancialSummary({
@@ -356,7 +374,7 @@ class DailyFinancialSummary with _$DailyFinancialSummary {
 
 /// Daily totals for charts
 @freezed
-class DailyTotals with _$DailyTotals {
+sealed class DailyTotals with _$DailyTotals {
   const factory DailyTotals({
     required String day,
     @Default(0) double income,
@@ -369,7 +387,7 @@ class DailyTotals with _$DailyTotals {
 
 /// Monthly financial summary
 @freezed
-class MonthlyFinancialSummary with _$MonthlyFinancialSummary {
+sealed class MonthlyFinancialSummary with _$MonthlyFinancialSummary {
   const MonthlyFinancialSummary._();
 
   const factory MonthlyFinancialSummary({
@@ -399,11 +417,14 @@ class MonthlyFinancialSummary with _$MonthlyFinancialSummary {
 
   /// Get formatted period string
   String get periodString => '$monthName, $year';
+
+  /// Alias for netProfit (backward compatibility)
+  double get netBalance => netProfit;
 }
 
 /// Request model for creating/updating financial entry
 @freezed
-class FinancialEntryRequest with _$FinancialEntryRequest {
+sealed class FinancialEntryRequest with _$FinancialEntryRequest {
   const factory FinancialEntryRequest({
     @JsonKey(name: 'entry_type') required EntryType entryType,
     required int category,
@@ -423,7 +444,7 @@ class FinancialEntryRequest with _$FinancialEntryRequest {
 
 /// Filter options for financial entries
 @freezed
-class FinancialEntryFilter with _$FinancialEntryFilter {
+sealed class FinancialEntryFilter with _$FinancialEntryFilter {
   const factory FinancialEntryFilter({
     EntryType? entryType,
     int? category,

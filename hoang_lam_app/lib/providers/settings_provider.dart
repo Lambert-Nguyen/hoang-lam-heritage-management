@@ -17,7 +17,7 @@ class SettingsStorageKeys {
 
 /// App settings state
 @freezed
-class AppSettings with _$AppSettings {
+sealed class AppSettings with _$AppSettings {
   const factory AppSettings({
     @Default(ThemeMode.system) ThemeMode themeMode,
     @Default('vi') String locale,

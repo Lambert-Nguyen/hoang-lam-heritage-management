@@ -51,11 +51,18 @@ class AppColors {
   static const Color info = Color(0xFF1976D2);
   static const Color infoBackground = Color(0xFFE3F2FD);
 
-  // Divider
+  // Divider & Border
   static const Color divider = Color(0xFFBDBDBD);
+  static const Color border = Color(0xFFE0E0E0);
 
   // Shadow
   static const Color shadow = Color(0x1A000000);
+
+  // Room Status Colors (aliases for backwards compatibility)
+  static const Color roomOccupied = occupied;
+  static const Color roomAvailable = available;
+  static const Color roomCleaning = cleaning;
+  static const Color roomMaintenance = maintenance;
 
   // Offline Banner
   static const Color offline = Color(0xFFFF9800);

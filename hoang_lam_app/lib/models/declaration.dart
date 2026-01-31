@@ -5,7 +5,7 @@ part 'declaration.g.dart';
 
 /// Request parameters for declaration export
 @freezed
-class DeclarationExportRequest with _$DeclarationExportRequest {
+sealed class DeclarationExportRequest with _$DeclarationExportRequest {
   const factory DeclarationExportRequest({
     required DateTime dateFrom,
     required DateTime dateTo,
