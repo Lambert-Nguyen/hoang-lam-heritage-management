@@ -9,3 +9,6 @@ export 'main_scaffold.dart';
 export 'rooms/room_status_card.dart';
 export 'rooms/room_grid.dart';
 export 'rooms/room_status_dialog.dart';
+
+// Finance widgets
+export 'finance/finance_widgets.dart';

@@ -42,6 +42,10 @@ class AppConstants {
   static const String financesEndpoint = '/finances/';
   static const String categoriesEndpoint = '/financial-categories/';
   static const String reportsEndpoint = '/reports/';
+  static const String paymentsEndpoint = '/payments/';
+  static const String folioItemsEndpoint = '/folio-items/';
+  static const String exchangeRatesEndpoint = '/exchange-rates/';
+  static const String receiptsEndpoint = '/receipts/';
 
   // Date/Time Formats
   static const String dateFormat = 'dd/MM/yyyy';

@@ -7,13 +7,17 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     BookingViewSet,
     DashboardView,
+    ExchangeRateViewSet,
     FinancialCategoryViewSet,
     FinancialEntryViewSet,
+    FolioItemViewSet,
     GuestViewSet,
     LoginView,
     LogoutView,
     NightAuditViewSet,
     PasswordChangeView,
+    PaymentViewSet,
+    ReceiptViewSet,
     RoomTypeViewSet,
     RoomViewSet,
     UserProfileView,
@@ -28,6 +32,10 @@ router.register(r"bookings", BookingViewSet, basename="booking")
 router.register(r"finance/categories", FinancialCategoryViewSet, basename="financialcategory")
 router.register(r"finance/entries", FinancialEntryViewSet, basename="financialentry")
 router.register(r"night-audits", NightAuditViewSet, basename="nightaudit")
+router.register(r"payments", PaymentViewSet, basename="payment")
+router.register(r"folio-items", FolioItemViewSet, basename="folioitem")
+router.register(r"exchange-rates", ExchangeRateViewSet, basename="exchangerate")
+router.register(r"receipts", ReceiptViewSet, basename="receipt")
 
 urlpatterns = [
     # JWT Authentication

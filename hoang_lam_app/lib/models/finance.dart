@@ -453,3 +453,608 @@ sealed class FinancialEntryFilter with _$FinancialEntryFilter {
     PaymentMethod? paymentMethod,
   }) = _FinancialEntryFilter;
 }
+
+// ============================================================
+// Payment Models (Phase 2.1.3)
+// ============================================================
+
+/// Payment type enum matching backend Payment.PaymentType
+enum PaymentType {
+  @JsonValue('deposit')
+  deposit,
+  @JsonValue('room_charge')
+  roomCharge,
+  @JsonValue('extra_charge')
+  extraCharge,
+  @JsonValue('refund')
+  refund,
+  @JsonValue('adjustment')
+  adjustment,
+}
+
+/// Extension for PaymentType display properties
+extension PaymentTypeExtension on PaymentType {
+  String get displayName {
+    switch (this) {
+      case PaymentType.deposit:
+        return 'Đặt cọc';
+      case PaymentType.roomCharge:
+        return 'Tiền phòng';
+      case PaymentType.extraCharge:
+        return 'Phí bổ sung';
+      case PaymentType.refund:
+        return 'Hoàn tiền';
+      case PaymentType.adjustment:
+        return 'Điều chỉnh';
+    }
+  }
+
+  String get displayNameEn {
+    switch (this) {
+      case PaymentType.deposit:
+        return 'Deposit';
+      case PaymentType.roomCharge:
+        return 'Room Charge';
+      case PaymentType.extraCharge:
+        return 'Extra Charge';
+      case PaymentType.refund:
+        return 'Refund';
+      case PaymentType.adjustment:
+        return 'Adjustment';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case PaymentType.deposit:
+        return Icons.account_balance_wallet;
+      case PaymentType.roomCharge:
+        return Icons.hotel;
+      case PaymentType.extraCharge:
+        return Icons.add_shopping_cart;
+      case PaymentType.refund:
+        return Icons.money_off;
+      case PaymentType.adjustment:
+        return Icons.edit;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case PaymentType.deposit:
+        return const Color(0xFF2196F3); // Blue
+      case PaymentType.roomCharge:
+        return const Color(0xFF4CAF50); // Green
+      case PaymentType.extraCharge:
+        return const Color(0xFFFF9800); // Orange
+      case PaymentType.refund:
+        return const Color(0xFFF44336); // Red
+      case PaymentType.adjustment:
+        return const Color(0xFF9C27B0); // Purple
+    }
+  }
+
+  /// Convert to API value (snake_case)
+  String get toApiValue {
+    switch (this) {
+      case PaymentType.roomCharge:
+        return 'room_charge';
+      case PaymentType.extraCharge:
+        return 'extra_charge';
+      default:
+        return name;
+    }
+  }
+}
+
+/// Payment status enum matching backend Payment.Status
+enum PaymentStatus {
+  @JsonValue('pending')
+  pending,
+  @JsonValue('completed')
+  completed,
+  @JsonValue('failed')
+  failed,
+  @JsonValue('refunded')
+  refunded,
+  @JsonValue('cancelled')
+  cancelled,
+}
+
+/// Extension for PaymentStatus display properties
+extension PaymentStatusExtension on PaymentStatus {
+  String get displayName {
+    switch (this) {
+      case PaymentStatus.pending:
+        return 'Chờ xử lý';
+      case PaymentStatus.completed:
+        return 'Hoàn tất';
+      case PaymentStatus.failed:
+        return 'Thất bại';
+      case PaymentStatus.refunded:
+        return 'Đã hoàn';
+      case PaymentStatus.cancelled:
+        return 'Đã hủy';
+    }
+  }
+
+  String get displayNameEn {
+    switch (this) {
+      case PaymentStatus.pending:
+        return 'Pending';
+      case PaymentStatus.completed:
+        return 'Completed';
+      case PaymentStatus.failed:
+        return 'Failed';
+      case PaymentStatus.refunded:
+        return 'Refunded';
+      case PaymentStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case PaymentStatus.pending:
+        return const Color(0xFFFFC107); // Amber
+      case PaymentStatus.completed:
+        return const Color(0xFF4CAF50); // Green
+      case PaymentStatus.failed:
+        return const Color(0xFFF44336); // Red
+      case PaymentStatus.refunded:
+        return const Color(0xFF9C27B0); // Purple
+      case PaymentStatus.cancelled:
+        return const Color(0xFF607D8B); // Blue Grey
+    }
+  }
+
+  Color get backgroundColor {
+    switch (this) {
+      case PaymentStatus.pending:
+        return const Color(0xFFFFF8E1); // Amber light
+      case PaymentStatus.completed:
+        return const Color(0xFFE8F5E9); // Green light
+      case PaymentStatus.failed:
+        return const Color(0xFFFFEBEE); // Red light
+      case PaymentStatus.refunded:
+        return const Color(0xFFF3E5F5); // Purple light
+      case PaymentStatus.cancelled:
+        return const Color(0xFFECEFF1); // Blue Grey light
+    }
+  }
+}
+
+/// Payment model matching backend Payment model
+@freezed
+sealed class Payment with _$Payment {
+  const Payment._();
+
+  const factory Payment({
+    required int id,
+    required int booking,
+    @JsonKey(name: 'booking_room') String? bookingRoom,
+    @JsonKey(name: 'guest_name') String? guestName,
+    @JsonKey(name: 'payment_type') required PaymentType paymentType,
+    required double amount,
+    @JsonKey(name: 'payment_method') required PaymentMethod paymentMethod,
+    @Default(PaymentStatus.pending) PaymentStatus status,
+    @JsonKey(name: 'receipt_number') String? receiptNumber,
+    String? notes,
+    @JsonKey(name: 'created_by') int? createdBy,
+    @JsonKey(name: 'created_by_name') String? createdByName,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+  }) = _Payment;
+
+  factory Payment.fromJson(Map<String, dynamic> json) =>
+      _$PaymentFromJson(json);
+
+  /// Check if payment is completed
+  bool get isCompleted => status == PaymentStatus.completed;
+
+  /// Check if payment is deposit type
+  bool get isDeposit => paymentType == PaymentType.deposit;
+}
+
+/// Request model for creating payment
+@freezed
+sealed class PaymentCreateRequest with _$PaymentCreateRequest {
+  const factory PaymentCreateRequest({
+    required int booking,
+    @JsonKey(name: 'payment_type') required PaymentType paymentType,
+    required double amount,
+    @JsonKey(name: 'payment_method') required PaymentMethod paymentMethod,
+    @Default(PaymentStatus.completed) PaymentStatus status,
+    String? notes,
+  }) = _PaymentCreateRequest;
+
+  factory PaymentCreateRequest.fromJson(Map<String, dynamic> json) =>
+      _$PaymentCreateRequestFromJson(json);
+}
+
+/// Deposit record request
+@freezed
+sealed class DepositRecordRequest with _$DepositRecordRequest {
+  const factory DepositRecordRequest({
+    required int booking,
+    required double amount,
+    @JsonKey(name: 'payment_method') required PaymentMethod paymentMethod,
+    String? notes,
+  }) = _DepositRecordRequest;
+
+  factory DepositRecordRequest.fromJson(Map<String, dynamic> json) =>
+      _$DepositRecordRequestFromJson(json);
+}
+
+/// Outstanding deposit info for a booking
+@freezed
+sealed class OutstandingDeposit with _$OutstandingDeposit {
+  const OutstandingDeposit._();
+
+  const factory OutstandingDeposit({
+    @JsonKey(name: 'booking_id') required int bookingId,
+    @JsonKey(name: 'room_number') required String roomNumber,
+    @JsonKey(name: 'guest_name') required String guestName,
+    @JsonKey(name: 'check_in_date') required DateTime checkInDate,
+    @JsonKey(name: 'check_out_date') required DateTime checkOutDate,
+    @JsonKey(name: 'total_amount') required double totalAmount,
+    @JsonKey(name: 'required_deposit') required double requiredDeposit,
+    @JsonKey(name: 'paid_deposit') required double paidDeposit,
+    @JsonKey(name: 'outstanding') required double outstanding,
+  }) = _OutstandingDeposit;
+
+  factory OutstandingDeposit.fromJson(Map<String, dynamic> json) =>
+      _$OutstandingDepositFromJson(json);
+
+  /// Get the percentage of deposit paid
+  double get paidPercentage =>
+      requiredDeposit > 0 ? (paidDeposit / requiredDeposit * 100) : 0;
+
+  /// Check if fully paid
+  bool get isFullyPaid => outstanding <= 0;
+}
+
+// ============================================================
+// Folio Item Models (Phase 2.1.4)
+// ============================================================
+
+/// Folio item type enum matching backend FolioItem.ItemType
+enum FolioItemType {
+  @JsonValue('room')
+  room,
+  @JsonValue('minibar')
+  minibar,
+  @JsonValue('laundry')
+  laundry,
+  @JsonValue('food')
+  food,
+  @JsonValue('service')
+  service,
+  @JsonValue('extra_bed')
+  extraBed,
+  @JsonValue('early_checkin')
+  earlyCheckin,
+  @JsonValue('late_checkout')
+  lateCheckout,
+  @JsonValue('damage')
+  damage,
+  @JsonValue('other')
+  other,
+}
+
+/// Extension for FolioItemType display properties
+extension FolioItemTypeExtension on FolioItemType {
+  String get displayName {
+    switch (this) {
+      case FolioItemType.room:
+        return 'Tiền phòng';
+      case FolioItemType.minibar:
+        return 'Minibar';
+      case FolioItemType.laundry:
+        return 'Giặt là';
+      case FolioItemType.food:
+        return 'Đồ ăn';
+      case FolioItemType.service:
+        return 'Dịch vụ';
+      case FolioItemType.extraBed:
+        return 'Giường phụ';
+      case FolioItemType.earlyCheckin:
+        return 'Nhận sớm';
+      case FolioItemType.lateCheckout:
+        return 'Trả muộn';
+      case FolioItemType.damage:
+        return 'Hư hỏng';
+      case FolioItemType.other:
+        return 'Khác';
+    }
+  }
+
+  String get displayNameEn {
+    switch (this) {
+      case FolioItemType.room:
+        return 'Room Charge';
+      case FolioItemType.minibar:
+        return 'Minibar';
+      case FolioItemType.laundry:
+        return 'Laundry';
+      case FolioItemType.food:
+        return 'Food & Beverage';
+      case FolioItemType.service:
+        return 'Service';
+      case FolioItemType.extraBed:
+        return 'Extra Bed';
+      case FolioItemType.earlyCheckin:
+        return 'Early Check-in';
+      case FolioItemType.lateCheckout:
+        return 'Late Checkout';
+      case FolioItemType.damage:
+        return 'Damage';
+      case FolioItemType.other:
+        return 'Other';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case FolioItemType.room:
+        return Icons.hotel;
+      case FolioItemType.minibar:
+        return Icons.local_bar;
+      case FolioItemType.laundry:
+        return Icons.local_laundry_service;
+      case FolioItemType.food:
+        return Icons.restaurant;
+      case FolioItemType.service:
+        return Icons.room_service;
+      case FolioItemType.extraBed:
+        return Icons.bed;
+      case FolioItemType.earlyCheckin:
+        return Icons.login;
+      case FolioItemType.lateCheckout:
+        return Icons.logout;
+      case FolioItemType.damage:
+        return Icons.warning;
+      case FolioItemType.other:
+        return Icons.more_horiz;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case FolioItemType.room:
+        return const Color(0xFF2196F3); // Blue
+      case FolioItemType.minibar:
+        return const Color(0xFFE91E63); // Pink
+      case FolioItemType.laundry:
+        return const Color(0xFF00BCD4); // Cyan
+      case FolioItemType.food:
+        return const Color(0xFFFF9800); // Orange
+      case FolioItemType.service:
+        return const Color(0xFF9C27B0); // Purple
+      case FolioItemType.extraBed:
+        return const Color(0xFF795548); // Brown
+      case FolioItemType.earlyCheckin:
+        return const Color(0xFF4CAF50); // Green
+      case FolioItemType.lateCheckout:
+        return const Color(0xFFFF5722); // Deep Orange
+      case FolioItemType.damage:
+        return const Color(0xFFF44336); // Red
+      case FolioItemType.other:
+        return const Color(0xFF607D8B); // Blue Grey
+    }
+  }
+
+  /// Convert to API value (snake_case)
+  String get toApiValue {
+    switch (this) {
+      case FolioItemType.extraBed:
+        return 'extra_bed';
+      case FolioItemType.earlyCheckin:
+        return 'early_checkin';
+      case FolioItemType.lateCheckout:
+        return 'late_checkout';
+      default:
+        return name;
+    }
+  }
+}
+
+/// Folio item model matching backend FolioItem model
+@freezed
+sealed class FolioItem with _$FolioItem {
+  const FolioItem._();
+
+  const factory FolioItem({
+    required int id,
+    required int booking,
+    @JsonKey(name: 'booking_room') String? bookingRoom,
+    @JsonKey(name: 'item_type') required FolioItemType itemType,
+    required String description,
+    required int quantity,
+    @JsonKey(name: 'unit_price') required double unitPrice,
+    @JsonKey(name: 'total_price') required double totalPrice,
+    required DateTime date,
+    @JsonKey(name: 'is_paid') @Default(false) bool isPaid,
+    @JsonKey(name: 'is_voided') @Default(false) bool isVoided,
+    @JsonKey(name: 'void_reason') String? voidReason,
+    @JsonKey(name: 'created_by') int? createdBy,
+    @JsonKey(name: 'created_by_name') String? createdByName,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+  }) = _FolioItem;
+
+  factory FolioItem.fromJson(Map<String, dynamic> json) =>
+      _$FolioItemFromJson(json);
+
+  /// Check if item is active (not voided)
+  bool get isActive => !isVoided;
+}
+
+/// Request model for creating folio item
+@freezed
+sealed class FolioItemCreateRequest with _$FolioItemCreateRequest {
+  const factory FolioItemCreateRequest({
+    required int booking,
+    @JsonKey(name: 'item_type') required FolioItemType itemType,
+    required String description,
+    required int quantity,
+    @JsonKey(name: 'unit_price') required double unitPrice,
+    required DateTime date,
+  }) = _FolioItemCreateRequest;
+
+  factory FolioItemCreateRequest.fromJson(Map<String, dynamic> json) =>
+      _$FolioItemCreateRequestFromJson(json);
+}
+
+/// Booking folio summary
+@freezed
+sealed class BookingFolioSummary with _$BookingFolioSummary {
+  const BookingFolioSummary._();
+
+  const factory BookingFolioSummary({
+    @JsonKey(name: 'booking_id') required int bookingId,
+    @JsonKey(name: 'room_number') required String roomNumber,
+    @JsonKey(name: 'guest_name') required String guestName,
+    @JsonKey(name: 'room_charges') required double roomCharges,
+    @JsonKey(name: 'additional_charges') required double additionalCharges,
+    @JsonKey(name: 'total_charges') required double totalCharges,
+    @JsonKey(name: 'total_payments') required double totalPayments,
+    required double balance,
+    required List<FolioItem> items,
+  }) = _BookingFolioSummary;
+
+  factory BookingFolioSummary.fromJson(Map<String, dynamic> json) =>
+      _$BookingFolioSummaryFromJson(json);
+
+  /// Check if balance is settled
+  bool get isSettled => balance <= 0;
+
+  /// Get outstanding amount (positive means guest owes)
+  double get outstandingAmount => balance > 0 ? balance : 0;
+}
+
+// ============================================================
+// Exchange Rate Models (Phase 2.6)
+// ============================================================
+
+/// Exchange rate model matching backend ExchangeRate
+@freezed
+sealed class ExchangeRate with _$ExchangeRate {
+  const ExchangeRate._();
+
+  const factory ExchangeRate({
+    required int id,
+    @JsonKey(name: 'from_currency') required String fromCurrency,
+    @JsonKey(name: 'to_currency') required String toCurrency,
+    required double rate,
+    required DateTime date,
+    @Default('manual') String source,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+  }) = _ExchangeRate;
+
+  factory ExchangeRate.fromJson(Map<String, dynamic> json) =>
+      _$ExchangeRateFromJson(json);
+
+  /// Get display string (e.g., "1 USD = 24,500 VND")
+  String get displayString => '1 $fromCurrency = ${rate.toStringAsFixed(2)} $toCurrency';
+
+  /// Convert an amount using this rate
+  double convert(double amount) => amount * rate;
+}
+
+/// Request model for creating exchange rate
+@freezed
+sealed class ExchangeRateCreateRequest with _$ExchangeRateCreateRequest {
+  const factory ExchangeRateCreateRequest({
+    @JsonKey(name: 'from_currency') required String fromCurrency,
+    @JsonKey(name: 'to_currency') required String toCurrency,
+    required double rate,
+    required DateTime date,
+    @Default('manual') String source,
+  }) = _ExchangeRateCreateRequest;
+
+  factory ExchangeRateCreateRequest.fromJson(Map<String, dynamic> json) =>
+      _$ExchangeRateCreateRequestFromJson(json);
+}
+
+/// Currency conversion request
+@freezed
+sealed class CurrencyConversionRequest with _$CurrencyConversionRequest {
+  const factory CurrencyConversionRequest({
+    required double amount,
+    @JsonKey(name: 'from_currency') required String fromCurrency,
+    @JsonKey(name: 'to_currency') required String toCurrency,
+  }) = _CurrencyConversionRequest;
+
+  factory CurrencyConversionRequest.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyConversionRequestFromJson(json);
+}
+
+/// Currency conversion response
+@freezed
+sealed class CurrencyConversionResult with _$CurrencyConversionResult {
+  const factory CurrencyConversionResult({
+    @JsonKey(name: 'original_amount') required double originalAmount,
+    @JsonKey(name: 'from_currency') required String fromCurrency,
+    @JsonKey(name: 'to_currency') required String toCurrency,
+    required double rate,
+    @JsonKey(name: 'converted_amount') required double convertedAmount,
+    required DateTime date,
+  }) = _CurrencyConversionResult;
+
+  factory CurrencyConversionResult.fromJson(Map<String, dynamic> json) =>
+      _$CurrencyConversionResultFromJson(json);
+}
+
+// ============================================================
+// Receipt Models (Phase 2.8)
+// ============================================================
+
+/// Receipt data model
+@freezed
+sealed class ReceiptData with _$ReceiptData {
+  const ReceiptData._();
+
+  const factory ReceiptData({
+    @JsonKey(name: 'receipt_number') required String receiptNumber,
+    @JsonKey(name: 'receipt_date') required DateTime receiptDate,
+    @JsonKey(name: 'booking_id') required int bookingId,
+    @JsonKey(name: 'room_number') required String roomNumber,
+    @JsonKey(name: 'guest_name') required String guestName,
+    @JsonKey(name: 'guest_phone') String? guestPhone,
+    @JsonKey(name: 'guest_address') String? guestAddress,
+    @JsonKey(name: 'check_in_date') required DateTime checkInDate,
+    @JsonKey(name: 'check_out_date') required DateTime checkOutDate,
+    @JsonKey(name: 'number_of_nights') required int numberOfNights,
+    @JsonKey(name: 'nightly_rate') required double nightlyRate,
+    @JsonKey(name: 'room_charges') required double roomCharges,
+    @JsonKey(name: 'additional_charges') required double additionalCharges,
+    @JsonKey(name: 'total_amount') required double totalAmount,
+    @JsonKey(name: 'deposit_paid') required double depositPaid,
+    @JsonKey(name: 'balance_due') required double balanceDue,
+    @JsonKey(name: 'payment_method') PaymentMethod? paymentMethod,
+    @JsonKey(name: 'folio_items') @Default([]) List<FolioItem> folioItems,
+    @JsonKey(name: 'payments') @Default([]) List<Payment> payments,
+  }) = _ReceiptData;
+
+  factory ReceiptData.fromJson(Map<String, dynamic> json) =>
+      _$ReceiptDataFromJson(json);
+
+  /// Check if balance is fully paid
+  bool get isFullyPaid => balanceDue <= 0;
+
+  /// Get total paid (deposit + other payments)
+  double get totalPaid => totalAmount - balanceDue;
+}
+
+/// Request to generate receipt
+@freezed
+sealed class ReceiptGenerateRequest with _$ReceiptGenerateRequest {
+  const factory ReceiptGenerateRequest({
+    @JsonKey(name: 'booking_id') required int bookingId,
+    @Default('VND') String currency,
+  }) = _ReceiptGenerateRequest;
+
+  factory ReceiptGenerateRequest.fromJson(Map<String, dynamic> json) =>
+      _$ReceiptGenerateRequestFromJson(json);
+}

@@ -73,6 +73,21 @@ class IsOwnerOrManager(permissions.BasePermission):
         return IsManager().has_permission(request, view)
 
 
+class IsStaffOrManager(permissions.BasePermission):
+    """Allow access to staff, manager, or owner."""
+
+    message = "Chỉ nhân viên hoặc quản lý mới có quyền thực hiện thao tác này."
+
+    def has_permission(self, request, view):
+        if not (
+            request.user
+            and request.user.is_authenticated
+            and hasattr(request.user, "hotel_profile")
+        ):
+            return False
+        return request.user.hotel_profile.role in ["owner", "manager", "staff"]
+
+
 class IsReadOnly(permissions.BasePermission):
     """Allow read-only access for safe methods."""
 

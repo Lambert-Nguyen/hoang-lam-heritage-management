@@ -12,6 +12,7 @@ import '../screens/home/home_screen.dart';
 import '../screens/rooms/room_detail_screen.dart';
 import '../screens/bookings/bookings_screen.dart';
 import '../screens/finance/finance_screen.dart';
+import '../screens/finance/receipt_preview_screen.dart';
 import '../screens/night_audit/night_audit_screen.dart';
 import '../screens/declaration/declaration_export_screen.dart';
 import '../screens/settings/settings_screen.dart';
@@ -27,6 +28,7 @@ class AppRoutes {
   static const String bookingDetail = '/bookings/:id';
   static const String newBooking = '/bookings/new';
   static const String finance = '/finance';
+  static const String receipt = '/receipt';
   static const String nightAudit = '/night-audit';
   static const String declaration = '/declaration';
   static const String settings = '/settings';
@@ -88,6 +90,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             );
           }
           return RoomDetailScreen(room: room);
+        },
+      ),
+
+      // Receipt preview route (outside shell for full screen)
+      GoRoute(
+        path: '${AppRoutes.receipt}/:bookingId',
+        name: 'receipt',
+        builder: (context, state) {
+          final bookingId = int.tryParse(state.pathParameters['bookingId'] ?? '');
+          final extra = state.extra as Map<String, dynamic>?;
+          
+          if (bookingId == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy thông tin đặt phòng'),
+              ),
+            );
+          }
+          
+          return ReceiptPreviewScreen(
+            bookingId: bookingId,
+            guestName: extra?['guestName'] as String?,
+            roomNumber: extra?['roomNumber'] as String?,
+          );
         },
       ),
 

@@ -2,13 +2,16 @@
 Serializers for API endpoints.
 """
 
+from decimal import Decimal
+
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, NightAudit, Room, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -861,3 +864,412 @@ class NightAuditCreateSerializer(serializers.Serializer):
         if value > date.today():
             raise serializers.ValidationError("Không thể tạo kiểm toán cho ngày trong tương lai.")
         return value
+
+
+# ============================================================
+# Payment Serializers (Phase 2.1.3)
+# ============================================================
+
+from .models import Payment, FolioItem, ExchangeRate
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    """Full serializer for Payment model."""
+
+    payment_type_display = serializers.CharField(source="get_payment_type_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    payment_method_display = serializers.CharField(source="get_payment_method_display", read_only=True)
+    created_by_name = serializers.SerializerMethodField()
+    booking_room = serializers.SerializerMethodField()
+    booking_guest = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Payment
+        fields = [
+            "id",
+            "booking",
+            "booking_room",
+            "booking_guest",
+            "payment_type",
+            "payment_type_display",
+            "amount",
+            "currency",
+            "payment_method",
+            "payment_method_display",
+            "status",
+            "status_display",
+            "transaction_id",
+            "reference_number",
+            "receipt_number",
+            "receipt_generated",
+            "description",
+            "notes",
+            "payment_date",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "receipt_number",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_created_by_name(self, obj):
+        if obj.created_by:
+            return obj.created_by.get_full_name() or obj.created_by.username
+        return None
+
+    @extend_schema_field(serializers.CharField)
+    def get_booking_room(self, obj):
+        if obj.booking:
+            return obj.booking.room.number
+        return None
+
+    @extend_schema_field(serializers.CharField)
+    def get_booking_guest(self, obj):
+        if obj.booking:
+            return obj.booking.guest.full_name
+        return None
+
+
+class PaymentListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing payments."""
+
+    payment_type_display = serializers.CharField(source="get_payment_type_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    payment_method_display = serializers.CharField(source="get_payment_method_display", read_only=True)
+    booking_room = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Payment
+        fields = [
+            "id",
+            "booking",
+            "booking_room",
+            "payment_type",
+            "payment_type_display",
+            "amount",
+            "currency",
+            "payment_method",
+            "payment_method_display",
+            "status",
+            "status_display",
+            "receipt_number",
+            "payment_date",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_booking_room(self, obj):
+        if obj.booking:
+            return obj.booking.room.number
+        return None
+
+
+class PaymentCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating a new payment."""
+
+    class Meta:
+        model = Payment
+        fields = [
+            "booking",
+            "payment_type",
+            "amount",
+            "currency",
+            "payment_method",
+            "transaction_id",
+            "reference_number",
+            "description",
+            "notes",
+        ]
+
+    def validate(self, attrs):
+        booking = attrs.get("booking")
+        payment_type = attrs.get("payment_type")
+        amount = attrs.get("amount")
+
+        # Validate deposit doesn't exceed total
+        if booking and payment_type == Payment.PaymentType.DEPOSIT:
+            existing_deposits = Payment.objects.filter(
+                booking=booking,
+                payment_type=Payment.PaymentType.DEPOSIT,
+                status=Payment.Status.COMPLETED,
+            ).aggregate(total=models.Sum("amount"))["total"] or 0
+            if existing_deposits + amount > booking.total_amount:
+                raise serializers.ValidationError(
+                    {"amount": "Tổng tiền cọc không thể vượt quá tổng tiền đặt phòng."}
+                )
+
+        return attrs
+
+    def create(self, validated_data):
+        validated_data["created_by"] = self.context["request"].user
+        payment = super().create(validated_data)
+
+        # Update booking deposit status if deposit payment
+        if payment.booking and payment.payment_type == Payment.PaymentType.DEPOSIT:
+            booking = payment.booking
+            total_deposits = Payment.objects.filter(
+                booking=booking,
+                payment_type=Payment.PaymentType.DEPOSIT,
+                status=Payment.Status.COMPLETED,
+            ).aggregate(total=models.Sum("amount"))["total"] or 0
+            booking.deposit_amount = total_deposits
+            booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")  # 30% threshold
+            booking.save(update_fields=["deposit_amount", "deposit_paid"])
+
+        return payment
+
+
+# ============================================================
+# Folio Item Serializers (Phase 2.1.4)
+# ============================================================
+
+
+class FolioItemSerializer(serializers.ModelSerializer):
+    """Full serializer for FolioItem model."""
+
+    item_type_display = serializers.CharField(source="get_item_type_display", read_only=True)
+    created_by_name = serializers.SerializerMethodField()
+    booking_room = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FolioItem
+        fields = [
+            "id",
+            "booking",
+            "booking_room",
+            "item_type",
+            "item_type_display",
+            "description",
+            "quantity",
+            "unit_price",
+            "total_price",
+            "date",
+            "minibar_sale",
+            "is_paid",
+            "is_voided",
+            "void_reason",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "total_price",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_created_by_name(self, obj):
+        if obj.created_by:
+            return obj.created_by.get_full_name() or obj.created_by.username
+        return None
+
+    @extend_schema_field(serializers.CharField)
+    def get_booking_room(self, obj):
+        return obj.booking.room.number
+
+
+class FolioItemCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating a new folio item."""
+
+    class Meta:
+        model = FolioItem
+        fields = [
+            "booking",
+            "item_type",
+            "description",
+            "quantity",
+            "unit_price",
+            "date",
+        ]
+
+    def create(self, validated_data):
+        validated_data["created_by"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+# ============================================================
+# Exchange Rate Serializers (Phase 2.6)
+# ============================================================
+
+
+class ExchangeRateSerializer(serializers.ModelSerializer):
+    """Full serializer for ExchangeRate model."""
+
+    class Meta:
+        model = ExchangeRate
+        fields = [
+            "id",
+            "from_currency",
+            "to_currency",
+            "rate",
+            "date",
+            "source",
+            "created_at",
+        ]
+        read_only_fields = ["id", "created_at"]
+
+
+class ExchangeRateCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating exchange rate."""
+
+    class Meta:
+        model = ExchangeRate
+        fields = ["from_currency", "to_currency", "rate", "date", "source"]
+
+    def validate(self, attrs):
+        from_currency = attrs.get("from_currency")
+        to_currency = attrs.get("to_currency")
+        date = attrs.get("date")
+
+        # Check for duplicate
+        if ExchangeRate.objects.filter(
+            from_currency=from_currency,
+            to_currency=to_currency,
+            date=date,
+        ).exists():
+            raise serializers.ValidationError(
+                "Tỷ giá cho cặp tiền tệ này vào ngày này đã tồn tại."
+            )
+
+        return attrs
+
+
+class CurrencyConversionSerializer(serializers.Serializer):
+    """Serializer for currency conversion request."""
+
+    amount = serializers.DecimalField(max_digits=15, decimal_places=2)
+    from_currency = serializers.CharField(max_length=3)
+    to_currency = serializers.CharField(max_length=3, default="VND")
+    date = serializers.DateField(required=False)
+
+
+# ============================================================
+# Deposit Management Serializers (Phase 2.4)
+# ============================================================
+
+
+class DepositRecordSerializer(serializers.Serializer):
+    """Serializer for recording a deposit payment."""
+
+    booking_id = serializers.IntegerField()
+    amount = serializers.DecimalField(max_digits=12, decimal_places=0)
+    payment_method = serializers.ChoiceField(choices=Booking.PaymentMethod.choices)
+    transaction_id = serializers.CharField(required=False, allow_blank=True)
+    notes = serializers.CharField(required=False, allow_blank=True)
+
+    def validate_booking_id(self, value):
+        try:
+            booking = Booking.objects.get(id=value)
+        except Booking.DoesNotExist:
+            raise serializers.ValidationError("Không tìm thấy đặt phòng.")
+
+        if booking.status == Booking.Status.CANCELLED:
+            raise serializers.ValidationError("Không thể nhận cọc cho đặt phòng đã hủy.")
+        if booking.status == Booking.Status.CHECKED_OUT:
+            raise serializers.ValidationError("Không thể nhận cọc cho đặt phòng đã trả phòng.")
+
+        return value
+
+
+class OutstandingDepositSerializer(serializers.ModelSerializer):
+    """Serializer for bookings with outstanding deposits."""
+
+    room_number = serializers.CharField(source="room.number", read_only=True)
+    room_type = serializers.CharField(source="room.room_type.name", read_only=True)
+    guest_name = serializers.CharField(source="guest.full_name", read_only=True)
+    guest_phone = serializers.CharField(source="guest.phone", read_only=True)
+    balance_due = serializers.DecimalField(max_digits=12, decimal_places=0, read_only=True)
+    deposit_percentage = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Booking
+        fields = [
+            "id",
+            "room_number",
+            "room_type",
+            "guest_name",
+            "guest_phone",
+            "check_in_date",
+            "check_out_date",
+            "total_amount",
+            "deposit_amount",
+            "deposit_paid",
+            "balance_due",
+            "deposit_percentage",
+            "status",
+        ]
+
+    @extend_schema_field(serializers.DecimalField(max_digits=5, decimal_places=2))
+    def get_deposit_percentage(self, obj):
+        if obj.total_amount > 0:
+            return round((obj.deposit_amount / obj.total_amount) * 100, 2)
+        return 0
+
+
+# ============================================================
+# Receipt Generation Serializers (Phase 2.8)
+# ============================================================
+
+
+class ReceiptGenerateSerializer(serializers.Serializer):
+    """Serializer for generating a receipt."""
+
+    booking_id = serializers.IntegerField(required=False)
+    payment_id = serializers.IntegerField(required=False)
+    include_folio = serializers.BooleanField(default=True)
+    language = serializers.ChoiceField(choices=[("vi", "Vietnamese"), ("en", "English")], default="vi")
+
+    def validate(self, attrs):
+        if not attrs.get("booking_id") and not attrs.get("payment_id"):
+            raise serializers.ValidationError(
+                "Phải cung cấp booking_id hoặc payment_id."
+            )
+        return attrs
+
+
+class ReceiptDataSerializer(serializers.Serializer):
+    """Serializer for receipt data output."""
+
+    receipt_number = serializers.CharField()
+    receipt_date = serializers.DateTimeField()
+    hotel_name = serializers.CharField()
+    hotel_address = serializers.CharField()
+    hotel_phone = serializers.CharField()
+
+    # Guest info
+    guest_name = serializers.CharField()
+    guest_phone = serializers.CharField()
+    guest_id_number = serializers.CharField(allow_blank=True)
+
+    # Booking info
+    room_number = serializers.CharField()
+    room_type = serializers.CharField()
+    check_in_date = serializers.DateField()
+    check_out_date = serializers.DateField()
+    nights = serializers.IntegerField()
+
+    # Financial
+    room_total = serializers.DecimalField(max_digits=12, decimal_places=0)
+    additional_charges = serializers.DecimalField(max_digits=12, decimal_places=0)
+    total_amount = serializers.DecimalField(max_digits=12, decimal_places=0)
+    deposit_paid = serializers.DecimalField(max_digits=12, decimal_places=0)
+    balance_due = serializers.DecimalField(max_digits=12, decimal_places=0)
+
+    # Folio items
+    folio_items = serializers.ListField(child=serializers.DictField(), required=False)
+
+    # Payment info
+    payment_method = serializers.CharField()
+    created_by = serializers.CharField()

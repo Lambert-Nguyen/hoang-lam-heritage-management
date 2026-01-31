@@ -2,8 +2,12 @@
 Views for API endpoints.
 """
 
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
+from django.db import models
 from django.db.models import Q
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -12,23 +16,34 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, Room, RoomType
-from .permissions import IsManager, IsStaff
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, NightAudit, Room, RoomType
+from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
     BookingSerializer,
     BookingStatusUpdateSerializer,
     CheckInSerializer,
     CheckOutSerializer,
+    CurrencyConversionSerializer,
+    DepositRecordSerializer,
+    ExchangeRateSerializer,
     FinancialCategoryListSerializer,
     FinancialCategorySerializer,
     FinancialEntryListSerializer,
     FinancialEntrySerializer,
+    FolioItemSerializer,
     GuestListSerializer,
     GuestSearchSerializer,
     GuestSerializer,
     LoginSerializer,
+    NightAuditListSerializer,
+    NightAuditSerializer,
+    OutstandingDepositSerializer,
     PasswordChangeSerializer,
+    PaymentListSerializer,
+    PaymentSerializer,
+    ReceiptDataSerializer,
+    ReceiptGenerateSerializer,
     RoomAvailabilitySerializer,
     RoomListSerializer,
     RoomSerializer,
@@ -2033,3 +2048,687 @@ class NightAuditViewSet(viewsets.ModelViewSet):
             )
 
         return Response(NightAuditSerializer(audit).data)
+
+
+# ============================================================
+# Payment ViewSet (Phase 2.1.3)
+# ============================================================
+
+
+class PaymentViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for Payment management.
+
+    Provides:
+    - List payments (with filtering by booking, type, status, date range)
+    - Create payment
+    - Retrieve payment details
+    - Update payment
+    - Delete payment (only pending payments)
+    - Record deposit action
+    - Get deposits for a booking
+    - Get outstanding deposits report
+    """
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+
+    def get_queryset(self):
+        from .models import Payment
+
+        queryset = Payment.objects.select_related(
+            "booking__room",
+            "booking__guest",
+            "created_by",
+        ).all()
+
+        # Filter by booking
+        booking_id = self.request.query_params.get("booking")
+        if booking_id:
+            queryset = queryset.filter(booking_id=booking_id)
+
+        # Filter by payment type
+        payment_type = self.request.query_params.get("payment_type")
+        if payment_type:
+            queryset = queryset.filter(payment_type=payment_type)
+
+        # Filter by status
+        payment_status = self.request.query_params.get("status")
+        if payment_status:
+            queryset = queryset.filter(status=payment_status)
+
+        # Filter by date range
+        date_from = self.request.query_params.get("date_from")
+        date_to = self.request.query_params.get("date_to")
+        if date_from:
+            queryset = queryset.filter(payment_date__date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(payment_date__date__lte=date_to)
+
+        return queryset
+
+    def get_serializer_class(self):
+        from .serializers import (
+            PaymentCreateSerializer,
+            PaymentListSerializer,
+            PaymentSerializer,
+        )
+
+        if self.action == "list":
+            return PaymentListSerializer
+        elif self.action == "create":
+            return PaymentCreateSerializer
+        return PaymentSerializer
+
+    @extend_schema(
+        summary="List payments",
+        description="Get a list of payments with optional filtering.",
+        parameters=[
+            OpenApiParameter("booking", OpenApiTypes.INT, description="Filter by booking ID"),
+            OpenApiParameter("payment_type", OpenApiTypes.STR, description="Filter by type (deposit, room_charge, etc.)"),
+            OpenApiParameter("status", OpenApiTypes.STR, description="Filter by status"),
+            OpenApiParameter("date_from", OpenApiTypes.DATE, description="Filter by date from"),
+            OpenApiParameter("date_to", OpenApiTypes.DATE, description="Filter by date to"),
+        ],
+        tags=["Payments"],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Create payment",
+        description="Create a new payment record.",
+        tags=["Payments"],
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Record deposit",
+        description="Quick action to record a deposit payment for a booking.",
+        request=DepositRecordSerializer,
+        responses={201: PaymentSerializer},
+        tags=["Payments"],
+    )
+    @action(detail=False, methods=["post"], url_path="record-deposit")
+    def record_deposit(self, request):
+        """Record a deposit payment for a booking."""
+        from .models import Payment
+        from .serializers import DepositRecordSerializer, PaymentSerializer
+
+        serializer = DepositRecordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        booking = Booking.objects.get(id=serializer.validated_data["booking_id"])
+
+        payment = Payment.objects.create(
+            booking=booking,
+            payment_type=Payment.PaymentType.DEPOSIT,
+            amount=serializer.validated_data["amount"],
+            payment_method=serializer.validated_data["payment_method"],
+            transaction_id=serializer.validated_data.get("transaction_id", ""),
+            notes=serializer.validated_data.get("notes", ""),
+            status=Payment.Status.COMPLETED,
+            created_by=request.user,
+        )
+
+        # Update booking deposit amount
+        from django.db.models import Sum
+
+        total_deposits = Payment.objects.filter(
+            booking=booking,
+            payment_type=Payment.PaymentType.DEPOSIT,
+            status=Payment.Status.COMPLETED,
+        ).aggregate(total=Sum("amount"))["total"] or 0
+
+        booking.deposit_amount = total_deposits
+        booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")
+        booking.save(update_fields=["deposit_amount", "deposit_paid"])
+
+        return Response(PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        summary="Get booking deposits",
+        description="Get all deposit payments for a specific booking.",
+        parameters=[
+            OpenApiParameter("booking_id", OpenApiTypes.INT, location=OpenApiParameter.PATH),
+        ],
+        responses={200: PaymentListSerializer(many=True)},
+        tags=["Payments"],
+    )
+    @action(detail=False, methods=["get"], url_path="booking/(?P<booking_id>[^/.]+)/deposits")
+    def booking_deposits(self, request, booking_id=None):
+        """Get all deposits for a booking."""
+        from .models import Payment
+        from .serializers import PaymentListSerializer
+
+        deposits = Payment.objects.filter(
+            booking_id=booking_id,
+            payment_type=Payment.PaymentType.DEPOSIT,
+        ).order_by("-payment_date")
+
+        serializer = PaymentListSerializer(deposits, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Outstanding deposits report",
+        description="Get list of bookings with outstanding/pending deposits.",
+        responses={200: OutstandingDepositSerializer(many=True)},
+        tags=["Payments"],
+    )
+    @action(detail=False, methods=["get"], url_path="outstanding-deposits")
+    def outstanding_deposits(self, request):
+        """Get bookings with outstanding deposits."""
+        from .serializers import OutstandingDepositSerializer
+
+        bookings = Booking.objects.filter(
+            deposit_paid=False,
+            status__in=[
+                Booking.Status.CONFIRMED,
+                Booking.Status.CHECKED_IN,
+            ],
+        ).select_related("room__room_type", "guest").order_by("check_in_date")
+
+        serializer = OutstandingDepositSerializer(bookings, many=True)
+        return Response(serializer.data)
+
+
+# ============================================================
+# Folio Item ViewSet (Phase 2.1.4)
+# ============================================================
+
+
+class FolioItemViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for Folio Item management (room charges).
+
+    Provides:
+    - List folio items
+    - Create folio item
+    - Update folio item
+    - Void folio item
+    - Get booking folio
+    """
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+
+    def get_queryset(self):
+        from .models import FolioItem
+
+        queryset = FolioItem.objects.select_related(
+            "booking__room",
+            "booking__guest",
+            "created_by",
+        ).all()
+
+        # Filter by booking
+        booking_id = self.request.query_params.get("booking")
+        if booking_id:
+            queryset = queryset.filter(booking_id=booking_id)
+
+        # Filter by type
+        item_type = self.request.query_params.get("item_type")
+        if item_type:
+            queryset = queryset.filter(item_type=item_type)
+
+        # Filter by status
+        include_voided = self.request.query_params.get("include_voided", "false").lower() == "true"
+        if not include_voided:
+            queryset = queryset.filter(is_voided=False)
+
+        return queryset
+
+    def get_serializer_class(self):
+        from .serializers import FolioItemCreateSerializer, FolioItemSerializer
+
+        if self.action == "create":
+            return FolioItemCreateSerializer
+        return FolioItemSerializer
+
+    def create(self, request, *args, **kwargs):
+        """Create folio item and return full serialized response."""
+        from .serializers import FolioItemCreateSerializer, FolioItemSerializer
+
+        serializer = FolioItemCreateSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        return Response(
+            FolioItemSerializer(instance).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        summary="Void folio item",
+        description="Void a folio item (soft delete with reason).",
+        request={"type": "object", "properties": {"reason": {"type": "string"}}},
+        tags=["Folio Items"],
+    )
+    @action(detail=True, methods=["post"], url_path="void")
+    def void(self, request, pk=None):
+        """Void a folio item."""
+        from .serializers import FolioItemSerializer
+
+        item = self.get_object()
+
+        if item.is_voided:
+            return Response(
+                {"detail": "Chi phí này đã bị hủy."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if item.is_paid:
+            return Response(
+                {"detail": "Không thể hủy chi phí đã thanh toán."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        item.is_voided = True
+        item.void_reason = request.data.get("reason", "")
+        item.save()
+
+        return Response(FolioItemSerializer(item).data)
+
+    @extend_schema(
+        summary="Get booking folio",
+        description="Get all folio items for a specific booking.",
+        parameters=[
+            OpenApiParameter("booking_id", OpenApiTypes.INT, location=OpenApiParameter.PATH),
+        ],
+        responses={200: FolioItemSerializer(many=True)},
+        tags=["Folio Items"],
+    )
+    @action(detail=False, methods=["get"], url_path="booking/(?P<booking_id>[^/.]+)")
+    def booking_folio(self, request, booking_id=None):
+        """Get all folio items for a booking."""
+        from .models import FolioItem
+        from .serializers import FolioItemSerializer
+
+        items = FolioItem.objects.filter(
+            booking_id=booking_id,
+            is_voided=False,
+        ).order_by("date", "created_at")
+
+        serializer = FolioItemSerializer(items, many=True)
+
+        # Calculate summary
+        from django.db.models import Sum
+
+        summary = items.aggregate(
+            total=Sum("total_price"),
+            paid=Sum("total_price", filter=models.Q(is_paid=True)),
+            unpaid=Sum("total_price", filter=models.Q(is_paid=False)),
+        )
+
+        return Response({
+            "items": serializer.data,
+            "summary": {
+                "total": summary["total"] or 0,
+                "paid": summary["paid"] or 0,
+                "unpaid": summary["unpaid"] or 0,
+            },
+        })
+
+
+# ============================================================
+# Exchange Rate ViewSet (Phase 2.6)
+# ============================================================
+
+
+class ExchangeRateViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for Exchange Rate management.
+
+    Provides:
+    - List exchange rates
+    - Create exchange rate
+    - Convert currency
+    - Get latest rates
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        from .models import ExchangeRate
+
+        queryset = ExchangeRate.objects.all()
+
+        # Filter by currency pair
+        from_currency = self.request.query_params.get("from_currency")
+        to_currency = self.request.query_params.get("to_currency")
+        if from_currency:
+            queryset = queryset.filter(from_currency=from_currency.upper())
+        if to_currency:
+            queryset = queryset.filter(to_currency=to_currency.upper())
+
+        # Filter by date
+        date = self.request.query_params.get("date")
+        if date:
+            queryset = queryset.filter(date=date)
+
+        return queryset
+
+    def get_serializer_class(self):
+        from .serializers import ExchangeRateCreateSerializer, ExchangeRateSerializer
+
+        if self.action == "create":
+            return ExchangeRateCreateSerializer
+        return ExchangeRateSerializer
+
+    @extend_schema(
+        summary="Get latest rates",
+        description="Get the latest exchange rates for all currency pairs.",
+        responses={200: ExchangeRateSerializer(many=True)},
+        tags=["Exchange Rates"],
+    )
+    @action(detail=False, methods=["get"], url_path="latest")
+    def latest_rates(self, request):
+        """Get latest exchange rates."""
+        from .models import ExchangeRate
+        from .serializers import ExchangeRateSerializer
+
+        # Get latest rate for each currency pair
+        from django.db.models import Max
+
+        latest_dates = ExchangeRate.objects.values(
+            "from_currency", "to_currency"
+        ).annotate(latest_date=Max("date"))
+
+        rates = []
+        for item in latest_dates:
+            rate = ExchangeRate.objects.filter(
+                from_currency=item["from_currency"],
+                to_currency=item["to_currency"],
+                date=item["latest_date"],
+            ).first()
+            if rate:
+                rates.append(rate)
+
+        serializer = ExchangeRateSerializer(rates, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Convert currency",
+        description="Convert an amount from one currency to another.",
+        request=CurrencyConversionSerializer,
+        responses={
+            200: {"type": "object", "properties": {
+                "original_amount": {"type": "number"},
+                "from_currency": {"type": "string"},
+                "converted_amount": {"type": "number"},
+                "to_currency": {"type": "string"},
+                "rate": {"type": "number"},
+                "date": {"type": "string", "format": "date"},
+            }},
+        },
+        tags=["Exchange Rates"],
+    )
+    @action(detail=False, methods=["post"], url_path="convert")
+    def convert(self, request):
+        """Convert currency."""
+        from .models import ExchangeRate
+        from .serializers import CurrencyConversionSerializer
+
+        serializer = CurrencyConversionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        amount = serializer.validated_data["amount"]
+        from_currency = serializer.validated_data["from_currency"].upper()
+        to_currency = serializer.validated_data["to_currency"].upper()
+        date = serializer.validated_data.get("date")
+
+        # If same currency, no conversion needed
+        if from_currency == to_currency:
+            return Response({
+                "original_amount": amount,
+                "from_currency": from_currency,
+                "converted_amount": amount,
+                "to_currency": to_currency,
+                "rate": 1,
+                "date": date or "N/A",
+            })
+
+        # Find exchange rate
+        if date:
+            rate = ExchangeRate.objects.filter(
+                from_currency=from_currency,
+                to_currency=to_currency,
+                date=date,
+            ).first()
+        else:
+            # Get latest rate
+            rate = ExchangeRate.objects.filter(
+                from_currency=from_currency,
+                to_currency=to_currency,
+            ).order_by("-date").first()
+
+        if not rate:
+            return Response(
+                {"detail": f"Không tìm thấy tỷ giá cho {from_currency} sang {to_currency}."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        converted_amount = amount * rate.rate
+
+        return Response({
+            "original_amount": amount,
+            "from_currency": from_currency,
+            "converted_amount": converted_amount,
+            "to_currency": to_currency,
+            "rate": rate.rate,
+            "date": rate.date,
+        })
+
+
+# ============================================================
+# Receipt Generation ViewSet (Phase 2.8)
+# ============================================================
+
+
+class ReceiptViewSet(viewsets.ViewSet):
+    """
+    API endpoints for Receipt generation.
+
+    Provides:
+    - Generate receipt for booking
+    - Generate receipt for payment
+    - Get receipt data (JSON)
+    - Download receipt (PDF)
+    """
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+
+    def _get_receipt_data(self, booking, payment=None, include_folio=True):
+        """Generate receipt data for a booking."""
+        from django.utils import timezone
+        from .models import FolioItem
+
+        # Generate receipt number
+        date_str = timezone.now().strftime("%Y%m%d")
+        receipt_count = booking.payments.filter(
+            receipt_generated=True,
+        ).count() + 1
+        receipt_number = f"INV-{booking.room.number}-{date_str}-{receipt_count:03d}"
+
+        # Get folio items
+        folio_items = []
+        if include_folio:
+            items = FolioItem.objects.filter(
+                booking=booking,
+                is_voided=False,
+            ).order_by("date")
+            folio_items = [
+                {
+                    "date": item.date.isoformat(),
+                    "description": item.description,
+                    "quantity": item.quantity,
+                    "unit_price": float(item.unit_price),
+                    "total": float(item.total_price),
+                }
+                for item in items
+            ]
+
+        return {
+            "receipt_number": receipt_number,
+            "receipt_date": timezone.now().isoformat(),
+            "hotel_name": "Nhà Nghỉ Hoàng Lâm Heritage",
+            "hotel_address": "123 Đường ABC, Phường XYZ, TP.HCM",
+            "hotel_phone": "028 1234 5678",
+            "guest_name": booking.guest.full_name,
+            "guest_phone": booking.guest.phone,
+            "guest_id_number": booking.guest.id_number or "",
+            "room_number": booking.room.number,
+            "room_type": booking.room.room_type.name,
+            "check_in_date": booking.check_in_date.isoformat(),
+            "check_out_date": booking.check_out_date.isoformat(),
+            "nights": booking.nights,
+            "room_total": float(booking.total_amount),
+            "additional_charges": float(booking.additional_charges),
+            "total_amount": float(booking.total_amount + booking.additional_charges),
+            "deposit_paid": float(booking.deposit_amount),
+            "balance_due": float(booking.balance_due),
+            "folio_items": folio_items,
+            "payment_method": booking.get_payment_method_display(),
+            "created_by": self.request.user.get_full_name() or self.request.user.username,
+        }
+
+    @extend_schema(
+        summary="Generate receipt data",
+        description="Generate receipt data for a booking (JSON format).",
+        request=ReceiptGenerateSerializer,
+        responses={200: ReceiptDataSerializer},
+        tags=["Receipts"],
+    )
+    @action(detail=False, methods=["post"], url_path="generate")
+    def generate(self, request):
+        """Generate receipt data."""
+        from .serializers import ReceiptGenerateSerializer
+
+        serializer = ReceiptGenerateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        booking_id = serializer.validated_data.get("booking_id")
+        payment_id = serializer.validated_data.get("payment_id")
+        include_folio = serializer.validated_data.get("include_folio", True)
+
+        if payment_id:
+            from .models import Payment
+
+            payment = Payment.objects.select_related(
+                "booking__room__room_type",
+                "booking__guest",
+            ).get(id=payment_id)
+            booking = payment.booking
+        else:
+            booking = Booking.objects.select_related(
+                "room__room_type",
+                "guest",
+            ).get(id=booking_id)
+            payment = None
+
+        receipt_data = self._get_receipt_data(booking, payment, include_folio)
+        return Response(receipt_data)
+
+    @extend_schema(
+        summary="Download receipt PDF",
+        description="Download receipt as PDF file.",
+        parameters=[
+            OpenApiParameter("booking_id", OpenApiTypes.INT, description="Booking ID"),
+        ],
+        tags=["Receipts"],
+    )
+    @action(detail=False, methods=["get"], url_path="download/(?P<booking_id>[^/.]+)")
+    def download(self, request, booking_id=None):
+        """Download receipt as PDF."""
+        from django.http import HttpResponse
+
+        try:
+            booking = Booking.objects.select_related(
+                "room__room_type",
+                "guest",
+            ).get(id=booking_id)
+        except Booking.DoesNotExist:
+            return Response(
+                {"detail": "Không tìm thấy đặt phòng."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        receipt_data = self._get_receipt_data(booking)
+
+        # Try to generate PDF
+        try:
+            from reportlab.lib.pagesizes import A4
+            from reportlab.pdfgen import canvas
+            from reportlab.lib.units import cm
+            from io import BytesIO
+
+            buffer = BytesIO()
+            p = canvas.Canvas(buffer, pagesize=A4)
+            width, height = A4
+
+            # Header
+            p.setFont("Helvetica-Bold", 16)
+            p.drawString(2 * cm, height - 2 * cm, receipt_data["hotel_name"])
+
+            p.setFont("Helvetica", 10)
+            p.drawString(2 * cm, height - 2.6 * cm, receipt_data["hotel_address"])
+            p.drawString(2 * cm, height - 3 * cm, f"Tel: {receipt_data['hotel_phone']}")
+
+            # Receipt info
+            p.setFont("Helvetica-Bold", 14)
+            p.drawString(2 * cm, height - 4 * cm, f"HÓA ĐƠN #{receipt_data['receipt_number']}")
+
+            p.setFont("Helvetica", 10)
+            y = height - 5 * cm
+
+            # Guest info
+            p.drawString(2 * cm, y, f"Khách hàng: {receipt_data['guest_name']}")
+            y -= 0.5 * cm
+            p.drawString(2 * cm, y, f"SĐT: {receipt_data['guest_phone']}")
+            y -= 0.5 * cm
+            if receipt_data["guest_id_number"]:
+                p.drawString(2 * cm, y, f"CCCD/Passport: {receipt_data['guest_id_number']}")
+                y -= 0.5 * cm
+
+            # Booking info
+            y -= 0.5 * cm
+            p.drawString(2 * cm, y, f"Phòng: {receipt_data['room_number']} - {receipt_data['room_type']}")
+            y -= 0.5 * cm
+            p.drawString(2 * cm, y, f"Ngày: {receipt_data['check_in_date']} - {receipt_data['check_out_date']} ({receipt_data['nights']} đêm)")
+            y -= cm
+
+            # Financial
+            p.setFont("Helvetica-Bold", 10)
+            p.drawString(2 * cm, y, "Chi tiết thanh toán:")
+            y -= 0.5 * cm
+
+            p.setFont("Helvetica", 10)
+            p.drawString(2 * cm, y, f"Tiền phòng: {receipt_data['room_total']:,.0f} VND")
+            y -= 0.5 * cm
+            if receipt_data["additional_charges"] > 0:
+                p.drawString(2 * cm, y, f"Chi phí phát sinh: {receipt_data['additional_charges']:,.0f} VND")
+                y -= 0.5 * cm
+            p.drawString(2 * cm, y, f"Tổng cộng: {receipt_data['total_amount']:,.0f} VND")
+            y -= 0.5 * cm
+            p.drawString(2 * cm, y, f"Đã đặt cọc: {receipt_data['deposit_paid']:,.0f} VND")
+            y -= 0.5 * cm
+            p.setFont("Helvetica-Bold", 10)
+            p.drawString(2 * cm, y, f"Còn lại: {receipt_data['balance_due']:,.0f} VND")
+
+            # Footer
+            p.setFont("Helvetica", 8)
+            p.drawString(2 * cm, 2 * cm, f"Người lập: {receipt_data['created_by']}")
+            p.drawString(2 * cm, 1.5 * cm, f"Ngày: {receipt_data['receipt_date']}")
+
+            p.showPage()
+            p.save()
+
+            buffer.seek(0)
+            response = HttpResponse(buffer.getvalue(), content_type="application/pdf")
+            response["Content-Disposition"] = f'attachment; filename="receipt_{booking_id}.pdf"'
+            return response
+
+        except ImportError:
+            # reportlab not installed, return JSON data instead
+            return Response({
+                "detail": "PDF generation not available. Returning JSON data.",
+                "data": receipt_data,
+            })

@@ -404,6 +404,195 @@ class FinancialEntry(models.Model):
         return self.amount * self.exchange_rate
 
 
+class Payment(models.Model):
+    """Individual payment transactions linked to bookings or standalone"""
+
+    class PaymentType(models.TextChoices):
+        DEPOSIT = "deposit", "Đặt cọc"
+        ROOM_CHARGE = "room_charge", "Tiền phòng"
+        EXTRA_CHARGE = "extra_charge", "Phụ thu"
+        REFUND = "refund", "Hoàn tiền"
+        ADJUSTMENT = "adjustment", "Điều chỉnh"
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Chờ xử lý"
+        COMPLETED = "completed", "Hoàn thành"
+        FAILED = "failed", "Thất bại"
+        REFUNDED = "refunded", "Đã hoàn"
+        CANCELLED = "cancelled", "Đã hủy"
+
+    # Link to booking (optional - can be standalone payment)
+    booking = models.ForeignKey(
+        Booking,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="payments",
+        verbose_name="Đặt phòng",
+    )
+
+    # Payment details
+    payment_type = models.CharField(
+        max_length=20, choices=PaymentType.choices, default=PaymentType.ROOM_CHARGE, verbose_name="Loại"
+    )
+    amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Số tiền",
+    )
+    currency = models.CharField(max_length=3, default="VND", verbose_name="Tiền tệ")
+    payment_method = models.CharField(
+        max_length=20,
+        choices=Booking.PaymentMethod.choices,
+        default=Booking.PaymentMethod.CASH,
+        verbose_name="Hình thức thanh toán",
+    )
+
+    # Status and tracking
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.COMPLETED, verbose_name="Trạng thái"
+    )
+    transaction_id = models.CharField(max_length=100, blank=True, verbose_name="Mã giao dịch")
+    reference_number = models.CharField(max_length=100, blank=True, verbose_name="Số tham chiếu")
+
+    # Receipt
+    receipt_number = models.CharField(max_length=50, blank=True, verbose_name="Số hóa đơn")
+    receipt_generated = models.BooleanField(default=False, verbose_name="Đã tạo hóa đơn")
+
+    # Notes
+    description = models.TextField(blank=True, verbose_name="Mô tả")
+    notes = models.TextField(blank=True, verbose_name="Ghi chú")
+
+    # Dates
+    payment_date = models.DateTimeField(auto_now_add=True, verbose_name="Ngày thanh toán")
+
+    # Audit
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_payments",
+        verbose_name="Người tạo",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Thanh toán"
+        verbose_name_plural = "Thanh toán"
+        ordering = ["-payment_date", "-created_at"]
+        indexes = [
+            models.Index(fields=["booking", "-payment_date"]),
+            models.Index(fields=["status", "-payment_date"]),
+            models.Index(fields=["payment_type", "-payment_date"]),
+        ]
+
+    def __str__(self):
+        if self.booking:
+            return f"{self.get_payment_type_display()} - {self.booking.room.number} - {self.amount:,.0f}đ"
+        return f"{self.get_payment_type_display()} - {self.amount:,.0f}đ"
+
+    def save(self, *args, **kwargs):
+        # Generate receipt number if not set
+        if not self.receipt_number and self.status == self.Status.COMPLETED:
+            from django.utils import timezone
+
+            date_str = timezone.now().strftime("%Y%m%d")
+            count = Payment.objects.filter(
+                created_at__date=timezone.now().date()
+            ).count() + 1
+            self.receipt_number = f"PMT-{date_str}-{count:04d}"
+        super().save(*args, **kwargs)
+
+
+class FolioItem(models.Model):
+    """Charges added to a booking folio (minibar, services, etc.)"""
+
+    class ItemType(models.TextChoices):
+        ROOM = "room", "Tiền phòng"
+        MINIBAR = "minibar", "Minibar"
+        LAUNDRY = "laundry", "Giặt ủi"
+        FOOD = "food", "Thức ăn/Đồ uống"
+        SERVICE = "service", "Dịch vụ khác"
+        EXTRA_BED = "extra_bed", "Giường phụ"
+        EARLY_CHECKIN = "early_checkin", "Check-in sớm"
+        LATE_CHECKOUT = "late_checkout", "Check-out muộn"
+        DAMAGE = "damage", "Hư hỏng"
+        OTHER = "other", "Khác"
+
+    booking = models.ForeignKey(
+        Booking, on_delete=models.CASCADE, related_name="folio_items", verbose_name="Đặt phòng"
+    )
+    item_type = models.CharField(
+        max_length=20, choices=ItemType.choices, default=ItemType.SERVICE, verbose_name="Loại"
+    )
+    description = models.CharField(max_length=200, verbose_name="Mô tả")
+    quantity = models.PositiveIntegerField(default=1, verbose_name="Số lượng")
+    unit_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Đơn giá",
+    )
+    total_price = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Thành tiền",
+    )
+    date = models.DateField(verbose_name="Ngày")
+
+    # Link to minibar sale if applicable
+    minibar_sale = models.ForeignKey(
+        "MinibarSale",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="folio_item",
+        verbose_name="Bán minibar",
+    )
+
+    # Status
+    is_paid = models.BooleanField(default=False, verbose_name="Đã thanh toán")
+    is_voided = models.BooleanField(default=False, verbose_name="Đã hủy")
+    void_reason = models.TextField(blank=True, verbose_name="Lý do hủy")
+
+    # Audit
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_folio_items",
+        verbose_name="Người tạo",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Chi phí phát sinh"
+        verbose_name_plural = "Chi phí phát sinh"
+        ordering = ["booking", "date", "created_at"]
+
+    def __str__(self):
+        return f"{self.booking.room.number} - {self.description} ({self.total_price:,.0f}đ)"
+
+    def save(self, *args, **kwargs):
+        self.total_price = self.unit_price * self.quantity
+        super().save(*args, **kwargs)
+
+        # Update booking additional_charges
+        if not self.is_voided:
+            from django.db.models import Sum
+
+            total = self.booking.folio_items.filter(
+                is_voided=False, is_paid=False
+            ).exclude(item_type=self.ItemType.ROOM).aggregate(
+                total=Sum("total_price")
+            )["total"] or 0
+            Booking.objects.filter(pk=self.booking_id).update(additional_charges=total)
+
+
 class HotelUser(models.Model):
     """Extended user profile for hotel staff"""
 
