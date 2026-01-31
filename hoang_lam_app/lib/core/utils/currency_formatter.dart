@@ -42,14 +42,18 @@ class CurrencyFormatter {
 
   /// Format as compact (e.g., 1.2M, 500K)
   static String formatCompact(num amount) {
-    if (amount >= 1000000000) {
-      return '${(amount / 1000000000).toStringAsFixed(1)}B';
-    } else if (amount >= 1000000) {
-      return '${(amount / 1000000).toStringAsFixed(1)}M';
-    } else if (amount >= 1000) {
-      return '${(amount / 1000).toStringAsFixed(0)}K';
+    final isNegative = amount < 0;
+    final absAmount = amount.abs();
+    final prefix = isNegative ? '-' : '';
+    
+    if (absAmount >= 1000000000) {
+      return '$prefix${(absAmount / 1000000000).toStringAsFixed(1)}B';
+    } else if (absAmount >= 1000000) {
+      return '$prefix${(absAmount / 1000000).toStringAsFixed(1)}M';
+    } else if (absAmount >= 1000) {
+      return '$prefix${(absAmount / 1000).toStringAsFixed(0)}K';
     }
-    return _numberFormat.format(amount);
+    return '$prefix${_numberFormat.format(absAmount)}';
   }
 
   /// Format number with thousand separators
@@ -58,16 +62,32 @@ class CurrencyFormatter {
   }
 
   /// Parse formatted string to number
+  /// 
+  /// Supports both VND (e.g., "1.000.000đ" or "1,000,000đ") 
+  /// and USD (e.g., "$1,234.56") formats
   static num? parse(String value) {
     try {
       // Remove currency symbols and spaces
-      final cleaned = value
+      String cleaned = value
           .replaceAll('₫', '')
           .replaceAll('\$', '')
-          .replaceAll(',', '')
-          .replaceAll('.', '')
           .replaceAll(' ', '')
           .trim();
+      
+      // Detect format: if it has commas as thousand separators and dots as decimal
+      // (USD style: 1,234.56) vs VND style (1.234.567 or 1,234,567)
+      final hasDecimalDot = cleaned.contains('.') && 
+          cleaned.indexOf('.') > cleaned.length - 4 &&
+          !cleaned.substring(cleaned.indexOf('.')).contains(',');
+      
+      if (hasDecimalDot) {
+        // USD format: remove thousand separators (commas), keep decimal dot
+        cleaned = cleaned.replaceAll(',', '');
+      } else {
+        // VND format: remove all separators (dots and commas)
+        cleaned = cleaned.replaceAll(',', '').replaceAll('.', '');
+      }
+      
       return num.tryParse(cleaned);
     } catch (e) {
       return null;

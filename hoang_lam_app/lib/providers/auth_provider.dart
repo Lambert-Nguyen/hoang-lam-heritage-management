@@ -179,9 +179,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Handle session expiry (called from auth interceptor)
-  void handleSessionExpired() {
+  Future<void> handleSessionExpired() async {
     _sessionTimer?.cancel();
-    _repository.clearAuthData();
+    await _repository.clearAuthData();
     state = const AuthState.unauthenticated();
   }
 

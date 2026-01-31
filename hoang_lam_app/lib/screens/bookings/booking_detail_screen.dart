@@ -316,8 +316,8 @@ class BookingDetailScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Check-in button
-        if (booking.status == BookingStatus.confirmed)
+        // Check-in button - allows pending or confirmed status (via canCheckIn)
+        if (booking.status.canCheckIn)
           ElevatedButton.icon(
             onPressed: () => _handleCheckIn(context, ref, booking),
             icon: const Icon(Icons.login),

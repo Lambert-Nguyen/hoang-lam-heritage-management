@@ -73,7 +73,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.roomDetail,
         name: 'roomDetail',
         builder: (context, state) {
-          final room = state.extra as Room;
+          final room = state.extra;
+          if (room == null || room is! Room) {
+            // Handle invalid deep link or missing extra
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy thông tin phòng'),
+              ),
+            );
+          }
           return RoomDetailScreen(room: room);
         },
       ),
