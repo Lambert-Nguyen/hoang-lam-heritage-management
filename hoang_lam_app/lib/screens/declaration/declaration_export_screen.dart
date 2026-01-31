@@ -1,0 +1,467 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../../models/declaration.dart';
+import '../../providers/declaration_provider.dart';
+
+/// Screen for exporting temporary residence declarations
+class DeclarationExportScreen extends ConsumerStatefulWidget {
+  const DeclarationExportScreen({super.key});
+
+  @override
+  ConsumerState<DeclarationExportScreen> createState() =>
+      _DeclarationExportScreenState();
+}
+
+class _DeclarationExportScreenState
+    extends ConsumerState<DeclarationExportScreen> {
+  DateTime _dateFrom = DateTime.now();
+  DateTime _dateTo = DateTime.now();
+  ExportFormat _format = ExportFormat.csv;
+
+  final _dateFormat = DateFormat('dd/MM/yyyy');
+
+  @override
+  Widget build(BuildContext context) {
+    final exportState = ref.watch(declarationExportProvider);
+
+    // Listen for state changes
+    ref.listen<DeclarationExportState>(declarationExportProvider,
+        (previous, next) {
+      next.whenOrNull(
+        success: (filePath) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Xuất file thành công!'),
+              action: SnackBarAction(
+                label: 'Mở',
+                onPressed: () => _openFile(filePath),
+              ),
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        },
+        error: (message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Lỗi: $message'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        },
+      );
+    });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Khai báo lưu trú'),
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Info card
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Thông tin',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Xuất danh sách khách lưu trú để khai báo tạm trú với công an. '
+                      'Danh sách bao gồm tất cả khách đã nhận phòng trong khoảng thời gian được chọn.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Date range section
+            Text(
+              'Khoảng thời gian',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _DatePickerField(
+                    label: 'Từ ngày',
+                    date: _dateFrom,
+                    dateFormat: _dateFormat,
+                    onDateSelected: (date) {
+                      setState(() {
+                        _dateFrom = date;
+                        if (_dateTo.isBefore(_dateFrom)) {
+                          _dateTo = _dateFrom;
+                        }
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _DatePickerField(
+                    label: 'Đến ngày',
+                    date: _dateTo,
+                    dateFormat: _dateFormat,
+                    firstDate: _dateFrom,
+                    onDateSelected: (date) {
+                      setState(() {
+                        _dateTo = date;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Quick select buttons
+            Wrap(
+              spacing: 8,
+              children: [
+                ActionChip(
+                  label: const Text('Hôm nay'),
+                  onPressed: () {
+                    setState(() {
+                      _dateFrom = DateTime.now();
+                      _dateTo = DateTime.now();
+                    });
+                  },
+                ),
+                ActionChip(
+                  label: const Text('Hôm qua'),
+                  onPressed: () {
+                    final yesterday =
+                        DateTime.now().subtract(const Duration(days: 1));
+                    setState(() {
+                      _dateFrom = yesterday;
+                      _dateTo = yesterday;
+                    });
+                  },
+                ),
+                ActionChip(
+                  label: const Text('7 ngày qua'),
+                  onPressed: () {
+                    setState(() {
+                      _dateTo = DateTime.now();
+                      _dateFrom =
+                          DateTime.now().subtract(const Duration(days: 6));
+                    });
+                  },
+                ),
+                ActionChip(
+                  label: const Text('30 ngày qua'),
+                  onPressed: () {
+                    setState(() {
+                      _dateTo = DateTime.now();
+                      _dateFrom =
+                          DateTime.now().subtract(const Duration(days: 29));
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // Format section
+            Text(
+              'Định dạng file',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _FormatCard(
+                    format: ExportFormat.csv,
+                    isSelected: _format == ExportFormat.csv,
+                    onTap: () => setState(() => _format = ExportFormat.csv),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: _FormatCard(
+                    format: ExportFormat.excel,
+                    isSelected: _format == ExportFormat.excel,
+                    onTap: () => setState(() => _format = ExportFormat.excel),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+
+            // Export button
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: exportState is DeclarationExportLoading
+                    ? null
+                    : _handleExport,
+                icon: exportState is DeclarationExportLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.download),
+                label: Text(
+                  exportState is DeclarationExportLoading
+                      ? 'Đang xuất...'
+                      : 'Xuất danh sách',
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Show last exported file
+            if (exportState is DeclarationExportSuccess)
+              _ExportedFileCard(
+                filePath: exportState.filePath,
+                onOpen: () => _openFile(exportState.filePath),
+                onShare: () => _shareFile(exportState.filePath),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleExport() {
+    ref.read(declarationExportProvider.notifier).export(
+          dateFrom: _dateFrom,
+          dateTo: _dateTo,
+          format: _format,
+        );
+  }
+
+  Future<void> _openFile(String filePath) async {
+    try {
+      await OpenFile.open(filePath);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Không thể mở file: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _shareFile(String filePath) async {
+    try {
+      await Share.shareXFiles([XFile(filePath)]);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Không thể chia sẻ file: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+}
+
+/// Date picker field widget
+class _DatePickerField extends StatelessWidget {
+  final String label;
+  final DateTime date;
+  final DateFormat dateFormat;
+  final DateTime? firstDate;
+  final ValueChanged<DateTime> onDateSelected;
+
+  const _DatePickerField({
+    required this.label,
+    required this.date,
+    required this.dateFormat,
+    required this.onDateSelected,
+    this.firstDate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () async {
+        final selectedDate = await showDatePicker(
+          context: context,
+          initialDate: date,
+          firstDate: firstDate ?? DateTime(2020),
+          lastDate: DateTime.now(),
+        );
+        if (selectedDate != null) {
+          onDateSelected(selectedDate);
+        }
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+          suffixIcon: const Icon(Icons.calendar_today, size: 20),
+        ),
+        child: Text(dateFormat.format(date)),
+      ),
+    );
+  }
+}
+
+/// Format selection card
+class _FormatCard extends StatelessWidget {
+  final ExportFormat format;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _FormatCard({
+    required this.format,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? colorScheme.primary : colorScheme.outline,
+            width: isSelected ? 2 : 1,
+          ),
+          color: isSelected
+              ? colorScheme.primaryContainer.withOpacity(0.3)
+              : null,
+        ),
+        child: Column(
+          children: [
+            Icon(
+              format == ExportFormat.csv
+                  ? Icons.description
+                  : Icons.table_chart,
+              size: 32,
+              color: isSelected ? colorScheme.primary : null,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              format.displayName,
+              style: TextStyle(
+                fontWeight: isSelected ? FontWeight.bold : null,
+                color: isSelected ? colorScheme.primary : null,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              format == ExportFormat.csv ? 'Phổ biến' : 'Có format',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Card showing exported file info
+class _ExportedFileCard extends StatelessWidget {
+  final String filePath;
+  final VoidCallback onOpen;
+  final VoidCallback onShare;
+
+  const _ExportedFileCard({
+    required this.filePath,
+    required this.onOpen,
+    required this.onShare,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final filename = filePath.split('/').last;
+
+    return Card(
+      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'File đã được xuất',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              filename,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: onOpen,
+                    icon: const Icon(Icons.open_in_new, size: 18),
+                    label: const Text('Mở'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: onShare,
+                    icon: const Icon(Icons.share, size: 18),
+                    label: const Text('Chia sẻ'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -12,6 +12,7 @@ from .views import (
     GuestViewSet,
     LoginView,
     LogoutView,
+    NightAuditViewSet,
     PasswordChangeView,
     RoomTypeViewSet,
     RoomViewSet,
@@ -26,6 +27,7 @@ router.register(r"guests", GuestViewSet, basename="guest")
 router.register(r"bookings", BookingViewSet, basename="booking")
 router.register(r"finance/categories", FinancialCategoryViewSet, basename="financialcategory")
 router.register(r"finance/entries", FinancialEntryViewSet, basename="financialentry")
+router.register(r"night-audits", NightAuditViewSet, basename="nightaudit")
 
 urlpatterns = [
     # JWT Authentication

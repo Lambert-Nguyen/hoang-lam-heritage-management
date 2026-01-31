@@ -12,6 +12,8 @@ import '../screens/home/home_screen.dart';
 import '../screens/rooms/room_detail_screen.dart';
 import '../screens/bookings/bookings_screen.dart';
 import '../screens/finance/finance_screen.dart';
+import '../screens/night_audit/night_audit_screen.dart';
+import '../screens/declaration/declaration_export_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../widgets/main_scaffold.dart';
 
@@ -25,6 +27,8 @@ class AppRoutes {
   static const String bookingDetail = '/bookings/:id';
   static const String newBooking = '/bookings/new';
   static const String finance = '/finance';
+  static const String nightAudit = '/night-audit';
+  static const String declaration = '/declaration';
   static const String settings = '/settings';
   static const String passwordChange = '/password-change';
 }
@@ -139,6 +143,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'finance',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: FinanceScreen(),
+            ),
+          ),
+
+          // Night Audit (accessible from settings or home)
+          GoRoute(
+            path: AppRoutes.nightAudit,
+            name: 'nightAudit',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: NightAuditScreen(),
+            ),
+          ),
+
+          // Declaration Export
+          GoRoute(
+            path: AppRoutes.declaration,
+            name: 'declaration',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: DeclarationExportScreen(),
             ),
           ),
 

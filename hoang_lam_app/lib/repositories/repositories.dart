@@ -4,3 +4,6 @@ export 'room_repository.dart';
 export 'guest_repository.dart';
 export 'booking_repository.dart';
 export 'dashboard_repository.dart';
+export 'finance_repository.dart';
+export 'night_audit_repository.dart';
+export 'declaration_repository.dart';

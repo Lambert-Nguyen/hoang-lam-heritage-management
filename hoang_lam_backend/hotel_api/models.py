@@ -580,3 +580,216 @@ class ExchangeRate(models.Model):
 
     def __str__(self):
         return f"1 {self.from_currency} = {self.rate:,.2f} {self.to_currency}"
+
+
+class NightAudit(models.Model):
+    """End-of-day audit record for financial reconciliation"""
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Nháp"
+        COMPLETED = "completed", "Hoàn thành"
+        CLOSED = "closed", "Đã đóng"
+
+    # Core identification
+    audit_date = models.DateField(unique=True, verbose_name="Ngày kiểm toán")
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.DRAFT, verbose_name="Trạng thái"
+    )
+
+    # Room statistics
+    total_rooms = models.PositiveIntegerField(default=0, verbose_name="Tổng phòng")
+    rooms_occupied = models.PositiveIntegerField(default=0, verbose_name="Phòng có khách")
+    rooms_available = models.PositiveIntegerField(default=0, verbose_name="Phòng trống")
+    rooms_cleaning = models.PositiveIntegerField(default=0, verbose_name="Phòng đang dọn")
+    rooms_maintenance = models.PositiveIntegerField(default=0, verbose_name="Phòng bảo trì")
+    occupancy_rate = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0, verbose_name="Tỷ lệ lấp đầy (%)"
+    )
+
+    # Booking statistics
+    check_ins_today = models.PositiveIntegerField(default=0, verbose_name="Check-in hôm nay")
+    check_outs_today = models.PositiveIntegerField(default=0, verbose_name="Check-out hôm nay")
+    no_shows = models.PositiveIntegerField(default=0, verbose_name="Không đến")
+    cancellations = models.PositiveIntegerField(default=0, verbose_name="Hủy đặt phòng")
+    new_bookings = models.PositiveIntegerField(default=0, verbose_name="Đặt phòng mới")
+
+    # Financial summary
+    total_income = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Tổng thu"
+    )
+    room_revenue = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Doanh thu phòng"
+    )
+    other_revenue = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Doanh thu khác"
+    )
+    total_expense = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Tổng chi"
+    )
+    net_revenue = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Lợi nhuận ròng"
+    )
+
+    # Payment breakdown
+    cash_collected = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Tiền mặt thu"
+    )
+    bank_transfer_collected = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Chuyển khoản thu"
+    )
+    momo_collected = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="MoMo thu"
+    )
+    other_payments = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Thanh toán khác"
+    )
+
+    # Outstanding amounts
+    pending_payments = models.DecimalField(
+        max_digits=15, decimal_places=0, default=0, verbose_name="Thanh toán chờ"
+    )
+    unpaid_bookings_count = models.PositiveIntegerField(
+        default=0, verbose_name="Số đặt phòng chưa thanh toán"
+    )
+
+    # Notes and metadata
+    notes = models.TextField(blank=True, verbose_name="Ghi chú")
+
+    # Audit trail
+    performed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="night_audits",
+        verbose_name="Người thực hiện",
+    )
+    performed_at = models.DateTimeField(null=True, blank=True, verbose_name="Thực hiện lúc")
+    closed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="closed_audits",
+        verbose_name="Người đóng",
+    )
+    closed_at = models.DateTimeField(null=True, blank=True, verbose_name="Đóng lúc")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Kiểm toán cuối ngày"
+        verbose_name_plural = "Kiểm toán cuối ngày"
+        ordering = ["-audit_date"]
+        indexes = [
+            models.Index(fields=["-audit_date"]),
+            models.Index(fields=["status", "-audit_date"]),
+        ]
+
+    def __str__(self):
+        return f"Night Audit - {self.audit_date} ({self.get_status_display()})"
+
+    def calculate_statistics(self):
+        """Calculate all statistics for this audit date"""
+        from django.db.models import Count, Sum, Q
+        from django.utils import timezone
+
+        audit_date = self.audit_date
+
+        # Room statistics
+        room_stats = Room.objects.filter(is_active=True).aggregate(
+            total=Count("id"),
+            occupied=Count("id", filter=Q(status=Room.Status.OCCUPIED)),
+            available=Count("id", filter=Q(status=Room.Status.AVAILABLE)),
+            cleaning=Count("id", filter=Q(status=Room.Status.CLEANING)),
+            maintenance=Count("id", filter=Q(status=Room.Status.MAINTENANCE)),
+        )
+        self.total_rooms = room_stats["total"] or 0
+        self.rooms_occupied = room_stats["occupied"] or 0
+        self.rooms_available = room_stats["available"] or 0
+        self.rooms_cleaning = room_stats["cleaning"] or 0
+        self.rooms_maintenance = room_stats["maintenance"] or 0
+
+        if self.total_rooms > 0:
+            self.occupancy_rate = (self.rooms_occupied / self.total_rooms) * 100
+        else:
+            self.occupancy_rate = 0
+
+        # Booking statistics
+        booking_stats = Booking.objects.filter(
+            Q(check_in_date=audit_date)
+            | Q(check_out_date=audit_date)
+            | Q(created_at__date=audit_date)
+        ).aggregate(
+            check_ins=Count("id", filter=Q(check_in_date=audit_date, status=Booking.Status.CHECKED_IN)),
+            check_outs=Count("id", filter=Q(check_out_date=audit_date, status=Booking.Status.CHECKED_OUT)),
+            no_shows=Count("id", filter=Q(check_in_date=audit_date, status=Booking.Status.NO_SHOW)),
+            cancellations=Count("id", filter=Q(status=Booking.Status.CANCELLED, updated_at__date=audit_date)),
+            new_bookings=Count("id", filter=Q(created_at__date=audit_date)),
+        )
+        self.check_ins_today = booking_stats["check_ins"] or 0
+        self.check_outs_today = booking_stats["check_outs"] or 0
+        self.no_shows = booking_stats["no_shows"] or 0
+        self.cancellations = booking_stats["cancellations"] or 0
+        self.new_bookings = booking_stats["new_bookings"] or 0
+
+        # Financial statistics from FinancialEntry
+        financial_stats = FinancialEntry.objects.filter(date=audit_date).aggregate(
+            total_income=Sum("amount", filter=Q(entry_type=FinancialEntry.EntryType.INCOME)),
+            total_expense=Sum("amount", filter=Q(entry_type=FinancialEntry.EntryType.EXPENSE)),
+            cash=Sum(
+                "amount",
+                filter=Q(
+                    entry_type=FinancialEntry.EntryType.INCOME,
+                    payment_method=Booking.PaymentMethod.CASH,
+                ),
+            ),
+            bank_transfer=Sum(
+                "amount",
+                filter=Q(
+                    entry_type=FinancialEntry.EntryType.INCOME,
+                    payment_method=Booking.PaymentMethod.BANK_TRANSFER,
+                ),
+            ),
+            momo=Sum(
+                "amount",
+                filter=Q(
+                    entry_type=FinancialEntry.EntryType.INCOME,
+                    payment_method=Booking.PaymentMethod.MOMO,
+                ),
+            ),
+        )
+        self.total_income = financial_stats["total_income"] or 0
+        self.total_expense = financial_stats["total_expense"] or 0
+        self.cash_collected = financial_stats["cash"] or 0
+        self.bank_transfer_collected = financial_stats["bank_transfer"] or 0
+        self.momo_collected = financial_stats["momo"] or 0
+        self.other_payments = self.total_income - self.cash_collected - self.bank_transfer_collected - self.momo_collected
+
+        # Room revenue from bookings checked out today
+        room_revenue = Booking.objects.filter(
+            check_out_date=audit_date,
+            status=Booking.Status.CHECKED_OUT,
+        ).aggregate(total=Sum("total_amount"))
+        self.room_revenue = room_revenue["total"] or 0
+        self.other_revenue = self.total_income - self.room_revenue
+        self.net_revenue = self.total_income - self.total_expense
+
+        # Pending payments - bookings that are checked in but not fully paid
+        pending = Booking.objects.filter(
+            status=Booking.Status.CHECKED_IN,
+            is_paid=False,
+        ).aggregate(
+            total=Sum("total_amount"),
+            count=Count("id"),
+        )
+        self.pending_payments = pending["total"] or 0
+        self.unpaid_bookings_count = pending["count"] or 0
+
+    def close_audit(self, user):
+        """Close the audit - no more changes allowed"""
+        from django.utils import timezone
+
+        self.status = self.Status.CLOSED
+        self.closed_by = user
+        self.closed_at = timezone.now()
+        self.save()

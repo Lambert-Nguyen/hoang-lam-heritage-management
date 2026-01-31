@@ -732,3 +732,132 @@ class FinancialSummarySerializer(serializers.Serializer):
     net_profit = serializers.DecimalField(max_digits=15, decimal_places=0)
     income_by_category = serializers.ListField(child=serializers.DictField())
     expense_by_category = serializers.ListField(child=serializers.DictField())
+
+
+# Import NightAudit model for serializer
+from .models import NightAudit
+
+
+class NightAuditSerializer(serializers.ModelSerializer):
+    """Full serializer for night audit."""
+
+    performed_by_name = serializers.SerializerMethodField()
+    closed_by_name = serializers.SerializerMethodField()
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+
+    class Meta:
+        model = NightAudit
+        fields = [
+            "id",
+            "audit_date",
+            "status",
+            "status_display",
+            # Room statistics
+            "total_rooms",
+            "rooms_occupied",
+            "rooms_available",
+            "rooms_cleaning",
+            "rooms_maintenance",
+            "occupancy_rate",
+            # Booking statistics
+            "check_ins_today",
+            "check_outs_today",
+            "no_shows",
+            "cancellations",
+            "new_bookings",
+            # Financial summary
+            "total_income",
+            "room_revenue",
+            "other_revenue",
+            "total_expense",
+            "net_revenue",
+            # Payment breakdown
+            "cash_collected",
+            "bank_transfer_collected",
+            "momo_collected",
+            "other_payments",
+            # Outstanding
+            "pending_payments",
+            "unpaid_bookings_count",
+            # Notes
+            "notes",
+            # Audit info
+            "performed_by",
+            "performed_by_name",
+            "performed_at",
+            "closed_by",
+            "closed_by_name",
+            "closed_at",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "performed_by",
+            "performed_by_name",
+            "performed_at",
+            "closed_by",
+            "closed_by_name",
+            "closed_at",
+            "created_at",
+            "updated_at",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_performed_by_name(self, obj):
+        """Get name of user who performed the audit."""
+        if obj.performed_by:
+            return obj.performed_by.get_full_name() or obj.performed_by.username
+        return None
+
+    @extend_schema_field(serializers.CharField)
+    def get_closed_by_name(self, obj):
+        """Get name of user who closed the audit."""
+        if obj.closed_by:
+            return obj.closed_by.get_full_name() or obj.closed_by.username
+        return None
+
+
+class NightAuditListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing night audits."""
+
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    performed_by_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NightAudit
+        fields = [
+            "id",
+            "audit_date",
+            "status",
+            "status_display",
+            "total_rooms",
+            "rooms_occupied",
+            "occupancy_rate",
+            "total_income",
+            "total_expense",
+            "net_revenue",
+            "performed_by_name",
+            "performed_at",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_performed_by_name(self, obj):
+        """Get name of user who performed the audit."""
+        if obj.performed_by:
+            return obj.performed_by.get_full_name() or obj.performed_by.username
+        return None
+
+
+class NightAuditCreateSerializer(serializers.Serializer):
+    """Serializer for creating/generating a night audit."""
+
+    audit_date = serializers.DateField()
+    notes = serializers.CharField(required=False, allow_blank=True)
+
+    def validate_audit_date(self, value):
+        """Validate that audit date is not in the future."""
+        from datetime import date
+        if value > date.today():
+            raise serializers.ValidationError("Không thể tạo kiểm toán cho ngày trong tương lai.")
+        return value

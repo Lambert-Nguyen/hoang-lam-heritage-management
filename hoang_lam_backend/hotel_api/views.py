@@ -637,6 +637,189 @@ class GuestViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @extend_schema(
+        summary="Export temporary residence declaration",
+        description="Export guest data for temporary residence declaration to police. "
+                    "Returns CSV or Excel file with guest information for a date range.",
+        parameters=[
+            OpenApiParameter(
+                name="date_from",
+                type=str,
+                description="Start date for export (YYYY-MM-DD). Defaults to today.",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="date_to",
+                type=str,
+                description="End date for export (YYYY-MM-DD). Defaults to today.",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="format",
+                type=str,
+                description="Export format: 'csv' or 'excel'. Defaults to 'csv'.",
+                required=False,
+            ),
+        ],
+        responses={
+            200: OpenApiResponse(
+                description="File download (CSV or Excel)",
+            )
+        },
+        tags=["Guest Management"],
+    )
+    @action(detail=False, methods=["get"], url_path="declaration-export")
+    def declaration_export(self, request):
+        """Export temporary residence declaration for police reporting."""
+        import csv
+        import io
+        from datetime import date
+
+        from django.http import HttpResponse
+
+        # Get date range parameters
+        date_from = request.query_params.get("date_from")
+        date_to = request.query_params.get("date_to")
+        export_format = request.query_params.get("format", "csv").lower()
+
+        today = date.today()
+        try:
+            date_from = date.fromisoformat(date_from) if date_from else today
+            date_to = date.fromisoformat(date_to) if date_to else today
+        except ValueError:
+            return Response(
+                {"detail": "Định dạng ngày không hợp lệ. Sử dụng YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if date_from > date_to:
+            return Response(
+                {"detail": "Ngày bắt đầu không được lớn hơn ngày kết thúc."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Get guests who checked in during the date range
+        bookings = Booking.objects.filter(
+            check_in_date__gte=date_from,
+            check_in_date__lte=date_to,
+            status__in=[Booking.Status.CHECKED_IN, Booking.Status.CHECKED_OUT],
+        ).select_related("guest", "room")
+
+        # Prepare data rows
+        rows = []
+        for booking in bookings:
+            guest = booking.guest
+            rows.append({
+                "stt": len(rows) + 1,
+                "ho_ten": guest.full_name,
+                "ngay_sinh": guest.date_of_birth.strftime("%d/%m/%Y") if guest.date_of_birth else "",
+                "gioi_tinh": "Nam" if guest.gender == "male" else "Nữ" if guest.gender == "female" else "",
+                "quoc_tich": guest.nationality or "Việt Nam",
+                "loai_giay_to": guest.get_id_type_display() if hasattr(guest, "get_id_type_display") else guest.id_type,
+                "so_giay_to": guest.id_number or "",
+                "ngay_cap": guest.id_issue_date.strftime("%d/%m/%Y") if guest.id_issue_date else "",
+                "noi_cap": guest.id_issue_place or "",
+                "dia_chi_thuong_tru": guest.address or "",
+                "so_dien_thoai": guest.phone or "",
+                "so_phong": booking.room.number,
+                "ngay_den": booking.check_in_date.strftime("%d/%m/%Y"),
+                "ngay_di": booking.check_out_date.strftime("%d/%m/%Y") if booking.actual_check_out else "",
+            })
+
+        if export_format == "excel":
+            try:
+                import openpyxl
+                from openpyxl.utils import get_column_letter
+
+                wb = openpyxl.Workbook()
+                ws = wb.active
+                ws.title = "Khai báo lưu trú"
+
+                # Headers
+                headers = [
+                    "STT", "Họ và tên", "Ngày sinh", "Giới tính", "Quốc tịch",
+                    "Loại giấy tờ", "Số giấy tờ", "Ngày cấp", "Nơi cấp",
+                    "Địa chỉ thường trú", "Số điện thoại", "Số phòng",
+                    "Ngày đến", "Ngày đi"
+                ]
+                for col, header in enumerate(headers, 1):
+                    ws.cell(row=1, column=col, value=header)
+
+                # Data rows
+                for row_idx, row_data in enumerate(rows, 2):
+                    ws.cell(row=row_idx, column=1, value=row_data["stt"])
+                    ws.cell(row=row_idx, column=2, value=row_data["ho_ten"])
+                    ws.cell(row=row_idx, column=3, value=row_data["ngay_sinh"])
+                    ws.cell(row=row_idx, column=4, value=row_data["gioi_tinh"])
+                    ws.cell(row=row_idx, column=5, value=row_data["quoc_tich"])
+                    ws.cell(row=row_idx, column=6, value=row_data["loai_giay_to"])
+                    ws.cell(row=row_idx, column=7, value=row_data["so_giay_to"])
+                    ws.cell(row=row_idx, column=8, value=row_data["ngay_cap"])
+                    ws.cell(row=row_idx, column=9, value=row_data["noi_cap"])
+                    ws.cell(row=row_idx, column=10, value=row_data["dia_chi_thuong_tru"])
+                    ws.cell(row=row_idx, column=11, value=row_data["so_dien_thoai"])
+                    ws.cell(row=row_idx, column=12, value=row_data["so_phong"])
+                    ws.cell(row=row_idx, column=13, value=row_data["ngay_den"])
+                    ws.cell(row=row_idx, column=14, value=row_data["ngay_di"])
+
+                # Save to buffer
+                buffer = io.BytesIO()
+                wb.save(buffer)
+                buffer.seek(0)
+
+                response = HttpResponse(
+                    buffer.getvalue(),
+                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                )
+                filename = f"khai_bao_luu_tru_{date_from}_{date_to}.xlsx"
+                response["Content-Disposition"] = f'attachment; filename="{filename}"'
+                return response
+
+            except ImportError:
+                return Response(
+                    {"detail": "Thư viện openpyxl chưa được cài đặt. Vui lòng sử dụng format=csv."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        else:
+            # CSV export
+            buffer = io.StringIO()
+            writer = csv.writer(buffer)
+
+            # Headers
+            writer.writerow([
+                "STT", "Họ và tên", "Ngày sinh", "Giới tính", "Quốc tịch",
+                "Loại giấy tờ", "Số giấy tờ", "Ngày cấp", "Nơi cấp",
+                "Địa chỉ thường trú", "Số điện thoại", "Số phòng",
+                "Ngày đến", "Ngày đi"
+            ])
+
+            # Data rows
+            for row_data in rows:
+                writer.writerow([
+                    row_data["stt"],
+                    row_data["ho_ten"],
+                    row_data["ngay_sinh"],
+                    row_data["gioi_tinh"],
+                    row_data["quoc_tich"],
+                    row_data["loai_giay_to"],
+                    row_data["so_giay_to"],
+                    row_data["ngay_cap"],
+                    row_data["noi_cap"],
+                    row_data["dia_chi_thuong_tru"],
+                    row_data["so_dien_thoai"],
+                    row_data["so_phong"],
+                    row_data["ngay_den"],
+                    row_data["ngay_di"],
+                ])
+
+            response = HttpResponse(
+                buffer.getvalue(),
+                content_type="text/csv; charset=utf-8-sig",  # utf-8-sig for Excel compatibility
+            )
+            filename = f"khai_bao_luu_tru_{date_from}_{date_to}.csv"
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            return response
+
 
 # ==================== Booking Management Views ====================
 
@@ -1587,3 +1770,266 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
+
+
+# Import NightAudit model and serializers
+from .models import NightAudit
+from .serializers import (
+    NightAuditCreateSerializer,
+    NightAuditListSerializer,
+    NightAuditSerializer,
+)
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List night audits",
+        description="Get a paginated list of night audits with optional filtering.",
+        parameters=[
+            OpenApiParameter(
+                name="status",
+                type=str,
+                description="Filter by status (draft, completed, closed)",
+            ),
+            OpenApiParameter(
+                name="date_from",
+                type=str,
+                description="Filter from date (YYYY-MM-DD)",
+            ),
+            OpenApiParameter(
+                name="date_to",
+                type=str,
+                description="Filter to date (YYYY-MM-DD)",
+            ),
+        ],
+        tags=["Night Audit"],
+    ),
+    retrieve=extend_schema(
+        summary="Get night audit details",
+        description="Get detailed information about a specific night audit.",
+        tags=["Night Audit"],
+    ),
+    create=extend_schema(
+        summary="Create/generate night audit",
+        description="Create a new night audit for a specific date. Statistics are calculated automatically.",
+        tags=["Night Audit"],
+    ),
+    update=extend_schema(
+        summary="Update night audit",
+        description="Update night audit details (only for draft audits).",
+        tags=["Night Audit"],
+    ),
+    partial_update=extend_schema(
+        summary="Partially update night audit",
+        description="Partially update night audit details (only for draft audits).",
+        tags=["Night Audit"],
+    ),
+    destroy=extend_schema(
+        summary="Delete night audit",
+        description="Delete a night audit (only for draft audits).",
+        tags=["Night Audit"],
+    ),
+)
+class NightAuditViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing night audits.
+
+    Endpoints:
+    - GET /night-audits/ - List all night audits
+    - POST /night-audits/ - Generate night audit for a date
+    - GET /night-audits/{id}/ - Get audit details
+    - PUT /night-audits/{id}/ - Update audit (draft only)
+    - DELETE /night-audits/{id}/ - Delete audit (draft only)
+    - POST /night-audits/{id}/close/ - Close the audit
+    - POST /night-audits/{id}/recalculate/ - Recalculate statistics
+    - GET /night-audits/today/ - Get or create today's audit
+    - GET /night-audits/latest/ - Get the most recent audit
+    """
+
+    queryset = NightAudit.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        """Return appropriate serializer based on action."""
+        if self.action == "list":
+            return NightAuditListSerializer
+        if self.action == "create":
+            return NightAuditCreateSerializer
+        return NightAuditSerializer
+
+    def get_queryset(self):
+        """Filter queryset based on query parameters."""
+        queryset = NightAudit.objects.all()
+
+        # Filter by status
+        status_filter = self.request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Filter by date range
+        date_from = self.request.query_params.get("date_from")
+        date_to = self.request.query_params.get("date_to")
+        if date_from:
+            queryset = queryset.filter(audit_date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(audit_date__lte=date_to)
+
+        return queryset.order_by("-audit_date")
+
+    def create(self, request, *args, **kwargs):
+        """Create or generate a night audit for a specific date."""
+        from django.utils import timezone
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        audit_date = serializer.validated_data["audit_date"]
+        notes = serializer.validated_data.get("notes", "")
+
+        # Check if audit already exists for this date
+        existing = NightAudit.objects.filter(audit_date=audit_date).first()
+        if existing:
+            return Response(
+                {
+                    "detail": f"Đã tồn tại kiểm toán cho ngày {audit_date}.",
+                    "existing_id": existing.id,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Create new audit
+        audit = NightAudit.objects.create(
+            audit_date=audit_date,
+            notes=notes,
+            performed_by=request.user,
+            performed_at=timezone.now(),
+            status=NightAudit.Status.DRAFT,
+        )
+
+        # Calculate statistics
+        audit.calculate_statistics()
+        audit.save()
+
+        return Response(
+            NightAuditSerializer(audit).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    def update(self, request, *args, **kwargs):
+        """Update night audit (only draft audits)."""
+        instance = self.get_object()
+
+        if instance.status == NightAudit.Status.CLOSED:
+            return Response(
+                {"detail": "Không thể chỉnh sửa kiểm toán đã đóng."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """Delete night audit (only draft audits)."""
+        instance = self.get_object()
+
+        if instance.status == NightAudit.Status.CLOSED:
+            return Response(
+                {"detail": "Không thể xóa kiểm toán đã đóng."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        return super().destroy(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Close night audit",
+        description="Close the audit - no more changes allowed after closing.",
+        request=None,
+        responses={200: NightAuditSerializer},
+        tags=["Night Audit"],
+    )
+    @action(detail=True, methods=["post"], url_path="close")
+    def close(self, request, pk=None):
+        """Close the night audit."""
+        audit = self.get_object()
+
+        if audit.status == NightAudit.Status.CLOSED:
+            return Response(
+                {"detail": "Kiểm toán đã được đóng."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        audit.close_audit(request.user)
+        return Response(NightAuditSerializer(audit).data)
+
+    @extend_schema(
+        summary="Recalculate statistics",
+        description="Recalculate all statistics for the audit (only for non-closed audits).",
+        request=None,
+        responses={200: NightAuditSerializer},
+        tags=["Night Audit"],
+    )
+    @action(detail=True, methods=["post"], url_path="recalculate")
+    def recalculate(self, request, pk=None):
+        """Recalculate audit statistics."""
+        audit = self.get_object()
+
+        if audit.status == NightAudit.Status.CLOSED:
+            return Response(
+                {"detail": "Không thể tính lại kiểm toán đã đóng."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        audit.calculate_statistics()
+        audit.save()
+
+        return Response(NightAuditSerializer(audit).data)
+
+    @extend_schema(
+        summary="Get today's audit",
+        description="Get today's night audit. Creates a draft if not exists.",
+        responses={200: NightAuditSerializer},
+        tags=["Night Audit"],
+    )
+    @action(detail=False, methods=["get"], url_path="today")
+    def today(self, request):
+        """Get or create today's night audit."""
+        from datetime import date
+
+        from django.utils import timezone
+
+        today = date.today()
+        audit = NightAudit.objects.filter(audit_date=today).first()
+
+        if not audit:
+            # Create draft audit for today
+            audit = NightAudit.objects.create(
+                audit_date=today,
+                performed_by=request.user,
+                performed_at=timezone.now(),
+                status=NightAudit.Status.DRAFT,
+            )
+            audit.calculate_statistics()
+            audit.save()
+
+        return Response(NightAuditSerializer(audit).data)
+
+    @extend_schema(
+        summary="Get latest audit",
+        description="Get the most recent night audit.",
+        responses={
+            200: NightAuditSerializer,
+            404: OpenApiResponse(description="No audits found"),
+        },
+        tags=["Night Audit"],
+    )
+    @action(detail=False, methods=["get"], url_path="latest")
+    def latest(self, request):
+        """Get the most recent night audit."""
+        audit = NightAudit.objects.order_by("-audit_date").first()
+
+        if not audit:
+            return Response(
+                {"detail": "Chưa có kiểm toán nào."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        return Response(NightAuditSerializer(audit).data)

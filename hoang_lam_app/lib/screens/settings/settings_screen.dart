@@ -8,6 +8,7 @@ import '../../core/config/app_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/biometric_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../router/app_router.dart';
 
 /// Settings screen
@@ -19,6 +20,7 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final currentUser = ref.watch(currentUserProvider);
     final biometricAsync = ref.watch(biometricNotifierProvider);
+    final settings = ref.watch(settingsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +68,6 @@ class SettingsScreen extends ConsumerWidget {
                 value: biometricState.isEnabled,
                 onChanged: (value) async {
                   if (value) {
-                    // Enable biometric - requires authentication first
                     final authenticated = await ref
                         .read(biometricNotifierProvider.notifier)
                         .authenticate();
@@ -77,14 +78,12 @@ class SettingsScreen extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content:
-                                Text('Đã bật đăng nhập sinh trắc học'),
+                            content: Text('Đã bật đăng nhập sinh trắc học'),
                           ),
                         );
                       }
                     }
                   } else {
-                    // Disable biometric
                     await ref
                         .read(biometricNotifierProvider.notifier)
                         .disableBiometric();
@@ -114,58 +113,77 @@ class SettingsScreen extends ConsumerWidget {
 
           // General settings
           _buildSectionHeader(context, 'Cài đặt chung'),
+
+          // Theme toggle
+          _buildSettingsTile(
+            context,
+            icon: Icons.dark_mode_outlined,
+            title: 'Giao diện',
+            subtitle: _getThemeModeText(settings.themeMode),
+            onTap: () {
+              _showThemePicker(context, ref, settings.themeMode);
+            },
+          ),
+
+          // Language picker
           _buildSettingsTile(
             context,
             icon: Icons.language,
             title: 'Ngôn ngữ',
-            subtitle: 'Tiếng Việt',
+            subtitle: settings.locale == 'vi' ? 'Tiếng Việt' : 'English',
             onTap: () {
-              _showLanguagePicker(context, ref);
+              _showLanguagePicker(context, ref, settings.locale);
             },
           ),
+
+          // Text size picker
           _buildSettingsTile(
             context,
             icon: Icons.text_fields,
             title: 'Cỡ chữ',
-            subtitle: 'Bình thường',
+            subtitle: _getTextSizeText(settings.textScaleFactor),
             onTap: () {
-              _showTextSizePicker(context);
+              _showTextSizePicker(context, ref, settings.textScaleFactor);
             },
           ),
+
+          // Notification settings
           _buildSettingsTile(
             context,
             icon: Icons.notifications_outlined,
             title: 'Thông báo',
-            subtitle: 'Bật',
+            subtitle: _getNotificationText(settings),
             onTap: () {
-              _showNotificationSettings(context);
+              _showNotificationSettings(context, ref, settings);
             },
           ),
 
           const Divider(),
 
-          // Hotel settings (admin only)
+          // Hotel management (admin only)
           if (currentUser?.isAdmin == true) ...[
             _buildSectionHeader(context, 'Quản lý'),
             _buildSettingsTile(
               context,
-              icon: Icons.hotel,
-              title: 'Thông tin khách sạn',
+              icon: Icons.nightlight_outlined,
+              title: 'Chốt ca đêm',
+              subtitle: 'Kiểm tra số liệu cuối ngày',
               onTap: () {
-                // TODO: Show hotel info
+                context.push(AppRoutes.nightAudit);
               },
             ),
             _buildSettingsTile(
               context,
-              icon: Icons.meeting_room,
-              title: 'Quản lý phòng',
+              icon: Icons.description_outlined,
+              title: 'Khai báo lưu trú',
+              subtitle: 'Xuất danh sách khách cho công an',
               onTap: () {
-                // TODO: Show room management
+                context.push(AppRoutes.declaration);
               },
             ),
             _buildSettingsTile(
               context,
-              icon: Icons.category,
+              icon: Icons.category_outlined,
               title: 'Danh mục thu chi',
               onTap: () {
                 // TODO: Show categories
@@ -241,6 +259,31 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _getThemeModeText(ThemeMode mode) {
+    return switch (mode) {
+      ThemeMode.light => 'Sáng',
+      ThemeMode.dark => 'Tối',
+      ThemeMode.system => 'Theo hệ thống',
+    };
+  }
+
+  String _getTextSizeText(double scaleFactor) {
+    if (scaleFactor <= 0.85) return 'Nhỏ';
+    if (scaleFactor <= 1.0) return 'Bình thường';
+    if (scaleFactor <= 1.15) return 'Lớn';
+    return 'Rất lớn';
+  }
+
+  String _getNotificationText(AppSettings settings) {
+    final enabled = <String>[];
+    if (settings.notifyCheckIn) enabled.add('Check-in');
+    if (settings.notifyCheckOut) enabled.add('Check-out');
+    if (settings.notifyCleaning) enabled.add('Dọn phòng');
+
+    if (enabled.isEmpty) return 'Tắt tất cả';
+    return enabled.join(', ');
   }
 
   Widget _buildProfileSection(
@@ -345,6 +388,195 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  void _showThemePicker(BuildContext context, WidgetRef ref, ThemeMode current) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Chọn giao diện'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<ThemeMode>(
+              title: const Text('Theo hệ thống'),
+              subtitle: const Text('Tự động theo cài đặt điện thoại'),
+              value: ThemeMode.system,
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setThemeMode(ThemeMode.system);
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Sáng'),
+              value: ThemeMode.light,
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setThemeMode(ThemeMode.light);
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Tối'),
+              value: ThemeMode.dark,
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setThemeMode(ThemeMode.dark);
+                Navigator.pop(dialogContext);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLanguagePicker(BuildContext context, WidgetRef ref, String current) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Chọn ngôn ngữ'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<String>(
+              title: const Text('Tiếng Việt'),
+              value: 'vi',
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setLocale('vi');
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<String>(
+              title: const Text('English'),
+              value: 'en',
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setLocale('en');
+                Navigator.pop(dialogContext);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTextSizePicker(BuildContext context, WidgetRef ref, double current) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Cỡ chữ'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<double>(
+              title: const Text('Nhỏ', style: TextStyle(fontSize: 12)),
+              value: 0.85,
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setTextScaleFactor(0.85);
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<double>(
+              title: const Text('Bình thường', style: TextStyle(fontSize: 14)),
+              value: 1.0,
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setTextScaleFactor(1.0);
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<double>(
+              title: const Text('Lớn', style: TextStyle(fontSize: 16)),
+              value: 1.15,
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setTextScaleFactor(1.15);
+                Navigator.pop(dialogContext);
+              },
+            ),
+            RadioListTile<double>(
+              title: const Text('Rất lớn', style: TextStyle(fontSize: 18)),
+              value: 1.3,
+              groupValue: current,
+              onChanged: (value) {
+                ref.read(settingsProvider.notifier).setTextScaleFactor(1.3);
+                Navigator.pop(dialogContext);
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showNotificationSettings(BuildContext context, WidgetRef ref, AppSettings settings) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: const Text('Cài đặt thông báo'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SwitchListTile(
+                title: const Text('Nhắc nhở check-in'),
+                subtitle: const Text('Thông báo khi có khách check-in hôm nay'),
+                value: settings.notifyCheckIn,
+                onChanged: (value) {
+                  ref.read(settingsProvider.notifier).setNotifyCheckIn(value);
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Nhắc nhở check-out'),
+                subtitle: const Text('Thông báo khi có khách check-out hôm nay'),
+                value: settings.notifyCheckOut,
+                onChanged: (value) {
+                  ref.read(settingsProvider.notifier).setNotifyCheckOut(value);
+                },
+              ),
+              SwitchListTile(
+                title: const Text('Nhắc nhở dọn phòng'),
+                subtitle: const Text('Thông báo khi có phòng cần dọn dẹp'),
+                value: settings.notifyCleaning,
+                onChanged: (value) {
+                  ref.read(settingsProvider.notifier).setNotifyCleaning(value);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Đóng'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showAboutDialog(BuildContext context) {
     showAboutDialog(
       context: context,
@@ -363,6 +595,14 @@ class SettingsScreen extends ConsumerWidget {
         const Text(
           'Phát triển bởi: Duy Lâm',
           style: TextStyle(color: AppColors.textSecondary),
+        ),
+        AppSpacing.gapVerticalSm,
+        const Text(
+          '© 2024 Hoàng Lâm Heritage. All rights reserved.',
+          style: TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+          ),
         ),
       ],
     );
@@ -392,145 +632,6 @@ class SettingsScreen extends ConsumerWidget {
               backgroundColor: AppColors.error,
             ),
             child: Text(l10n.logout),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showLanguagePicker(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Chọn ngôn ngữ'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<String>(
-              title: const Text('Tiếng Việt'),
-              value: 'vi',
-              groupValue: 'vi', // TODO: Get from locale provider
-              onChanged: (value) {
-                // TODO: Update locale
-                Navigator.pop(dialogContext);
-              },
-            ),
-            RadioListTile<String>(
-              title: const Text('English'),
-              value: 'en',
-              groupValue: 'vi', // TODO: Get from locale provider
-              onChanged: (value) {
-                // TODO: Update locale
-                Navigator.pop(dialogContext);
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Đóng'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showTextSizePicker(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Cỡ chữ'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<double>(
-              title: const Text('Nhỏ', style: TextStyle(fontSize: 12)),
-              value: 0.85,
-              groupValue: 1.0, // TODO: Get from settings
-              onChanged: (value) {
-                // TODO: Update text scale
-                Navigator.pop(dialogContext);
-              },
-            ),
-            RadioListTile<double>(
-              title: const Text('Bình thường', style: TextStyle(fontSize: 14)),
-              value: 1.0,
-              groupValue: 1.0, // TODO: Get from settings
-              onChanged: (value) {
-                // TODO: Update text scale
-                Navigator.pop(dialogContext);
-              },
-            ),
-            RadioListTile<double>(
-              title: const Text('Lớn', style: TextStyle(fontSize: 16)),
-              value: 1.15,
-              groupValue: 1.0, // TODO: Get from settings
-              onChanged: (value) {
-                // TODO: Update text scale
-                Navigator.pop(dialogContext);
-              },
-            ),
-            RadioListTile<double>(
-              title: const Text('Rất lớn', style: TextStyle(fontSize: 18)),
-              value: 1.3,
-              groupValue: 1.0, // TODO: Get from settings
-              onChanged: (value) {
-                // TODO: Update text scale
-                Navigator.pop(dialogContext);
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Đóng'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showNotificationSettings(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Cài đặt thông báo'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SwitchListTile(
-              title: const Text('Nhắc nhở check-in'),
-              subtitle: const Text('Thông báo khi có khách check-in hôm nay'),
-              value: true, // TODO: Get from settings
-              onChanged: (value) {
-                // TODO: Update setting
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Nhắc nhở check-out'),
-              subtitle: const Text('Thông báo khi có khách check-out hôm nay'),
-              value: true, // TODO: Get from settings
-              onChanged: (value) {
-                // TODO: Update setting
-              },
-            ),
-            SwitchListTile(
-              title: const Text('Nhắc nhở dọn phòng'),
-              subtitle: const Text('Thông báo khi có phòng cần dọn dẹp'),
-              value: false, // TODO: Get from settings
-              onChanged: (value) {
-                // TODO: Update setting
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Đóng'),
           ),
         ],
       ),
