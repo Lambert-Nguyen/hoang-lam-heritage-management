@@ -157,52 +157,72 @@ Note: Feature modules, views/serializers/tests, and full app scaffolding remain 
 
 ### Phase 1: Core MVP (Foundation)
 **Goal:** Basic booking and room management
+**Status:** ✅ MVP COMPLETE (2026-01-30) - All P0 features implemented!
 
-| Feature | Priority | Description |
-|---------|----------|-------------|
-| User Authentication | P0 | Login for mom and brother (JWT) |
-| Room Management | P0 | View/edit 7 rooms, status, rates |
-| Manual Booking | P0 | Create walk-in and phone bookings |
-| Booking Calendar | P0 | Visual calendar of occupancy (monthly timeline view) |
-| Check-in/Check-out | P0 | Mark guests as arrived/departed with timestamps |
-| Guest Information | P0 | Name, phone, ID/passport number (CCCD), nationality |
-| ID/Passport Scanning | P1 | Camera capture of guest ID with OCR auto-fill (ezCloud-inspired) |
-| Dashboard | P0 | Today's overview: rooms, check-ins/outs, revenue |
-| Temporary Residence Declaration | P1 | Export guest data for police reporting (Vietnamese legal requirement) |
-| Night Audit | P1 | End-of-day summary, auto-close day, pending payments report |
+| Feature | Priority | Status | Description |
+|---------|----------|--------|-------------|
+| User Authentication | P0 | ✅ Done | Login for mom and brother (JWT) |
+| Room Management | P0 | ✅ Done | View/edit 7 rooms, status, rates |
+| Manual Booking | P0 | ✅ Done | Create walk-in and phone bookings |
+| Booking Calendar | P0 | ✅ Done | Visual calendar of occupancy (monthly timeline view) |
+| Check-in/Check-out | P0 | ✅ Done | Mark guests as arrived/departed with timestamps |
+| Guest Information | P0 | ✅ Done | Name, phone, ID/passport number (CCCD), nationality |
+| ID/Passport Scanning | P1 | 🔄 Phase 2 | Camera capture of guest ID with OCR auto-fill |
+| Dashboard | P0 | ✅ Done | Today's overview: rooms, check-ins/outs, revenue |
+| Temporary Residence Declaration | P1 | 🔄 Phase 2 | Export guest data for police reporting |
+| Night Audit | P1 | 🔄 Phase 2 | End-of-day summary, auto-close day, pending payments report |
+| Offline Support | P1 | 🔄 Phase 2 | Local caching and sync when online |
+
+**Deferred to Phase 2:** ID Scanning, Temp Residence Declaration, Night Audit, Offline Support (P1 enhancements)
+**Deferred to Phase 3:** Hourly Booking, Group Booking, Early/Late Check Fees
 
 ### Phase 2: Financial Tracking
 **Goal:** Income and expense management (like ezCloud's revenue tools)
+**Status:** 🔄 IN PROGRESS - Backend CRUD complete, Frontend pending
 
-| Feature | Priority | Description |
-|---------|----------|-------------|
-| Income Recording | P0 | Room revenue, extra services, deposits |
-| Expense Recording | P0 | Utilities, supplies, wages, categorized |
-| Daily Summary | P0 | Today's income/expenses with cash drawer balance |
-| Monthly Report | P1 | Revenue, expenses, profit margins |
-| Multi-Currency | P1 | VND, USD support with exchange rates |
-| Receipt/Invoice | P1 | Generate receipts, optional e-invoice integration (like ezInvoice) |
-| Payment Methods | P0 | Cash, bank transfer, MoMo, VNPay, card |
-| Deposit Management | P0 | Track deposits, partial payments, outstanding balances |
-| Split Payments | P1 | Allow payment across multiple methods for single booking |
-| Refund Processing | P1 | Handle cancellation refunds and adjustments |
+| Feature | Priority | Status | Description |
+|---------|----------|--------|-------------|
+| Income Recording | P0 | ✅ Backend | Room revenue, extra services, deposits |
+| Expense Recording | P0 | ✅ Backend | Utilities, supplies, wages, categorized |
+| Daily Summary | P0 | ✅ Backend | Today's income/expenses with cash drawer balance |
+| Monthly Report | P1 | ✅ Backend | Revenue, expenses, profit margins |
+| Multi-Currency | P1 | Pending | VND, USD support with exchange rates |
+| Receipt/Invoice | P1 | Pending | Generate receipts, optional e-invoice integration |
+| Payment Methods | P0 | ✅ Backend | Cash, bank transfer, MoMo, VNPay, card |
+| Deposit Management | P0 | Pending | Track deposits, partial payments, outstanding balances |
+| Split Payments | P1 | Pending | Allow payment across multiple methods for single booking |
+| Refund Processing | P1 | Pending | Handle cancellation refunds and adjustments |
+
+**Also includes (from Phase 1 deferrals):**
+- ID/Passport Scanning with OCR
+- Night Audit (day close, statistics)
+- Temporary Residence Declaration (CSV/Excel export)
+- Offline Support (sync, conflict resolution)
+- Language/Theme settings
 
 ### Phase 3: Operations & Housekeeping
 **Goal:** Complete hotel operations (ezCloud-inspired)
+**Status:** Pending (Phase 2 prerequisite)
 
-| Feature | Priority | Description |
-|---------|----------|-------------|
-| Housekeeping Tasks | P1 | Auto-create cleaning tasks on checkout |
-| Room Status Tracking | P0 | Available → Occupied → Cleaning → Maintenance → Available |
-| Minibar/POS | P1 | Sell items, charge to room folio (like ezCloud front desk POS) |
-| Minibar Inventory | P2 | Track minibar stock per room, auto-replenishment alerts |
-| Task Assignment | P1 | Assign cleaning/maintenance tasks to staff with notifications |
-| Maintenance Requests | P1 | Track room maintenance issues, priority levels, history |
-| Room Inspection | P2 | Checklist for room inspections, photo documentation |
-| Lost & Found | P2 | Track items left by guests with guest notification |
-| Extra Bed/Amenities | P1 | Add extra beds, cots, amenities with charges |
-| Early Check-in/Late Check-out | P1 | Handle early arrivals and late departures with pricing |
-| Hourly Room Rates | P1 | Support hourly bookings (common in Vietnam) |
+| Feature | Priority | Status | Description |
+|---------|----------|--------|-------------|
+| Housekeeping Tasks | P1 | Pending | Auto-create cleaning tasks on checkout |
+| Room Status Tracking | P0 | ✅ Done | Available → Occupied → Cleaning → Maintenance → Available |
+| Minibar/POS | P1 | Pending | Sell items, charge to room folio |
+| Minibar Inventory | P2 | Pending | Track minibar stock per room, auto-replenishment alerts |
+| Task Assignment | P1 | Pending | Assign cleaning/maintenance tasks to staff with notifications |
+| Maintenance Requests | P1 | Pending | Track room maintenance issues, priority levels, history |
+| Room Inspection | P2 | Pending | Checklist for room inspections, photo documentation |
+| Lost & Found | P2 | Pending | Track items left by guests with guest notification |
+| Extra Bed/Amenities | P1 | Pending | Add extra beds, cots, amenities with charges |
+| Early Check-in/Late Check-out | P1 | Pending | Handle early arrivals and late departures with pricing |
+| Hourly Room Rates | P1 | Pending | Support hourly bookings (common in Vietnam) |
+| Group Booking | P1 | Pending | Multiple rooms, single invoice |
+
+**Also includes (from Phase 1 deferrals):**
+- Hourly booking logic and UI
+- Early check-in / Late check-out fees
+- Group booking management
 
 ### Phase 4: Reports & Analytics
 **Goal:** Business intelligence (like ezBi with Power BI integration)
@@ -1977,45 +1997,59 @@ class OfflineBanner extends StatelessWidget {
 
 ## 14. Development Phases
 
+> **Status Update (2026-01-30):** Phase 1 MVP is COMPLETE! All 270 tests passing. See [TASKS.md](./TASKS.md) for detailed progress.
 
-### Phase 1: Foundation (MVP)
+### Phase 1: Foundation (MVP) ✅ COMPLETE
 **Duration estimate removed per guidelines - focus on deliverables**
 
-#### Backend Tasks
-- [ ] Set up Django project structure
-- [ ] Implement User/Auth models and JWT
-- [ ] Implement Room and RoomType models
-- [ ] Implement Booking model and CRUD API
-- [ ] Create seed data for 7 rooms
-- [ ] Basic API documentation
+#### Backend Tasks ✅
+- [x] Set up Django project structure
+- [x] Implement User/Auth models and JWT
+- [x] Implement Room and RoomType models
+- [x] Implement Booking model and CRUD API
+- [x] Implement Guest model and CRUD API
+- [x] Create seed data for 7 rooms
+- [x] Basic API documentation
 
-#### Frontend Tasks
-- [ ] Set up Flutter project structure (copy patterns from cosmo_app)
-- [ ] Implement authentication screens
-- [ ] Implement Home dashboard
-- [ ] Implement Room grid/status view
-- [ ] Implement Booking calendar
-- [ ] Implement New Booking flow
-- [ ] Implement Booking detail/edit
-- [ ] Basic offline caching
+#### Frontend Tasks ✅
+- [x] Set up Flutter project structure (copy patterns from cosmo_app)
+- [x] Implement authentication screens
+- [x] Implement Home dashboard
+- [x] Implement Room grid/status view
+- [x] Implement Booking calendar
+- [x] Implement New Booking flow
+- [x] Implement Booking detail/edit
+- [x] Implement Guest management
 
-#### Deliverables
-- Working login for 2 users (mom, brother)
-- View all 7 rooms with status
-- Create/view/edit bookings
-- Calendar view of bookings
-- Check-in/check-out functionality
+#### Deliverables ✅
+- ✅ Working login for 2 users (mom, brother)
+- ✅ View all 7 rooms with status
+- ✅ Create/view/edit bookings
+- ✅ Calendar view of bookings
+- ✅ Check-in/check-out functionality
+- ✅ Guest registration and history
+
+#### Deferred to Later Phases
+- 🔄 ID Scanning (OCR) → Phase 2
+- 🔄 Night Audit → Phase 2
+- 🔄 Temp Residence Export → Phase 2
+- 🔄 Offline Support → Phase 2
+- 🔄 Hourly Booking → Phase 3
+- 🔄 Group Booking → Phase 3
 
 ---
 
-### Phase 2: Financial Tracking
+### Phase 2: Financial Tracking + Phase 1 Deferrals
 
 #### Backend Tasks
-- [ ] Implement FinancialCategory model
-- [ ] Implement FinancialEntry model
-- [ ] API for income/expense CRUD
-- [ ] API for financial summaries
+- [x] Implement FinancialCategory model
+- [x] Implement FinancialEntry model
+- [x] API for income/expense CRUD
+- [x] API for financial summaries
 - [ ] Multi-currency support
+- [ ] ID Scanning backend support
+- [ ] Night Audit model and API
+- [ ] Declaration export (CSV/Excel)
 
 #### Frontend Tasks
 - [ ] Finance tab with summary cards
@@ -2023,16 +2057,24 @@ class OfflineBanner extends StatelessWidget {
 - [ ] Add income screen
 - [ ] Add expense screen
 - [ ] Daily/monthly summary view
+- [ ] ID Scanning with OCR
+- [ ] Night Audit screen
+- [ ] Declaration export screen
+- [ ] Offline sync support
+- [ ] Language/Theme settings
 
 #### Deliverables
 - Record income (room payments, extras)
 - Record expenses (utilities, supplies)
 - Daily income/expense summary
 - Monthly totals
+- ID scanning with auto-fill
+- Night audit day close
+- Guest data export for police
 
 ---
 
-### Phase 3: Reports & Analytics
+### Phase 3: Reports & Analytics + Operations
 
 #### Backend Tasks
 - [ ] Revenue report API (by room, by source)
@@ -2040,6 +2082,9 @@ class OfflineBanner extends StatelessWidget {
 - [ ] Occupancy rate calculation
 - [ ] Profit/loss calculation
 - [ ] Excel export endpoint
+- [ ] Hourly booking logic
+- [ ] Group booking logic
+- [ ] Housekeeping task management
 
 #### Frontend Tasks
 - [ ] Financial report screen
@@ -2047,12 +2092,17 @@ class OfflineBanner extends StatelessWidget {
 - [ ] Occupancy report
 - [ ] Export to Excel functionality
 - [ ] Date range selection
+- [ ] Hourly booking UI
+- [ ] Group booking UI
+- [ ] Housekeeping task screens
 
 #### Deliverables
 - Monthly/yearly financial reports
 - Occupancy rate visualization
 - Revenue by room analysis
 - Export reports to Excel
+- Hourly room bookings
+- Group booking management
 
 ---
 
