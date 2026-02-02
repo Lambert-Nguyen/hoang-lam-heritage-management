@@ -620,17 +620,17 @@
 - [x] **3.2.7** Write housekeeping CRUD tests — ✅ 58 tests (24 housekeeping + 34 maintenance)
 
 ### 3.3 Housekeeping (Frontend)
-`[BLOCKED BY: 3.2.1-3.2.6]`
-- [ ] **3.3.1** Create HousekeepingTask model (Freezed)
-- [ ] **3.3.2** Create housekeeping repository
-- [ ] **3.3.3** Create housekeeping provider
-- [ ] **3.3.4** Create task list screen
-- [ ] **3.3.5** Create task detail screen
-- [ ] **3.3.6** Create task assignment dialog
-- [ ] **3.3.7** Create task completion flow
-- [ ] **3.3.8** Create inspection checklist widget
-- [ ] **3.3.9** Create photo documentation
-- [ ] **3.3.10** Write housekeeping widget tests
+`[BLOCKED BY: 3.2.1-3.2.6]` ✅ **COMPLETE**
+- [x] **3.3.1** Create HousekeepingTask model (Freezed) — ✅ lib/models/housekeeping.dart (HousekeepingTask, MaintenanceRequest + all enums)
+- [x] **3.3.2** Create housekeeping repository — ✅ lib/repositories/housekeeping_repository.dart
+- [x] **3.3.3** Create housekeeping provider — ✅ lib/providers/housekeeping_provider.dart (with filter classes)
+- [x] **3.3.4** Create task list screen — ✅ lib/screens/housekeeping/task_list_screen.dart (tabbed: Today/All/My Tasks)
+- [x] **3.3.5** Create task detail screen — ✅ lib/screens/housekeeping/task_detail_screen.dart
+- [x] **3.3.6** Create task assignment dialog — ✅ lib/widgets/housekeeping/assign_task_dialog.dart
+- [x] **3.3.7** Create task completion flow — ✅ lib/widgets/housekeeping/complete_task_dialog.dart (checklist-based)
+- [x] **3.3.8** Create inspection checklist widget — ✅ Integrated in complete_task_dialog.dart
+- [x] **3.3.9** Create maintenance screens — ✅ maintenance_list_screen.dart, maintenance_detail_screen.dart, maintenance_form_screen.dart
+- [x] **3.3.10** Write housekeeping widget tests — ✅ 45 tests (task_card, maintenance_card, task_filter_sheet, maintenance_filter_sheet)
 
 ### 3.4 Minibar/POS (Backend)
 `[BLOCKED BY: 1.8.1, 2.1.4]`

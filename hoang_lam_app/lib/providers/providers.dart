@@ -9,3 +9,4 @@ export 'finance_provider.dart';
 export 'night_audit_provider.dart';
 export 'declaration_provider.dart';
 export 'settings_provider.dart';
+export 'housekeeping_provider.dart';

@@ -46,6 +46,8 @@ class AppConstants {
   static const String folioItemsEndpoint = '/folio-items/';
   static const String exchangeRatesEndpoint = '/exchange-rates/';
   static const String receiptsEndpoint = '/receipts/';
+  static const String housekeepingTasksEndpoint = '/housekeeping-tasks/';
+  static const String maintenanceRequestsEndpoint = '/maintenance-requests/';
 
   // Date/Time Formats
   static const String dateFormat = 'dd/MM/yyyy';
