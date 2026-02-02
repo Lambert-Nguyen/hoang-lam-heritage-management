@@ -8,3 +8,4 @@ export 'finance_repository.dart';
 export 'night_audit_repository.dart';
 export 'declaration_repository.dart';
 export 'housekeeping_repository.dart';
+export 'minibar_repository.dart';

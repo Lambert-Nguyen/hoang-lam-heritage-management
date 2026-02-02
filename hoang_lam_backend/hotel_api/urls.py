@@ -16,6 +16,8 @@ from .views import (
     LoginView,
     LogoutView,
     MaintenanceRequestViewSet,
+    MinibarItemViewSet,
+    MinibarSaleViewSet,
     NightAuditViewSet,
     PasswordChangeView,
     PaymentViewSet,
@@ -40,6 +42,8 @@ router.register(r"exchange-rates", ExchangeRateViewSet, basename="exchangerate")
 router.register(r"receipts", ReceiptViewSet, basename="receipt")
 router.register(r"housekeeping-tasks", HousekeepingTaskViewSet, basename="housekeepingtask")
 router.register(r"maintenance-requests", MaintenanceRequestViewSet, basename="maintenancerequest")
+router.register(r"minibar-items", MinibarItemViewSet, basename="minibaritem")
+router.register(r"minibar-sales", MinibarSaleViewSet, basename="minibarsale")
 
 urlpatterns = [
     # JWT Authentication

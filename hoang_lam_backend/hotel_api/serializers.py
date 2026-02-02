@@ -11,7 +11,7 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, HousekeepingTask, MaintenanceRequest, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, HousekeepingTask, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -1485,3 +1485,250 @@ class MaintenanceRequestListSerializer(serializers.ModelSerializer):
 
     def get_location(self, obj):
         return obj.room.number if obj.room else obj.location_description
+
+
+# ============================================================
+# Minibar Serializers (Phase 3.4)
+# ============================================================
+
+
+class MinibarItemSerializer(serializers.ModelSerializer):
+    """Full serializer for MinibarItem model."""
+
+    class Meta:
+        model = MinibarItem
+        fields = [
+            "id",
+            "name",
+            "price",
+            "cost",
+            "category",
+            "is_active",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class MinibarItemCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating minibar items."""
+
+    class Meta:
+        model = MinibarItem
+        fields = ["name", "price", "cost", "category", "is_active"]
+
+    def validate_name(self, value):
+        if MinibarItem.objects.filter(name__iexact=value).exists():
+            raise serializers.ValidationError("Sản phẩm minibar với tên này đã tồn tại.")
+        return value
+
+    def validate_price(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Giá bán phải lớn hơn hoặc bằng 0.")
+        return value
+
+    def validate_cost(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Giá vốn phải lớn hơn hoặc bằng 0.")
+        return value
+
+
+class MinibarItemUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating minibar items."""
+
+    class Meta:
+        model = MinibarItem
+        fields = ["name", "price", "cost", "category", "is_active"]
+
+    def validate_name(self, value):
+        instance = self.instance
+        if MinibarItem.objects.filter(name__iexact=value).exclude(pk=instance.pk).exists():
+            raise serializers.ValidationError("Sản phẩm minibar với tên này đã tồn tại.")
+        return value
+
+    def validate_price(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Giá bán phải lớn hơn hoặc bằng 0.")
+        return value
+
+    def validate_cost(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Giá vốn phải lớn hơn hoặc bằng 0.")
+        return value
+
+
+class MinibarItemListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing minibar items."""
+
+    class Meta:
+        model = MinibarItem
+        fields = ["id", "name", "price", "category", "is_active"]
+
+
+class MinibarSaleSerializer(serializers.ModelSerializer):
+    """Full serializer for MinibarSale model."""
+
+    item_name = serializers.CharField(source="item.name", read_only=True)
+    item_category = serializers.CharField(source="item.category", read_only=True)
+    booking_guest_name = serializers.CharField(source="booking.guest_name", read_only=True)
+    booking_room_number = serializers.CharField(source="booking.room.number", read_only=True)
+    created_by_name = serializers.CharField(source="created_by.get_full_name", read_only=True)
+
+    class Meta:
+        model = MinibarSale
+        fields = [
+            "id",
+            "booking",
+            "booking_guest_name",
+            "booking_room_number",
+            "item",
+            "item_name",
+            "item_category",
+            "quantity",
+            "unit_price",
+            "total",
+            "date",
+            "is_charged",
+            "created_by",
+            "created_by_name",
+            "created_at",
+        ]
+        read_only_fields = [
+            "id",
+            "unit_price",
+            "total",
+            "created_at",
+        ]
+
+
+class MinibarSaleCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating minibar sales."""
+
+    class Meta:
+        model = MinibarSale
+        fields = ["booking", "item", "quantity", "date"]
+
+    def validate_booking(self, value):
+        if value.status not in ["confirmed", "checked_in"]:
+            raise serializers.ValidationError(
+                "Chỉ có thể thêm minibar cho đặt phòng đã xác nhận hoặc đã nhận phòng."
+            )
+        return value
+
+    def validate_item(self, value):
+        if not value.is_active:
+            raise serializers.ValidationError("Sản phẩm này không còn hoạt động.")
+        return value
+
+    def validate_quantity(self, value):
+        if value < 1:
+            raise serializers.ValidationError("Số lượng phải lớn hơn 0.")
+        return value
+
+    def create(self, validated_data):
+        item = validated_data["item"]
+        quantity = validated_data["quantity"]
+        validated_data["unit_price"] = item.price
+        validated_data["total"] = item.price * quantity
+        validated_data["created_by"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+class MinibarSaleUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating minibar sales."""
+
+    class Meta:
+        model = MinibarSale
+        fields = ["quantity", "is_charged"]
+
+    def validate_quantity(self, value):
+        if value < 1:
+            raise serializers.ValidationError("Số lượng phải lớn hơn 0.")
+        return value
+
+    def update(self, instance, validated_data):
+        if "quantity" in validated_data and validated_data["quantity"] != instance.quantity:
+            new_quantity = validated_data["quantity"]
+            validated_data["total"] = instance.unit_price * new_quantity
+        return super().update(instance, validated_data)
+
+
+class MinibarSaleListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing minibar sales."""
+
+    item_name = serializers.CharField(source="item.name", read_only=True)
+    room_number = serializers.CharField(source="booking.room.number", read_only=True)
+
+    class Meta:
+        model = MinibarSale
+        fields = [
+            "id",
+            "item_name",
+            "room_number",
+            "quantity",
+            "total",
+            "date",
+            "is_charged",
+        ]
+
+
+class MinibarSaleBulkCreateSerializer(serializers.Serializer):
+    """Serializer for bulk creating minibar sales."""
+
+    booking = serializers.PrimaryKeyRelatedField(queryset=Booking.objects.all())
+    items = serializers.ListField(
+        child=serializers.DictField(child=serializers.IntegerField()),
+        min_length=1,
+    )
+    date = serializers.DateField(required=False)
+
+    def validate_booking(self, value):
+        if value.status not in ["confirmed", "checked_in"]:
+            raise serializers.ValidationError(
+                "Chỉ có thể thêm minibar cho đặt phòng đã xác nhận hoặc đã nhận phòng."
+            )
+        return value
+
+    def validate_items(self, value):
+        for item_data in value:
+            if "item_id" not in item_data or "quantity" not in item_data:
+                raise serializers.ValidationError(
+                    "Mỗi mục phải có item_id và quantity."
+                )
+            if item_data["quantity"] < 1:
+                raise serializers.ValidationError("Số lượng phải lớn hơn 0.")
+            try:
+                item = MinibarItem.objects.get(pk=item_data["item_id"])
+                if not item.is_active:
+                    raise serializers.ValidationError(
+                        f"Sản phẩm '{item.name}' không còn hoạt động."
+                    )
+            except MinibarItem.DoesNotExist:
+                raise serializers.ValidationError(
+                    f"Sản phẩm với ID {item_data['item_id']} không tồn tại."
+                )
+        return value
+
+    def create(self, validated_data):
+        from django.utils import timezone
+
+        booking = validated_data["booking"]
+        items_data = validated_data["items"]
+        date = validated_data.get("date", timezone.now().date())
+        user = self.context["request"].user
+
+        sales = []
+        for item_data in items_data:
+            item = MinibarItem.objects.get(pk=item_data["item_id"])
+            quantity = item_data["quantity"]
+            sale = MinibarSale.objects.create(
+                booking=booking,
+                item=item,
+                quantity=quantity,
+                unit_price=item.price,
+                total=item.price * quantity,
+                date=date,
+                created_by=user,
+            )
+            sales.append(sale)
+        return sales

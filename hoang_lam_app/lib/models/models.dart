@@ -9,3 +9,4 @@ export 'finance.dart' hide PaymentMethod, PaymentMethodExtension;  // Use Paymen
 export 'night_audit.dart';
 export 'declaration.dart';
 export 'housekeeping.dart';
+export 'minibar.dart';

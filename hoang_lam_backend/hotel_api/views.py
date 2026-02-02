@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, HousekeepingTask, MaintenanceRequest, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, HousekeepingTask, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -44,6 +44,15 @@ from .serializers import (
     MaintenanceRequestListSerializer,
     MaintenanceRequestSerializer,
     MaintenanceRequestUpdateSerializer,
+    MinibarItemCreateSerializer,
+    MinibarItemListSerializer,
+    MinibarItemSerializer,
+    MinibarItemUpdateSerializer,
+    MinibarSaleBulkCreateSerializer,
+    MinibarSaleCreateSerializer,
+    MinibarSaleListSerializer,
+    MinibarSaleSerializer,
+    MinibarSaleUpdateSerializer,
     NightAuditListSerializer,
     NightAuditSerializer,
     OutstandingDepositSerializer,
@@ -3373,3 +3382,519 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
         )
         serializer = MaintenanceRequestListSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+# ============================================================
+# Minibar ViewSets (Phase 3.4)
+# ============================================================
+
+
+class MinibarItemViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing minibar items.
+
+    Provides CRUD operations for minibar inventory items.
+    """
+
+    queryset = MinibarItem.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return MinibarItemCreateSerializer
+        elif self.action in ["update", "partial_update"]:
+            return MinibarItemUpdateSerializer
+        elif self.action == "list":
+            return MinibarItemListSerializer
+        return MinibarItemSerializer
+
+    def get_queryset(self):
+        queryset = MinibarItem.objects.all()
+
+        # Filter by active status
+        is_active = self.request.query_params.get("is_active")
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == "true")
+
+        # Filter by category
+        category = self.request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category__iexact=category)
+
+        # Search by name
+        search = self.request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(name__icontains=search)
+
+        return queryset.order_by("category", "name")
+
+    @extend_schema(
+        summary="List minibar items",
+        description="Get a list of all minibar items with optional filtering.",
+        parameters=[
+            {
+                "name": "is_active",
+                "in": "query",
+                "description": "Filter by active status",
+                "required": False,
+                "schema": {"type": "boolean"},
+            },
+            {
+                "name": "category",
+                "in": "query",
+                "description": "Filter by category",
+                "required": False,
+                "schema": {"type": "string"},
+            },
+            {
+                "name": "search",
+                "in": "query",
+                "description": "Search by name",
+                "required": False,
+                "schema": {"type": "string"},
+            },
+        ],
+        responses={200: MinibarItemListSerializer(many=True)},
+        tags=["Minibar"],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Create minibar item",
+        description="Create a new minibar item.",
+        request=MinibarItemCreateSerializer,
+        responses={201: MinibarItemSerializer},
+        tags=["Minibar"],
+    )
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Get minibar item",
+        description="Get details of a specific minibar item.",
+        responses={200: MinibarItemSerializer},
+        tags=["Minibar"],
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Update minibar item",
+        description="Update a minibar item.",
+        request=MinibarItemUpdateSerializer,
+        responses={200: MinibarItemSerializer},
+        tags=["Minibar"],
+    )
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Partial update minibar item",
+        description="Partially update a minibar item.",
+        request=MinibarItemUpdateSerializer,
+        responses={200: MinibarItemSerializer},
+        tags=["Minibar"],
+    )
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Delete minibar item",
+        description="Delete a minibar item.",
+        responses={204: None},
+        tags=["Minibar"],
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Toggle item active status",
+        description="Toggle the active status of a minibar item.",
+        responses={200: MinibarItemSerializer},
+        tags=["Minibar"],
+    )
+    @action(detail=True, methods=["post"])
+    def toggle_active(self, request, pk=None):
+        """Toggle the active status of a minibar item."""
+        item = self.get_object()
+        item.is_active = not item.is_active
+        item.save()
+        serializer = MinibarItemSerializer(item)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Get active items",
+        description="Get all active minibar items for POS display.",
+        responses={200: MinibarItemListSerializer(many=True)},
+        tags=["Minibar"],
+    )
+    @action(detail=False, methods=["get"])
+    def active(self, request):
+        """Get all active minibar items."""
+        queryset = MinibarItem.objects.filter(is_active=True).order_by("category", "name")
+        serializer = MinibarItemListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Get categories",
+        description="Get list of distinct minibar item categories.",
+        responses={200: {"type": "array", "items": {"type": "string"}}},
+        tags=["Minibar"],
+    )
+    @action(detail=False, methods=["get"])
+    def categories(self, request):
+        """Get distinct minibar item categories."""
+        categories = (
+            MinibarItem.objects.filter(is_active=True)
+            .values_list("category", flat=True)
+            .distinct()
+            .order_by("category")
+        )
+        return Response(list(filter(None, categories)))
+
+
+class MinibarSaleViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing minibar sales.
+
+    Provides CRUD operations for minibar sales/charges.
+    """
+
+    queryset = MinibarSale.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return MinibarSaleCreateSerializer
+        elif self.action in ["update", "partial_update"]:
+            return MinibarSaleUpdateSerializer
+        elif self.action == "list":
+            return MinibarSaleListSerializer
+        elif self.action == "bulk_create":
+            return MinibarSaleBulkCreateSerializer
+        return MinibarSaleSerializer
+
+    def get_queryset(self):
+        queryset = MinibarSale.objects.select_related(
+            "booking", "booking__room", "item", "created_by"
+        )
+
+        # Filter by booking
+        booking_id = self.request.query_params.get("booking")
+        if booking_id:
+            queryset = queryset.filter(booking_id=booking_id)
+
+        # Filter by room
+        room_id = self.request.query_params.get("room")
+        if room_id:
+            queryset = queryset.filter(booking__room_id=room_id)
+
+        # Filter by date range
+        date_from = self.request.query_params.get("date_from")
+        date_to = self.request.query_params.get("date_to")
+        if date_from:
+            queryset = queryset.filter(date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(date__lte=date_to)
+
+        # Filter by charged status
+        is_charged = self.request.query_params.get("is_charged")
+        if is_charged is not None:
+            queryset = queryset.filter(is_charged=is_charged.lower() == "true")
+
+        return queryset.order_by("-date", "-created_at")
+
+    @extend_schema(
+        summary="List minibar sales",
+        description="Get a list of minibar sales with optional filtering.",
+        parameters=[
+            {
+                "name": "booking",
+                "in": "query",
+                "description": "Filter by booking ID",
+                "required": False,
+                "schema": {"type": "integer"},
+            },
+            {
+                "name": "room",
+                "in": "query",
+                "description": "Filter by room ID",
+                "required": False,
+                "schema": {"type": "integer"},
+            },
+            {
+                "name": "date_from",
+                "in": "query",
+                "description": "Filter sales from this date",
+                "required": False,
+                "schema": {"type": "string", "format": "date"},
+            },
+            {
+                "name": "date_to",
+                "in": "query",
+                "description": "Filter sales up to this date",
+                "required": False,
+                "schema": {"type": "string", "format": "date"},
+            },
+            {
+                "name": "is_charged",
+                "in": "query",
+                "description": "Filter by charged status",
+                "required": False,
+                "schema": {"type": "boolean"},
+            },
+        ],
+        responses={200: MinibarSaleListSerializer(many=True)},
+        tags=["Minibar"],
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Create minibar sale",
+        description="Create a new minibar sale/charge.",
+        request=MinibarSaleCreateSerializer,
+        responses={201: MinibarSaleSerializer},
+        tags=["Minibar"],
+    )
+    def create(self, request, *args, **kwargs):
+        serializer = MinibarSaleCreateSerializer(data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        response_serializer = MinibarSaleSerializer(instance)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        summary="Get minibar sale",
+        description="Get details of a specific minibar sale.",
+        responses={200: MinibarSaleSerializer},
+        tags=["Minibar"],
+    )
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Update minibar sale",
+        description="Update a minibar sale.",
+        request=MinibarSaleUpdateSerializer,
+        responses={200: MinibarSaleSerializer},
+        tags=["Minibar"],
+    )
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = MinibarSaleUpdateSerializer(instance, data=request.data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        response_serializer = MinibarSaleSerializer(instance)
+        return Response(response_serializer.data)
+
+    @extend_schema(
+        summary="Partial update minibar sale",
+        description="Partially update a minibar sale.",
+        request=MinibarSaleUpdateSerializer,
+        responses={200: MinibarSaleSerializer},
+        tags=["Minibar"],
+    )
+    def partial_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = MinibarSaleUpdateSerializer(instance, data=request.data, partial=True, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save()
+        response_serializer = MinibarSaleSerializer(instance)
+        return Response(response_serializer.data)
+
+    @extend_schema(
+        summary="Delete minibar sale",
+        description="Delete a minibar sale.",
+        responses={204: None},
+        tags=["Minibar"],
+    )
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+    @extend_schema(
+        summary="Bulk create minibar sales",
+        description="Create multiple minibar sales at once for a booking.",
+        request=MinibarSaleBulkCreateSerializer,
+        responses={201: MinibarSaleSerializer(many=True)},
+        tags=["Minibar"],
+    )
+    @action(detail=False, methods=["post"])
+    def bulk_create(self, request):
+        """Create multiple minibar sales at once."""
+        serializer = MinibarSaleBulkCreateSerializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        sales = serializer.save()
+        response_serializer = MinibarSaleSerializer(sales, many=True)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        summary="Mark as charged",
+        description="Mark a minibar sale as charged to the room folio.",
+        responses={200: MinibarSaleSerializer},
+        tags=["Minibar"],
+    )
+    @action(detail=True, methods=["post"])
+    def mark_charged(self, request, pk=None):
+        """Mark a minibar sale as charged."""
+        sale = self.get_object()
+        if sale.is_charged:
+            return Response(
+                {"detail": "Sale đã được tính phí."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        sale.is_charged = True
+        sale.save()
+        serializer = MinibarSaleSerializer(sale)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Unmark as charged",
+        description="Unmark a minibar sale as charged (reverse charge).",
+        responses={200: MinibarSaleSerializer},
+        tags=["Minibar"],
+    )
+    @action(detail=True, methods=["post"])
+    def unmark_charged(self, request, pk=None):
+        """Unmark a minibar sale as charged."""
+        sale = self.get_object()
+        if not sale.is_charged:
+            return Response(
+                {"detail": "Sale chưa được tính phí."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        sale.is_charged = False
+        sale.save()
+        serializer = MinibarSaleSerializer(sale)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Get uncharged sales for booking",
+        description="Get all uncharged minibar sales for a specific booking.",
+        parameters=[
+            {
+                "name": "booking",
+                "in": "query",
+                "description": "Booking ID",
+                "required": True,
+                "schema": {"type": "integer"},
+            },
+        ],
+        responses={200: MinibarSaleListSerializer(many=True)},
+        tags=["Minibar"],
+    )
+    @action(detail=False, methods=["get"])
+    def uncharged(self, request):
+        """Get uncharged sales for a booking."""
+        booking_id = request.query_params.get("booking")
+        if not booking_id:
+            return Response(
+                {"detail": "booking parameter is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        queryset = MinibarSale.objects.filter(
+            booking_id=booking_id, is_charged=False
+        ).order_by("-date")
+        serializer = MinibarSaleListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Charge all to room",
+        description="Charge all uncharged minibar sales for a booking to the room folio.",
+        request={"type": "object", "properties": {"booking": {"type": "integer"}}},
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "charged_count": {"type": "integer"},
+                    "total_amount": {"type": "number"},
+                },
+            }
+        },
+        tags=["Minibar"],
+    )
+    @action(detail=False, methods=["post"])
+    def charge_all(self, request):
+        """Charge all uncharged sales for a booking."""
+        booking_id = request.data.get("booking")
+        if not booking_id:
+            return Response(
+                {"detail": "booking parameter is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        sales = MinibarSale.objects.filter(booking_id=booking_id, is_charged=False)
+        total = sum(sale.total for sale in sales)
+        count = sales.count()
+
+        sales.update(is_charged=True)
+
+        return Response(
+            {
+                "charged_count": count,
+                "total_amount": total,
+            }
+        )
+
+    @extend_schema(
+        summary="Get sales summary for booking",
+        description="Get a summary of all minibar sales for a booking.",
+        parameters=[
+            {
+                "name": "booking",
+                "in": "query",
+                "description": "Booking ID",
+                "required": True,
+                "schema": {"type": "integer"},
+            },
+        ],
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "total_sales": {"type": "integer"},
+                    "total_amount": {"type": "number"},
+                    "charged_amount": {"type": "number"},
+                    "uncharged_amount": {"type": "number"},
+                    "items": {"type": "array"},
+                },
+            }
+        },
+        tags=["Minibar"],
+    )
+    @action(detail=False, methods=["get"])
+    def summary(self, request):
+        """Get minibar sales summary for a booking."""
+        booking_id = request.query_params.get("booking")
+        if not booking_id:
+            return Response(
+                {"detail": "booking parameter is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        sales = MinibarSale.objects.filter(booking_id=booking_id)
+        total_amount = sum(sale.total for sale in sales)
+        charged_amount = sum(sale.total for sale in sales if sale.is_charged)
+        uncharged_amount = sum(sale.total for sale in sales if not sale.is_charged)
+
+        # Group by item
+        from django.db.models import Sum
+
+        items_summary = (
+            sales.values("item__name")
+            .annotate(total_quantity=Sum("quantity"), total_amount=Sum("total"))
+            .order_by("item__name")
+        )
+
+        return Response(
+            {
+                "total_sales": sales.count(),
+                "total_amount": total_amount,
+                "charged_amount": charged_amount,
+                "uncharged_amount": uncharged_amount,
+                "items": list(items_summary),
+            }
+        )

@@ -12,3 +12,9 @@ export 'rooms/room_status_dialog.dart';
 
 // Finance widgets
 export 'finance/finance_widgets.dart';
+
+// Minibar widgets
+export 'minibar/minibar_widgets.dart';
+
+// Folio widgets
+export 'folio/folio_widgets.dart';

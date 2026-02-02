@@ -13,6 +13,8 @@ import '../screens/rooms/room_detail_screen.dart';
 import '../screens/bookings/bookings_screen.dart';
 import '../screens/finance/finance_screen.dart';
 import '../screens/finance/receipt_preview_screen.dart';
+import '../screens/minibar/minibar_screens.dart';
+import '../screens/folio/folio_screens.dart';
 import '../screens/night_audit/night_audit_screen.dart';
 import '../screens/declaration/declaration_export_screen.dart';
 import '../screens/settings/settings_screen.dart';
@@ -29,6 +31,9 @@ class AppRoutes {
   static const String newBooking = '/bookings/new';
   static const String finance = '/finance';
   static const String receipt = '/receipt';
+  static const String minibarPos = '/minibar';
+  static const String minibarInventory = '/minibar/inventory';
+  static const String roomFolio = '/folio';
   static const String nightAudit = '/night-audit';
   static const String declaration = '/declaration';
   static const String settings = '/settings';
@@ -118,6 +123,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      // Room Folio route (outside shell for full screen)
+      GoRoute(
+        path: '${AppRoutes.roomFolio}/:bookingId',
+        name: 'roomFolio',
+        builder: (context, state) {
+          final bookingId = int.tryParse(state.pathParameters['bookingId'] ?? '');
+          
+          if (bookingId == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy thông tin đặt phòng'),
+              ),
+            );
+          }
+          
+          return RoomFolioScreen(bookingId: bookingId);
+        },
+      ),
+
       // Main app shell with bottom navigation
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -171,6 +196,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) => const NoTransitionPage(
               child: FinanceScreen(),
             ),
+          ),
+
+          // Minibar POS
+          GoRoute(
+            path: AppRoutes.minibarPos,
+            name: 'minibarPos',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: MinibarPosScreen(),
+            ),
+            routes: [
+              // Minibar Inventory
+              GoRoute(
+                path: 'inventory',
+                name: 'minibarInventory',
+                parentNavigatorKey: _rootNavigatorKey,
+                builder: (context, state) => const MinibarInventoryScreen(),
+              ),
+            ],
           ),
 
           // Night Audit (accessible from settings or home)
