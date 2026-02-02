@@ -687,6 +687,155 @@ class HousekeepingTask(models.Model):
         return f"{self.room.number} - {self.get_task_type_display()}"
 
 
+class MaintenanceRequest(models.Model):
+    """Maintenance requests for room and facility issues"""
+
+    class Priority(models.TextChoices):
+        LOW = "low", "Thấp"
+        MEDIUM = "medium", "Trung bình"
+        HIGH = "high", "Cao"
+        URGENT = "urgent", "Khẩn cấp"
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Chờ xử lý"
+        ASSIGNED = "assigned", "Đã phân công"
+        IN_PROGRESS = "in_progress", "Đang thực hiện"
+        ON_HOLD = "on_hold", "Tạm dừng"
+        COMPLETED = "completed", "Hoàn thành"
+        CANCELLED = "cancelled", "Đã hủy"
+
+    class Category(models.TextChoices):
+        ELECTRICAL = "electrical", "Điện"
+        PLUMBING = "plumbing", "Nước"
+        AC_HEATING = "ac_heating", "Điều hòa/Sưởi"
+        FURNITURE = "furniture", "Nội thất"
+        APPLIANCE = "appliance", "Thiết bị"
+        STRUCTURAL = "structural", "Kết cấu"
+        SAFETY = "safety", "An toàn"
+        OTHER = "other", "Khác"
+
+    # Location
+    room = models.ForeignKey(
+        Room,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="maintenance_requests",
+        verbose_name="Phòng",
+        help_text="Để trống nếu là khu vực công cộng",
+    )
+    location_description = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Vị trí cụ thể",
+        help_text="Mô tả vị trí nếu không phải phòng (ví dụ: Sảnh, Hành lang tầng 2)",
+    )
+
+    # Request details
+    title = models.CharField(max_length=200, verbose_name="Tiêu đề")
+    description = models.TextField(verbose_name="Mô tả chi tiết")
+    category = models.CharField(
+        max_length=20,
+        choices=Category.choices,
+        default=Category.OTHER,
+        verbose_name="Danh mục",
+    )
+    priority = models.CharField(
+        max_length=10,
+        choices=Priority.choices,
+        default=Priority.MEDIUM,
+        verbose_name="Mức ưu tiên",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        verbose_name="Trạng thái",
+    )
+
+    # Assignment and resolution
+    assigned_to = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="assigned_maintenance",
+        verbose_name="Phân công cho",
+    )
+    assigned_at = models.DateTimeField(null=True, blank=True, verbose_name="Phân công lúc")
+
+    # Cost tracking
+    estimated_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Chi phí dự kiến",
+    )
+    actual_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Chi phí thực tế",
+    )
+
+    # Resolution details
+    resolution_notes = models.TextField(blank=True, verbose_name="Ghi chú hoàn thành")
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name="Hoàn thành lúc")
+    completed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="completed_maintenance",
+        verbose_name="Người hoàn thành",
+    )
+
+    # Audit fields
+    reported_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="reported_maintenance",
+        verbose_name="Người báo cáo",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Yêu cầu bảo trì"
+        verbose_name_plural = "Yêu cầu bảo trì"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        location = self.room.number if self.room else self.location_description
+        return f"{location} - {self.title}"
+
+    def assign(self, user, assigned_by=None):
+        """Assign the request to a user"""
+        from django.utils import timezone
+
+        self.assigned_to = user
+        self.assigned_at = timezone.now()
+        if self.status == self.Status.PENDING:
+            self.status = self.Status.ASSIGNED
+        self.save()
+
+    def complete(self, user, notes=""):
+        """Mark the request as completed"""
+        from django.utils import timezone
+
+        self.status = self.Status.COMPLETED
+        self.completed_by = user
+        self.completed_at = timezone.now()
+        if notes:
+            self.resolution_notes = notes
+        self.save()
+
+
 class MinibarItem(models.Model):
     """Minibar inventory items"""
 

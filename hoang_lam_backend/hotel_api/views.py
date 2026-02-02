@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, HousekeepingTask, MaintenanceRequest, NightAudit, Room, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -35,7 +35,15 @@ from .serializers import (
     GuestListSerializer,
     GuestSearchSerializer,
     GuestSerializer,
+    HousekeepingTaskCreateSerializer,
+    HousekeepingTaskListSerializer,
+    HousekeepingTaskSerializer,
+    HousekeepingTaskUpdateSerializer,
     LoginSerializer,
+    MaintenanceRequestCreateSerializer,
+    MaintenanceRequestListSerializer,
+    MaintenanceRequestSerializer,
+    MaintenanceRequestUpdateSerializer,
     NightAuditListSerializer,
     NightAuditSerializer,
     OutstandingDepositSerializer,
@@ -2732,3 +2740,636 @@ class ReceiptViewSet(viewsets.ViewSet):
                 "detail": "PDF generation not available. Returning JSON data.",
                 "data": receipt_data,
             })
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List housekeeping tasks",
+        description="List all housekeeping tasks with filtering options.",
+        parameters=[
+            OpenApiParameter(
+                name="room",
+                type=OpenApiTypes.INT,
+                description="Filter by room ID",
+            ),
+            OpenApiParameter(
+                name="status",
+                type=OpenApiTypes.STR,
+                description="Filter by status (pending, in_progress, completed, verified)",
+            ),
+            OpenApiParameter(
+                name="task_type",
+                type=OpenApiTypes.STR,
+                description="Filter by task type (cleaning, turndown, inspection, deep_clean, laundry)",
+            ),
+            OpenApiParameter(
+                name="assigned_to",
+                type=OpenApiTypes.INT,
+                description="Filter by assigned user ID",
+            ),
+            OpenApiParameter(
+                name="scheduled_date",
+                type=OpenApiTypes.DATE,
+                description="Filter by scheduled date (YYYY-MM-DD)",
+            ),
+            OpenApiParameter(
+                name="priority",
+                type=OpenApiTypes.STR,
+                description="Filter by priority (low, medium, high, urgent)",
+            ),
+        ],
+        tags=["Housekeeping"],
+    ),
+    retrieve=extend_schema(
+        summary="Get housekeeping task details",
+        description="Get detailed information about a specific housekeeping task.",
+        tags=["Housekeeping"],
+    ),
+    create=extend_schema(
+        summary="Create housekeeping task",
+        description="Create a new housekeeping task.",
+        tags=["Housekeeping"],
+    ),
+    update=extend_schema(
+        summary="Update housekeeping task",
+        description="Update a housekeeping task.",
+        tags=["Housekeeping"],
+    ),
+    partial_update=extend_schema(
+        summary="Partial update housekeeping task",
+        description="Partially update a housekeeping task.",
+        tags=["Housekeeping"],
+    ),
+    destroy=extend_schema(
+        summary="Delete housekeeping task",
+        description="Delete a housekeeping task.",
+        tags=["Housekeeping"],
+    ),
+)
+class HousekeepingTaskViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing housekeeping tasks."""
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+    queryset = HousekeepingTask.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return HousekeepingTaskListSerializer
+        elif self.action == "create":
+            return HousekeepingTaskCreateSerializer
+        elif self.action in ["update", "partial_update"]:
+            return HousekeepingTaskUpdateSerializer
+        return HousekeepingTaskSerializer
+
+    def get_queryset(self):
+        queryset = HousekeepingTask.objects.select_related(
+            "room", "assigned_to", "created_by"
+        ).order_by("-created_at")
+
+        # Filter by room
+        room = self.request.query_params.get("room")
+        if room:
+            queryset = queryset.filter(room_id=room)
+
+        # Filter by status
+        status_filter = self.request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Filter by task type
+        task_type = self.request.query_params.get("task_type")
+        if task_type:
+            queryset = queryset.filter(task_type=task_type)
+
+        # Filter by assigned user
+        assigned_to = self.request.query_params.get("assigned_to")
+        if assigned_to:
+            queryset = queryset.filter(assigned_to_id=assigned_to)
+
+        # Filter by scheduled date
+        scheduled_date = self.request.query_params.get("scheduled_date")
+        if scheduled_date:
+            queryset = queryset.filter(scheduled_date=scheduled_date)
+
+        # Filter by priority
+        priority = self.request.query_params.get("priority")
+        if priority:
+            queryset = queryset.filter(priority=priority)
+
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+    @extend_schema(
+        summary="Assign housekeeping task",
+        description="Assign a housekeeping task to a staff member.",
+        request={
+            "type": "object",
+            "properties": {
+                "assigned_to": {
+                    "type": "integer",
+                    "description": "User ID of the staff member to assign",
+                },
+            },
+            "required": ["assigned_to"],
+        },
+        responses={
+            200: HousekeepingTaskSerializer,
+            400: OpenApiResponse(description="Invalid request"),
+            404: OpenApiResponse(description="Task or user not found"),
+        },
+        tags=["Housekeeping"],
+    )
+    @action(detail=True, methods=["post"])
+    def assign(self, request, pk=None):
+        """Assign the task to a staff member."""
+        task = self.get_object()
+        assigned_to_id = request.data.get("assigned_to")
+
+        if not assigned_to_id:
+            return Response(
+                {"detail": "assigned_to is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user = User.objects.get(pk=assigned_to_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        task.assigned_to = user
+        if task.status == "pending":
+            task.status = "in_progress"
+        task.save()
+
+        serializer = HousekeepingTaskSerializer(task)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Complete housekeeping task",
+        description="Mark a housekeeping task as completed.",
+        request={
+            "type": "object",
+            "properties": {
+                "notes": {
+                    "type": "string",
+                    "description": "Optional completion notes",
+                },
+            },
+        },
+        responses={
+            200: HousekeepingTaskSerializer,
+            400: OpenApiResponse(description="Task already completed or verified"),
+        },
+        tags=["Housekeeping"],
+    )
+    @action(detail=True, methods=["post"])
+    def complete(self, request, pk=None):
+        """Mark the task as completed."""
+        from django.utils import timezone
+
+        task = self.get_object()
+
+        if task.status in ["completed", "verified"]:
+            return Response(
+                {"detail": f"Cannot complete task with status '{task.status}'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        task.status = "completed"
+        task.completed_at = timezone.now()
+        if request.data.get("notes"):
+            task.notes = request.data.get("notes")
+        task.save()
+
+        # Update room status to available if it was a cleaning task
+        if task.task_type in ["checkout_clean", "stay_clean", "deep_clean"] and task.room:
+            task.room.status = Room.Status.AVAILABLE
+            task.room.save()
+
+        serializer = HousekeepingTaskSerializer(task)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Verify housekeeping task",
+        description="Verify a completed housekeeping task (manager only).",
+        request={
+            "type": "object",
+            "properties": {
+                "notes": {
+                    "type": "string",
+                    "description": "Optional verification notes",
+                },
+            },
+        },
+        responses={
+            200: HousekeepingTaskSerializer,
+            400: OpenApiResponse(description="Task not completed"),
+        },
+        tags=["Housekeeping"],
+    )
+    @action(detail=True, methods=["post"])
+    def verify(self, request, pk=None):
+        """Verify the completed task."""
+        task = self.get_object()
+
+        if task.status != "completed":
+            return Response(
+                {"detail": "Only completed tasks can be verified."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        task.status = "verified"
+        if request.data.get("notes"):
+            task.notes = f"{task.notes}\nVerified: {request.data.get('notes')}" if task.notes else f"Verified: {request.data.get('notes')}"
+        task.save()
+
+        serializer = HousekeepingTaskSerializer(task)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Get tasks for today",
+        description="Get all housekeeping tasks scheduled for today.",
+        responses={
+            200: HousekeepingTaskListSerializer(many=True),
+        },
+        tags=["Housekeeping"],
+    )
+    @action(detail=False, methods=["get"])
+    def today(self, request):
+        """Get tasks scheduled for today."""
+        from django.utils import timezone
+
+        today = timezone.now().date()
+        queryset = self.get_queryset().filter(scheduled_date=today)
+        serializer = HousekeepingTaskListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Get my tasks",
+        description="Get housekeeping tasks assigned to the current user.",
+        responses={
+            200: HousekeepingTaskListSerializer(many=True),
+        },
+        tags=["Housekeeping"],
+    )
+    @action(detail=False, methods=["get"])
+    def my_tasks(self, request):
+        """Get tasks assigned to the current user."""
+        queryset = self.get_queryset().filter(
+            assigned_to=request.user,
+            status__in=["pending", "in_progress"],
+        )
+        serializer = HousekeepingTaskListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List maintenance requests",
+        description="List all maintenance requests with filtering options.",
+        parameters=[
+            OpenApiParameter(
+                name="room",
+                type=OpenApiTypes.INT,
+                description="Filter by room ID",
+            ),
+            OpenApiParameter(
+                name="status",
+                type=OpenApiTypes.STR,
+                description="Filter by status (pending, assigned, in_progress, on_hold, completed, cancelled)",
+            ),
+            OpenApiParameter(
+                name="priority",
+                type=OpenApiTypes.STR,
+                description="Filter by priority (low, medium, high, urgent)",
+            ),
+            OpenApiParameter(
+                name="category",
+                type=OpenApiTypes.STR,
+                description="Filter by category (electrical, plumbing, ac_heating, furniture, appliance, structural, safety, other)",
+            ),
+            OpenApiParameter(
+                name="assigned_to",
+                type=OpenApiTypes.INT,
+                description="Filter by assigned user ID",
+            ),
+        ],
+        tags=["Maintenance"],
+    ),
+    retrieve=extend_schema(
+        summary="Get maintenance request details",
+        description="Get detailed information about a specific maintenance request.",
+        tags=["Maintenance"],
+    ),
+    create=extend_schema(
+        summary="Create maintenance request",
+        description="Create a new maintenance request.",
+        tags=["Maintenance"],
+    ),
+    update=extend_schema(
+        summary="Update maintenance request",
+        description="Update a maintenance request.",
+        tags=["Maintenance"],
+    ),
+    partial_update=extend_schema(
+        summary="Partial update maintenance request",
+        description="Partially update a maintenance request.",
+        tags=["Maintenance"],
+    ),
+    destroy=extend_schema(
+        summary="Delete maintenance request",
+        description="Delete a maintenance request.",
+        tags=["Maintenance"],
+    ),
+)
+class MaintenanceRequestViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing maintenance requests."""
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+    queryset = MaintenanceRequest.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return MaintenanceRequestListSerializer
+        elif self.action == "create":
+            return MaintenanceRequestCreateSerializer
+        elif self.action in ["update", "partial_update"]:
+            return MaintenanceRequestUpdateSerializer
+        return MaintenanceRequestSerializer
+
+    def get_queryset(self):
+        queryset = MaintenanceRequest.objects.select_related(
+            "room", "reported_by", "assigned_to", "completed_by"
+        ).order_by("-created_at")
+
+        # Filter by room
+        room = self.request.query_params.get("room")
+        if room:
+            queryset = queryset.filter(room_id=room)
+
+        # Filter by status
+        status_filter = self.request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Filter by priority
+        priority = self.request.query_params.get("priority")
+        if priority:
+            queryset = queryset.filter(priority=priority)
+
+        # Filter by category
+        category = self.request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category=category)
+
+        # Filter by assigned user
+        assigned_to = self.request.query_params.get("assigned_to")
+        if assigned_to:
+            queryset = queryset.filter(assigned_to_id=assigned_to)
+
+        return queryset
+
+    def perform_create(self, serializer):
+        serializer.save(reported_by=self.request.user)
+
+    @extend_schema(
+        summary="Assign maintenance request",
+        description="Assign a maintenance request to a staff member.",
+        request={
+            "type": "object",
+            "properties": {
+                "assigned_to": {
+                    "type": "integer",
+                    "description": "User ID of the staff member to assign",
+                },
+                "estimated_cost": {
+                    "type": "number",
+                    "description": "Estimated cost for the repair",
+                },
+            },
+            "required": ["assigned_to"],
+        },
+        responses={
+            200: MaintenanceRequestSerializer,
+            400: OpenApiResponse(description="Invalid request"),
+            404: OpenApiResponse(description="Request or user not found"),
+        },
+        tags=["Maintenance"],
+    )
+    @action(detail=True, methods=["post"])
+    def assign(self, request, pk=None):
+        """Assign the request to a staff member."""
+        maintenance_request = self.get_object()
+        assigned_to_id = request.data.get("assigned_to")
+
+        if not assigned_to_id:
+            return Response(
+                {"detail": "assigned_to is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user = User.objects.get(pk=assigned_to_id)
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "User not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        maintenance_request.assign(user)
+
+        # Update estimated cost if provided
+        if request.data.get("estimated_cost"):
+            maintenance_request.estimated_cost = request.data.get("estimated_cost")
+            maintenance_request.save()
+
+        serializer = MaintenanceRequestSerializer(maintenance_request)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Complete maintenance request",
+        description="Mark a maintenance request as completed.",
+        request={
+            "type": "object",
+            "properties": {
+                "actual_cost": {
+                    "type": "number",
+                    "description": "Actual cost of the repair",
+                },
+                "resolution_notes": {
+                    "type": "string",
+                    "description": "Notes about the resolution",
+                },
+            },
+        },
+        responses={
+            200: MaintenanceRequestSerializer,
+            400: OpenApiResponse(description="Request not in progress"),
+        },
+        tags=["Maintenance"],
+    )
+    @action(detail=True, methods=["post"])
+    def complete(self, request, pk=None):
+        """Mark the request as completed."""
+        maintenance_request = self.get_object()
+
+        if maintenance_request.status not in ["assigned", "in_progress"]:
+            return Response(
+                {"detail": f"Cannot complete request with status '{maintenance_request.status}'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        actual_cost = request.data.get("actual_cost")
+        resolution_notes = request.data.get("resolution_notes", "")
+
+        # Update actual cost if provided
+        if actual_cost is not None:
+            maintenance_request.actual_cost = actual_cost
+            maintenance_request.save()
+
+        # Use the model's complete method
+        maintenance_request.complete(request.user, resolution_notes)
+
+        serializer = MaintenanceRequestSerializer(maintenance_request)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Put maintenance request on hold",
+        description="Put a maintenance request on hold.",
+        request={
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "description": "Reason for putting on hold",
+                },
+            },
+        },
+        responses={
+            200: MaintenanceRequestSerializer,
+            400: OpenApiResponse(description="Invalid status transition"),
+        },
+        tags=["Maintenance"],
+    )
+    @action(detail=True, methods=["post"])
+    def hold(self, request, pk=None):
+        """Put the request on hold."""
+        maintenance_request = self.get_object()
+
+        if maintenance_request.status in ["completed", "cancelled"]:
+            return Response(
+                {"detail": f"Cannot hold request with status '{maintenance_request.status}'."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        maintenance_request.status = "on_hold"
+        if request.data.get("reason"):
+            maintenance_request.resolution_notes = f"{maintenance_request.resolution_notes}\nOn hold: {request.data.get('reason')}" if maintenance_request.resolution_notes else f"On hold: {request.data.get('reason')}"
+        maintenance_request.save()
+
+        serializer = MaintenanceRequestSerializer(maintenance_request)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Resume maintenance request",
+        description="Resume a maintenance request from on hold.",
+        responses={
+            200: MaintenanceRequestSerializer,
+            400: OpenApiResponse(description="Request not on hold"),
+        },
+        tags=["Maintenance"],
+    )
+    @action(detail=True, methods=["post"])
+    def resume(self, request, pk=None):
+        """Resume the request from on hold."""
+        maintenance_request = self.get_object()
+
+        if maintenance_request.status != "on_hold":
+            return Response(
+                {"detail": "Request is not on hold."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        maintenance_request.status = "in_progress" if maintenance_request.assigned_to else "assigned"
+        maintenance_request.save()
+
+        serializer = MaintenanceRequestSerializer(maintenance_request)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Cancel maintenance request",
+        description="Cancel a maintenance request.",
+        request={
+            "type": "object",
+            "properties": {
+                "reason": {
+                    "type": "string",
+                    "description": "Reason for cancellation",
+                },
+            },
+        },
+        responses={
+            200: MaintenanceRequestSerializer,
+            400: OpenApiResponse(description="Request already completed"),
+        },
+        tags=["Maintenance"],
+    )
+    @action(detail=True, methods=["post"])
+    def cancel(self, request, pk=None):
+        """Cancel the request."""
+        maintenance_request = self.get_object()
+
+        if maintenance_request.status == "completed":
+            return Response(
+                {"detail": "Cannot cancel completed request."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        maintenance_request.status = "cancelled"
+        if request.data.get("reason"):
+            maintenance_request.resolution_notes = f"{maintenance_request.resolution_notes}\nCancelled: {request.data.get('reason')}" if maintenance_request.resolution_notes else f"Cancelled: {request.data.get('reason')}"
+        maintenance_request.save()
+
+        serializer = MaintenanceRequestSerializer(maintenance_request)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Get urgent requests",
+        description="Get all urgent and high priority maintenance requests that are not completed.",
+        responses={
+            200: MaintenanceRequestListSerializer(many=True),
+        },
+        tags=["Maintenance"],
+    )
+    @action(detail=False, methods=["get"])
+    def urgent(self, request):
+        """Get urgent and high priority requests."""
+        queryset = self.get_queryset().filter(
+            priority__in=["urgent", "high"],
+            status__in=["pending", "assigned", "in_progress", "on_hold"],
+        )
+        serializer = MaintenanceRequestListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @extend_schema(
+        summary="Get my requests",
+        description="Get maintenance requests assigned to the current user.",
+        responses={
+            200: MaintenanceRequestListSerializer(many=True),
+        },
+        tags=["Maintenance"],
+    )
+    @action(detail=False, methods=["get"])
+    def my_requests(self, request):
+        """Get requests assigned to the current user."""
+        queryset = self.get_queryset().filter(
+            assigned_to=request.user,
+            status__in=["assigned", "in_progress", "on_hold"],
+        )
+        serializer = MaintenanceRequestListSerializer(queryset, many=True)
+        return Response(serializer.data)

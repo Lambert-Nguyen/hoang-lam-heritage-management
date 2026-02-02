@@ -12,8 +12,10 @@ from .views import (
     FinancialEntryViewSet,
     FolioItemViewSet,
     GuestViewSet,
+    HousekeepingTaskViewSet,
     LoginView,
     LogoutView,
+    MaintenanceRequestViewSet,
     NightAuditViewSet,
     PasswordChangeView,
     PaymentViewSet,
@@ -36,6 +38,8 @@ router.register(r"payments", PaymentViewSet, basename="payment")
 router.register(r"folio-items", FolioItemViewSet, basename="folioitem")
 router.register(r"exchange-rates", ExchangeRateViewSet, basename="exchangerate")
 router.register(r"receipts", ReceiptViewSet, basename="receipt")
+router.register(r"housekeeping-tasks", HousekeepingTaskViewSet, basename="housekeepingtask")
+router.register(r"maintenance-requests", MaintenanceRequestViewSet, basename="maintenancerequest")
 
 urlpatterns = [
     # JWT Authentication

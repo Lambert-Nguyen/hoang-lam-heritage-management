@@ -11,7 +11,7 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, HousekeepingTask, MaintenanceRequest, NightAudit, Room, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -1273,3 +1273,215 @@ class ReceiptDataSerializer(serializers.Serializer):
     # Payment info
     payment_method = serializers.CharField()
     created_by = serializers.CharField()
+
+
+# ============================================================
+# Housekeeping Serializers (Phase 3.1)
+# ============================================================
+
+
+class HousekeepingTaskSerializer(serializers.ModelSerializer):
+    """Full housekeeping task serializer."""
+
+    room_number = serializers.CharField(source="room.number", read_only=True)
+    assigned_to_name = serializers.CharField(source="assigned_to.get_full_name", read_only=True)
+    created_by_name = serializers.CharField(source="created_by.get_full_name", read_only=True)
+    task_type_display = serializers.CharField(source="get_task_type_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+
+    class Meta:
+        model = HousekeepingTask
+        fields = [
+            "id",
+            "room",
+            "room_number",
+            "task_type",
+            "task_type_display",
+            "status",
+            "status_display",
+            "scheduled_date",
+            "completed_at",
+            "assigned_to",
+            "assigned_to_name",
+            "notes",
+            "booking",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at", "created_by"]
+
+
+class HousekeepingTaskCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating housekeeping tasks."""
+
+    class Meta:
+        model = HousekeepingTask
+        fields = [
+            "room",
+            "task_type",
+            "scheduled_date",
+            "assigned_to",
+            "notes",
+            "booking",
+        ]
+
+    def create(self, validated_data):
+        validated_data["created_by"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+class HousekeepingTaskUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating housekeeping tasks."""
+
+    class Meta:
+        model = HousekeepingTask
+        fields = [
+            "status",
+            "assigned_to",
+            "notes",
+            "completed_at",
+        ]
+
+
+class HousekeepingTaskListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing housekeeping tasks."""
+
+    room_number = serializers.CharField(source="room.number", read_only=True)
+    assigned_to_name = serializers.CharField(source="assigned_to.get_full_name", read_only=True)
+    task_type_display = serializers.CharField(source="get_task_type_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+
+    class Meta:
+        model = HousekeepingTask
+        fields = [
+            "id",
+            "room_number",
+            "task_type",
+            "task_type_display",
+            "status",
+            "status_display",
+            "scheduled_date",
+            "assigned_to_name",
+        ]
+
+
+# ============================================================
+# Maintenance Request Serializers (Phase 3.1)
+# ============================================================
+
+
+class MaintenanceRequestSerializer(serializers.ModelSerializer):
+    """Full maintenance request serializer."""
+
+    room_number = serializers.CharField(source="room.number", read_only=True, allow_null=True)
+    assigned_to_name = serializers.CharField(source="assigned_to.get_full_name", read_only=True, allow_null=True)
+    reported_by_name = serializers.CharField(source="reported_by.get_full_name", read_only=True, allow_null=True)
+    completed_by_name = serializers.CharField(source="completed_by.get_full_name", read_only=True, allow_null=True)
+    priority_display = serializers.CharField(source="get_priority_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
+
+    class Meta:
+        model = MaintenanceRequest
+        fields = [
+            "id",
+            "room",
+            "room_number",
+            "location_description",
+            "title",
+            "description",
+            "category",
+            "category_display",
+            "priority",
+            "priority_display",
+            "status",
+            "status_display",
+            "assigned_to",
+            "assigned_to_name",
+            "assigned_at",
+            "estimated_cost",
+            "actual_cost",
+            "resolution_notes",
+            "completed_at",
+            "completed_by",
+            "completed_by_name",
+            "reported_by",
+            "reported_by_name",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at", "reported_by", "assigned_at", "completed_at", "completed_by"]
+
+
+class MaintenanceRequestCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating maintenance requests."""
+
+    class Meta:
+        model = MaintenanceRequest
+        fields = [
+            "room",
+            "location_description",
+            "title",
+            "description",
+            "category",
+            "priority",
+            "estimated_cost",
+        ]
+
+    def validate(self, attrs):
+        # Require either room or location_description
+        if not attrs.get("room") and not attrs.get("location_description"):
+            raise serializers.ValidationError(
+                "Vui lòng chọn phòng hoặc nhập vị trí cụ thể."
+            )
+        return attrs
+
+    def create(self, validated_data):
+        validated_data["reported_by"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+class MaintenanceRequestUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating maintenance requests."""
+
+    class Meta:
+        model = MaintenanceRequest
+        fields = [
+            "status",
+            "assigned_to",
+            "priority",
+            "estimated_cost",
+            "actual_cost",
+            "resolution_notes",
+        ]
+
+
+class MaintenanceRequestListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing maintenance requests."""
+
+    room_number = serializers.CharField(source="room.number", read_only=True, allow_null=True)
+    priority_display = serializers.CharField(source="get_priority_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
+    location = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MaintenanceRequest
+        fields = [
+            "id",
+            "title",
+            "room_number",
+            "location",
+            "category",
+            "category_display",
+            "priority",
+            "priority_display",
+            "status",
+            "status_display",
+            "created_at",
+        ]
+
+    def get_location(self, obj):
+        return obj.room.number if obj.room else obj.location_description
