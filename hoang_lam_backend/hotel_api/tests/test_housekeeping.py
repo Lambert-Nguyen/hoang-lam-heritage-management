@@ -93,7 +93,7 @@ def housekeeping_task(db, room, staff_user, manager_user):
         room=room,
         task_type=HousekeepingTask.TaskType.CHECKOUT_CLEAN,
         status=HousekeepingTask.Status.PENDING,
-        scheduled_date=date.today(),
+        scheduled_date=timezone.now().date(),
         created_by=manager_user,
     )
 
@@ -105,7 +105,7 @@ def assigned_task(db, room, staff_user, manager_user):
         room=room,
         task_type=HousekeepingTask.TaskType.DEEP_CLEAN,
         status=HousekeepingTask.Status.IN_PROGRESS,
-        scheduled_date=date.today(),
+        scheduled_date=timezone.now().date(),
         assigned_to=staff_user,
         created_by=manager_user,
     )
@@ -161,7 +161,7 @@ class TestHousekeepingTaskViewSet:
     def test_filter_tasks_by_scheduled_date(self, api_client, staff_user, housekeeping_task):
         """Can filter tasks by scheduled date."""
         api_client.force_authenticate(user=staff_user)
-        today = date.today().isoformat()
+        today = timezone.now().date().isoformat()
         response = api_client.get(f"/api/v1/housekeeping-tasks/?scheduled_date={today}")
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data["results"]) >= 1
@@ -181,7 +181,7 @@ class TestHousekeepingTaskViewSet:
         data = {
             "room": room.id,
             "task_type": "inspection",
-            "scheduled_date": date.today().isoformat(),
+            "scheduled_date": timezone.now().date().isoformat(),
         }
         response = api_client.post("/api/v1/housekeeping-tasks/", data)
         assert response.status_code == status.HTTP_201_CREATED
@@ -199,7 +199,7 @@ class TestHousekeepingTaskViewSet:
         data = {
             "room": room.id,
             "task_type": "stay_clean",
-            "scheduled_date": date.today().isoformat(),
+            "scheduled_date": timezone.now().date().isoformat(),
         }
         response = api_client.post("/api/v1/housekeeping-tasks/", data)
         assert response.status_code == status.HTTP_201_CREATED
@@ -319,7 +319,7 @@ class TestHousekeepingTaskModel:
         task = HousekeepingTask.objects.create(
             room=room,
             task_type=HousekeepingTask.TaskType.CHECKOUT_CLEAN,
-            scheduled_date=date.today(),
+            scheduled_date=timezone.now().date(),
             created_by=manager_user,
         )
         assert task.status == HousekeepingTask.Status.PENDING
@@ -335,7 +335,7 @@ class TestHousekeepingTaskModel:
         task = HousekeepingTask.objects.create(
             room=room,
             task_type=HousekeepingTask.TaskType.INSPECTION,
-            scheduled_date=date.today(),
+            scheduled_date=timezone.now().date(),
             created_by=manager_user,
         )
         assert task.status == HousekeepingTask.Status.PENDING

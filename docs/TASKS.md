@@ -655,7 +655,7 @@
 - [x] **3.5.5** Create item selector — ✅ lib/widgets/minibar/minibar_item_grid.dart, minibar_item_card.dart
 - [x] **3.5.6** Create charge confirmation — ✅ lib/widgets/minibar/minibar_cart_panel.dart (checkout via processCart)
 - [x] **3.5.7** Create inventory management screen — ✅ lib/screens/minibar/minibar_inventory_screen.dart (items tab + sales history tab), minibar_item_form_screen.dart
-- [ ] **3.5.8** Write minibar widget tests — 🔄 Pending
+- [x] **3.5.8** Write minibar widget tests — ✅ test/widgets/minibar/ (minibar_item_card_test.dart, minibar_cart_panel_test.dart, minibar_item_grid_test.dart)
 
 ### 3.6 Room Folio (Frontend)
 `[BLOCKED BY: 3.4.4, 2.3.1-2.3.4]` ✅ **COMPLETE**
@@ -663,7 +663,7 @@
 - [x] **3.6.2** Create folio item list — ✅ lib/widgets/folio/folio_item_list_widget.dart (grouped by FolioItemType, void/paid status)
 - [x] **3.6.3** Create add charge dialog — ✅ lib/widgets/folio/add_charge_dialog.dart (type selector, qty, price, date)
 - [x] **3.6.4** Create folio summary — ✅ lib/widgets/folio/folio_summary_widget.dart (room/additional charges, payments, balance)
-- [ ] **3.6.5** Write folio widget tests — 🔄 Pending
+- [x] **3.6.5** Write folio widget tests — ✅ test/widgets/folio/ (folio_item_list_widget_test.dart, folio_summary_widget_test.dart, add_charge_dialog_test.dart)
 
 > **Provider**: lib/providers/folio_provider.dart (FolioNotifier with loadFolio, addCharge, voidItem)
 > **Route**: `/folio/:bookingId` in app_router.dart
