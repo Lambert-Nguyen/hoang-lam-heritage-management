@@ -195,7 +195,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                         ),
                   ),
                   Text(
-                    currentUser.username ?? '',
+                    currentUser?.username ?? '',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                         ),

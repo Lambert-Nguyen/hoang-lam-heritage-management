@@ -11,7 +11,7 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, HotelUser, HousekeepingTask, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -133,6 +133,12 @@ class RoomTypeSerializer(serializers.ModelSerializer):
             "name",
             "name_en",
             "base_rate",
+            # Hourly booking fields
+            "hourly_rate",
+            "first_hour_rate",
+            "allows_hourly",
+            "min_hours",
+            # Guest capacity
             "max_guests",
             "description",
             "amenities",
@@ -178,6 +184,8 @@ class RoomTypeListSerializer(serializers.ModelSerializer):
             "name",
             "name_en",
             "base_rate",
+            "hourly_rate",
+            "allows_hourly",
             "max_guests",
             "is_active",
             "room_count",
@@ -412,8 +420,10 @@ class BookingSerializer(serializers.ModelSerializer):
     room_type_name = serializers.CharField(source="room.room_type.name", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     source_display = serializers.CharField(source="get_source_display", read_only=True)
+    booking_type_display = serializers.CharField(source="get_booking_type_display", read_only=True)
     nights = serializers.ReadOnlyField()
     balance_due = serializers.ReadOnlyField()
+    is_hourly = serializers.ReadOnlyField()
 
     @extend_schema_field(serializers.IntegerField)
     def nights(self, obj):
@@ -442,6 +452,20 @@ class BookingSerializer(serializers.ModelSerializer):
             "source",
             "source_display",
             "ota_reference",
+            # Booking type (hourly/overnight)
+            "booking_type",
+            "booking_type_display",
+            "is_hourly",
+            # Hourly booking fields
+            "hours_booked",
+            "hourly_rate",
+            "expected_check_out_time",
+            # Early/Late fees
+            "early_check_in_fee",
+            "late_check_out_fee",
+            "early_check_in_hours",
+            "late_check_out_hours",
+            # Pricing
             "nightly_rate",
             "total_amount",
             "currency",
@@ -527,6 +551,7 @@ class BookingListSerializer(serializers.ModelSerializer):
     room_number = serializers.CharField(source="room.number", read_only=True)
     room_type_name = serializers.CharField(source="room.room_type.name", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
+    booking_type_display = serializers.CharField(source="get_booking_type_display", read_only=True)
     nights = serializers.ReadOnlyField()
 
     class Meta:
@@ -545,7 +570,11 @@ class BookingListSerializer(serializers.ModelSerializer):
             "status",
             "status_display",
             "source",
+            "booking_type",
+            "booking_type_display",
+            "hours_booked",
             "nightly_rate",
+            "hourly_rate",
             "total_amount",
             "is_paid",
             "nights",
@@ -1985,6 +2014,390 @@ class ExportReportRequestSerializer(serializers.Serializer):
         if attrs["start_date"] > attrs["end_date"]:
             raise serializers.ValidationError({
                 "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+
+
+# ============================================================
+# Lost & Found Serializers (Phase 3)
+# ============================================================
+
+
+class LostAndFoundSerializer(serializers.ModelSerializer):
+    """Full serializer for Lost & Found items."""
+
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
+    room_number = serializers.SerializerMethodField()
+    guest_name = serializers.SerializerMethodField()
+    found_by_name = serializers.SerializerMethodField()
+    claimed_by_staff_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LostAndFound
+        fields = [
+            "id",
+            "item_name",
+            "description",
+            "category",
+            "category_display",
+            "estimated_value",
+            # Location
+            "room",
+            "room_number",
+            "found_location",
+            "storage_location",
+            # Guest association
+            "guest",
+            "guest_name",
+            "booking",
+            # Status
+            "status",
+            "status_display",
+            "found_date",
+            "claimed_date",
+            "disposed_date",
+            # Staff
+            "found_by",
+            "found_by_name",
+            "claimed_by_staff",
+            "claimed_by_staff_name",
+            # Contact
+            "guest_contacted",
+            "contact_notes",
+            # Image
+            "image",
+            # Notes
+            "notes",
+            # Audit
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "claimed_date",
+            "disposed_date",
+            "claimed_by_staff",
+            "created_at",
+            "updated_at",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_room_number(self, obj):
+        return obj.room.number if obj.room else None
+
+    @extend_schema_field(serializers.CharField)
+    def get_guest_name(self, obj):
+        return obj.guest.full_name if obj.guest else None
+
+    @extend_schema_field(serializers.CharField)
+    def get_found_by_name(self, obj):
+        if obj.found_by:
+            return obj.found_by.get_full_name() or obj.found_by.username
+        return None
+
+    @extend_schema_field(serializers.CharField)
+    def get_claimed_by_staff_name(self, obj):
+        if obj.claimed_by_staff:
+            return obj.claimed_by_staff.get_full_name() or obj.claimed_by_staff.username
+        return None
+
+
+class LostAndFoundListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing Lost & Found items."""
+
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    category_display = serializers.CharField(source="get_category_display", read_only=True)
+    room_number = serializers.SerializerMethodField()
+    guest_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LostAndFound
+        fields = [
+            "id",
+            "item_name",
+            "category",
+            "category_display",
+            "status",
+            "status_display",
+            "room",
+            "room_number",
+            "guest",
+            "guest_name",
+            "found_date",
+            "estimated_value",
+            "image",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_room_number(self, obj):
+        return obj.room.number if obj.room else None
+
+    @extend_schema_field(serializers.CharField)
+    def get_guest_name(self, obj):
+        return obj.guest.full_name if obj.guest else None
+
+
+class LostAndFoundCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating Lost & Found items."""
+
+    class Meta:
+        model = LostAndFound
+        fields = [
+            "item_name",
+            "description",
+            "category",
+            "estimated_value",
+            "room",
+            "found_location",
+            "storage_location",
+            "guest",
+            "booking",
+            "found_date",
+            "found_by",
+            "guest_contacted",
+            "contact_notes",
+            "image",
+            "notes",
+        ]
+
+    def create(self, validated_data):
+        # Set initial status
+        validated_data["status"] = LostAndFound.Status.FOUND
+        return super().create(validated_data)
+
+
+class LostAndFoundUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating Lost & Found items."""
+
+    class Meta:
+        model = LostAndFound
+        fields = [
+            "item_name",
+            "description",
+            "category",
+            "estimated_value",
+            "room",
+            "found_location",
+            "storage_location",
+            "guest",
+            "booking",
+            "status",
+            "guest_contacted",
+            "contact_notes",
+            "image",
+            "notes",
+        ]
+
+
+class LostAndFoundClaimSerializer(serializers.Serializer):
+    """Serializer for claiming a lost item."""
+
+    notes = serializers.CharField(required=False, allow_blank=True)
+
+    def validate(self, attrs):
+        item = self.context.get("item")
+        if item and item.status == LostAndFound.Status.CLAIMED:
+            raise serializers.ValidationError("Vật phẩm này đã được trả cho khách.")
+        if item and item.status in [LostAndFound.Status.DISPOSED, LostAndFound.Status.DONATED]:
+            raise serializers.ValidationError("Vật phẩm này đã được xử lý.")
+        return attrs
+
+
+class LostAndFoundDisposeSerializer(serializers.Serializer):
+    """Serializer for disposing a lost item."""
+
+    method = serializers.ChoiceField(
+        choices=["disposed", "donated"],
+        default="disposed",
+    )
+
+    def validate(self, attrs):
+        item = self.context.get("item")
+        if item and item.status == LostAndFound.Status.CLAIMED:
+            raise serializers.ValidationError("Không thể xử lý vật phẩm đã trả cho khách.")
+        if item and item.status in [LostAndFound.Status.DISPOSED, LostAndFound.Status.DONATED]:
+            raise serializers.ValidationError("Vật phẩm này đã được xử lý.")
+        return attrs
+
+
+# ============================================================
+# Group Booking Serializers (Phase 3)
+# ============================================================
+
+
+class GroupBookingSerializer(serializers.ModelSerializer):
+    """Full serializer for Group Booking."""
+
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    source_display = serializers.CharField(source="get_source_display", read_only=True)
+    created_by_name = serializers.SerializerMethodField()
+    room_numbers = serializers.SerializerMethodField()
+    nights = serializers.IntegerField(read_only=True)
+    balance_due = serializers.DecimalField(max_digits=12, decimal_places=0, read_only=True)
+
+    class Meta:
+        model = GroupBooking
+        fields = [
+            "id",
+            "name",
+            "contact_name",
+            "contact_phone",
+            "contact_email",
+            "company",
+            # Dates
+            "check_in_date",
+            "check_out_date",
+            "actual_check_in",
+            "actual_check_out",
+            "nights",
+            # Room allocation
+            "room_count",
+            "guest_count",
+            "rooms",
+            "room_numbers",
+            # Pricing
+            "total_amount",
+            "deposit_amount",
+            "deposit_paid",
+            "special_rate",
+            "discount_percent",
+            "currency",
+            "balance_due",
+            # Status
+            "status",
+            "status_display",
+            "source",
+            "source_display",
+            # Notes
+            "notes",
+            "special_requests",
+            # Audit
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "actual_check_in",
+            "actual_check_out",
+            "created_by",
+            "created_at",
+            "updated_at",
+        ]
+
+    @extend_schema_field(serializers.CharField)
+    def get_created_by_name(self, obj):
+        if obj.created_by:
+            return obj.created_by.get_full_name() or obj.created_by.username
+        return None
+
+    @extend_schema_field(serializers.ListField)
+    def get_room_numbers(self, obj):
+        return list(obj.rooms.values_list("number", flat=True))
+
+
+class GroupBookingListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for listing Group Bookings."""
+
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
+    nights = serializers.IntegerField(read_only=True)
+    balance_due = serializers.DecimalField(max_digits=12, decimal_places=0, read_only=True)
+
+    class Meta:
+        model = GroupBooking
+        fields = [
+            "id",
+            "name",
+            "contact_name",
+            "contact_phone",
+            "company",
+            "check_in_date",
+            "check_out_date",
+            "nights",
+            "room_count",
+            "guest_count",
+            "total_amount",
+            "deposit_paid",
+            "balance_due",
+            "status",
+            "status_display",
+        ]
+
+
+class GroupBookingCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating Group Bookings."""
+
+    class Meta:
+        model = GroupBooking
+        fields = [
+            "name",
+            "contact_name",
+            "contact_phone",
+            "contact_email",
+            "company",
+            "check_in_date",
+            "check_out_date",
+            "room_count",
+            "guest_count",
+            "rooms",
+            "total_amount",
+            "deposit_amount",
+            "deposit_paid",
+            "special_rate",
+            "discount_percent",
+            "currency",
+            "source",
+            "notes",
+            "special_requests",
+        ]
+
+    def validate(self, attrs):
+        if attrs["check_in_date"] >= attrs["check_out_date"]:
+            raise serializers.ValidationError({
+                "check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."
+            })
+        return attrs
+
+    def create(self, validated_data):
+        # Set created_by from request
+        validated_data["created_by"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+class GroupBookingUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating Group Bookings."""
+
+    class Meta:
+        model = GroupBooking
+        fields = [
+            "name",
+            "contact_name",
+            "contact_phone",
+            "contact_email",
+            "company",
+            "check_in_date",
+            "check_out_date",
+            "room_count",
+            "guest_count",
+            "rooms",
+            "total_amount",
+            "deposit_amount",
+            "deposit_paid",
+            "special_rate",
+            "discount_percent",
+            "status",
+            "notes",
+            "special_requests",
+        ]
+
+    def validate(self, attrs):
+        check_in = attrs.get("check_in_date", self.instance.check_in_date)
+        check_out = attrs.get("check_out_date", self.instance.check_out_date)
+        if check_in >= check_out:
+            raise serializers.ValidationError({
+                "check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."
             })
         return attrs
 

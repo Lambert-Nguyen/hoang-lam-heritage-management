@@ -97,6 +97,12 @@ sealed class RoomType with _$RoomType {
     required String name,
     @JsonKey(name: 'name_en') String? nameEn,
     @JsonKey(name: 'base_rate') required int baseRate,
+    // Hourly booking fields
+    @JsonKey(name: 'hourly_rate') int? hourlyRate,
+    @JsonKey(name: 'first_hour_rate') int? firstHourRate,
+    @JsonKey(name: 'allows_hourly') @Default(true) bool allowsHourly,
+    @JsonKey(name: 'min_hours') @Default(2) int minHours,
+    // Guest capacity
     @JsonKey(name: 'max_guests') @Default(2) int maxGuests,
     String? description,
     @Default([]) List<String> amenities,
@@ -122,6 +128,15 @@ sealed class RoomType with _$RoomType {
         RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
         (Match m) => '${m[1]}.',
       )}đ';
+
+  /// Get formatted hourly rate
+  String? get formattedHourlyRate {
+    if (hourlyRate == null) return null;
+    return '${hourlyRate.toString().replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (Match m) => '${m[1]}.',
+        )}đ/giờ';
+  }
 }
 
 /// Room model matching backend RoomSerializer

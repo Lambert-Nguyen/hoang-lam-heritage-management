@@ -50,6 +50,8 @@ class AppConstants {
   static const String maintenanceRequestsEndpoint = '/maintenance-requests/';
   static const String minibarItemsEndpoint = '/minibar-items/';
   static const String minibarSalesEndpoint = '/minibar-sales/';
+  static const String lostFoundEndpoint = '/lost-found/';
+  static const String groupBookingsEndpoint = '/group-bookings/';
 
   // Date/Time Formats
   static const String dateFormat = 'dd/MM/yyyy';

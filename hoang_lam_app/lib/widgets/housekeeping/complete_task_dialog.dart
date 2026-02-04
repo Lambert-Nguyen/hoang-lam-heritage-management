@@ -4,7 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/housekeeping.dart';
 import '../common/app_button.dart';
-import '../common/app_text_field.dart';
+import '../common/app_input.dart';
 
 /// Dialog for completing a housekeeping task with optional notes
 class CompleteTaskDialog extends StatefulWidget {

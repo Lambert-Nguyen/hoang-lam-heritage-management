@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/auth.dart';
 import '../providers/auth_provider.dart';
 import '../models/room.dart';
+import '../models/housekeeping.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/splash_screen.dart';
 import '../screens/auth/password_change_screen.dart';
@@ -19,6 +20,7 @@ import '../screens/night_audit/night_audit_screen.dart';
 import '../screens/declaration/declaration_export_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/reports/report_screen.dart';
+import '../screens/housekeeping/housekeeping_screens.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -40,6 +42,12 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String passwordChange = '/password-change';
   static const String reports = '/reports';
+  static const String housekeepingTasks = '/housekeeping';
+  static const String housekeepingTaskDetail = '/housekeeping/task';
+  static const String housekeepingNewTask = '/housekeeping/new';
+  static const String maintenance = '/maintenance';
+  static const String maintenanceDetail = '/maintenance/request';
+  static const String maintenanceNew = '/maintenance/new';
 }
 
 /// Navigation keys for bottom nav
@@ -145,6 +153,68 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      // Housekeeping Task Detail (outside shell for full screen)
+      GoRoute(
+        path: '${AppRoutes.housekeepingTaskDetail}/:taskId',
+        name: 'housekeepingTaskDetail',
+        builder: (context, state) {
+          // Task is passed via extra
+          final task = state.extra;
+          
+          if (task == null || task is! HousekeepingTask) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy thông tin công việc'),
+              ),
+            );
+          }
+          
+          return TaskDetailScreen(task: task);
+        },
+      ),
+
+      // New Housekeeping Task (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.housekeepingNewTask,
+        name: 'housekeepingNewTask',
+        builder: (context, state) {
+          final task = state.extra as HousekeepingTask?;
+          return TaskFormScreen(task: task);
+        },
+      ),
+
+      // Maintenance Request Detail (outside shell for full screen)
+      GoRoute(
+        path: '${AppRoutes.maintenanceDetail}/:requestId',
+        name: 'maintenanceDetail',
+        builder: (context, state) {
+          // Request is passed via extra
+          final request = state.extra;
+          
+          if (request == null || request is! MaintenanceRequest) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy yêu cầu bảo trì'),
+              ),
+            );
+          }
+          
+          return MaintenanceDetailScreen(request: request);
+        },
+      ),
+
+      // New Maintenance Request (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.maintenanceNew,
+        name: 'maintenanceNew',
+        builder: (context, state) {
+          final request = state.extra as MaintenanceRequest?;
+          return MaintenanceFormScreen(request: request);
+        },
+      ),
+
       // Main app shell with bottom navigation
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -242,6 +312,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'reports',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ReportScreen(),
+            ),
+          ),
+
+          // Housekeeping Tasks
+          GoRoute(
+            path: AppRoutes.housekeepingTasks,
+            name: 'housekeepingTasks',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: TaskListScreen(),
+            ),
+          ),
+
+          // Maintenance Requests
+          GoRoute(
+            path: AppRoutes.maintenance,
+            name: 'maintenance',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: MaintenanceListScreen(),
             ),
           ),
 

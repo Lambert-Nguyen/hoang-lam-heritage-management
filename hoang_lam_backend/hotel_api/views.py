@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, HousekeepingTask, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -32,6 +32,10 @@ from .serializers import (
     FinancialEntryListSerializer,
     FinancialEntrySerializer,
     FolioItemSerializer,
+    GroupBookingCreateSerializer,
+    GroupBookingListSerializer,
+    GroupBookingSerializer,
+    GroupBookingUpdateSerializer,
     GuestListSerializer,
     GuestSearchSerializer,
     GuestSerializer,
@@ -40,6 +44,12 @@ from .serializers import (
     HousekeepingTaskSerializer,
     HousekeepingTaskUpdateSerializer,
     LoginSerializer,
+    LostAndFoundClaimSerializer,
+    LostAndFoundCreateSerializer,
+    LostAndFoundDisposeSerializer,
+    LostAndFoundListSerializer,
+    LostAndFoundSerializer,
+    LostAndFoundUpdateSerializer,
     MaintenanceRequestCreateSerializer,
     MaintenanceRequestListSerializer,
     MaintenanceRequestSerializer,
@@ -53,6 +63,7 @@ from .serializers import (
     MinibarSaleListSerializer,
     MinibarSaleSerializer,
     MinibarSaleUpdateSerializer,
+    NightAuditCreateSerializer,
     NightAuditListSerializer,
     NightAuditSerializer,
     OutstandingDepositSerializer,
@@ -4911,3 +4922,485 @@ class ExportReportView(APIView):
                 response = HttpResponse(output.getvalue(), content_type="text/csv")
                 response["Content-Disposition"] = f'attachment; filename="{report_type}_report_{start_date}_{end_date}.csv"'
                 return response
+
+
+# ============================================================
+# Lost & Found ViewSet (Phase 3)
+# ============================================================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List lost and found items",
+        description="Get list of all lost and found items with optional filtering.",
+        parameters=[
+            OpenApiParameter("status", OpenApiTypes.STR, description="Filter by status (found/stored/claimed/donated/disposed)"),
+            OpenApiParameter("category", OpenApiTypes.STR, description="Filter by category"),
+            OpenApiParameter("room", OpenApiTypes.INT, description="Filter by room ID"),
+            OpenApiParameter("guest", OpenApiTypes.INT, description="Filter by guest ID"),
+            OpenApiParameter("found_date_from", OpenApiTypes.DATE, description="Filter by found date (from)"),
+            OpenApiParameter("found_date_to", OpenApiTypes.DATE, description="Filter by found date (to)"),
+            OpenApiParameter("search", OpenApiTypes.STR, description="Search in item name and description"),
+        ],
+        tags=["Lost & Found"],
+    ),
+    retrieve=extend_schema(
+        summary="Get lost and found item details",
+        tags=["Lost & Found"],
+    ),
+    create=extend_schema(
+        summary="Create lost and found item",
+        tags=["Lost & Found"],
+    ),
+    update=extend_schema(
+        summary="Update lost and found item",
+        tags=["Lost & Found"],
+    ),
+    partial_update=extend_schema(
+        summary="Partially update lost and found item",
+        tags=["Lost & Found"],
+    ),
+    destroy=extend_schema(
+        summary="Delete lost and found item",
+        tags=["Lost & Found"],
+    ),
+)
+class LostAndFoundViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing lost and found items.
+
+    Endpoints:
+    - GET /lost-found/ - List all items
+    - POST /lost-found/ - Create new item
+    - GET /lost-found/{id}/ - Get item details
+    - PUT /lost-found/{id}/ - Update item
+    - DELETE /lost-found/{id}/ - Delete item
+    - POST /lost-found/{id}/claim/ - Mark as claimed/returned
+    - POST /lost-found/{id}/dispose/ - Mark as disposed/donated
+    - POST /lost-found/{id}/store/ - Mark as stored
+    - GET /lost-found/statistics/ - Get summary statistics
+    """
+
+    queryset = LostAndFound.objects.all()
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+
+    def get_serializer_class(self):
+        """Return appropriate serializer based on action."""
+        if self.action == "list":
+            return LostAndFoundListSerializer
+        if self.action == "create":
+            return LostAndFoundCreateSerializer
+        if self.action in ["update", "partial_update"]:
+            return LostAndFoundUpdateSerializer
+        if self.action == "claim":
+            return LostAndFoundClaimSerializer
+        if self.action == "dispose":
+            return LostAndFoundDisposeSerializer
+        return LostAndFoundSerializer
+
+    def get_queryset(self):
+        """Filter queryset based on query parameters."""
+        queryset = LostAndFound.objects.select_related(
+            "room", "guest", "booking", "found_by", "claimed_by_staff"
+        )
+
+        # Filter by status
+        status_filter = self.request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Filter by category
+        category = self.request.query_params.get("category")
+        if category:
+            queryset = queryset.filter(category=category)
+
+        # Filter by room
+        room_id = self.request.query_params.get("room")
+        if room_id:
+            queryset = queryset.filter(room_id=room_id)
+
+        # Filter by guest
+        guest_id = self.request.query_params.get("guest")
+        if guest_id:
+            queryset = queryset.filter(guest_id=guest_id)
+
+        # Filter by found date range
+        found_from = self.request.query_params.get("found_date_from")
+        found_to = self.request.query_params.get("found_date_to")
+        if found_from:
+            queryset = queryset.filter(found_date__gte=found_from)
+        if found_to:
+            queryset = queryset.filter(found_date__lte=found_to)
+
+        # Search
+        search = self.request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(item_name__icontains=search) | Q(description__icontains=search)
+            )
+
+        return queryset.order_by("-found_date", "-created_at")
+
+    def perform_create(self, serializer):
+        """Set found_by to current user if not specified."""
+        if not serializer.validated_data.get("found_by"):
+            serializer.save(found_by=self.request.user)
+        else:
+            serializer.save()
+
+    @extend_schema(
+        summary="Claim item",
+        description="Mark item as claimed/returned to guest.",
+        request=LostAndFoundClaimSerializer,
+        responses={200: LostAndFoundSerializer},
+        tags=["Lost & Found"],
+    )
+    @action(detail=True, methods=["post"], url_path="claim")
+    def claim(self, request, pk=None):
+        """Mark item as claimed/returned to guest."""
+        item = self.get_object()
+        serializer = self.get_serializer(data=request.data, context={"item": item})
+        serializer.is_valid(raise_exception=True)
+
+        notes = serializer.validated_data.get("notes", "")
+        item.claim(request.user, notes)
+
+        return Response(LostAndFoundSerializer(item).data)
+
+    @extend_schema(
+        summary="Dispose item",
+        description="Mark item as disposed or donated.",
+        request=LostAndFoundDisposeSerializer,
+        responses={200: LostAndFoundSerializer},
+        tags=["Lost & Found"],
+    )
+    @action(detail=True, methods=["post"], url_path="dispose")
+    def dispose(self, request, pk=None):
+        """Mark item as disposed or donated."""
+        item = self.get_object()
+        serializer = self.get_serializer(data=request.data, context={"item": item})
+        serializer.is_valid(raise_exception=True)
+
+        method = serializer.validated_data.get("method", "disposed")
+        item.dispose(method)
+
+        return Response(LostAndFoundSerializer(item).data)
+
+    @extend_schema(
+        summary="Store item",
+        description="Mark item as stored (in lost & found storage).",
+        request=None,
+        responses={200: LostAndFoundSerializer},
+        tags=["Lost & Found"],
+    )
+    @action(detail=True, methods=["post"], url_path="store")
+    def store(self, request, pk=None):
+        """Mark item as stored."""
+        item = self.get_object()
+
+        if item.status in [LostAndFound.Status.CLAIMED, LostAndFound.Status.DISPOSED, LostAndFound.Status.DONATED]:
+            return Response(
+                {"detail": "Không thể lưu giữ vật phẩm đã được xử lý."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        item.status = LostAndFound.Status.STORED
+        item.save()
+
+        return Response(LostAndFoundSerializer(item).data)
+
+    @extend_schema(
+        summary="Get statistics",
+        description="Get summary statistics for lost and found items.",
+        responses={
+            200: OpenApiResponse(
+                description="Statistics data",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "total_items": {"type": "integer"},
+                        "by_status": {"type": "object"},
+                        "by_category": {"type": "object"},
+                        "unclaimed_value": {"type": "number"},
+                        "recent_items": {"type": "array"},
+                    },
+                },
+            )
+        },
+        tags=["Lost & Found"],
+    )
+    @action(detail=False, methods=["get"], url_path="statistics")
+    def statistics(self, request):
+        """Get summary statistics for lost and found items."""
+        from django.db.models import Count, Sum
+
+        # Total items
+        total = LostAndFound.objects.count()
+
+        # By status
+        by_status = dict(
+            LostAndFound.objects.values_list("status")
+            .annotate(count=Count("id"))
+            .values_list("status", "count")
+        )
+
+        # By category
+        by_category = dict(
+            LostAndFound.objects.values_list("category")
+            .annotate(count=Count("id"))
+            .values_list("category", "count")
+        )
+
+        # Unclaimed value
+        unclaimed = LostAndFound.objects.filter(
+            status__in=[LostAndFound.Status.FOUND, LostAndFound.Status.STORED]
+        ).aggregate(total=Sum("estimated_value"))["total"] or 0
+
+        # Recent items
+        recent = LostAndFoundListSerializer(
+            LostAndFound.objects.order_by("-created_at")[:5], many=True
+        ).data
+
+        return Response({
+            "total_items": total,
+            "by_status": by_status,
+            "by_category": by_category,
+            "unclaimed_value": unclaimed,
+            "recent_items": recent,
+        })
+
+
+# ============================================================
+# Group Booking ViewSet (Phase 3)
+# ============================================================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List group bookings",
+        description="Get list of all group bookings with optional filtering.",
+        parameters=[
+            OpenApiParameter("status", OpenApiTypes.STR, description="Filter by status"),
+            OpenApiParameter("date_from", OpenApiTypes.DATE, description="Filter by check-in date (from)"),
+            OpenApiParameter("date_to", OpenApiTypes.DATE, description="Filter by check-in date (to)"),
+            OpenApiParameter("search", OpenApiTypes.STR, description="Search in name, contact, company"),
+        ],
+        tags=["Group Booking"],
+    ),
+    retrieve=extend_schema(
+        summary="Get group booking details",
+        tags=["Group Booking"],
+    ),
+    create=extend_schema(
+        summary="Create group booking",
+        tags=["Group Booking"],
+    ),
+    update=extend_schema(
+        summary="Update group booking",
+        tags=["Group Booking"],
+    ),
+    partial_update=extend_schema(
+        summary="Partially update group booking",
+        tags=["Group Booking"],
+    ),
+    destroy=extend_schema(
+        summary="Delete group booking",
+        tags=["Group Booking"],
+    ),
+)
+class GroupBookingViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing group bookings.
+
+    Endpoints:
+    - GET /group-bookings/ - List all group bookings
+    - POST /group-bookings/ - Create new group booking
+    - GET /group-bookings/{id}/ - Get group booking details
+    - PUT /group-bookings/{id}/ - Update group booking
+    - DELETE /group-bookings/{id}/ - Delete group booking
+    - POST /group-bookings/{id}/confirm/ - Confirm group booking
+    - POST /group-bookings/{id}/check-in/ - Check in group
+    - POST /group-bookings/{id}/check-out/ - Check out group
+    - POST /group-bookings/{id}/cancel/ - Cancel group booking
+    - POST /group-bookings/{id}/assign-rooms/ - Assign rooms to group
+    """
+
+    queryset = GroupBooking.objects.all()
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+
+    def get_serializer_class(self):
+        """Return appropriate serializer based on action."""
+        if self.action == "list":
+            return GroupBookingListSerializer
+        if self.action == "create":
+            return GroupBookingCreateSerializer
+        if self.action in ["update", "partial_update"]:
+            return GroupBookingUpdateSerializer
+        return GroupBookingSerializer
+
+    def get_queryset(self):
+        """Filter queryset based on query parameters."""
+        queryset = GroupBooking.objects.prefetch_related("rooms").select_related("created_by")
+
+        # Filter by status
+        status_filter = self.request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Filter by date range
+        date_from = self.request.query_params.get("date_from")
+        date_to = self.request.query_params.get("date_to")
+        if date_from:
+            queryset = queryset.filter(check_in_date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(check_in_date__lte=date_to)
+
+        # Search
+        search = self.request.query_params.get("search")
+        if search:
+            queryset = queryset.filter(
+                Q(name__icontains=search)
+                | Q(contact_name__icontains=search)
+                | Q(company__icontains=search)
+                | Q(contact_phone__icontains=search)
+            )
+
+        return queryset.order_by("-check_in_date", "-created_at")
+
+    @extend_schema(
+        summary="Confirm group booking",
+        description="Change status from tentative to confirmed.",
+        request=None,
+        responses={200: GroupBookingSerializer},
+        tags=["Group Booking"],
+    )
+    @action(detail=True, methods=["post"], url_path="confirm")
+    def confirm(self, request, pk=None):
+        """Confirm the group booking."""
+        group = self.get_object()
+
+        if group.status != GroupBooking.Status.TENTATIVE:
+            return Response(
+                {"detail": f"Không thể xác nhận đặt phòng ở trạng thái {group.get_status_display()}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        group.status = GroupBooking.Status.CONFIRMED
+        group.save()
+
+        return Response(GroupBookingSerializer(group).data)
+
+    @extend_schema(
+        summary="Check in group",
+        description="Check in the entire group.",
+        request=None,
+        responses={200: GroupBookingSerializer},
+        tags=["Group Booking"],
+    )
+    @action(detail=True, methods=["post"], url_path="check-in")
+    def check_in(self, request, pk=None):
+        """Check in the group."""
+        from django.utils import timezone
+
+        group = self.get_object()
+
+        if group.status not in [GroupBooking.Status.TENTATIVE, GroupBooking.Status.CONFIRMED]:
+            return Response(
+                {"detail": f"Không thể nhận phòng cho đặt phòng ở trạng thái {group.get_status_display()}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        group.status = GroupBooking.Status.CHECKED_IN
+        group.actual_check_in = timezone.now()
+        group.save()
+
+        return Response(GroupBookingSerializer(group).data)
+
+    @extend_schema(
+        summary="Check out group",
+        description="Check out the entire group.",
+        request=None,
+        responses={200: GroupBookingSerializer},
+        tags=["Group Booking"],
+    )
+    @action(detail=True, methods=["post"], url_path="check-out")
+    def check_out(self, request, pk=None):
+        """Check out the group."""
+        from django.utils import timezone
+
+        group = self.get_object()
+
+        if group.status != GroupBooking.Status.CHECKED_IN:
+            return Response(
+                {"detail": f"Không thể trả phòng cho đặt phòng ở trạng thái {group.get_status_display()}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        group.status = GroupBooking.Status.CHECKED_OUT
+        group.actual_check_out = timezone.now()
+        group.save()
+
+        # Free up all assigned rooms
+        group.rooms.update(status=Room.Status.CLEANING)
+
+        return Response(GroupBookingSerializer(group).data)
+
+    @extend_schema(
+        summary="Cancel group booking",
+        description="Cancel the group booking.",
+        request=None,
+        responses={200: GroupBookingSerializer},
+        tags=["Group Booking"],
+    )
+    @action(detail=True, methods=["post"], url_path="cancel")
+    def cancel(self, request, pk=None):
+        """Cancel the group booking."""
+        group = self.get_object()
+
+        if group.status in [GroupBooking.Status.CHECKED_OUT, GroupBooking.Status.CANCELLED]:
+            return Response(
+                {"detail": f"Không thể hủy đặt phòng ở trạng thái {group.get_status_display()}."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        group.status = GroupBooking.Status.CANCELLED
+        group.save()
+
+        return Response(GroupBookingSerializer(group).data)
+
+    @extend_schema(
+        summary="Assign rooms to group",
+        description="Assign specific rooms to the group booking.",
+        request={
+            "type": "object",
+            "properties": {
+                "room_ids": {"type": "array", "items": {"type": "integer"}},
+            },
+            "required": ["room_ids"],
+        },
+        responses={200: GroupBookingSerializer},
+        tags=["Group Booking"],
+    )
+    @action(detail=True, methods=["post"], url_path="assign-rooms")
+    def assign_rooms(self, request, pk=None):
+        """Assign rooms to the group booking."""
+        group = self.get_object()
+
+        room_ids = request.data.get("room_ids", [])
+        if not room_ids:
+            return Response(
+                {"detail": "Vui lòng cung cấp danh sách phòng."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        rooms = Room.objects.filter(id__in=room_ids, is_active=True)
+        if rooms.count() != len(room_ids):
+            return Response(
+                {"detail": "Một số phòng không tồn tại hoặc không hoạt động."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        group.rooms.set(rooms)
+        group.save()
+
+        return Response(GroupBookingSerializer(group).data)

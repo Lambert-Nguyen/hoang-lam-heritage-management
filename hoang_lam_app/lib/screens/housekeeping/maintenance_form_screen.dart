@@ -9,8 +9,7 @@ import '../../providers/housekeeping_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
-import '../../widgets/common/app_dropdown.dart';
-import '../../widgets/common/app_text_field.dart';
+import '../../widgets/common/app_input.dart';
 
 /// Screen for creating or editing a maintenance request
 class MaintenanceFormScreen extends ConsumerStatefulWidget {
@@ -89,7 +88,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     ),
                     AppSpacing.gapVerticalMd,
                     roomsAsync.when(
-                      data: (response) => _buildRoomDropdown(response.results),
+                      data: (rooms) => _buildRoomDropdown(rooms),
                       loading: () => const Center(
                         child: CircularProgressIndicator(),
                       ),
@@ -117,7 +116,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     AppSpacing.gapVerticalMd,
                     AppTextField(
                       controller: _titleController,
-                      hintText: 'Mô tả ngắn gọn vấn đề',
+                      hint: 'Mô tả ngắn gọn vấn đề',
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Vui lòng nhập tiêu đề';
@@ -180,7 +179,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     AppSpacing.gapVerticalMd,
                     AppTextField(
                       controller: _descriptionController,
-                      hintText: 'Mô tả chi tiết vấn đề cần xử lý...',
+                      hint: 'Mô tả chi tiết vấn đề cần xử lý...',
                       maxLines: 5,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -208,10 +207,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     AppSpacing.gapVerticalMd,
                     AppTextField(
                       controller: _estimatedCostController,
-                      hintText: '0',
+                      hint: '0',
                       keyboardType: TextInputType.number,
                       prefixIcon: Icons.attach_money,
-                      suffixText: 'VNĐ',
+                      helper: 'VNĐ',
                     ),
                   ],
                 ),
@@ -222,7 +221,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
               SizedBox(
                 width: double.infinity,
                 child: AppButton(
-                  text: widget.isEditing ? 'Cập nhật' : 'Tạo yêu cầu',
+                  label: widget.isEditing ? 'Cập nhật' : 'Tạo yêu cầu',
                   onPressed: _isLoading ? null : _submit,
                   isLoading: _isLoading,
                 ),
@@ -233,26 +232,19 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       ),
     );
   }
-
   Widget _buildRoomDropdown(List<Room> rooms) {
     return AppDropdown<int>(
       value: _selectedRoomId,
       items: rooms
           .map((room) => DropdownMenuItem(
                 value: room.id,
-                child: Text('Phòng ${room.roomNumber}'),
+                child: Text('Phòng ${room.number}'),
               ))
           .toList(),
       onChanged: (value) {
         setState(() {
           _selectedRoomId = value;
         });
-      },
-      validator: (value) {
-        if (value == null) {
-          return 'Vui lòng chọn phòng';
-        }
-        return null;
       },
       hint: 'Chọn phòng',
     );
@@ -395,9 +387,9 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     try {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
       
-      double? estimatedCost;
+      int? estimatedCost;
       if (_estimatedCostController.text.isNotEmpty) {
-        estimatedCost = double.tryParse(_estimatedCostController.text);
+        estimatedCost = int.tryParse(_estimatedCostController.text);
       }
 
       MaintenanceRequest? result;
@@ -405,7 +397,6 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
         result = await notifier.updateMaintenanceRequest(
           widget.request!.id,
           MaintenanceRequestUpdate(
-            room: _selectedRoomId,
             title: _titleController.text,
             description: _descriptionController.text,
             category: _selectedCategory.apiValue,
@@ -421,7 +412,6 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
             description: _descriptionController.text,
             category: _selectedCategory.apiValue,
             priority: _selectedPriority.apiValue,
-            estimatedCost: estimatedCost,
           ),
         );
       }

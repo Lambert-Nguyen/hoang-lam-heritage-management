@@ -536,9 +536,9 @@ class _MaintenanceDetailScreenState
             if (_request.status.canAssign && _request.assignedTo == null)
               Expanded(
                 child: AppButton(
-                  text: 'Phân công',
+                  label: 'Phân công',
                   onPressed: _assignRequest,
-                  variant: AppButtonVariant.outlined,
+                  isOutlined: true,
                   icon: Icons.person_add,
                 ),
               ),
@@ -547,7 +547,7 @@ class _MaintenanceDetailScreenState
             if (_request.status.canComplete)
               Expanded(
                 child: AppButton(
-                  text: 'Hoàn thành',
+                  label: 'Hoàn thành',
                   onPressed: _completeRequest,
                   icon: Icons.check,
                 ),

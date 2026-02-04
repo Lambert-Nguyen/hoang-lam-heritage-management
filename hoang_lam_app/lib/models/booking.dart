@@ -381,6 +381,53 @@ extension PaymentMethodExtension on PaymentMethod {
   }
 }
 
+/// Booking type (hourly or overnight)
+enum BookingType {
+  @JsonValue('overnight')
+  overnight,
+  @JsonValue('hourly')
+  hourly,
+}
+
+/// Extension for BookingType display properties
+extension BookingTypeExtension on BookingType {
+  String get displayName {
+    switch (this) {
+      case BookingType.overnight:
+        return 'Qua đêm';
+      case BookingType.hourly:
+        return 'Theo giờ';
+    }
+  }
+
+  String get displayNameEn {
+    switch (this) {
+      case BookingType.overnight:
+        return 'Overnight';
+      case BookingType.hourly:
+        return 'Hourly';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case BookingType.overnight:
+        return Icons.nightlight_round;
+      case BookingType.hourly:
+        return Icons.schedule;
+    }
+  }
+
+  Color get color {
+    switch (this) {
+      case BookingType.overnight:
+        return const Color(0xFF3F51B5); // Indigo
+      case BookingType.hourly:
+        return const Color(0xFF00BCD4); // Cyan
+    }
+  }
+}
+
 /// Lightweight guest summary for booking display
 @freezed
 sealed class GuestSummary with _$GuestSummary {
@@ -435,6 +482,22 @@ sealed class Booking with _$Booking {
     @Default(BookingSource.walkIn) BookingSource source,
     @JsonKey(name: 'source_display') String? sourceDisplay,
     @JsonKey(name: 'ota_reference') @Default('') String otaReference,
+
+    // Booking type (hourly/overnight)
+    @JsonKey(name: 'booking_type') @Default(BookingType.overnight) BookingType bookingType,
+    @JsonKey(name: 'booking_type_display') String? bookingTypeDisplay,
+    @JsonKey(name: 'is_hourly') @Default(false) bool isHourly,
+
+    // Hourly booking fields
+    @JsonKey(name: 'hours_booked') int? hoursBooked,
+    @JsonKey(name: 'hourly_rate') int? hourlyRate,
+    @JsonKey(name: 'expected_check_out_time') DateTime? expectedCheckOutTime,
+
+    // Early/Late check fees
+    @JsonKey(name: 'early_check_in_fee') @Default(0) int earlyCheckInFee,
+    @JsonKey(name: 'late_check_out_fee') @Default(0) int lateCheckOutFee,
+    @JsonKey(name: 'early_check_in_hours') @Default(0) double earlyCheckInHours,
+    @JsonKey(name: 'late_check_out_hours') @Default(0) double lateCheckOutHours,
 
     // Pricing
     @JsonKey(name: 'nightly_rate') required int nightlyRate,
@@ -507,8 +570,12 @@ sealed class Booking with _$Booking {
   /// Calculate nights from dates
   int get calculatedNights => checkOutDate.difference(checkInDate).inDays;
 
-  /// Calculate balance due
-  int get calculatedBalanceDue => totalAmount + additionalCharges - depositAmount;
+  /// Calculate balance due (including early/late fees)
+  int get calculatedBalanceDue => 
+      totalAmount + additionalCharges + earlyCheckInFee + lateCheckOutFee - depositAmount;
+
+  /// Total fees (early + late)
+  int get totalFees => earlyCheckInFee + lateCheckOutFee;
 
   /// Get guest name (from details or fallback)
   String get guestName => guestDetails?.fullName ?? 'Khách #$guest';

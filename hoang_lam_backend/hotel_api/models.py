@@ -27,7 +27,32 @@ class RoomType(models.Model):
         max_digits=12,
         decimal_places=0,
         validators=[MinValueValidator(Decimal("0"))],
-        verbose_name="Giá cơ bản",
+        verbose_name="Giá cơ bản/đêm",
+    )
+    hourly_rate = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giá theo giờ",
+    )
+    first_hour_rate = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giá giờ đầu tiên",
+        help_text="Giá cho 2-3 giờ đầu tiên (thường cao hơn)",
+    )
+    allows_hourly = models.BooleanField(
+        default=True,
+        verbose_name="Cho phép đặt theo giờ",
+    )
+    min_hours = models.PositiveIntegerField(
+        default=2,
+        verbose_name="Số giờ tối thiểu",
     )
     max_guests = models.PositiveIntegerField(default=2, verbose_name="Số khách tối đa")
     description = models.TextField(blank=True, verbose_name="Mô tả")
@@ -222,6 +247,68 @@ class Booking(models.Model):
     )
     ota_reference = models.CharField(max_length=50, blank=True, verbose_name="Mã OTA")
 
+    # Booking type (hourly or overnight)
+    class BookingType(models.TextChoices):
+        OVERNIGHT = "overnight", "Qua đêm"
+        HOURLY = "hourly", "Theo giờ"
+
+    booking_type = models.CharField(
+        max_length=20,
+        choices=BookingType.choices,
+        default=BookingType.OVERNIGHT,
+        verbose_name="Loại đặt phòng",
+    )
+
+    # Hourly booking fields
+    hours_booked = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Số giờ đặt",
+        help_text="Chỉ áp dụng cho đặt phòng theo giờ",
+    )
+    hourly_rate = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giá/giờ",
+    )
+    expected_check_out_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Giờ trả dự kiến",
+        help_text="Thời điểm trả phòng dự kiến cho đặt theo giờ",
+    )
+
+    # Early check-in / Late check-out fees
+    early_check_in_fee = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        default=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Phí nhận sớm",
+    )
+    late_check_out_fee = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        default=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Phí trả muộn",
+    )
+    early_check_in_hours = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        default=0,
+        verbose_name="Số giờ nhận sớm",
+    )
+    late_check_out_hours = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        default=0,
+        verbose_name="Số giờ trả muộn",
+    )
+
     # Pricing
     nightly_rate = models.DecimalField(
         max_digits=12,
@@ -297,8 +384,14 @@ class Booking(models.Model):
 
     @property
     def balance_due(self):
-        """Calculate remaining balance including additional charges"""
-        return self.total_amount + self.additional_charges - self.deposit_amount
+        """Calculate remaining balance including additional charges and fees"""
+        total_fees = self.early_check_in_fee + self.late_check_out_fee
+        return self.total_amount + self.additional_charges + total_fees - self.deposit_amount
+
+    @property
+    def is_hourly(self):
+        """Check if this is an hourly booking"""
+        return self.booking_type == self.BookingType.HOURLY
 
 
 class FinancialCategory(models.Model):
@@ -1131,3 +1224,265 @@ class NightAudit(models.Model):
         self.closed_by = user
         self.closed_at = timezone.now()
         self.save()
+
+
+class LostAndFound(models.Model):
+    """Track items left by guests or found in the hotel"""
+
+    class Status(models.TextChoices):
+        FOUND = "found", "Đã tìm thấy"
+        STORED = "stored", "Đang lưu giữ"
+        CLAIMED = "claimed", "Đã trả khách"
+        DONATED = "donated", "Đã quyên góp"
+        DISPOSED = "disposed", "Đã tiêu hủy"
+
+    class Category(models.TextChoices):
+        ELECTRONICS = "electronics", "Đồ điện tử"
+        CLOTHING = "clothing", "Quần áo"
+        JEWELRY = "jewelry", "Trang sức"
+        DOCUMENTS = "documents", "Giấy tờ"
+        MONEY = "money", "Tiền"
+        BAGS = "bags", "Túi/Vali"
+        PERSONAL = "personal", "Đồ cá nhân"
+        OTHER = "other", "Khác"
+
+    # Item details
+    item_name = models.CharField(max_length=200, verbose_name="Tên vật phẩm")
+    description = models.TextField(blank=True, verbose_name="Mô tả chi tiết")
+    category = models.CharField(
+        max_length=20,
+        choices=Category.choices,
+        default=Category.OTHER,
+        verbose_name="Danh mục",
+    )
+    estimated_value = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giá trị ước tính",
+    )
+
+    # Location info
+    room = models.ForeignKey(
+        Room,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="lost_items",
+        verbose_name="Phòng",
+    )
+    found_location = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Nơi tìm thấy",
+        help_text="Vị trí cụ thể nếu không phải phòng",
+    )
+    storage_location = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Nơi lưu giữ",
+    )
+
+    # Guest association (if known)
+    guest = models.ForeignKey(
+        Guest,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="lost_items",
+        verbose_name="Khách hàng",
+    )
+    booking = models.ForeignKey(
+        Booking,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="lost_items",
+        verbose_name="Đặt phòng",
+    )
+
+    # Status tracking
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.FOUND,
+        verbose_name="Trạng thái",
+    )
+    found_date = models.DateField(verbose_name="Ngày tìm thấy")
+    claimed_date = models.DateField(null=True, blank=True, verbose_name="Ngày trả khách")
+    disposed_date = models.DateField(null=True, blank=True, verbose_name="Ngày tiêu hủy/quyên góp")
+
+    # Staff info
+    found_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="found_items",
+        verbose_name="Người tìm thấy",
+    )
+    claimed_by_staff = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="returned_items",
+        verbose_name="Nhân viên trả",
+    )
+
+    # Guest contact attempts
+    guest_contacted = models.BooleanField(default=False, verbose_name="Đã liên hệ khách")
+    contact_notes = models.TextField(blank=True, verbose_name="Ghi chú liên hệ")
+
+    # Image documentation
+    image = models.ImageField(
+        upload_to="lost_found/",
+        null=True,
+        blank=True,
+        verbose_name="Ảnh vật phẩm",
+    )
+
+    # Notes
+    notes = models.TextField(blank=True, verbose_name="Ghi chú")
+
+    # Audit
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Vật thất lạc"
+        verbose_name_plural = "Vật thất lạc"
+        ordering = ["-found_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.item_name} - {self.get_status_display()}"
+
+    def claim(self, staff_user, notes=""):
+        """Mark item as claimed/returned to guest"""
+        from django.utils import timezone
+
+        self.status = self.Status.CLAIMED
+        self.claimed_date = timezone.now().date()
+        self.claimed_by_staff = staff_user
+        if notes:
+            self.contact_notes = notes
+        self.save()
+
+    def dispose(self, method="disposed"):
+        """Mark item as disposed or donated"""
+        from django.utils import timezone
+
+        if method == "donated":
+            self.status = self.Status.DONATED
+        else:
+            self.status = self.Status.DISPOSED
+        self.disposed_date = timezone.now().date()
+        self.save()
+
+
+class GroupBooking(models.Model):
+    """Group booking for multiple rooms (tours, events, corporate)"""
+
+    class Status(models.TextChoices):
+        TENTATIVE = "tentative", "Đang chờ"
+        CONFIRMED = "confirmed", "Đã xác nhận"
+        CHECKED_IN = "checked_in", "Đang ở"
+        CHECKED_OUT = "checked_out", "Đã trả phòng"
+        CANCELLED = "cancelled", "Đã hủy"
+
+    # Group info
+    name = models.CharField(max_length=200, verbose_name="Tên đoàn/nhóm")
+    contact_name = models.CharField(max_length=100, verbose_name="Người liên hệ")
+    contact_phone = models.CharField(max_length=20, verbose_name="SĐT liên hệ")
+    contact_email = models.EmailField(blank=True, verbose_name="Email")
+    company = models.CharField(max_length=200, blank=True, verbose_name="Công ty/Tổ chức")
+
+    # Dates
+    check_in_date = models.DateField(verbose_name="Ngày nhận phòng")
+    check_out_date = models.DateField(verbose_name="Ngày trả phòng")
+    actual_check_in = models.DateTimeField(null=True, blank=True, verbose_name="Giờ nhận thực tế")
+    actual_check_out = models.DateTimeField(null=True, blank=True, verbose_name="Giờ trả thực tế")
+
+    # Room allocation
+    room_count = models.PositiveIntegerField(verbose_name="Số phòng")
+    guest_count = models.PositiveIntegerField(verbose_name="Số khách")
+    rooms = models.ManyToManyField(Room, related_name="group_bookings", blank=True, verbose_name="Phòng")
+
+    # Pricing
+    total_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Tổng tiền",
+    )
+    deposit_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        default=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Tiền cọc",
+    )
+    deposit_paid = models.BooleanField(default=False, verbose_name="Đã đặt cọc")
+    special_rate = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giá đặc biệt/đêm",
+    )
+    discount_percent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        verbose_name="Giảm giá (%)",
+    )
+    currency = models.CharField(max_length=3, default="VND", verbose_name="Tiền tệ")
+
+    # Status
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.TENTATIVE,
+        verbose_name="Trạng thái",
+    )
+    source = models.CharField(
+        max_length=20,
+        choices=Booking.Source.choices,
+        default=Booking.Source.PHONE,
+        verbose_name="Nguồn đặt",
+    )
+
+    # Notes
+    notes = models.TextField(blank=True, verbose_name="Ghi chú")
+    special_requests = models.TextField(blank=True, verbose_name="Yêu cầu đặc biệt")
+
+    # Audit
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_group_bookings",
+        verbose_name="Người tạo",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Đặt phòng nhóm"
+        verbose_name_plural = "Đặt phòng nhóm"
+        ordering = ["-check_in_date", "-created_at"]
+
+    def __str__(self):
+        return f"{self.name} ({self.room_count} phòng, {self.check_in_date})"
+
+    @property
+    def nights(self):
+        """Calculate number of nights"""
+        return (self.check_out_date - self.check_in_date).days
+
+    @property
+    def balance_due(self):
+        """Calculate remaining balance"""
+        return self.total_amount - self.deposit_amount

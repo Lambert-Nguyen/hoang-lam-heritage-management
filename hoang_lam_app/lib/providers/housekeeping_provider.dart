@@ -324,6 +324,29 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
     }
   }
 
+  /// Update an existing maintenance request
+  Future<MaintenanceRequest?> updateMaintenanceRequest(
+    int id,
+    MaintenanceRequestUpdate update,
+  ) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final updatedRequest = await _repository.updateMaintenanceRequest(
+        id,
+        update,
+      );
+      _updateRequestInList(updatedRequest);
+      _invalidateProviders();
+      return updatedRequest;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      );
+      return null;
+    }
+  }
+
   /// Assign a maintenance request
   Future<MaintenanceRequest?> assignMaintenanceRequest(
     int requestId,
