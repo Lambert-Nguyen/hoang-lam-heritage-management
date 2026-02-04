@@ -10,3 +10,4 @@ export 'night_audit.dart';
 export 'declaration.dart';
 export 'housekeeping.dart';
 export 'minibar.dart';
+export 'report.dart';

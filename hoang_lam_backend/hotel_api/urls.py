@@ -25,6 +25,15 @@ from .views import (
     RoomTypeViewSet,
     RoomViewSet,
     UserProfileView,
+    # Phase 4: Reports
+    OccupancyReportView,
+    RevenueReportView,
+    KPIReportView,
+    ExpenseReportView,
+    ChannelPerformanceView,
+    GuestDemographicsView,
+    ComparativeReportView,
+    ExportReportView,
 )
 
 # Register ViewSets
@@ -54,6 +63,15 @@ urlpatterns = [
     path("auth/password/change/", PasswordChangeView.as_view(), name="password_change"),
     # Dashboard
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
+    # Reports (Phase 4)
+    path("reports/occupancy/", OccupancyReportView.as_view(), name="report_occupancy"),
+    path("reports/revenue/", RevenueReportView.as_view(), name="report_revenue"),
+    path("reports/kpi/", KPIReportView.as_view(), name="report_kpi"),
+    path("reports/expenses/", ExpenseReportView.as_view(), name="report_expenses"),
+    path("reports/channels/", ChannelPerformanceView.as_view(), name="report_channels"),
+    path("reports/demographics/", GuestDemographicsView.as_view(), name="report_demographics"),
+    path("reports/comparative/", ComparativeReportView.as_view(), name="report_comparative"),
+    path("reports/export/", ExportReportView.as_view(), name="report_export"),
     # API endpoints
     path("", include(router.urls)),
 ]

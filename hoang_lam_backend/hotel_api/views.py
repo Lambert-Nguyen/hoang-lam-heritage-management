@@ -68,6 +68,15 @@ from .serializers import (
     RoomTypeListSerializer,
     RoomTypeSerializer,
     UserProfileSerializer,
+    # Phase 4: Report serializers
+    OccupancyReportRequestSerializer,
+    RevenueReportRequestSerializer,
+    KPIReportRequestSerializer,
+    ExpenseReportRequestSerializer,
+    ChannelPerformanceRequestSerializer,
+    GuestDemographicsRequestSerializer,
+    ComparativeReportRequestSerializer,
+    ExportReportRequestSerializer,
 )
 
 User = get_user_model()
@@ -3898,3 +3907,1007 @@ class MinibarSaleViewSet(viewsets.ModelViewSet):
                 "items": list(items_summary),
             }
         )
+
+
+# ============================================================================
+# PHASE 4: REPORT VIEWS
+# ============================================================================
+
+
+class OccupancyReportView(APIView):
+    """
+    Occupancy report endpoint.
+    Returns daily/weekly/monthly occupancy data with revenue.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Get occupancy report",
+        description="Get occupancy statistics for a date range with optional grouping.",
+        parameters=[
+            OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("group_by", OpenApiTypes.STR, enum=["day", "week", "month"]),
+            OpenApiParameter("room_type", OpenApiTypes.INT),
+        ],
+        responses={
+            200: OpenApiResponse(
+                description="Occupancy report data",
+                response={
+                    "type": "object",
+                    "properties": {
+                        "summary": {"type": "object"},
+                        "data": {"type": "array"},
+                    },
+                },
+            ),
+        },
+        tags=["Reports"],
+    )
+    def get(self, request):
+        from datetime import timedelta
+        from django.db.models import Count, Sum, Q
+        from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
+        
+        serializer = OccupancyReportRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        group_by = serializer.validated_data.get("group_by", "day")
+        room_type_id = serializer.validated_data.get("room_type")
+        
+        # Get total active rooms (optionally filtered by room type)
+        rooms_query = Room.objects.filter(is_active=True)
+        if room_type_id:
+            rooms_query = rooms_query.filter(room_type_id=room_type_id)
+        total_rooms = rooms_query.count()
+        
+        if total_rooms == 0:
+            return Response({
+                "summary": {
+                    "total_rooms": 0,
+                    "total_room_nights": 0,
+                    "occupied_nights": 0,
+                    "average_occupancy": 0,
+                    "total_revenue": 0,
+                },
+                "data": [],
+            })
+        
+        # Calculate occupancy for each day in range
+        data = []
+        current_date = start_date
+        
+        # Get all bookings that overlap with date range
+        bookings_query = Booking.objects.filter(
+            status__in=["confirmed", "checked_in", "checked_out"],
+            check_in_date__lte=end_date,
+            check_out_date__gt=start_date,
+        )
+        if room_type_id:
+            bookings_query = bookings_query.filter(room__room_type_id=room_type_id)
+        
+        daily_data = {}
+        while current_date <= end_date:
+            # Count rooms occupied on this date
+            occupied = bookings_query.filter(
+                check_in_date__lte=current_date,
+                check_out_date__gt=current_date,
+            ).count()
+            
+            # Get revenue for this date (from bookings that include this night)
+            day_bookings = bookings_query.filter(
+                check_in_date__lte=current_date,
+                check_out_date__gt=current_date,
+            )
+            day_revenue = sum(b.nightly_rate for b in day_bookings)
+            
+            daily_data[current_date] = {
+                "date": current_date,
+                "total_rooms": total_rooms,
+                "occupied_rooms": occupied,
+                "available_rooms": total_rooms - occupied,
+                "occupancy_rate": round((occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0,
+                "revenue": day_revenue,
+            }
+            current_date += timedelta(days=1)
+        
+        # Group data if needed
+        if group_by == "day":
+            data = list(daily_data.values())
+        elif group_by == "week":
+            from collections import defaultdict
+            weekly = defaultdict(lambda: {"occupied_sum": 0, "revenue_sum": 0, "days": 0})
+            for date, day_data in daily_data.items():
+                week_start = date - timedelta(days=date.weekday())
+                weekly[week_start]["occupied_sum"] += day_data["occupied_rooms"]
+                weekly[week_start]["revenue_sum"] += day_data["revenue"]
+                weekly[week_start]["days"] += 1
+            
+            for week_start, week_data in sorted(weekly.items()):
+                avg_occupied = week_data["occupied_sum"] / week_data["days"]
+                data.append({
+                    "period": f"Week of {week_start.isoformat()}",
+                    "date": week_start,
+                    "total_rooms": total_rooms,
+                    "occupied_rooms": round(avg_occupied, 1),
+                    "available_rooms": round(total_rooms - avg_occupied, 1),
+                    "occupancy_rate": round((avg_occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0,
+                    "revenue": week_data["revenue_sum"],
+                })
+        elif group_by == "month":
+            from collections import defaultdict
+            monthly = defaultdict(lambda: {"occupied_sum": 0, "revenue_sum": 0, "days": 0})
+            for date, day_data in daily_data.items():
+                month_key = date.replace(day=1)
+                monthly[month_key]["occupied_sum"] += day_data["occupied_rooms"]
+                monthly[month_key]["revenue_sum"] += day_data["revenue"]
+                monthly[month_key]["days"] += 1
+            
+            for month_start, month_data in sorted(monthly.items()):
+                avg_occupied = month_data["occupied_sum"] / month_data["days"]
+                data.append({
+                    "period": month_start.strftime("%Y-%m"),
+                    "date": month_start,
+                    "total_rooms": total_rooms,
+                    "occupied_rooms": round(avg_occupied, 1),
+                    "available_rooms": round(total_rooms - avg_occupied, 1),
+                    "occupancy_rate": round((avg_occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0,
+                    "revenue": month_data["revenue_sum"],
+                })
+        
+        # Calculate summary
+        total_days = (end_date - start_date).days + 1
+        total_room_nights = total_rooms * total_days
+        occupied_nights = sum(d["occupied_rooms"] for d in daily_data.values())
+        total_revenue = sum(d["revenue"] for d in daily_data.values())
+        
+        summary = {
+            "total_rooms": total_rooms,
+            "total_room_nights": total_room_nights,
+            "occupied_nights": round(occupied_nights),
+            "average_occupancy": round((occupied_nights / total_room_nights) * 100, 2) if total_room_nights > 0 else 0,
+            "total_revenue": total_revenue,
+        }
+        
+        return Response({
+            "summary": summary,
+            "data": data,
+        })
+
+
+class RevenueReportView(APIView):
+    """
+    Revenue report endpoint.
+    Returns revenue breakdown by source with expenses and profit.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Get revenue report",
+        description="Get revenue and expense data for a date range.",
+        parameters=[
+            OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("group_by", OpenApiTypes.STR, enum=["day", "week", "month"]),
+            OpenApiParameter("category", OpenApiTypes.INT),
+        ],
+        responses={200: OpenApiResponse(description="Revenue report data")},
+        tags=["Reports"],
+    )
+    def get(self, request):
+        from datetime import timedelta
+        from collections import defaultdict
+        from django.db.models import Sum
+        
+        serializer = RevenueReportRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        group_by = serializer.validated_data.get("group_by", "day")
+        category_id = serializer.validated_data.get("category")
+        
+        # Get financial entries
+        income_query = FinancialEntry.objects.filter(
+            entry_type="income",
+            date__gte=start_date,
+            date__lte=end_date,
+        )
+        expense_query = FinancialEntry.objects.filter(
+            entry_type="expense",
+            date__gte=start_date,
+            date__lte=end_date,
+        )
+        
+        if category_id:
+            income_query = income_query.filter(category_id=category_id)
+            expense_query = expense_query.filter(category_id=category_id)
+        
+        # Get minibar sales
+        minibar_query = MinibarSale.objects.filter(
+            date__gte=start_date,
+            date__lte=end_date,
+        )
+        
+        # Build daily data
+        daily_data = {}
+        current_date = start_date
+        
+        while current_date <= end_date:
+            # Room revenue (from financial entries linked to bookings)
+            day_room_revenue = income_query.filter(
+                date=current_date,
+                booking__isnull=False,
+            ).aggregate(total=Sum("amount"))["total"] or 0
+            
+            # Additional revenue (income not linked to bookings)
+            day_additional = income_query.filter(
+                date=current_date,
+                booking__isnull=True,
+            ).aggregate(total=Sum("amount"))["total"] or 0
+            
+            # Minibar revenue
+            day_minibar = minibar_query.filter(date=current_date).aggregate(
+                total=Sum("total")
+            )["total"] or 0
+            
+            # Expenses
+            day_expenses = expense_query.filter(date=current_date).aggregate(
+                total=Sum("amount")
+            )["total"] or 0
+            
+            total_revenue = day_room_revenue + day_additional + day_minibar
+            net_profit = total_revenue - day_expenses
+            
+            daily_data[current_date] = {
+                "date": current_date,
+                "room_revenue": day_room_revenue,
+                "additional_revenue": day_additional,
+                "minibar_revenue": day_minibar,
+                "total_revenue": total_revenue,
+                "total_expenses": day_expenses,
+                "net_profit": net_profit,
+                "profit_margin": round((net_profit / total_revenue) * 100, 2) if total_revenue > 0 else 0,
+            }
+            current_date += timedelta(days=1)
+        
+        # Group data
+        if group_by == "day":
+            data = list(daily_data.values())
+        elif group_by == "week":
+            weekly = defaultdict(lambda: {
+                "room_revenue": 0, "additional_revenue": 0, "minibar_revenue": 0,
+                "total_expenses": 0,
+            })
+            for date, day_data in daily_data.items():
+                week_start = date - timedelta(days=date.weekday())
+                weekly[week_start]["room_revenue"] += day_data["room_revenue"]
+                weekly[week_start]["additional_revenue"] += day_data["additional_revenue"]
+                weekly[week_start]["minibar_revenue"] += day_data["minibar_revenue"]
+                weekly[week_start]["total_expenses"] += day_data["total_expenses"]
+            
+            data = []
+            for week_start, week_data in sorted(weekly.items()):
+                total_rev = week_data["room_revenue"] + week_data["additional_revenue"] + week_data["minibar_revenue"]
+                net = total_rev - week_data["total_expenses"]
+                data.append({
+                    "period": f"Week of {week_start.isoformat()}",
+                    "date": week_start,
+                    "room_revenue": week_data["room_revenue"],
+                    "additional_revenue": week_data["additional_revenue"],
+                    "minibar_revenue": week_data["minibar_revenue"],
+                    "total_revenue": total_rev,
+                    "total_expenses": week_data["total_expenses"],
+                    "net_profit": net,
+                    "profit_margin": round((net / total_rev) * 100, 2) if total_rev > 0 else 0,
+                })
+        elif group_by == "month":
+            monthly = defaultdict(lambda: {
+                "room_revenue": 0, "additional_revenue": 0, "minibar_revenue": 0,
+                "total_expenses": 0,
+            })
+            for date, day_data in daily_data.items():
+                month_key = date.replace(day=1)
+                monthly[month_key]["room_revenue"] += day_data["room_revenue"]
+                monthly[month_key]["additional_revenue"] += day_data["additional_revenue"]
+                monthly[month_key]["minibar_revenue"] += day_data["minibar_revenue"]
+                monthly[month_key]["total_expenses"] += day_data["total_expenses"]
+            
+            data = []
+            for month_start, month_data in sorted(monthly.items()):
+                total_rev = month_data["room_revenue"] + month_data["additional_revenue"] + month_data["minibar_revenue"]
+                net = total_rev - month_data["total_expenses"]
+                data.append({
+                    "period": month_start.strftime("%Y-%m"),
+                    "date": month_start,
+                    "room_revenue": month_data["room_revenue"],
+                    "additional_revenue": month_data["additional_revenue"],
+                    "minibar_revenue": month_data["minibar_revenue"],
+                    "total_revenue": total_rev,
+                    "total_expenses": month_data["total_expenses"],
+                    "net_profit": net,
+                    "profit_margin": round((net / total_rev) * 100, 2) if total_rev > 0 else 0,
+                })
+        
+        # Calculate summary
+        summary = {
+            "room_revenue": sum(d["room_revenue"] for d in daily_data.values()),
+            "additional_revenue": sum(d["additional_revenue"] for d in daily_data.values()),
+            "minibar_revenue": sum(d["minibar_revenue"] for d in daily_data.values()),
+            "total_revenue": sum(d["total_revenue"] for d in daily_data.values()),
+            "total_expenses": sum(d["total_expenses"] for d in daily_data.values()),
+            "net_profit": sum(d["net_profit"] for d in daily_data.values()),
+        }
+        summary["profit_margin"] = round(
+            (summary["net_profit"] / summary["total_revenue"]) * 100, 2
+        ) if summary["total_revenue"] > 0 else 0
+        
+        return Response({
+            "summary": summary,
+            "data": data,
+        })
+
+
+class KPIReportView(APIView):
+    """
+    KPI report endpoint (RevPAR, ADR, etc.).
+    Returns key performance indicators for the hotel.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Get KPI report",
+        description="Get key performance indicators including RevPAR and ADR.",
+        parameters=[
+            OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("compare_previous", OpenApiTypes.BOOL),
+        ],
+        responses={200: OpenApiResponse(description="KPI report data")},
+        tags=["Reports"],
+    )
+    def get(self, request):
+        from datetime import timedelta
+        from django.db.models import Sum, Count
+        
+        serializer = KPIReportRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        compare_previous = serializer.validated_data.get("compare_previous", True)
+        
+        def calculate_kpis(start, end):
+            total_days = (end - start).days + 1
+            total_rooms = Room.objects.filter(is_active=True).count()
+            total_room_nights = total_rooms * total_days
+            
+            if total_room_nights == 0:
+                return None
+            
+            # Get completed bookings in range
+            bookings = Booking.objects.filter(
+                status__in=["checked_out", "checked_in", "confirmed"],
+                check_in_date__lte=end,
+                check_out_date__gt=start,
+            )
+            
+            # Calculate room nights sold
+            room_nights_sold = 0
+            room_revenue = 0
+            for booking in bookings:
+                # Calculate nights within the date range
+                booking_start = max(booking.check_in_date, start)
+                booking_end = min(booking.check_out_date, end + timedelta(days=1))
+                nights = (booking_end - booking_start).days
+                if nights > 0:
+                    room_nights_sold += nights
+                    room_revenue += booking.nightly_rate * nights
+            
+            # Get total revenue and expenses from financial entries
+            total_revenue = FinancialEntry.objects.filter(
+                entry_type="income",
+                date__gte=start,
+                date__lte=end,
+            ).aggregate(total=Sum("amount"))["total"] or 0
+            
+            total_expenses = FinancialEntry.objects.filter(
+                entry_type="expense",
+                date__gte=start,
+                date__lte=end,
+            ).aggregate(total=Sum("amount"))["total"] or 0
+            
+            # Add minibar revenue
+            minibar_revenue = MinibarSale.objects.filter(
+                date__gte=start,
+                date__lte=end,
+            ).aggregate(total=Sum("total"))["total"] or 0
+            
+            total_revenue += minibar_revenue
+            
+            # Calculate KPIs
+            occupancy_rate = (room_nights_sold / total_room_nights) * 100 if total_room_nights > 0 else 0
+            adr = room_revenue / room_nights_sold if room_nights_sold > 0 else 0
+            revpar = room_revenue / total_room_nights if total_room_nights > 0 else 0
+            
+            return {
+                "period_start": start,
+                "period_end": end,
+                "revpar": round(revpar),
+                "adr": round(adr),
+                "occupancy_rate": round(occupancy_rate, 2),
+                "total_room_nights_available": total_room_nights,
+                "total_room_nights_sold": room_nights_sold,
+                "total_room_revenue": room_revenue,
+                "total_revenue": total_revenue,
+                "total_expenses": total_expenses,
+                "net_profit": total_revenue - total_expenses,
+            }
+        
+        current_kpis = calculate_kpis(start_date, end_date)
+        
+        if current_kpis is None:
+            return Response({
+                "current": None,
+                "previous": None,
+                "changes": None,
+            })
+        
+        # Calculate previous period for comparison
+        previous_kpis = None
+        changes = None
+        
+        if compare_previous:
+            period_length = (end_date - start_date).days + 1
+            previous_end = start_date - timedelta(days=1)
+            previous_start = previous_end - timedelta(days=period_length - 1)
+            previous_kpis = calculate_kpis(previous_start, previous_end)
+            
+            if previous_kpis:
+                def calc_change(current, previous):
+                    if previous == 0:
+                        return None
+                    return round(((current - previous) / previous) * 100, 2)
+                
+                changes = {
+                    "revpar_change": calc_change(current_kpis["revpar"], previous_kpis["revpar"]),
+                    "adr_change": calc_change(current_kpis["adr"], previous_kpis["adr"]),
+                    "occupancy_change": calc_change(current_kpis["occupancy_rate"], previous_kpis["occupancy_rate"]),
+                    "revenue_change": calc_change(current_kpis["total_revenue"], previous_kpis["total_revenue"]),
+                }
+        
+        return Response({
+            "current": current_kpis,
+            "previous": previous_kpis,
+            "changes": changes,
+        })
+
+
+class ExpenseReportView(APIView):
+    """
+    Expense breakdown report by category.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Get expense breakdown report",
+        description="Get expenses grouped by category for a date range.",
+        parameters=[
+            OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
+        ],
+        responses={200: OpenApiResponse(description="Expense report data")},
+        tags=["Reports"],
+    )
+    def get(self, request):
+        from django.db.models import Sum, Count
+        
+        serializer = ExpenseReportRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        
+        # Get expenses grouped by category
+        expenses = FinancialEntry.objects.filter(
+            entry_type="expense",
+            date__gte=start_date,
+            date__lte=end_date,
+        ).values(
+            "category__id",
+            "category__name",
+            "category__icon",
+            "category__color",
+        ).annotate(
+            total_amount=Sum("amount"),
+            transaction_count=Count("id"),
+        ).order_by("-total_amount")
+        
+        total_expenses = sum(e["total_amount"] for e in expenses)
+        
+        data = []
+        for expense in expenses:
+            data.append({
+                "category_id": expense["category__id"],
+                "category_name": expense["category__name"],
+                "category_icon": expense["category__icon"],
+                "category_color": expense["category__color"],
+                "total_amount": expense["total_amount"],
+                "transaction_count": expense["transaction_count"],
+                "percentage": round((expense["total_amount"] / total_expenses) * 100, 2) if total_expenses > 0 else 0,
+            })
+        
+        return Response({
+            "summary": {
+                "total_expenses": total_expenses,
+                "category_count": len(data),
+                "transaction_count": sum(e["transaction_count"] for e in data),
+            },
+            "data": data,
+        })
+
+
+class ChannelPerformanceView(APIView):
+    """
+    Channel (booking source) performance report.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Get channel performance report",
+        description="Get booking performance by source/channel.",
+        parameters=[
+            OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
+        ],
+        responses={200: OpenApiResponse(description="Channel performance data")},
+        tags=["Reports"],
+    )
+    def get(self, request):
+        from django.db.models import Sum, Count, Avg, F
+        
+        serializer = ChannelPerformanceRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        
+        # Get bookings in range
+        all_bookings = Booking.objects.filter(
+            check_in_date__lte=end_date,
+            check_out_date__gt=start_date,
+        )
+        
+        # Group by source
+        source_data = all_bookings.values("source").annotate(
+            booking_count=Count("id"),
+            total_revenue=Sum("total_amount"),
+            cancelled_count=Count("id", filter=models.Q(status="cancelled")),
+        ).order_by("-total_revenue")
+        
+        total_revenue = sum(s["total_revenue"] or 0 for s in source_data)
+        
+        data = []
+        for source in source_data:
+            source_code = source["source"]
+            source_display = dict(Booking.Source.choices).get(source_code, source_code)
+            
+            # Calculate total nights for this source
+            source_bookings = all_bookings.filter(source=source_code)
+            total_nights = sum(b.nights for b in source_bookings)
+            
+            booking_count = source["booking_count"]
+            cancelled_count = source["cancelled_count"]
+            revenue = source["total_revenue"] or 0
+            
+            data.append({
+                "source": source_code,
+                "source_display": source_display,
+                "booking_count": booking_count,
+                "total_nights": total_nights,
+                "total_revenue": revenue,
+                "average_rate": round(revenue / total_nights) if total_nights > 0 else 0,
+                "cancellation_count": cancelled_count,
+                "cancellation_rate": round((cancelled_count / booking_count) * 100, 2) if booking_count > 0 else 0,
+                "percentage_of_revenue": round((revenue / total_revenue) * 100, 2) if total_revenue > 0 else 0,
+            })
+        
+        return Response({
+            "summary": {
+                "total_bookings": sum(s["booking_count"] for s in data),
+                "total_revenue": total_revenue,
+                "total_nights": sum(s["total_nights"] for s in data),
+                "total_cancellations": sum(s["cancellation_count"] for s in data),
+            },
+            "data": data,
+        })
+
+
+class GuestDemographicsView(APIView):
+    """
+    Guest demographics report.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Get guest demographics report",
+        description="Get guest statistics by nationality or other criteria.",
+        parameters=[
+            OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("group_by", OpenApiTypes.STR, enum=["nationality", "source", "room_type"]),
+        ],
+        responses={200: OpenApiResponse(description="Guest demographics data")},
+        tags=["Reports"],
+    )
+    def get(self, request):
+        from django.db.models import Sum, Count, Avg
+        
+        serializer = GuestDemographicsRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        group_by = serializer.validated_data.get("group_by", "nationality")
+        
+        # Get bookings in range
+        bookings = Booking.objects.filter(
+            status__in=["confirmed", "checked_in", "checked_out"],
+            check_in_date__lte=end_date,
+            check_out_date__gt=start_date,
+        ).select_related("guest", "room__room_type")
+        
+        total_revenue = sum(b.total_amount for b in bookings)
+        
+        if group_by == "nationality":
+            # Group by guest nationality
+            data_dict = {}
+            for booking in bookings:
+                nationality = booking.guest.nationality or "Unknown"
+                if nationality not in data_dict:
+                    data_dict[nationality] = {
+                        "guest_ids": set(),
+                        "booking_count": 0,
+                        "total_nights": 0,
+                        "total_revenue": 0,
+                    }
+                data_dict[nationality]["guest_ids"].add(booking.guest_id)
+                data_dict[nationality]["booking_count"] += 1
+                data_dict[nationality]["total_nights"] += booking.nights
+                data_dict[nationality]["total_revenue"] += booking.total_amount
+            
+            data = []
+            for nationality, stats in sorted(data_dict.items(), key=lambda x: -x[1]["total_revenue"]):
+                guest_count = len(stats["guest_ids"])
+                data.append({
+                    "nationality": nationality,
+                    "guest_count": guest_count,
+                    "booking_count": stats["booking_count"],
+                    "total_nights": stats["total_nights"],
+                    "total_revenue": stats["total_revenue"],
+                    "percentage": round((stats["total_revenue"] / total_revenue) * 100, 2) if total_revenue > 0 else 0,
+                    "average_stay": round(stats["total_nights"] / stats["booking_count"], 2) if stats["booking_count"] > 0 else 0,
+                })
+        else:
+            # Default to nationality grouping
+            data = []
+        
+        return Response({
+            "summary": {
+                "total_guests": len(set(b.guest_id for b in bookings)),
+                "total_bookings": bookings.count(),
+                "total_revenue": total_revenue,
+            },
+            "data": data,
+        })
+
+
+class ComparativeReportView(APIView):
+    """
+    Period-over-period comparative report.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Get comparative report",
+        description="Compare metrics between two periods.",
+        parameters=[
+            OpenApiParameter("current_start", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("current_end", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("comparison_type", OpenApiTypes.STR, enum=["previous_period", "previous_year", "custom"]),
+            OpenApiParameter("previous_start", OpenApiTypes.DATE),
+            OpenApiParameter("previous_end", OpenApiTypes.DATE),
+        ],
+        responses={200: OpenApiResponse(description="Comparative report data")},
+        tags=["Reports"],
+    )
+    def get(self, request):
+        from datetime import timedelta
+        from dateutil.relativedelta import relativedelta
+        from django.db.models import Sum, Count
+        
+        serializer = ComparativeReportRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        current_start = serializer.validated_data["current_start"]
+        current_end = serializer.validated_data["current_end"]
+        comparison_type = serializer.validated_data.get("comparison_type", "previous_period")
+        
+        # Calculate previous period dates
+        if comparison_type == "previous_period":
+            period_length = (current_end - current_start).days + 1
+            previous_end = current_start - timedelta(days=1)
+            previous_start = previous_end - timedelta(days=period_length - 1)
+        elif comparison_type == "previous_year":
+            previous_start = current_start - relativedelta(years=1)
+            previous_end = current_end - relativedelta(years=1)
+        else:  # custom
+            previous_start = serializer.validated_data.get("previous_start")
+            previous_end = serializer.validated_data.get("previous_end")
+        
+        def get_metrics(start, end):
+            total_rooms = Room.objects.filter(is_active=True).count()
+            total_days = (end - start).days + 1
+            total_room_nights = total_rooms * total_days
+            
+            # Revenue
+            revenue = FinancialEntry.objects.filter(
+                entry_type="income",
+                date__gte=start,
+                date__lte=end,
+            ).aggregate(total=Sum("amount"))["total"] or 0
+            
+            # Expenses
+            expenses = FinancialEntry.objects.filter(
+                entry_type="expense",
+                date__gte=start,
+                date__lte=end,
+            ).aggregate(total=Sum("amount"))["total"] or 0
+            
+            # Bookings
+            bookings = Booking.objects.filter(
+                status__in=["confirmed", "checked_in", "checked_out"],
+                check_in_date__lte=end,
+                check_out_date__gt=start,
+            )
+            booking_count = bookings.count()
+            room_nights_sold = sum(b.nights for b in bookings)
+            room_revenue = sum(b.total_amount for b in bookings)
+            
+            # Occupancy
+            occupancy = (room_nights_sold / total_room_nights) * 100 if total_room_nights > 0 else 0
+            
+            # ADR
+            adr = room_revenue / room_nights_sold if room_nights_sold > 0 else 0
+            
+            # RevPAR
+            revpar = room_revenue / total_room_nights if total_room_nights > 0 else 0
+            
+            return {
+                "revenue": revenue,
+                "expenses": expenses,
+                "net_profit": revenue - expenses,
+                "booking_count": booking_count,
+                "occupancy_rate": round(occupancy, 2),
+                "adr": round(adr),
+                "revpar": round(revpar),
+            }
+        
+        current_metrics = get_metrics(current_start, current_end)
+        previous_metrics = get_metrics(previous_start, previous_end) if previous_start and previous_end else None
+        
+        def calc_change(current, previous):
+            if previous is None or previous == 0:
+                return None
+            return round(((current - previous) / previous) * 100, 2)
+        
+        comparisons = []
+        metrics_list = [
+            ("revenue", "Doanh thu"),
+            ("expenses", "Chi phí"),
+            ("net_profit", "Lợi nhuận"),
+            ("booking_count", "Số đặt phòng"),
+            ("occupancy_rate", "Tỷ lệ lấp đầy"),
+            ("adr", "Giá trung bình/đêm"),
+            ("revpar", "RevPAR"),
+        ]
+        
+        for metric_key, metric_name in metrics_list:
+            current_val = current_metrics[metric_key]
+            previous_val = previous_metrics[metric_key] if previous_metrics else None
+            
+            comparisons.append({
+                "metric": metric_name,
+                "metric_key": metric_key,
+                "current_period_value": current_val,
+                "previous_period_value": previous_val,
+                "change_amount": current_val - previous_val if previous_val is not None else None,
+                "change_percentage": calc_change(current_val, previous_val),
+            })
+        
+        return Response({
+            "current_period": {
+                "start": current_start,
+                "end": current_end,
+                "metrics": current_metrics,
+            },
+            "previous_period": {
+                "start": previous_start,
+                "end": previous_end,
+                "metrics": previous_metrics,
+            } if previous_metrics else None,
+            "comparisons": comparisons,
+        })
+
+
+class ExportReportView(APIView):
+    """
+    Export reports to Excel/CSV.
+    """
+    
+    permission_classes = [IsAuthenticated]
+    
+    @extend_schema(
+        summary="Export report to file",
+        description="Export report data to Excel or CSV format.",
+        parameters=[
+            OpenApiParameter("report_type", OpenApiTypes.STR, required=True, 
+                           enum=["occupancy", "revenue", "expenses", "kpi", "channels", "demographics"]),
+            OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
+            OpenApiParameter("format", OpenApiTypes.STR, enum=["xlsx", "csv"]),
+        ],
+        responses={200: OpenApiResponse(description="File download")},
+        tags=["Reports"],
+    )
+    def get(self, request):
+        import csv
+        import io
+        from django.http import HttpResponse
+        
+        serializer = ExportReportRequestSerializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+        
+        report_type = serializer.validated_data["report_type"]
+        start_date = serializer.validated_data["start_date"]
+        end_date = serializer.validated_data["end_date"]
+        export_format = serializer.validated_data.get("format", "xlsx")
+        
+        # Get report data based on type
+        if report_type == "occupancy":
+            view = OccupancyReportView()
+            view.request = request
+            response_data = view.get(request).data
+            data = response_data.get("data", [])
+            headers = ["Date", "Total Rooms", "Occupied", "Available", "Occupancy %", "Revenue"]
+            rows = [[
+                d.get("date") or d.get("period"),
+                d["total_rooms"],
+                d["occupied_rooms"],
+                d["available_rooms"],
+                d["occupancy_rate"],
+                d["revenue"],
+            ] for d in data]
+        elif report_type == "revenue":
+            view = RevenueReportView()
+            view.request = request
+            response_data = view.get(request).data
+            data = response_data.get("data", [])
+            headers = ["Date", "Room Revenue", "Additional", "Minibar", "Total Revenue", "Expenses", "Net Profit", "Margin %"]
+            rows = [[
+                d.get("date") or d.get("period"),
+                d["room_revenue"],
+                d["additional_revenue"],
+                d["minibar_revenue"],
+                d["total_revenue"],
+                d["total_expenses"],
+                d["net_profit"],
+                d["profit_margin"],
+            ] for d in data]
+        elif report_type == "expenses":
+            view = ExpenseReportView()
+            view.request = request
+            response_data = view.get(request).data
+            data = response_data.get("data", [])
+            headers = ["Category", "Amount", "Transactions", "Percentage"]
+            rows = [[
+                d["category_name"],
+                d["total_amount"],
+                d["transaction_count"],
+                d["percentage"],
+            ] for d in data]
+        elif report_type == "channels":
+            view = ChannelPerformanceView()
+            view.request = request
+            response_data = view.get(request).data
+            data = response_data.get("data", [])
+            headers = ["Channel", "Bookings", "Nights", "Revenue", "Avg Rate", "Cancellations", "Cancel %", "Revenue %"]
+            rows = [[
+                d["source_display"],
+                d["booking_count"],
+                d["total_nights"],
+                d["total_revenue"],
+                d["average_rate"],
+                d["cancellation_count"],
+                d["cancellation_rate"],
+                d["percentage_of_revenue"],
+            ] for d in data]
+        elif report_type == "demographics":
+            view = GuestDemographicsView()
+            view.request = request
+            response_data = view.get(request).data
+            data = response_data.get("data", [])
+            headers = ["Nationality", "Guests", "Bookings", "Nights", "Revenue", "Percentage", "Avg Stay"]
+            rows = [[
+                d["nationality"],
+                d["guest_count"],
+                d["booking_count"],
+                d["total_nights"],
+                d["total_revenue"],
+                d["percentage"],
+                d["average_stay"],
+            ] for d in data]
+        else:
+            return Response({"detail": "Invalid report type"}, status=400)
+        
+        # Generate file
+        if export_format == "csv":
+            output = io.StringIO()
+            writer = csv.writer(output)
+            writer.writerow(headers)
+            writer.writerows(rows)
+            
+            response = HttpResponse(output.getvalue(), content_type="text/csv")
+            response["Content-Disposition"] = f'attachment; filename="{report_type}_report_{start_date}_{end_date}.csv"'
+            return response
+        else:  # xlsx
+            try:
+                import openpyxl
+                from openpyxl.utils import get_column_letter
+                
+                wb = openpyxl.Workbook()
+                ws = wb.active
+                ws.title = report_type.title()
+                
+                # Headers
+                for col, header in enumerate(headers, 1):
+                    ws.cell(row=1, column=col, value=header)
+                
+                # Data
+                for row_idx, row in enumerate(rows, 2):
+                    for col_idx, value in enumerate(row, 1):
+                        ws.cell(row=row_idx, column=col_idx, value=value)
+                
+                # Auto-width columns
+                for col_idx in range(1, len(headers) + 1):
+                    ws.column_dimensions[get_column_letter(col_idx)].width = 15
+                
+                output = io.BytesIO()
+                wb.save(output)
+                output.seek(0)
+                
+                response = HttpResponse(
+                    output.getvalue(),
+                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                response["Content-Disposition"] = f'attachment; filename="{report_type}_report_{start_date}_{end_date}.xlsx"'
+                return response
+            except ImportError:
+                # Fallback to CSV if openpyxl not installed
+                output = io.StringIO()
+                writer = csv.writer(output)
+                writer.writerow(headers)
+                writer.writerows(rows)
+                
+                response = HttpResponse(output.getvalue(), content_type="text/csv")
+                response["Content-Disposition"] = f'attachment; filename="{report_type}_report_{start_date}_{end_date}.csv"'
+                return response

@@ -1732,3 +1732,259 @@ class MinibarSaleBulkCreateSerializer(serializers.Serializer):
             )
             sales.append(sale)
         return sales
+
+
+# ============================================================================
+# PHASE 4: REPORT SERIALIZERS
+# ============================================================================
+
+
+class OccupancyReportSerializer(serializers.Serializer):
+    """Occupancy report data serializer."""
+    
+    date = serializers.DateField()
+    total_rooms = serializers.IntegerField()
+    occupied_rooms = serializers.IntegerField()
+    available_rooms = serializers.IntegerField()
+    occupancy_rate = serializers.DecimalField(max_digits=5, decimal_places=2)
+    revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+
+
+class OccupancyReportRequestSerializer(serializers.Serializer):
+    """Request parameters for occupancy report."""
+    
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+    group_by = serializers.ChoiceField(
+        choices=["day", "week", "month"],
+        default="day",
+        required=False,
+    )
+    room_type = serializers.IntegerField(required=False, allow_null=True)
+    
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError({
+                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+
+
+class RevenueReportSerializer(serializers.Serializer):
+    """Revenue report data serializer."""
+    
+    date = serializers.DateField(required=False)
+    period = serializers.CharField(required=False)  # For week/month grouping
+    room_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    additional_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    minibar_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    total_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    total_expenses = serializers.DecimalField(max_digits=15, decimal_places=0)
+    net_profit = serializers.DecimalField(max_digits=15, decimal_places=0)
+    profit_margin = serializers.DecimalField(max_digits=5, decimal_places=2)
+
+
+class RevenueReportRequestSerializer(serializers.Serializer):
+    """Request parameters for revenue report."""
+    
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+    group_by = serializers.ChoiceField(
+        choices=["day", "week", "month"],
+        default="day",
+        required=False,
+    )
+    category = serializers.IntegerField(required=False, allow_null=True)
+    
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError({
+                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+
+
+class KPIReportSerializer(serializers.Serializer):
+    """KPI metrics serializer (RevPAR, ADR, etc.)."""
+    
+    period_start = serializers.DateField()
+    period_end = serializers.DateField()
+    
+    # Key metrics
+    revpar = serializers.DecimalField(max_digits=15, decimal_places=0, help_text="Revenue Per Available Room")
+    adr = serializers.DecimalField(max_digits=15, decimal_places=0, help_text="Average Daily Rate")
+    occupancy_rate = serializers.DecimalField(max_digits=5, decimal_places=2, help_text="Occupancy percentage")
+    
+    # Totals
+    total_room_nights_available = serializers.IntegerField()
+    total_room_nights_sold = serializers.IntegerField()
+    total_room_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    total_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    total_expenses = serializers.DecimalField(max_digits=15, decimal_places=0)
+    net_profit = serializers.DecimalField(max_digits=15, decimal_places=0)
+    
+    # Comparisons (vs previous period)
+    revpar_change = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+    adr_change = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+    occupancy_change = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+    revenue_change = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+
+
+class KPIReportRequestSerializer(serializers.Serializer):
+    """Request parameters for KPI report."""
+    
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+    compare_previous = serializers.BooleanField(default=True, required=False)
+    
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError({
+                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+
+
+class ExpenseReportSerializer(serializers.Serializer):
+    """Expense report by category."""
+    
+    category_id = serializers.IntegerField()
+    category_name = serializers.CharField()
+    category_icon = serializers.CharField()
+    category_color = serializers.CharField()
+    total_amount = serializers.DecimalField(max_digits=15, decimal_places=0)
+    transaction_count = serializers.IntegerField()
+    percentage = serializers.DecimalField(max_digits=5, decimal_places=2)
+
+
+class ExpenseReportRequestSerializer(serializers.Serializer):
+    """Request parameters for expense report."""
+    
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+    
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError({
+                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+
+
+class ChannelPerformanceSerializer(serializers.Serializer):
+    """Channel (booking source) performance data."""
+    
+    source = serializers.CharField()
+    source_display = serializers.CharField()
+    booking_count = serializers.IntegerField()
+    total_nights = serializers.IntegerField()
+    total_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    average_rate = serializers.DecimalField(max_digits=15, decimal_places=0)
+    cancellation_count = serializers.IntegerField()
+    cancellation_rate = serializers.DecimalField(max_digits=5, decimal_places=2)
+    percentage_of_revenue = serializers.DecimalField(max_digits=5, decimal_places=2)
+
+
+class ChannelPerformanceRequestSerializer(serializers.Serializer):
+    """Request parameters for channel performance report."""
+    
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+    
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError({
+                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+
+
+class GuestDemographicsSerializer(serializers.Serializer):
+    """Guest demographics data."""
+    
+    nationality = serializers.CharField()
+    guest_count = serializers.IntegerField()
+    booking_count = serializers.IntegerField()
+    total_nights = serializers.IntegerField()
+    total_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
+    percentage = serializers.DecimalField(max_digits=5, decimal_places=2)
+    average_stay = serializers.DecimalField(max_digits=5, decimal_places=2)
+
+
+class GuestDemographicsRequestSerializer(serializers.Serializer):
+    """Request parameters for guest demographics report."""
+    
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+    group_by = serializers.ChoiceField(
+        choices=["nationality", "source", "room_type"],
+        default="nationality",
+        required=False,
+    )
+    
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError({
+                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+
+
+class ComparativeReportSerializer(serializers.Serializer):
+    """Comparative report (period over period)."""
+    
+    metric = serializers.CharField()
+    current_period_value = serializers.DecimalField(max_digits=15, decimal_places=2)
+    previous_period_value = serializers.DecimalField(max_digits=15, decimal_places=2, allow_null=True)
+    change_amount = serializers.DecimalField(max_digits=15, decimal_places=2, allow_null=True)
+    change_percentage = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
+
+
+class ComparativeReportRequestSerializer(serializers.Serializer):
+    """Request parameters for comparative report."""
+    
+    current_start = serializers.DateField(required=True)
+    current_end = serializers.DateField(required=True)
+    previous_start = serializers.DateField(required=False, allow_null=True)
+    previous_end = serializers.DateField(required=False, allow_null=True)
+    comparison_type = serializers.ChoiceField(
+        choices=["previous_period", "previous_year", "custom"],
+        default="previous_period",
+        required=False,
+    )
+    
+    def validate(self, attrs):
+        if attrs["current_start"] > attrs["current_end"]:
+            raise serializers.ValidationError({
+                "current_end": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        if attrs.get("comparison_type") == "custom":
+            if not attrs.get("previous_start") or not attrs.get("previous_end"):
+                raise serializers.ValidationError({
+                    "previous_start": "Phải cung cấp khoảng thời gian trước khi so sánh custom."
+                })
+        return attrs
+
+
+class ExportReportRequestSerializer(serializers.Serializer):
+    """Request parameters for report export."""
+    
+    report_type = serializers.ChoiceField(
+        choices=["occupancy", "revenue", "expenses", "kpi", "channels", "demographics"],
+        required=True,
+    )
+    start_date = serializers.DateField(required=True)
+    end_date = serializers.DateField(required=True)
+    format = serializers.ChoiceField(
+        choices=["xlsx", "csv"],
+        default="xlsx",
+        required=False,
+    )
+    
+    def validate(self, attrs):
+        if attrs["start_date"] > attrs["end_date"]:
+            raise serializers.ValidationError({
+                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
+            })
+        return attrs
+

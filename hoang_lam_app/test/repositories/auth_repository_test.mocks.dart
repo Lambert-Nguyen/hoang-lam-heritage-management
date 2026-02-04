@@ -270,6 +270,40 @@ class MockApiClient extends _i1.Mock implements _i4.ApiClient {
             ),
           )
           as _i5.Future<_i2.Response<T>>);
+
+  @override
+  _i5.Future<_i2.Response<List<int>>> getBytes(
+    String? path, {
+    Map<String, dynamic>? queryParameters,
+    _i2.Options? options,
+    _i2.CancelToken? cancelToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getBytes,
+              [path],
+              {
+                #queryParameters: queryParameters,
+                #options: options,
+                #cancelToken: cancelToken,
+              },
+            ),
+            returnValue: _i5.Future<_i2.Response<List<int>>>.value(
+              _FakeResponse_1<List<int>>(
+                this,
+                Invocation.method(
+                  #getBytes,
+                  [path],
+                  {
+                    #queryParameters: queryParameters,
+                    #options: options,
+                    #cancelToken: cancelToken,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i5.Future<_i2.Response<List<int>>>);
 }
 
 /// A class which mocks [FlutterSecureStorage].

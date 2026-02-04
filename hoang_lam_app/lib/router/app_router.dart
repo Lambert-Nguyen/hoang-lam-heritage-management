@@ -18,6 +18,7 @@ import '../screens/folio/folio_screens.dart';
 import '../screens/night_audit/night_audit_screen.dart';
 import '../screens/declaration/declaration_export_screen.dart';
 import '../screens/settings/settings_screen.dart';
+import '../screens/reports/report_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -38,6 +39,7 @@ class AppRoutes {
   static const String declaration = '/declaration';
   static const String settings = '/settings';
   static const String passwordChange = '/password-change';
+  static const String reports = '/reports';
 }
 
 /// Navigation keys for bottom nav
@@ -231,6 +233,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'declaration',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: DeclarationExportScreen(),
+            ),
+          ),
+
+          // Reports & Analytics
+          GoRoute(
+            path: AppRoutes.reports,
+            name: 'reports',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: ReportScreen(),
             ),
           ),
 

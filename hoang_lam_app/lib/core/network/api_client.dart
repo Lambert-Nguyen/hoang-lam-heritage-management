@@ -131,4 +131,21 @@ class ApiClient {
       cancelToken: cancelToken,
     );
   }
+
+  /// Download file as bytes (for export functionality)
+  Future<Response<List<int>>> getBytes(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
+    return _dio.get<List<int>>(
+      path,
+      queryParameters: queryParameters,
+      options: (options ?? Options()).copyWith(
+        responseType: ResponseType.bytes,
+      ),
+      cancelToken: cancelToken,
+    );
+  }
 }

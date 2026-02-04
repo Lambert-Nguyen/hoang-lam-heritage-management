@@ -236,4 +236,38 @@ class MockApiClient extends _i1.Mock implements _i3.ApiClient {
             ),
           )
           as _i4.Future<_i2.Response<T>>);
+
+  @override
+  _i4.Future<_i2.Response<List<int>>> getBytes(
+    String? path, {
+    Map<String, dynamic>? queryParameters,
+    _i2.Options? options,
+    _i2.CancelToken? cancelToken,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getBytes,
+              [path],
+              {
+                #queryParameters: queryParameters,
+                #options: options,
+                #cancelToken: cancelToken,
+              },
+            ),
+            returnValue: _i4.Future<_i2.Response<List<int>>>.value(
+              _FakeResponse_1<List<int>>(
+                this,
+                Invocation.method(
+                  #getBytes,
+                  [path],
+                  {
+                    #queryParameters: queryParameters,
+                    #options: options,
+                    #cancelToken: cancelToken,
+                  },
+                ),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.Response<List<int>>>);
 }

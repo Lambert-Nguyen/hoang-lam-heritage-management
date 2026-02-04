@@ -12,3 +12,4 @@ export 'declaration_provider.dart';
 export 'settings_provider.dart';
 export 'housekeeping_provider.dart';
 export 'minibar_provider.dart';
+export 'report_provider.dart';
