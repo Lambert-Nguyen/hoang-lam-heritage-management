@@ -21,6 +21,16 @@ import '../screens/declaration/declaration_export_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/reports/report_screen.dart';
 import '../screens/housekeeping/housekeeping_screens.dart';
+import '../screens/lost_found/lost_found_list_screen.dart';
+import '../screens/lost_found/lost_found_detail_screen.dart';
+import '../screens/lost_found/lost_found_form_screen.dart';
+import '../screens/group_booking/group_booking_list_screen.dart';
+import '../screens/group_booking/group_booking_detail_screen.dart';
+import '../screens/group_booking/group_booking_form_screen.dart';
+import '../screens/room_inspection/room_inspection_list_screen.dart';
+import '../screens/room_inspection/room_inspection_detail_screen.dart';
+import '../screens/room_inspection/room_inspection_form_screen.dart';
+import '../screens/room_inspection/inspection_template_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -48,6 +58,22 @@ class AppRoutes {
   static const String maintenance = '/maintenance';
   static const String maintenanceDetail = '/maintenance/request';
   static const String maintenanceNew = '/maintenance/new';
+  // Lost & Found routes
+  static const String lostFound = '/lost-found';
+  static const String lostFoundNew = '/lost-found/new';
+  static const String lostFoundDetail = '/lost-found/:id';
+  static const String lostFoundEdit = '/lost-found/:id/edit';
+  // Group Booking routes
+  static const String groupBookings = '/group-bookings';
+  static const String groupBookingNew = '/group-bookings/new';
+  static const String groupBookingDetail = '/group-bookings/:id';
+  static const String groupBookingEdit = '/group-bookings/:id/edit';
+  // Room Inspection routes
+  static const String roomInspections = '/room-inspections';
+  static const String roomInspectionNew = '/room-inspections/new';
+  static const String roomInspectionDetail = '/room-inspections/:id';
+  static const String roomInspectionConduct = '/room-inspections/:id/conduct';
+  static const String inspectionTemplates = '/inspection-templates';
 }
 
 /// Navigation keys for bottom nav
@@ -215,6 +241,128 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      // Lost & Found routes (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.lostFoundNew,
+        name: 'lostFoundNew',
+        builder: (context, state) => const LostFoundFormScreen(),
+      ),
+      GoRoute(
+        path: '/lost-found/:id/edit',
+        name: 'lostFoundEdit',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy đồ thất lạc'),
+              ),
+            );
+          }
+          return LostFoundFormScreen(itemId: id);
+        },
+      ),
+      GoRoute(
+        path: '/lost-found/:id',
+        name: 'lostFoundDetail',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy đồ thất lạc'),
+              ),
+            );
+          }
+          return LostFoundDetailScreen(itemId: id);
+        },
+      ),
+
+      // Group Booking routes (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.groupBookingNew,
+        name: 'groupBookingNew',
+        builder: (context, state) => const GroupBookingFormScreen(),
+      ),
+      GoRoute(
+        path: '/group-bookings/:id/edit',
+        name: 'groupBookingEdit',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy đặt phòng đoàn'),
+              ),
+            );
+          }
+          return GroupBookingFormScreen(bookingId: id);
+        },
+      ),
+      GoRoute(
+        path: '/group-bookings/:id',
+        name: 'groupBookingDetail',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy đặt phòng đoàn'),
+              ),
+            );
+          }
+          return GroupBookingDetailScreen(bookingId: id);
+        },
+      ),
+
+      // Room Inspection routes (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.roomInspectionNew,
+        name: 'roomInspectionNew',
+        builder: (context, state) => const RoomInspectionFormScreen(),
+      ),
+      GoRoute(
+        path: '/room-inspections/:id/conduct',
+        name: 'roomInspectionConduct',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy kiểm tra'),
+              ),
+            );
+          }
+          return RoomInspectionFormScreen(inspectionId: id, isConductMode: true);
+        },
+      ),
+      GoRoute(
+        path: '/room-inspections/:id',
+        name: 'roomInspectionDetail',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy kiểm tra'),
+              ),
+            );
+          }
+          return RoomInspectionDetailScreen(inspectionId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.inspectionTemplates,
+        name: 'inspectionTemplates',
+        builder: (context, state) => const InspectionTemplateScreen(),
+      ),
+
       // Main app shell with bottom navigation
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -330,6 +478,33 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'maintenance',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: MaintenanceListScreen(),
+            ),
+          ),
+
+          // Lost & Found
+          GoRoute(
+            path: AppRoutes.lostFound,
+            name: 'lostFound',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: LostFoundListScreen(),
+            ),
+          ),
+
+          // Group Bookings
+          GoRoute(
+            path: AppRoutes.groupBookings,
+            name: 'groupBookings',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: GroupBookingListScreen(),
+            ),
+          ),
+
+          // Room Inspections
+          GoRoute(
+            path: AppRoutes.roomInspections,
+            name: 'roomInspections',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: RoomInspectionListScreen(),
             ),
           ),
 

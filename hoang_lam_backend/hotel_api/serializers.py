@@ -11,7 +11,7 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomInspection, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -2400,4 +2400,313 @@ class GroupBookingUpdateSerializer(serializers.ModelSerializer):
                 "check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."
             })
         return attrs
+
+
+# ==============================================================================
+# Room Inspection Serializers
+# ==============================================================================
+
+
+class InspectionTemplateSerializer(serializers.ModelSerializer):
+    """Full serializer for Inspection Templates."""
+
+    inspection_type_display = serializers.CharField(
+        source="get_inspection_type_display", read_only=True
+    )
+    room_type_name = serializers.CharField(
+        source="room_type.name", read_only=True, allow_null=True
+    )
+    item_count = serializers.SerializerMethodField()
+    created_by_name = serializers.CharField(
+        source="created_by.get_full_name", read_only=True, allow_null=True
+    )
+
+    class Meta:
+        model = InspectionTemplate
+        fields = [
+            "id",
+            "name",
+            "inspection_type",
+            "inspection_type_display",
+            "room_type",
+            "room_type_name",
+            "is_default",
+            "is_active",
+            "items",
+            "item_count",
+            "created_by",
+            "created_by_name",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at", "created_by"]
+
+    @extend_schema_field(serializers.IntegerField())
+    def get_item_count(self, obj):
+        return len(obj.items) if obj.items else 0
+
+
+class InspectionTemplateListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for template lists."""
+
+    inspection_type_display = serializers.CharField(
+        source="get_inspection_type_display", read_only=True
+    )
+    room_type_name = serializers.CharField(
+        source="room_type.name", read_only=True, allow_null=True
+    )
+    item_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = InspectionTemplate
+        fields = [
+            "id",
+            "name",
+            "inspection_type",
+            "inspection_type_display",
+            "room_type",
+            "room_type_name",
+            "is_default",
+            "is_active",
+            "item_count",
+        ]
+
+    @extend_schema_field(serializers.IntegerField())
+    def get_item_count(self, obj):
+        return len(obj.items) if obj.items else 0
+
+
+class InspectionTemplateCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating Inspection Templates."""
+
+    class Meta:
+        model = InspectionTemplate
+        fields = [
+            "name",
+            "inspection_type",
+            "room_type",
+            "is_default",
+            "is_active",
+            "items",
+        ]
+
+    def validate_items(self, value):
+        """Validate checklist items format."""
+        if not isinstance(value, list):
+            raise serializers.ValidationError("Danh sách mục phải là một array.")
+
+        for idx, item in enumerate(value):
+            if not isinstance(item, dict):
+                raise serializers.ValidationError(f"Mục {idx + 1} phải là một object.")
+            if "item" not in item:
+                raise serializers.ValidationError(f"Mục {idx + 1} phải có trường 'item'.")
+            if "category" not in item:
+                raise serializers.ValidationError(f"Mục {idx + 1} phải có trường 'category'.")
+
+        return value
+
+    def create(self, validated_data):
+        validated_data["created_by"] = self.context["request"].user
+        return super().create(validated_data)
+
+
+class RoomInspectionSerializer(serializers.ModelSerializer):
+    """Full serializer for Room Inspections."""
+
+    room_number = serializers.CharField(source="room.number", read_only=True)
+    room_type_name = serializers.CharField(
+        source="room.room_type.name", read_only=True
+    )
+    inspection_type_display = serializers.CharField(
+        source="get_inspection_type_display", read_only=True
+    )
+    status_display = serializers.CharField(
+        source="get_status_display", read_only=True
+    )
+    inspector_name = serializers.CharField(
+        source="inspector.get_full_name", read_only=True, allow_null=True
+    )
+    booking_info = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RoomInspection
+        fields = [
+            "id",
+            "room",
+            "room_number",
+            "room_type_name",
+            "booking",
+            "booking_info",
+            "inspection_type",
+            "inspection_type_display",
+            "scheduled_date",
+            "completed_at",
+            "inspector",
+            "inspector_name",
+            "status",
+            "status_display",
+            "checklist_items",
+            "total_items",
+            "passed_items",
+            "score",
+            "issues_found",
+            "critical_issues",
+            "images",
+            "notes",
+            "action_required",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "total_items",
+            "passed_items",
+            "score",
+            "issues_found",
+            "critical_issues",
+            "created_at",
+            "updated_at",
+        ]
+
+    @extend_schema_field(serializers.DictField())
+    def get_booking_info(self, obj):
+        if not obj.booking:
+            return None
+        return {
+            "id": obj.booking.id,
+            "guest_name": obj.booking.guest.name if obj.booking.guest else None,
+            "check_in_date": obj.booking.check_in_date,
+            "check_out_date": obj.booking.check_out_date,
+        }
+
+
+class RoomInspectionListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for inspection lists."""
+
+    room_number = serializers.CharField(source="room.number", read_only=True)
+    inspection_type_display = serializers.CharField(
+        source="get_inspection_type_display", read_only=True
+    )
+    status_display = serializers.CharField(
+        source="get_status_display", read_only=True
+    )
+    inspector_name = serializers.CharField(
+        source="inspector.get_full_name", read_only=True, allow_null=True
+    )
+
+    class Meta:
+        model = RoomInspection
+        fields = [
+            "id",
+            "room",
+            "room_number",
+            "inspection_type",
+            "inspection_type_display",
+            "scheduled_date",
+            "completed_at",
+            "inspector_name",
+            "status",
+            "status_display",
+            "score",
+            "issues_found",
+            "critical_issues",
+        ]
+
+
+class RoomInspectionCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating Room Inspections."""
+
+    template_id = serializers.IntegerField(required=False, write_only=True)
+
+    class Meta:
+        model = RoomInspection
+        fields = [
+            "room",
+            "booking",
+            "inspection_type",
+            "scheduled_date",
+            "inspector",
+            "checklist_items",
+            "notes",
+            "template_id",
+        ]
+
+    def create(self, validated_data):
+        template_id = validated_data.pop("template_id", None)
+
+        # If template provided, copy checklist items from template
+        if template_id:
+            try:
+                template = InspectionTemplate.objects.get(id=template_id, is_active=True)
+                # Convert template items to inspection checklist format
+                validated_data["checklist_items"] = [
+                    {
+                        "category": item.get("category", ""),
+                        "item": item.get("item", ""),
+                        "critical": item.get("critical", False),
+                        "passed": None,  # Not yet inspected
+                        "notes": "",
+                    }
+                    for item in template.items
+                ]
+            except InspectionTemplate.DoesNotExist:
+                pass
+
+        return super().create(validated_data)
+
+
+class RoomInspectionUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating Room Inspections."""
+
+    class Meta:
+        model = RoomInspection
+        fields = [
+            "scheduled_date",
+            "inspector",
+            "status",
+            "checklist_items",
+            "images",
+            "notes",
+            "action_required",
+        ]
+
+
+class RoomInspectionCompleteSerializer(serializers.Serializer):
+    """Serializer for completing a room inspection."""
+
+    checklist_items = serializers.ListField(
+        child=serializers.DictField(),
+        required=True,
+    )
+    images = serializers.ListField(
+        child=serializers.URLField(),
+        required=False,
+        default=list,
+    )
+    notes = serializers.CharField(required=False, allow_blank=True, default="")
+    action_required = serializers.CharField(required=False, allow_blank=True, default="")
+
+    def validate_checklist_items(self, value):
+        """Validate that all items have been inspected."""
+        for idx, item in enumerate(value):
+            if item.get("passed") is None:
+                raise serializers.ValidationError(
+                    f"Mục '{item.get('item', idx + 1)}' chưa được kiểm tra."
+                )
+        return value
+
+
+class RoomInspectionStatisticsSerializer(serializers.Serializer):
+    """Serializer for inspection statistics."""
+
+    total_inspections = serializers.IntegerField()
+    completed_inspections = serializers.IntegerField()
+    pending_inspections = serializers.IntegerField()
+    requires_action = serializers.IntegerField()
+    average_score = serializers.DecimalField(max_digits=5, decimal_places=2)
+    total_issues = serializers.IntegerField()
+    critical_issues = serializers.IntegerField()
+    inspections_by_type = serializers.DictField()
+    inspections_by_room = serializers.ListField()
+
 

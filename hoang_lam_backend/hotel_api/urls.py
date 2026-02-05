@@ -14,6 +14,7 @@ from .views import (
     GroupBookingViewSet,
     GuestViewSet,
     HousekeepingTaskViewSet,
+    InspectionTemplateViewSet,
     LoginView,
     LogoutView,
     LostAndFoundViewSet,
@@ -24,6 +25,7 @@ from .views import (
     PasswordChangeView,
     PaymentViewSet,
     ReceiptViewSet,
+    RoomInspectionViewSet,
     RoomTypeViewSet,
     RoomViewSet,
     UserProfileView,
@@ -58,6 +60,9 @@ router.register(r"minibar-sales", MinibarSaleViewSet, basename="minibarsale")
 # Phase 3: Lost & Found and Group Booking
 router.register(r"lost-found", LostAndFoundViewSet, basename="lostandfound")
 router.register(r"group-bookings", GroupBookingViewSet, basename="groupbooking")
+# Phase 3: Room Inspection
+router.register(r"inspection-templates", InspectionTemplateViewSet, basename="inspectiontemplate")
+router.register(r"room-inspections", RoomInspectionViewSet, basename="roominspection")
 
 urlpatterns = [
     # JWT Authentication

@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomType
+from .models import Booking, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomInspection, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -79,6 +79,16 @@ from .serializers import (
     RoomTypeListSerializer,
     RoomTypeSerializer,
     UserProfileSerializer,
+    # Phase 3: Room Inspection serializers
+    InspectionTemplateSerializer,
+    InspectionTemplateListSerializer,
+    InspectionTemplateCreateSerializer,
+    RoomInspectionSerializer,
+    RoomInspectionListSerializer,
+    RoomInspectionCreateSerializer,
+    RoomInspectionUpdateSerializer,
+    RoomInspectionCompleteSerializer,
+    RoomInspectionStatisticsSerializer,
     # Phase 4: Report serializers
     OccupancyReportRequestSerializer,
     RevenueReportRequestSerializer,
@@ -5404,3 +5414,385 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
         group.save()
 
         return Response(GroupBookingSerializer(group).data)
+
+
+# ==============================================================================
+# Room Inspection ViewSets
+# ==============================================================================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List inspection templates",
+        description="Get a list of all inspection templates.",
+        tags=["Room Inspection"],
+    ),
+    retrieve=extend_schema(
+        summary="Get template details",
+        description="Get detailed information about an inspection template.",
+        tags=["Room Inspection"],
+    ),
+    create=extend_schema(
+        summary="Create template",
+        description="Create a new inspection template.",
+        tags=["Room Inspection"],
+    ),
+    update=extend_schema(
+        summary="Update template",
+        description="Update an existing inspection template.",
+        tags=["Room Inspection"],
+    ),
+    partial_update=extend_schema(
+        summary="Partially update template",
+        description="Partially update an existing inspection template.",
+        tags=["Room Inspection"],
+    ),
+    destroy=extend_schema(
+        summary="Delete template",
+        description="Delete an inspection template.",
+        tags=["Room Inspection"],
+    ),
+)
+class InspectionTemplateViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing inspection templates."""
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+    filterset_fields = ["inspection_type", "room_type", "is_default", "is_active"]
+    search_fields = ["name"]
+    ordering_fields = ["name", "created_at"]
+    ordering = ["name"]
+
+    def get_queryset(self):
+        return InspectionTemplate.objects.select_related("room_type", "created_by").all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return InspectionTemplateListSerializer
+        if self.action == "create":
+            return InspectionTemplateCreateSerializer
+        return InspectionTemplateSerializer
+
+    @extend_schema(
+        summary="Get default templates",
+        description="Get default inspection templates by type.",
+        parameters=[
+            OpenApiParameter(
+                name="inspection_type",
+                type=str,
+                required=False,
+                description="Filter by inspection type",
+            ),
+        ],
+        responses={200: InspectionTemplateListSerializer(many=True)},
+        tags=["Room Inspection"],
+    )
+    @action(detail=False, methods=["get"], url_path="defaults")
+    def defaults(self, request):
+        """Get default inspection templates."""
+        queryset = self.get_queryset().filter(is_default=True, is_active=True)
+
+        inspection_type = request.query_params.get("inspection_type")
+        if inspection_type:
+            queryset = queryset.filter(inspection_type=inspection_type)
+
+        serializer = InspectionTemplateListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List room inspections",
+        description="Get a list of all room inspections with optional filters.",
+        parameters=[
+            OpenApiParameter(name="room", type=int, description="Filter by room ID"),
+            OpenApiParameter(name="status", type=str, description="Filter by status"),
+            OpenApiParameter(name="inspection_type", type=str, description="Filter by type"),
+            OpenApiParameter(name="from_date", type=str, description="Filter from date (YYYY-MM-DD)"),
+            OpenApiParameter(name="to_date", type=str, description="Filter to date (YYYY-MM-DD)"),
+        ],
+        tags=["Room Inspection"],
+    ),
+    retrieve=extend_schema(
+        summary="Get inspection details",
+        description="Get detailed information about a room inspection.",
+        tags=["Room Inspection"],
+    ),
+    create=extend_schema(
+        summary="Create inspection",
+        description="Create a new room inspection.",
+        tags=["Room Inspection"],
+    ),
+    update=extend_schema(
+        summary="Update inspection",
+        description="Update an existing room inspection.",
+        tags=["Room Inspection"],
+    ),
+    partial_update=extend_schema(
+        summary="Partially update inspection",
+        description="Partially update an existing room inspection.",
+        tags=["Room Inspection"],
+    ),
+    destroy=extend_schema(
+        summary="Delete inspection",
+        description="Delete a room inspection.",
+        tags=["Room Inspection"],
+    ),
+)
+class RoomInspectionViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing room inspections."""
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+    filterset_fields = ["room", "status", "inspection_type", "inspector"]
+    search_fields = ["room__number", "notes"]
+    ordering_fields = ["scheduled_date", "completed_at", "score", "created_at"]
+    ordering = ["-scheduled_date"]
+
+    def get_queryset(self):
+        queryset = RoomInspection.objects.select_related(
+            "room", "room__room_type", "booking", "booking__guest", "inspector"
+        ).all()
+
+        # Date filters
+        from_date = self.request.query_params.get("from_date")
+        to_date = self.request.query_params.get("to_date")
+
+        if from_date:
+            queryset = queryset.filter(scheduled_date__gte=from_date)
+        if to_date:
+            queryset = queryset.filter(scheduled_date__lte=to_date)
+
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return RoomInspectionListSerializer
+        if self.action == "create":
+            return RoomInspectionCreateSerializer
+        if self.action in ["update", "partial_update"]:
+            return RoomInspectionUpdateSerializer
+        if self.action == "complete":
+            return RoomInspectionCompleteSerializer
+        if self.action == "statistics":
+            return RoomInspectionStatisticsSerializer
+        return RoomInspectionSerializer
+
+    @extend_schema(
+        summary="Complete inspection",
+        description="Mark a room inspection as completed with results.",
+        request=RoomInspectionCompleteSerializer,
+        responses={200: RoomInspectionSerializer},
+        tags=["Room Inspection"],
+    )
+    @action(detail=True, methods=["post"], url_path="complete")
+    def complete(self, request, pk=None):
+        """Complete the room inspection with checklist results."""
+        inspection = self.get_object()
+
+        if inspection.status == RoomInspection.Status.COMPLETED:
+            return Response(
+                {"detail": "Kiểm tra này đã hoàn thành."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = RoomInspectionCompleteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        inspection.checklist_items = serializer.validated_data["checklist_items"]
+        inspection.images = serializer.validated_data.get("images", [])
+        inspection.notes = serializer.validated_data.get("notes", "")
+        inspection.action_required = serializer.validated_data.get("action_required", "")
+        inspection.complete(request.user)
+
+        return Response(RoomInspectionSerializer(inspection).data)
+
+    @extend_schema(
+        summary="Start inspection",
+        description="Mark an inspection as in progress.",
+        request=None,
+        responses={200: RoomInspectionSerializer},
+        tags=["Room Inspection"],
+    )
+    @action(detail=True, methods=["post"], url_path="start")
+    def start(self, request, pk=None):
+        """Start the room inspection."""
+        inspection = self.get_object()
+
+        if inspection.status != RoomInspection.Status.PENDING:
+            return Response(
+                {"detail": "Chỉ có thể bắt đầu kiểm tra đang chờ."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        inspection.status = RoomInspection.Status.IN_PROGRESS
+        inspection.inspector = request.user
+        inspection.save()
+
+        return Response(RoomInspectionSerializer(inspection).data)
+
+    @extend_schema(
+        summary="Get inspection statistics",
+        description="Get statistics about room inspections.",
+        parameters=[
+            OpenApiParameter(name="from_date", type=str, description="From date (YYYY-MM-DD)"),
+            OpenApiParameter(name="to_date", type=str, description="To date (YYYY-MM-DD)"),
+        ],
+        responses={200: RoomInspectionStatisticsSerializer},
+        tags=["Room Inspection"],
+    )
+    @action(detail=False, methods=["get"], url_path="statistics")
+    def statistics(self, request):
+        """Get room inspection statistics."""
+        from django.db.models import Avg, Count, Sum
+
+        queryset = self.get_queryset()
+
+        # Calculate statistics
+        total_inspections = queryset.count()
+        completed_inspections = queryset.filter(status=RoomInspection.Status.COMPLETED).count()
+        pending_inspections = queryset.filter(status=RoomInspection.Status.PENDING).count()
+        requires_action = queryset.filter(status=RoomInspection.Status.REQUIRES_ACTION).count()
+
+        # Average score from completed inspections
+        avg_score = queryset.filter(
+            status__in=[RoomInspection.Status.COMPLETED, RoomInspection.Status.REQUIRES_ACTION]
+        ).aggregate(avg=Avg("score"))["avg"] or 0
+
+        # Total issues
+        issue_stats = queryset.aggregate(
+            total_issues=Sum("issues_found"),
+            critical_issues=Sum("critical_issues"),
+        )
+
+        # Inspections by type
+        by_type = queryset.values("inspection_type").annotate(count=Count("id"))
+        inspections_by_type = {item["inspection_type"]: item["count"] for item in by_type}
+
+        # Inspections by room (top 10 with most inspections)
+        by_room = queryset.values("room__number").annotate(
+            count=Count("id"),
+            avg_score=Avg("score"),
+        ).order_by("-count")[:10]
+        inspections_by_room = list(by_room)
+
+        data = {
+            "total_inspections": total_inspections,
+            "completed_inspections": completed_inspections,
+            "pending_inspections": pending_inspections,
+            "requires_action": requires_action,
+            "average_score": round(avg_score, 2),
+            "total_issues": issue_stats["total_issues"] or 0,
+            "critical_issues": issue_stats["critical_issues"] or 0,
+            "inspections_by_type": inspections_by_type,
+            "inspections_by_room": inspections_by_room,
+        }
+
+        return Response(data)
+
+    @extend_schema(
+        summary="Create from checkout",
+        description="Auto-create checkout inspection for a booking.",
+        request={
+            "type": "object",
+            "properties": {
+                "booking_id": {"type": "integer"},
+                "template_id": {"type": "integer"},
+            },
+            "required": ["booking_id"],
+        },
+        responses={201: RoomInspectionSerializer},
+        tags=["Room Inspection"],
+    )
+    @action(detail=False, methods=["post"], url_path="from-checkout")
+    def from_checkout(self, request):
+        """Create checkout inspection from a booking."""
+        from django.utils import timezone
+
+        booking_id = request.data.get("booking_id")
+        template_id = request.data.get("template_id")
+
+        if not booking_id:
+            return Response(
+                {"detail": "Vui lòng cung cấp booking_id."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            booking = Booking.objects.get(id=booking_id)
+        except Booking.DoesNotExist:
+            return Response(
+                {"detail": "Đặt phòng không tồn tại."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Get template or use default
+        checklist_items = []
+        if template_id:
+            try:
+                template = InspectionTemplate.objects.get(id=template_id, is_active=True)
+                checklist_items = [
+                    {
+                        "category": item.get("category", ""),
+                        "item": item.get("item", ""),
+                        "critical": item.get("critical", False),
+                        "passed": None,
+                        "notes": "",
+                    }
+                    for item in template.items
+                ]
+            except InspectionTemplate.DoesNotExist:
+                pass
+        else:
+            # Try to find default template for room type
+            template = InspectionTemplate.objects.filter(
+                inspection_type=RoomInspection.InspectionType.CHECKOUT,
+                is_default=True,
+                is_active=True,
+            ).filter(
+                Q(room_type=booking.room.room_type) | Q(room_type__isnull=True)
+            ).first()
+
+            if template:
+                checklist_items = [
+                    {
+                        "category": item.get("category", ""),
+                        "item": item.get("item", ""),
+                        "critical": item.get("critical", False),
+                        "passed": None,
+                        "notes": "",
+                    }
+                    for item in template.items
+                ]
+
+        # Create inspection
+        inspection = RoomInspection.objects.create(
+            room=booking.room,
+            booking=booking,
+            inspection_type=RoomInspection.InspectionType.CHECKOUT,
+            scheduled_date=timezone.now().date(),
+            checklist_items=checklist_items,
+        )
+
+        return Response(
+            RoomInspectionSerializer(inspection).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        summary="Get pending inspections",
+        description="Get all pending inspections for today.",
+        responses={200: RoomInspectionListSerializer(many=True)},
+        tags=["Room Inspection"],
+    )
+    @action(detail=False, methods=["get"], url_path="pending-today")
+    def pending_today(self, request):
+        """Get pending inspections for today."""
+        from django.utils import timezone
+
+        today = timezone.now().date()
+        queryset = self.get_queryset().filter(
+            scheduled_date=today,
+            status=RoomInspection.Status.PENDING,
+        )
+
+        serializer = RoomInspectionListSerializer(queryset, many=True)
+        return Response(serializer.data)

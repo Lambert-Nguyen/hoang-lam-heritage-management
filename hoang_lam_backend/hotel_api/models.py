@@ -1381,6 +1381,201 @@ class LostAndFound(models.Model):
         self.save()
 
 
+class RoomInspection(models.Model):
+    """Room inspection checklist with photo documentation"""
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Chờ kiểm tra"
+        IN_PROGRESS = "in_progress", "Đang kiểm tra"
+        COMPLETED = "completed", "Hoàn thành"
+        REQUIRES_ACTION = "requires_action", "Cần xử lý"
+
+    class InspectionType(models.TextChoices):
+        CHECKOUT = "checkout", "Sau khi trả phòng"
+        CHECKIN = "checkin", "Trước khi nhận phòng"
+        ROUTINE = "routine", "Kiểm tra định kỳ"
+        MAINTENANCE = "maintenance", "Kiểm tra bảo trì"
+        DEEP_CLEAN = "deep_clean", "Kiểm tra vệ sinh tổng"
+
+    # Basic info
+    room = models.ForeignKey(
+        Room,
+        on_delete=models.CASCADE,
+        related_name="inspections",
+        verbose_name="Phòng",
+    )
+    booking = models.ForeignKey(
+        "Booking",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="inspections",
+        verbose_name="Đặt phòng liên quan",
+    )
+    inspection_type = models.CharField(
+        max_length=20,
+        choices=InspectionType.choices,
+        default=InspectionType.CHECKOUT,
+        verbose_name="Loại kiểm tra",
+    )
+    scheduled_date = models.DateField(verbose_name="Ngày kiểm tra")
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name="Thời điểm hoàn thành")
+
+    # Staff
+    inspector = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="inspections_performed",
+        verbose_name="Người kiểm tra",
+    )
+
+    # Status
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        verbose_name="Trạng thái",
+    )
+
+    # Checklist results - stored as JSON
+    checklist_items = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Danh sách kiểm tra",
+        help_text="Danh sách các mục kiểm tra và kết quả",
+    )
+    # Example structure:
+    # [
+    #   {"category": "bedroom", "item": "Giường ngủ", "passed": true, "notes": ""},
+    #   {"category": "bathroom", "item": "Toilet", "passed": false, "notes": "Cần sửa"},
+    # ]
+
+    # Scoring
+    total_items = models.PositiveIntegerField(default=0, verbose_name="Tổng số mục")
+    passed_items = models.PositiveIntegerField(default=0, verbose_name="Số mục đạt")
+    score = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=0,
+        verbose_name="Điểm (%)",
+    )
+
+    # Issues found
+    issues_found = models.PositiveIntegerField(default=0, verbose_name="Số vấn đề phát hiện")
+    critical_issues = models.PositiveIntegerField(default=0, verbose_name="Vấn đề nghiêm trọng")
+
+    # Images - stored as JSON array of URLs
+    images = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Ảnh kiểm tra",
+    )
+
+    # Notes
+    notes = models.TextField(blank=True, verbose_name="Ghi chú tổng thể")
+    action_required = models.TextField(blank=True, verbose_name="Hành động cần thực hiện")
+
+    # Audit
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Kiểm tra phòng"
+        verbose_name_plural = "Kiểm tra phòng"
+        ordering = ["-scheduled_date", "-created_at"]
+
+    def __str__(self):
+        return f"Kiểm tra phòng {self.room.number} - {self.scheduled_date}"
+
+    def calculate_score(self):
+        """Calculate inspection score based on checklist results"""
+        if not self.checklist_items:
+            return
+
+        self.total_items = len(self.checklist_items)
+        self.passed_items = sum(1 for item in self.checklist_items if item.get("passed", False))
+        self.issues_found = self.total_items - self.passed_items
+        self.critical_issues = sum(
+            1 for item in self.checklist_items
+            if not item.get("passed", False) and item.get("critical", False)
+        )
+
+        if self.total_items > 0:
+            self.score = (self.passed_items / self.total_items) * 100
+        else:
+            self.score = 0
+
+    def complete(self, inspector):
+        """Mark inspection as completed"""
+        from django.utils import timezone
+
+        self.calculate_score()
+        self.completed_at = timezone.now()
+        self.inspector = inspector
+
+        if self.issues_found > 0:
+            self.status = self.Status.REQUIRES_ACTION
+        else:
+            self.status = self.Status.COMPLETED
+
+        self.save()
+
+
+class InspectionTemplate(models.Model):
+    """Reusable inspection checklist templates"""
+
+    name = models.CharField(max_length=100, verbose_name="Tên mẫu")
+    inspection_type = models.CharField(
+        max_length=20,
+        choices=RoomInspection.InspectionType.choices,
+        default=RoomInspection.InspectionType.CHECKOUT,
+        verbose_name="Loại kiểm tra",
+    )
+    room_type = models.ForeignKey(
+        RoomType,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="inspection_templates",
+        verbose_name="Loại phòng áp dụng",
+    )
+    is_default = models.BooleanField(default=False, verbose_name="Mẫu mặc định")
+    is_active = models.BooleanField(default=True, verbose_name="Còn sử dụng")
+
+    # Template items
+    items = models.JSONField(
+        default=list,
+        verbose_name="Các mục kiểm tra",
+        help_text="Danh sách các mục cần kiểm tra",
+    )
+    # Example structure:
+    # [
+    #   {"category": "bedroom", "item": "Giường ngủ", "critical": true},
+    #   {"category": "bedroom", "item": "Ga trải giường", "critical": false},
+    #   {"category": "bathroom", "item": "Toilet", "critical": true},
+    # ]
+
+    # Audit
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="created_templates",
+        verbose_name="Người tạo",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Mẫu kiểm tra"
+        verbose_name_plural = "Mẫu kiểm tra"
+        ordering = ["name"]
+
+    def __str__(self):
+        return f"{self.name} ({self.get_inspection_type_display()})"
+
+
 class GroupBooking(models.Model):
     """Group booking for multiple rooms (tours, events, corporate)"""
 
