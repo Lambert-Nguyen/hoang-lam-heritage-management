@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -77,7 +76,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
   }
 
   Widget _buildUrgentTab() {
-    final urgentAsync = ref.watch(urgentMaintenanceRequestsProvider);
+    final urgentAsync = ref.watch(urgentRequestsProvider);
 
     return urgentAsync.when(
       data: (requests) {
@@ -90,14 +89,14 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         }
         return RefreshIndicator(
           onRefresh: () async {
-            ref.invalidate(urgentMaintenanceRequestsProvider);
+            ref.invalidate(urgentRequestsProvider);
           },
           child: _buildRequestList(requests),
         );
       },
       loading: () => const LoadingIndicator(),
       error: (error, _) => _buildErrorState(error, () {
-        ref.invalidate(urgentMaintenanceRequestsProvider);
+        ref.invalidate(urgentRequestsProvider);
       }),
     );
   }
@@ -106,8 +105,8 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
     final requestsAsync = ref.watch(filteredMaintenanceRequestsProvider(_filter));
 
     return requestsAsync.when(
-      data: (response) {
-        if (response.results.isEmpty) {
+      data: (requests) {
+        if (requests.isEmpty) {
           return const EmptyState(
             icon: Icons.build_outlined,
             title: 'Không có yêu cầu bảo trì',
@@ -118,7 +117,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
           onRefresh: () async {
             ref.invalidate(filteredMaintenanceRequestsProvider(_filter));
           },
-          child: _buildRequestList(response.results),
+          child: _buildRequestList(requests),
         );
       },
       loading: () => const LoadingIndicator(),

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
-import '../../widgets/common/app_card.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/housekeeping/task_card.dart';
@@ -252,17 +250,19 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   }
 
   void _showFilterSheet() async {
-    final newFilter = await showModalBottomSheet<HousekeepingTaskFilter>(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => TaskFilterSheet(currentFilter: _filter),
+      builder: (context) => TaskFilterSheet(
+        initialFilter: _filter,
+        onApply: (newFilter) {
+          setState(() {
+            _filter = newFilter;
+          });
+          Navigator.pop(context);
+        },
+      ),
     );
-
-    if (newFilter != null) {
-      setState(() {
-        _filter = newFilter;
-      });
-    }
   }
 
   void _viewTask(HousekeepingTask task) {

@@ -400,9 +400,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             if (_task.status.canAssign && _task.assignedTo == null)
               Expanded(
                 child: AppButton(
-                  text: 'Phân công',
+                  label: 'Phân công',
                   onPressed: _assignTask,
-                  variant: AppButtonVariant.outlined,
+                  isOutlined: true,
                   icon: Icons.person_add,
                 ),
               ),
@@ -411,7 +411,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             if (_task.status.canComplete)
               Expanded(
                 child: AppButton(
-                  text: 'Hoàn thành',
+                  label: 'Hoàn thành',
                   onPressed: _completeTask,
                   icon: Icons.check,
                 ),
@@ -419,7 +419,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             if (_task.status.canVerify)
               Expanded(
                 child: AppButton(
-                  text: 'Xác nhận',
+                  label: 'Xác nhận',
                   onPressed: _verifyTask,
                   icon: Icons.verified,
                 ),

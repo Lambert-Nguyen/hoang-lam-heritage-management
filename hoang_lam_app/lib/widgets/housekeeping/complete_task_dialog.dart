@@ -179,7 +179,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                     AppSpacing.gapVerticalSm,
                     AppTextField(
                       controller: _notesController,
-                      hintText: 'Nhập ghi chú về công việc...',
+                      hint: 'Nhập ghi chú về công việc...',
                       maxLines: 3,
                     ),
                   ],
