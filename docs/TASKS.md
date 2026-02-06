@@ -48,8 +48,9 @@
 > - **✅ Phase 4.1**: 10/10 complete (Report Endpoints Backend - 8 endpoints, 29 tests)
 > - **✅ Phase 4.2**: 10/10 complete (Reports Frontend - models, repository, provider, screen, 27 tests)
 > - **✅ Dashboard**: Added /api/v1/dashboard/ endpoint for aggregated hotel metrics (4 tests)
+> - **✅ Pricing Management**: Rate Plans & Date Rate Overrides - Backend models + API + Flutter screens. See [PRICING_MANAGEMENT.md](./PRICING_MANAGEMENT.md)
 > - **📊 Test Coverage**: **703 tests passing** (259 backend + 444 frontend), **100% pass rate**
-> - **🎯 Overall Progress**: 234/268 tasks (87.3%) - PHASE 1, 2, 3.1-3.2, 4 COMPLETE!
+> - **🎯 Overall Progress**: 236/270 tasks (87.4%) - PHASE 1, 2, 3.1-3.2, 4 COMPLETE + Pricing!
 >
 > ### Deferred Tasks (Status Update)
 >

@@ -12,6 +12,8 @@ import '../screens/auth/splash_screen.dart';
 import '../screens/auth/password_change_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/rooms/room_detail_screen.dart';
+import '../screens/rooms/room_form_screen.dart';
+import '../screens/rooms/room_management_screen.dart';
 import '../screens/bookings/bookings_screen.dart';
 import '../screens/bookings/booking_form_screen.dart';
 import '../screens/bookings/booking_detail_screen.dart';
@@ -34,6 +36,9 @@ import '../screens/room_inspection/room_inspection_list_screen.dart';
 import '../screens/room_inspection/room_inspection_detail_screen.dart';
 import '../screens/room_inspection/room_inspection_form_screen.dart';
 import '../screens/room_inspection/inspection_template_screen.dart';
+import '../screens/pricing/pricing_management_screen.dart';
+import '../screens/pricing/rate_plan_form_screen.dart';
+import '../screens/pricing/date_rate_override_form_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -42,6 +47,9 @@ class AppRoutes {
   static const String login = '/login';
   static const String home = '/home';
   static const String roomDetail = '/room-detail';
+  static const String roomManagement = '/room-management';
+  static const String roomNew = '/room-management/new';
+  static const String roomEdit = '/room-management/edit';
   static const String bookings = '/bookings';
   static const String bookingDetail = '/bookings/:id';
   static const String newBooking = '/bookings/new';
@@ -77,6 +85,12 @@ class AppRoutes {
   static const String roomInspectionDetail = '/room-inspections/:id';
   static const String roomInspectionConduct = '/room-inspections/:id/conduct';
   static const String inspectionTemplates = '/inspection-templates';
+  // Pricing routes
+  static const String pricing = '/pricing';
+  static const String ratePlanNew = '/pricing/rate-plans/new';
+  static const String ratePlanEdit = '/pricing/rate-plans/:id';
+  static const String dateOverrideNew = '/pricing/date-overrides/new';
+  static const String dateOverrideEdit = '/pricing/date-overrides/:id';
 }
 
 /// Navigation keys for bottom nav
@@ -131,6 +145,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             );
           }
           return RoomDetailScreen(room: room);
+        },
+      ),
+
+      // Room Management routes (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.roomManagement,
+        name: 'roomManagement',
+        builder: (context, state) => const RoomManagementScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.roomNew,
+        name: 'roomNew',
+        builder: (context, state) => const RoomFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.roomEdit,
+        name: 'roomEdit',
+        builder: (context, state) {
+          final room = state.extra as Room?;
+          return RoomFormScreen(room: room);
         },
       ),
 
@@ -361,6 +395,55 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.inspectionTemplates,
         name: 'inspectionTemplates',
         builder: (context, state) => const InspectionTemplateScreen(),
+      ),
+
+      // Pricing routes (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.pricing,
+        name: 'pricing',
+        builder: (context, state) => const PricingManagementScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.ratePlanNew,
+        name: 'ratePlanNew',
+        builder: (context, state) => const RatePlanFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.ratePlanEdit,
+        name: 'ratePlanEdit',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy gói giá'),
+              ),
+            );
+          }
+          return RatePlanFormScreen(ratePlanId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.dateOverrideNew,
+        name: 'dateOverrideNew',
+        builder: (context, state) => const DateRateOverrideFormScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.dateOverrideEdit,
+        name: 'dateOverrideEdit',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(
+                child: Text('Không tìm thấy giá theo ngày'),
+              ),
+            );
+          }
+          return DateRateOverrideFormScreen(overrideId: id);
+        },
       ),
 
       // Main app shell with bottom navigation

@@ -3,6 +3,22 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'rate_plan.freezed.dart';
 part 'rate_plan.g.dart';
 
+/// Converter for decimal fields that may come as string or number from the backend
+class DecimalToDoubleConverter implements JsonConverter<double, dynamic> {
+  const DecimalToDoubleConverter();
+
+  @override
+  double fromJson(dynamic json) {
+    if (json == null) return 0.0;
+    if (json is num) return json.toDouble();
+    if (json is String) return double.tryParse(json) ?? 0.0;
+    return 0.0;
+  }
+
+  @override
+  dynamic toJson(double object) => object;
+}
+
 /// Cancellation policy matching backend RatePlan.CancellationPolicy choices
 enum CancellationPolicy {
   @JsonValue('free')
@@ -59,6 +75,7 @@ sealed class RatePlan with _$RatePlan {
     @JsonKey(name: 'name_en') String? nameEn,
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
+    @DecimalToDoubleConverter()
     @JsonKey(name: 'base_rate') required double baseRate,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
     @JsonKey(name: 'min_stay') @Default(1) int minStay,
@@ -90,6 +107,7 @@ sealed class RatePlanListItem with _$RatePlanListItem {
     required String name,
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
+    @DecimalToDoubleConverter()
     @JsonKey(name: 'base_rate') required double baseRate,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
     @JsonKey(name: 'min_stay') @Default(1) int minStay,
@@ -137,6 +155,7 @@ sealed class DateRateOverride with _$DateRateOverride {
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     required DateTime date,
+    @DecimalToDoubleConverter()
     required double rate,
     @Default('') String reason,
     @JsonKey(name: 'closed_to_arrival') @Default(false) bool closedToArrival,
@@ -158,6 +177,7 @@ sealed class DateRateOverrideListItem with _$DateRateOverrideListItem {
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     required DateTime date,
+    @DecimalToDoubleConverter()
     required double rate,
     @Default('') String reason,
     @JsonKey(name: 'closed_to_arrival') @Default(false) bool closedToArrival,

@@ -4,6 +4,38 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'room.freezed.dart';
 part 'room.g.dart';
 
+/// Converter for decimal fields that may come as string or number from the backend
+class DecimalToIntConverter implements JsonConverter<int, dynamic> {
+  const DecimalToIntConverter();
+
+  @override
+  int fromJson(dynamic json) {
+    if (json == null) return 0;
+    if (json is num) return json.toInt();
+    if (json is String) return int.tryParse(json) ?? double.tryParse(json)?.toInt() ?? 0;
+    return 0;
+  }
+
+  @override
+  dynamic toJson(int object) => object;
+}
+
+/// Nullable version for optional decimal fields
+class NullableDecimalToIntConverter implements JsonConverter<int?, dynamic> {
+  const NullableDecimalToIntConverter();
+
+  @override
+  int? fromJson(dynamic json) {
+    if (json == null) return null;
+    if (json is num) return json.toInt();
+    if (json is String) return int.tryParse(json) ?? double.tryParse(json)?.toInt();
+    return null;
+  }
+
+  @override
+  dynamic toJson(int? object) => object;
+}
+
 /// Room status matching backend Room.Status choices
 enum RoomStatus {
   @JsonValue('available')
@@ -96,9 +128,12 @@ sealed class RoomType with _$RoomType {
     required int id,
     required String name,
     @JsonKey(name: 'name_en') String? nameEn,
+    @DecimalToIntConverter()
     @JsonKey(name: 'base_rate') required int baseRate,
     // Hourly booking fields
+    @NullableDecimalToIntConverter()
     @JsonKey(name: 'hourly_rate') int? hourlyRate,
+    @NullableDecimalToIntConverter()
     @JsonKey(name: 'first_hour_rate') int? firstHourRate,
     @JsonKey(name: 'allows_hourly') @Default(true) bool allowsHourly,
     @JsonKey(name: 'min_hours') @Default(2) int minHours,
@@ -155,6 +190,7 @@ sealed class Room with _$Room {
     @Default([]) List<String> amenities,
     String? notes,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
+    @NullableDecimalToIntConverter()
     @JsonKey(name: 'base_rate') int? baseRate,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,

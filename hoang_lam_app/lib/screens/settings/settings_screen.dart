@@ -111,6 +111,29 @@ class SettingsScreen extends ConsumerWidget {
 
           const Divider(),
 
+          // Property Management section
+          _buildSectionHeader(context, 'Quản lý căn hộ'),
+          _buildSettingsTile(
+            context,
+            icon: Icons.meeting_room,
+            title: 'Quản lý phòng',
+            subtitle: 'Thêm, sửa, xóa phòng',
+            onTap: () {
+              context.push(AppRoutes.roomManagement);
+            },
+          ),
+          _buildSettingsTile(
+            context,
+            icon: Icons.sell,
+            title: 'Quản lý giá',
+            subtitle: 'Gói giá, giá theo ngày, khuyến mãi',
+            onTap: () {
+              context.push(AppRoutes.pricing);
+            },
+          ),
+
+          const Divider(),
+
           // General settings
           _buildSectionHeader(context, 'Cài đặt chung'),
 
