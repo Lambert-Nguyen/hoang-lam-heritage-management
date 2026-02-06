@@ -73,8 +73,8 @@ class HomeScreen extends ConsumerWidget {
                   // Today's revenue (if financial data available)
                   DashboardRevenueCard(
                     todaySummary: dashboard.today,
-                    todayRevenue: 0, // TODO: Get from financial endpoint
-                    todayExpense: 0,
+                    todayRevenue: dashboard.today.revenue,
+                    todayExpense: dashboard.today.expense,
                   ),
                   AppSpacing.gapVerticalLg,
 
@@ -291,14 +291,16 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildRoomLegend(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: AppSpacing.md,
+      runSpacing: AppSpacing.sm,
       children: [
         _buildLegendItem('Trống', AppColors.available),
-        AppSpacing.gapHorizontalMd,
         _buildLegendItem('Có khách', AppColors.occupied),
-        AppSpacing.gapHorizontalMd,
         _buildLegendItem('Dọn dẹp', AppColors.cleaning),
+        _buildLegendItem('Bảo trì', AppColors.maintenance),
+        _buildLegendItem('Khóa', AppColors.blocked),
       ],
     );
   }

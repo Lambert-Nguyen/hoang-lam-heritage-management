@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/config/env_config.dart';
+import 'providers/settings_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/storage/hive_storage.dart';
 import 'l10n/app_localizations.dart';
@@ -69,11 +70,11 @@ class HoangLamApp extends ConsumerWidget {
       // Builder for text scaling (accessibility)
       builder: (context, child) {
         // Get saved text scale from settings (default 1.0)
-        // final textScale = ref.watch(textScaleProvider);
+        final textScale = ref.watch(textScaleFactorProvider);
 
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(
-            // textScaleFactor: textScale,
+            textScaler: TextScaler.linear(textScale),
           ),
           child: child ?? const SizedBox.shrink(),
         );

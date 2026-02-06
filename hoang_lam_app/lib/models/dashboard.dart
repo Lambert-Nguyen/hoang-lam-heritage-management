@@ -42,6 +42,8 @@ sealed class TodaySummary with _$TodaySummary {
     @JsonKey(name: 'check_outs') required int checkOuts,
     @JsonKey(name: 'pending_arrivals') required int pendingArrivals,
     @JsonKey(name: 'pending_departures') required int pendingDepartures,
+    @Default(0) double revenue,
+    @Default(0) double expense,
   }) = _TodaySummary;
 
   factory TodaySummary.fromJson(Map<String, dynamic> json) =>

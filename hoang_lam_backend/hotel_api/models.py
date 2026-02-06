@@ -153,6 +153,28 @@ class Guest(models.Model):
     preferences = models.JSONField(default=dict, blank=True, verbose_name="Sở thích")
     notes = models.TextField(blank=True, verbose_name="Ghi chú")
 
+    # Loyalty tracking (Design Plan Section 5)
+    preferred_room_type = models.ForeignKey(
+        "RoomType",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="preferred_by_guests",
+        verbose_name="Loại phòng ưa thích",
+    )
+    preferred_floor = models.PositiveIntegerField(
+        null=True, blank=True, verbose_name="Tầng ưa thích"
+    )
+    special_requests = models.TextField(blank=True, verbose_name="Yêu cầu đặc biệt")
+    total_spent = models.DecimalField(
+        max_digits=15,
+        decimal_places=0,
+        default=0,
+        verbose_name="Tổng chi tiêu",
+    )
+    first_stay = models.DateField(null=True, blank=True, verbose_name="Lần đầu ở")
+    last_stay = models.DateField(null=True, blank=True, verbose_name="Lần cuối ở")
+
     # Audit
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -193,7 +215,9 @@ class Booking(models.Model):
         BOOKING_COM = "booking_com", "Booking.com"
         AGODA = "agoda", "Agoda"
         AIRBNB = "airbnb", "Airbnb"
+        EXPEDIA = "expedia", "Expedia"
         TRAVELOKA = "traveloka", "Traveloka"
+        GOOGLE_HOTEL = "google_hotel", "Google Hotel"
         OTHER_OTA = "other_ota", "OTA khác"
         OTHER = "other", "Khác"
 
@@ -202,6 +226,7 @@ class Booking(models.Model):
         BANK_TRANSFER = "bank_transfer", "Chuyển khoản"
         MOMO = "momo", "MoMo"
         VNPAY = "vnpay", "VNPay"
+        ZALOPAY = "zalopay", "ZaloPay"
         CARD = "card", "Thẻ"
         OTA_COLLECT = "ota_collect", "OTA thu hộ"
         OTHER = "other", "Khác"
@@ -348,9 +373,42 @@ class Booking(models.Model):
     )
     is_paid = models.BooleanField(default=False, verbose_name="Đã thanh toán đủ")
 
+    # Discount (Design Plan Section 5)
+    discount_amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        default=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giảm giá",
+    )
+    discount_reason = models.CharField(
+        max_length=100, blank=True, verbose_name="Lý do giảm giá"
+    )
+
+    # OTA tracking (Design Plan Section 5)
+    ota_commission = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        default=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Hoa hồng OTA",
+    )
+
+    # Temporary residence declaration (Vietnamese legal requirement)
+    declaration_submitted = models.BooleanField(
+        default=False, verbose_name="Đã khai báo tạm trú"
+    )
+    declaration_submitted_at = models.DateTimeField(
+        null=True, blank=True, verbose_name="Thời gian khai báo"
+    )
+
     # Notes and metadata
     notes = models.TextField(blank=True, verbose_name="Ghi chú")
     special_requests = models.TextField(blank=True, verbose_name="Yêu cầu đặc biệt")
+    internal_notes = models.TextField(
+        blank=True, verbose_name="Ghi chú nội bộ",
+        help_text="Ghi chú chỉ nhân viên thấy",
+    )
 
     # Audit
     created_by = models.ForeignKey(
@@ -701,6 +759,13 @@ class HotelUser(models.Model):
     )
     phone = models.CharField(max_length=20, blank=True, verbose_name="Số điện thoại")
     is_active = models.BooleanField(default=True)
+
+    # Permission fields (Design Plan Section 5)
+    can_view_finance = models.BooleanField(default=False, verbose_name="Xem tài chính")
+    can_edit_rates = models.BooleanField(default=False, verbose_name="Sửa giá phòng")
+    can_manage_bookings = models.BooleanField(default=True, verbose_name="Quản lý đặt phòng")
+    receive_notifications = models.BooleanField(default=True, verbose_name="Nhận thông báo")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

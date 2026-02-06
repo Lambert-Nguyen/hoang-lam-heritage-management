@@ -1356,6 +1356,22 @@ class DashboardView(APIView):
         occupied_rooms = room_status_dict.get(Room.Status.OCCUPIED, 0)
         occupancy_rate = (occupied_rooms / total_rooms * 100) if total_rooms > 0 else 0
 
+        # Today's financial summary
+        from django.db.models import Sum
+
+        today_income = (
+            FinancialEntry.objects.filter(
+                date=today, entry_type=FinancialEntry.EntryType.INCOME
+            ).aggregate(total=Sum("amount"))["total"]
+            or 0
+        )
+        today_expense = (
+            FinancialEntry.objects.filter(
+                date=today, entry_type=FinancialEntry.EntryType.EXPENSE
+            ).aggregate(total=Sum("amount"))["total"]
+            or 0
+        )
+
         return Response(
             {
                 "room_status": {
@@ -1372,6 +1388,8 @@ class DashboardView(APIView):
                     "check_outs": today_check_outs + completed_check_outs,
                     "pending_arrivals": today_check_ins,
                     "pending_departures": today_check_outs,
+                    "revenue": float(today_income),
+                    "expense": float(today_expense),
                 },
                 "occupancy": {
                     "rate": round(occupancy_rate, 1),
