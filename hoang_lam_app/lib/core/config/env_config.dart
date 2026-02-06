@@ -21,7 +21,7 @@ class EnvConfig {
   /// Development configuration
   static const EnvConfig dev = EnvConfig._(
     environment: Environment.dev,
-    apiBaseUrl: 'http://10.250.229.47:8000/api/v1',
+    apiBaseUrl: 'http://localhost:8000/api/v1',
     appName: 'Hoang Lam Heritage (Dev)',
     enableLogging: true,
     apiTimeout: Duration(seconds: 30),

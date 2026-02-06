@@ -47,5 +47,10 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Sử dụng Face ID để đăng nhập nhanh vào ứng dụng</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
