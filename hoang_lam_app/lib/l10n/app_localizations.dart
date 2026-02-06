@@ -96,7 +96,7 @@ class AppLocalizations {
 
 // Vietnamese translations
 const Map<String, String> _viTranslations = {
-  'app_name': 'Nhà Nghỉ Hoàng Lâm',
+  'app_name': 'Hoàng Lâm Heritage Suites',
   'home': 'Trang chủ',
   'bookings': 'Đặt phòng',
   'finance': 'Tài chính',

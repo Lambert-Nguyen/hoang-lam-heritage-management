@@ -39,7 +39,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check hotel name is displayed
-      expect(find.text('Nhà Nghỉ Hoàng Lâm'), findsOneWidget);
+      expect(find.text('Hoàng Lâm Heritage Suites'), findsOneWidget);
 
       // Check login form elements
       expect(find.text('Tên đăng nhập'), findsOneWidget);

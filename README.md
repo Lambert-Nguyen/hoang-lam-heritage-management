@@ -572,10 +572,10 @@ flutter test
 
 ## 📄 License
 
-**Private** - All rights reserved. Hoang Lam Heritage Hotel © 2026
+**Private** - All rights reserved. Hoang Lam Heritage Suites © 2026
 
 ---
 
 <p align="center">
-  Made with ❤️ for Hoang Lam Heritage Hotel
+  Made with ❤️ for Hoang Lam Heritage Suites
 </p>

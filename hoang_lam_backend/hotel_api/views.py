@@ -2644,7 +2644,7 @@ class ReceiptViewSet(viewsets.ViewSet):
         return {
             "receipt_number": receipt_number,
             "receipt_date": timezone.now().isoformat(),
-            "hotel_name": "Nhà Nghỉ Hoàng Lâm Heritage",
+            "hotel_name": "Hoàng Lâm Heritage Suites",
             "hotel_address": "123 Đường ABC, Phường XYZ, TP.HCM",
             "hotel_phone": "028 1234 5678",
             "guest_name": booking.guest.full_name,

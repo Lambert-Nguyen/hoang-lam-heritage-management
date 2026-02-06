@@ -20,7 +20,7 @@ extension UserRoleExtension on UserRole {
   String get displayName {
     switch (this) {
       case UserRole.owner:
-        return 'Chủ nhà nghỉ';
+        return 'Chủ căn hộ';
       case UserRole.manager:
         return 'Quản lý';
       case UserRole.staff:

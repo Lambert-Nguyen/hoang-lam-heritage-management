@@ -138,7 +138,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
                     // Subtitle
                     Text(
-                      'Quản lý nhà nghỉ',
+                      'Quản lý căn hộ',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withValues(alpha: 0.8),

@@ -589,7 +589,7 @@ class SettingsScreen extends ConsumerWidget {
       ),
       children: [
         const Text(
-          'Ứng dụng quản lý nhà nghỉ đơn giản, dễ sử dụng dành cho gia đình.',
+          'Ứng dụng quản lý căn hộ đơn giản, dễ sử dụng dành cho gia đình.',
         ),
         AppSpacing.gapVerticalMd,
         const Text(
@@ -598,7 +598,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
         AppSpacing.gapVerticalSm,
         const Text(
-          '© 2024 Hoàng Lâm Heritage. All rights reserved.',
+          '© 2024 Hoàng Lâm Heritage Suites. All rights reserved.',
           style: TextStyle(
             color: AppColors.textSecondary,
             fontSize: 12,

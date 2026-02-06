@@ -7,8 +7,8 @@ class AppConstants {
   static const String appBuildNumber = '1';
 
   // Hotel Info
-  static const String hotelName = 'Nhà Nghỉ Hoàng Lâm';
-  static const String hotelNameEn = 'Hoang Lam Heritage';
+  static const String hotelName = 'Hoàng Lâm Heritage Suites';
+  static const String hotelNameEn = 'Hoang Lam Heritage Suites';
   static const int totalRooms = 7;
 
   // Storage Keys
