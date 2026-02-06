@@ -66,7 +66,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState.loading();
 
     try {
-      final isAuthenticated = await _repository.isAuthenticated();
+      // Add timeout to prevent hanging on simulator
+      final isAuthenticated = await _repository
+          .isAuthenticated()
+          .timeout(const Duration(seconds: 5), onTimeout: () => false);
 
       if (!isAuthenticated) {
         state = const AuthState.unauthenticated();
