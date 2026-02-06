@@ -179,7 +179,7 @@ class HomeScreen extends ConsumerWidget {
           context.push(AppRoutes.newBooking);
         },
         icon: const Icon(Icons.add),
-        label: const Text('Đặt phòng'),
+        label: const Text('Đặt phòng mới'),
       ),
     );
   }

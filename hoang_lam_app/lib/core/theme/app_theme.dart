@@ -120,12 +120,21 @@ class AppTheme {
         ),
       ),
 
-      // Floating Action Button
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      // Floating Action Button - Large for accessibility
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
         elevation: AppSpacing.elevationLg,
-        shape: CircleBorder(),
+        extendedPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        extendedTextStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
+        extendedIconLabelSpacing: 12,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
 
       // Input Decoration
@@ -360,12 +369,21 @@ class AppTheme {
         ),
       ),
 
-      // Floating Action Button
-      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      // Floating Action Button - Large for accessibility
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primaryLight,
         foregroundColor: AppColors.darkBackground,
         elevation: AppSpacing.elevationLg,
-        shape: CircleBorder(),
+        extendedPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        extendedTextStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
+        extendedIconLabelSpacing: 12,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
 
       // Input Decoration

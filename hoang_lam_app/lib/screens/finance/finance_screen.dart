@@ -73,19 +73,20 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          FloatingActionButton.small(
+          FloatingActionButton.extended(
             heroTag: 'expense',
             onPressed: () => _navigateToForm(EntryType.expense),
             backgroundColor: AppColors.expense,
-            child: const Icon(Icons.remove, color: Colors.white),
+            icon: const Icon(Icons.remove, color: Colors.white),
+            label: const Text('Khoản chi', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
           ),
-          AppSpacing.gapVerticalSm,
+          AppSpacing.gapVerticalMd,
           FloatingActionButton.extended(
             heroTag: 'income',
             onPressed: () => _navigateToForm(EntryType.income),
             backgroundColor: AppColors.income,
             icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text('Thu', style: TextStyle(color: Colors.white)),
+            label: const Text('Khoản thu', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
           ),
         ],
       ),

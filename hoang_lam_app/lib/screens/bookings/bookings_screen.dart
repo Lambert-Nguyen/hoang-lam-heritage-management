@@ -131,7 +131,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _navigateToCreateBooking(),
         icon: const Icon(Icons.add),
-        label: const Text('Đặt phòng'),
+        label: const Text('Đặt phòng mới'),
       ),
     );
   }
