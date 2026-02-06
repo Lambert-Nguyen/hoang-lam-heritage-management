@@ -28,13 +28,13 @@ dependencies:
   hive_flutter: ^1.1.0
 
   # Secure Storage (for tokens)
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^10.0.0
 
   # Biometric Authentication
   local_auth: ^2.3.0
 
   # Navigation
-  go_router: ^14.8.1
+  go_router: ^17.0.0
 
   # Models & Serialization
   freezed_annotation: ^3.0.0
@@ -44,13 +44,13 @@ dependencies:
   intl: any  # Version pinned by flutter_localizations
 
   # Charts
-  fl_chart: ^0.70.2
+  fl_chart: ^1.1.0
 
   # Calendar
   table_calendar: ^3.1.3
 
   # Connectivity
-  connectivity_plus: ^6.1.4
+  connectivity_plus: ^7.0.0
 
   # Image handling
   cached_network_image: ^3.4.1
@@ -61,7 +61,7 @@ dependencies:
   equatable: ^2.0.7
   logger: ^2.5.0
   path_provider: ^2.1.5
-  share_plus: ^10.1.4
+  share_plus: ^12.0.1
   open_file: ^3.5.10
 
 dev_dependencies:
