@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/config/app_constants.dart';
 import '../../models/auth.dart';
 import '../../providers/auth_provider.dart';
-import '../../router/app_router.dart';
 
 /// Splash screen shown during app initialization
 /// Checks authentication status and redirects accordingly
@@ -55,10 +53,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   Future<void> _checkAuthStatus() async {
     // Small delay for splash animation
+    debugPrint('[SplashScreen] Starting auth check delay...');
     await Future.delayed(const Duration(milliseconds: 800));
 
     // Check auth status
+    debugPrint('[SplashScreen] Calling checkAuthStatus...');
     await ref.read(authStateProvider.notifier).checkAuthStatus();
+    debugPrint('[SplashScreen] checkAuthStatus completed');
   }
 
   @override
@@ -69,22 +70,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Listen to auth state changes
-    ref.listen<AuthState>(authStateProvider, (previous, next) {
-      next.maybeWhen(
-        authenticated: (_) {
-          if (context.mounted) {
-            context.go(AppRoutes.home);
-          }
-        },
-        unauthenticated: () {
-          if (context.mounted) {
-            context.go(AppRoutes.login);
-          }
-        },
-        orElse: () {},
-      );
-    });
+    // Watch auth state - router will handle redirects automatically
+    final authState = ref.watch(authStateProvider);
+    debugPrint('[SplashScreen] Current auth state: $authState');
+    
+    // No manual navigation needed - router's redirect handles it
+    authState.maybeWhen(
+      authenticated: (_) {
+        debugPrint('[SplashScreen] Authenticated - router will redirect to home');
+      },
+      unauthenticated: () {
+        debugPrint('[SplashScreen] Unauthenticated - router will redirect to login');
+      },
+      orElse: () {
+        debugPrint('[SplashScreen] Still loading: $authState');
+      },
+    );
 
     return Scaffold(
       backgroundColor: AppColors.primary,

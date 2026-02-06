@@ -39,8 +39,8 @@ class AppConstants {
   static const String roomTypesEndpoint = '/room-types/';
   static const String bookingsEndpoint = '/bookings/';
   static const String guestsEndpoint = '/guests/';
-  static const String financesEndpoint = '/finances/';
-  static const String categoriesEndpoint = '/financial-categories/';
+  static const String financesEndpoint = '/finance/entries/';
+  static const String categoriesEndpoint = '/finance/categories/';
   static const String reportsEndpoint = '/reports/';
   static const String paymentsEndpoint = '/payments/';
   static const String folioItemsEndpoint = '/folio-items/';

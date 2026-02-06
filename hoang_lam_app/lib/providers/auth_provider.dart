@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/errors/app_exceptions.dart';
@@ -64,12 +65,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// Check authentication status on app startup
   Future<void> checkAuthStatus() async {
     state = const AuthState.loading();
+    debugPrint('[AuthProvider] Starting checkAuthStatus...');
 
     try {
       // Add timeout to prevent hanging on simulator
+      debugPrint('[AuthProvider] Checking isAuthenticated...');
       final isAuthenticated = await _repository
           .isAuthenticated()
-          .timeout(const Duration(seconds: 5), onTimeout: () => false);
+          .timeout(const Duration(seconds: 5), onTimeout: () {
+        debugPrint('[AuthProvider] isAuthenticated timed out!');
+        return false;
+      });
+      debugPrint('[AuthProvider] isAuthenticated: $isAuthenticated');
 
       if (!isAuthenticated) {
         state = const AuthState.unauthenticated();

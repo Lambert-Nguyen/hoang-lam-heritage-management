@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,15 +83,12 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 /// App router configuration
 final appRouterProvider = Provider<GoRouter>((ref) {
-  // Watch auth state for redirect logic
-  final authState = ref.watch(authStateProvider);
-
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.splash,
     debugLogDiagnostics: true,
 
-    // Refresh router when auth state changes
+    // Refresh router when auth state changes (re-evaluates redirects)
     refreshListenable: _AuthStateRefreshNotifier(ref),
 
     routes: [
@@ -548,14 +546,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     // Redirect logic for authentication
     redirect: (context, state) {
       final currentPath = state.matchedLocation;
-
-      // Public routes that don't require authentication
-      final publicRoutes = [AppRoutes.splash, AppRoutes.login];
-      final isPublicRoute = publicRoutes.contains(currentPath);
+      // Read current auth state (don't watch - refreshListenable handles refresh)
+      final authState = ref.read(authStateProvider);
+      debugPrint('[Router] redirect called - path: $currentPath, authState: $authState');
 
       // Check auth state
       final isAuthenticated = authState.maybeWhen(
         authenticated: (_) => true,
+        orElse: () => false,
+      );
+
+      final isUnauthenticated = authState.maybeWhen(
+        unauthenticated: () => true,
         orElse: () => false,
       );
 
@@ -567,19 +569,33 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // If still checking auth, stay on splash
       if (isInitialOrLoading && currentPath == AppRoutes.splash) {
+        debugPrint('[Router] Still loading, staying on splash');
         return null;
       }
 
+      // If unauthenticated and on splash, redirect to login
+      if (isUnauthenticated && currentPath == AppRoutes.splash) {
+        debugPrint('[Router] Unauthenticated on splash, redirecting to login');
+        return AppRoutes.login;
+      }
+
+      // Public routes that don't require authentication
+      final publicRoutes = [AppRoutes.splash, AppRoutes.login];
+      final isPublicRoute = publicRoutes.contains(currentPath);
+
       // If not authenticated and trying to access protected route
       if (!isAuthenticated && !isPublicRoute) {
+        debugPrint('[Router] Not authenticated, redirecting to login');
         return AppRoutes.login;
       }
 
       // If authenticated and on login/splash, redirect to home
       if (isAuthenticated && (currentPath == AppRoutes.login || currentPath == AppRoutes.splash)) {
+        debugPrint('[Router] Authenticated, redirecting to home');
         return AppRoutes.home;
       }
 
+      debugPrint('[Router] No redirect needed');
       return null;
     },
   );

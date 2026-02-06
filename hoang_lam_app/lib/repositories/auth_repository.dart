@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../core/config/app_constants.dart';
@@ -148,10 +149,15 @@ class AuthRepository {
 
   /// Check if user is currently authenticated (has stored tokens)
   Future<bool> isAuthenticated() async {
-    final accessToken = await _secureStorage.read(
-      key: AppConstants.accessTokenKey,
-    );
-    return accessToken != null;
+    try {
+      final accessToken = await _secureStorage
+          .read(key: AppConstants.accessTokenKey)
+          .timeout(const Duration(seconds: 3), onTimeout: () => null);
+      return accessToken != null;
+    } catch (e) {
+      debugPrint('[AuthRepository] isAuthenticated error: $e');
+      return false;
+    }
   }
 
   /// Get stored access token
