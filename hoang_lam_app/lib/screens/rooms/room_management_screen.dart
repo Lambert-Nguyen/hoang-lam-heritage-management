@@ -71,14 +71,17 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
               final totalRooms = rooms.length;
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    _buildStatChip('Tổng: $totalRooms', AppColors.primary),
-                    const SizedBox(width: 8),
-                    _buildStatChip('Hoạt động: $activeRooms', AppColors.success),
-                    const SizedBox(width: 8),
-                    _buildStatChip('Vô hiệu: ${totalRooms - activeRooms}', AppColors.mutedAccent),
-                  ],
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildStatChip('Tổng: $totalRooms', AppColors.primary),
+                      const SizedBox(width: 8),
+                      _buildStatChip('Hoạt động: $activeRooms', AppColors.success),
+                      const SizedBox(width: 8),
+                      _buildStatChip('Vô hiệu: ${totalRooms - activeRooms}', AppColors.mutedAccent),
+                    ],
+                  ),
                 ),
               );
             },
@@ -254,7 +257,12 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
         ),
         title: Row(
           children: [
-            Text(room.displayName),
+            Flexible(
+              child: Text(
+                room.displayName,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             if (!room.isActive) ...[
               const SizedBox(width: 8),
               Container(
@@ -275,13 +283,21 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
           children: [
             Icon(room.status.icon, size: 14, color: room.status.color),
             const SizedBox(width: 4),
-            Text(room.status.displayName),
-            const SizedBox(width: 12),
-            Text(
-              room.roomTypeName ?? 'N/A',
-              style: TextStyle(color: AppColors.textSecondary),
+            Flexible(
+              child: Text(
+                room.status.displayName,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            const Spacer(),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                room.roomTypeName ?? 'N/A',
+                style: TextStyle(color: AppColors.textSecondary),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
             Text(
               room.formattedRate,
               style: TextStyle(

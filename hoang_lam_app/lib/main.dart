@@ -57,12 +57,12 @@ class HoangLamApp extends ConsumerWidget {
       // Theme
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.light,
+      themeMode: ref.watch(themeModeProvider),
 
       // Localization
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: const Locale('vi'), // Default to Vietnamese
+      locale: ref.watch(localeProvider),
 
       // Router
       routerConfig: router,
