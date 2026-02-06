@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomInspection, RoomType
+from .models import Booking, DateRateOverride, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, RatePlan, Room, RoomInspection, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -98,6 +98,16 @@ from .serializers import (
     GuestDemographicsRequestSerializer,
     ComparativeReportRequestSerializer,
     ExportReportRequestSerializer,
+    # RatePlan and DateRateOverride serializers
+    RatePlanSerializer,
+    RatePlanListSerializer,
+    RatePlanCreateSerializer,
+    RatePlanUpdateSerializer,
+    DateRateOverrideSerializer,
+    DateRateOverrideListSerializer,
+    DateRateOverrideCreateSerializer,
+    DateRateOverrideUpdateSerializer,
+    DateRateOverrideBulkCreateSerializer,
 )
 
 User = get_user_model()
@@ -5813,4 +5823,279 @@ class RoomInspectionViewSet(viewsets.ModelViewSet):
         )
 
         serializer = RoomInspectionListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+# ============================================================
+# RatePlan ViewSet
+# ============================================================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List rate plans",
+        description="Get all rate plans, optionally filtered by room type.",
+        parameters=[
+            OpenApiParameter("room_type", OpenApiTypes.INT, description="Filter by room type ID"),
+            OpenApiParameter("is_active", OpenApiTypes.BOOL, description="Filter by active status"),
+        ],
+        responses={200: RatePlanListSerializer(many=True)},
+        tags=["Rate Plans"],
+    ),
+    retrieve=extend_schema(
+        summary="Get rate plan details",
+        description="Get detailed information about a specific rate plan.",
+        responses={200: RatePlanSerializer},
+        tags=["Rate Plans"],
+    ),
+    create=extend_schema(
+        summary="Create rate plan",
+        description="Create a new rate plan.",
+        request=RatePlanCreateSerializer,
+        responses={201: RatePlanSerializer},
+        tags=["Rate Plans"],
+    ),
+    update=extend_schema(
+        summary="Update rate plan",
+        description="Update an existing rate plan.",
+        request=RatePlanUpdateSerializer,
+        responses={200: RatePlanSerializer},
+        tags=["Rate Plans"],
+    ),
+    partial_update=extend_schema(
+        summary="Partial update rate plan",
+        description="Partially update a rate plan.",
+        request=RatePlanUpdateSerializer,
+        responses={200: RatePlanSerializer},
+        tags=["Rate Plans"],
+    ),
+    destroy=extend_schema(
+        summary="Delete rate plan",
+        description="Delete a rate plan.",
+        responses={204: None},
+        tags=["Rate Plans"],
+    ),
+)
+class RatePlanViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing RatePlans."""
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+    queryset = RatePlan.objects.select_related("room_type").all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return RatePlanListSerializer
+        elif self.action == "create":
+            return RatePlanCreateSerializer
+        elif self.action in ["update", "partial_update"]:
+            return RatePlanUpdateSerializer
+        return RatePlanSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Filter by room type
+        room_type = self.request.query_params.get("room_type")
+        if room_type:
+            queryset = queryset.filter(room_type_id=room_type)
+
+        # Filter by active status
+        is_active = self.request.query_params.get("is_active")
+        if is_active is not None:
+            is_active_bool = is_active.lower() in ("true", "1", "yes")
+            queryset = queryset.filter(is_active=is_active_bool)
+
+        return queryset
+
+    @extend_schema(
+        summary="Get active rate plans for room type",
+        description="Get all active rate plans for a specific room type, including currently valid ones.",
+        parameters=[
+            OpenApiParameter("room_type_id", OpenApiTypes.INT, description="Room type ID", required=True, location=OpenApiParameter.PATH),
+        ],
+        responses={200: RatePlanListSerializer(many=True)},
+        tags=["Rate Plans"],
+    )
+    @action(detail=False, methods=["get"], url_path="by-room-type/(?P<room_type_id>[^/.]+)")
+    def by_room_type(self, request, room_type_id=None):
+        """Get active rate plans for a room type."""
+        from django.utils import timezone
+
+        today = timezone.now().date()
+        queryset = self.get_queryset().filter(
+            room_type_id=room_type_id,
+            is_active=True,
+        ).filter(
+            Q(valid_from__isnull=True) | Q(valid_from__lte=today),
+            Q(valid_to__isnull=True) | Q(valid_to__gte=today),
+        )
+
+        serializer = RatePlanListSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+# ============================================================
+# DateRateOverride ViewSet
+# ============================================================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List date rate overrides",
+        description="Get all date rate overrides, optionally filtered by room type and date range.",
+        parameters=[
+            OpenApiParameter("room_type", OpenApiTypes.INT, description="Filter by room type ID"),
+            OpenApiParameter("start_date", OpenApiTypes.DATE, description="Filter from date"),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, description="Filter to date"),
+        ],
+        responses={200: DateRateOverrideListSerializer(many=True)},
+        tags=["Date Rate Overrides"],
+    ),
+    retrieve=extend_schema(
+        summary="Get date rate override details",
+        description="Get detailed information about a specific date rate override.",
+        responses={200: DateRateOverrideSerializer},
+        tags=["Date Rate Overrides"],
+    ),
+    create=extend_schema(
+        summary="Create date rate override",
+        description="Create a new date rate override.",
+        request=DateRateOverrideCreateSerializer,
+        responses={201: DateRateOverrideSerializer},
+        tags=["Date Rate Overrides"],
+    ),
+    update=extend_schema(
+        summary="Update date rate override",
+        description="Update an existing date rate override.",
+        request=DateRateOverrideUpdateSerializer,
+        responses={200: DateRateOverrideSerializer},
+        tags=["Date Rate Overrides"],
+    ),
+    partial_update=extend_schema(
+        summary="Partial update date rate override",
+        description="Partially update a date rate override.",
+        request=DateRateOverrideUpdateSerializer,
+        responses={200: DateRateOverrideSerializer},
+        tags=["Date Rate Overrides"],
+    ),
+    destroy=extend_schema(
+        summary="Delete date rate override",
+        description="Delete a date rate override.",
+        responses={204: None},
+        tags=["Date Rate Overrides"],
+    ),
+)
+class DateRateOverrideViewSet(viewsets.ModelViewSet):
+    """ViewSet for managing DateRateOverrides."""
+
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
+    queryset = DateRateOverride.objects.select_related("room_type").all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return DateRateOverrideListSerializer
+        elif self.action == "create":
+            return DateRateOverrideCreateSerializer
+        elif self.action in ["update", "partial_update"]:
+            return DateRateOverrideUpdateSerializer
+        elif self.action == "bulk_create":
+            return DateRateOverrideBulkCreateSerializer
+        return DateRateOverrideSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Filter by room type
+        room_type = self.request.query_params.get("room_type")
+        if room_type:
+            queryset = queryset.filter(room_type_id=room_type)
+
+        # Filter by date range
+        start_date = self.request.query_params.get("start_date")
+        if start_date:
+            queryset = queryset.filter(date__gte=start_date)
+
+        end_date = self.request.query_params.get("end_date")
+        if end_date:
+            queryset = queryset.filter(date__lte=end_date)
+
+        return queryset
+
+    @extend_schema(
+        summary="Bulk create date rate overrides",
+        description="Create date rate overrides for a date range. Existing overrides for the same room type and dates will be updated.",
+        request=DateRateOverrideBulkCreateSerializer,
+        responses={201: DateRateOverrideSerializer(many=True)},
+        tags=["Date Rate Overrides"],
+    )
+    @action(detail=False, methods=["post"], url_path="bulk-create")
+    def bulk_create(self, request):
+        """Bulk create date rate overrides for a date range."""
+        from datetime import timedelta
+
+        serializer = DateRateOverrideBulkCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+        room_type = data["room_type"]
+        start_date = data["start_date"]
+        end_date = data["end_date"]
+        rate = data["rate"]
+        reason = data.get("reason", "")
+        closed_to_arrival = data.get("closed_to_arrival", False)
+        closed_to_departure = data.get("closed_to_departure", False)
+        min_stay = data.get("min_stay")
+
+        created_overrides = []
+        current_date = start_date
+        while current_date <= end_date:
+            override, created = DateRateOverride.objects.update_or_create(
+                room_type=room_type,
+                date=current_date,
+                defaults={
+                    "rate": rate,
+                    "reason": reason,
+                    "closed_to_arrival": closed_to_arrival,
+                    "closed_to_departure": closed_to_departure,
+                    "min_stay": min_stay,
+                },
+            )
+            created_overrides.append(override)
+            current_date += timedelta(days=1)
+
+        return Response(
+            DateRateOverrideSerializer(created_overrides, many=True).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        summary="Get overrides for room type",
+        description="Get all date rate overrides for a specific room type in a date range.",
+        parameters=[
+            OpenApiParameter("room_type_id", OpenApiTypes.INT, description="Room type ID", required=True, location=OpenApiParameter.PATH),
+            OpenApiParameter("start_date", OpenApiTypes.DATE, description="Start date", required=True),
+            OpenApiParameter("end_date", OpenApiTypes.DATE, description="End date", required=True),
+        ],
+        responses={200: DateRateOverrideListSerializer(many=True)},
+        tags=["Date Rate Overrides"],
+    )
+    @action(detail=False, methods=["get"], url_path="by-room-type/(?P<room_type_id>[^/.]+)")
+    def by_room_type(self, request, room_type_id=None):
+        """Get date rate overrides for a room type in a date range."""
+        start_date = request.query_params.get("start_date")
+        end_date = request.query_params.get("end_date")
+
+        if not start_date or not end_date:
+            return Response(
+                {"detail": "start_date and end_date are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        queryset = self.get_queryset().filter(
+            room_type_id=room_type_id,
+            date__gte=start_date,
+            date__lte=end_date,
+        )
+
+        serializer = DateRateOverrideListSerializer(queryset, many=True)
         return Response(serializer.data)

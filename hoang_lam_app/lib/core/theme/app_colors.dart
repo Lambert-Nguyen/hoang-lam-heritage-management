@@ -67,4 +67,21 @@ class AppColors {
   // Offline Banner
   static const Color offline = Color(0xFFFF9800);
   static const Color onOffline = Color(0xFFFFFFFF);
+
+  // ==================== Dark Mode Colors ====================
+  
+  // Dark Background Colors
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkSurfaceVariant = Color(0xFF2C2C2C);
+  static const Color darkCard = Color(0xFF242424);
+
+  // Dark Text Colors
+  static const Color darkTextPrimary = Color(0xFFE1E1E1);
+  static const Color darkTextSecondary = Color(0xFFB0B0B0);
+  static const Color darkTextHint = Color(0xFF757575);
+
+  // Dark Divider & Border
+  static const Color darkDivider = Color(0xFF424242);
+  static const Color darkBorder = Color(0xFF383838);
 }

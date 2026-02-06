@@ -1746,3 +1746,150 @@ class GroupBooking(models.Model):
     def balance_due(self):
         """Calculate remaining balance"""
         return self.total_amount - self.deposit_amount
+
+
+class RatePlan(models.Model):
+    """
+    Rate plan for dynamic pricing.
+    Allows different rates based on booking rules (advance booking, min stay, etc.)
+    """
+
+    class CancellationPolicy(models.TextChoices):
+        FREE = "free", "Miễn phí hủy"
+        FLEXIBLE = "flexible", "Linh hoạt"
+        MODERATE = "moderate", "Trung bình"
+        STRICT = "strict", "Nghiêm ngặt"
+        NON_REFUNDABLE = "non_refundable", "Không hoàn tiền"
+
+    name = models.CharField(max_length=50, verbose_name="Tên gói giá")
+    name_en = models.CharField(max_length=50, blank=True, verbose_name="Name (English)")
+    room_type = models.ForeignKey(
+        RoomType,
+        on_delete=models.CASCADE,
+        related_name="rate_plans",
+        verbose_name="Loại phòng",
+    )
+    base_rate = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giá cơ bản/đêm",
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Đang hoạt động")
+
+    # Rate rules
+    min_stay = models.PositiveIntegerField(default=1, verbose_name="Số đêm tối thiểu")
+    max_stay = models.PositiveIntegerField(
+        null=True, blank=True, verbose_name="Số đêm tối đa"
+    )
+    advance_booking_days = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Số ngày đặt trước",
+        help_text="Yêu cầu đặt trước ít nhất X ngày",
+    )
+    cancellation_policy = models.CharField(
+        max_length=20,
+        choices=CancellationPolicy.choices,
+        default=CancellationPolicy.FLEXIBLE,
+        verbose_name="Chính sách hủy",
+    )
+
+    # Date restrictions
+    valid_from = models.DateField(
+        null=True, blank=True, verbose_name="Có hiệu lực từ"
+    )
+    valid_to = models.DateField(
+        null=True, blank=True, verbose_name="Có hiệu lực đến"
+    )
+    blackout_dates = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Ngày không áp dụng",
+        help_text="Danh sách ngày không áp dụng gói giá này",
+    )
+
+    # Channel distribution
+    channels = models.JSONField(
+        default=list,
+        blank=True,
+        verbose_name="Kênh phân phối",
+        help_text="Danh sách kênh áp dụng: booking_com, agoda, direct, etc.",
+    )
+
+    # Description
+    description = models.TextField(blank=True, verbose_name="Mô tả")
+    includes_breakfast = models.BooleanField(
+        default=False, verbose_name="Bao gồm bữa sáng"
+    )
+
+    # Audit
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Gói giá"
+        verbose_name_plural = "Gói giá"
+        ordering = ["room_type", "name"]
+        unique_together = [["room_type", "name"]]
+
+    def __str__(self):
+        return f"{self.name} - {self.room_type.name}"
+
+
+class DateRateOverride(models.Model):
+    """
+    Date-specific rate override for dynamic pricing.
+    Allows setting special rates for specific dates (holidays, weekends, events).
+    """
+
+    room_type = models.ForeignKey(
+        RoomType,
+        on_delete=models.CASCADE,
+        related_name="rate_overrides",
+        verbose_name="Loại phòng",
+    )
+    date = models.DateField(verbose_name="Ngày")
+    rate = models.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        validators=[MinValueValidator(Decimal("0"))],
+        verbose_name="Giá",
+    )
+    reason = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Lý do",
+        help_text="VD: Tết, Lễ hội, Cuối tuần",
+    )
+
+    # Restrictions
+    closed_to_arrival = models.BooleanField(
+        default=False,
+        verbose_name="Đóng nhận khách",
+        help_text="Không cho phép check-in ngày này",
+    )
+    closed_to_departure = models.BooleanField(
+        default=False,
+        verbose_name="Đóng trả phòng",
+        help_text="Không cho phép check-out ngày này",
+    )
+    min_stay = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Số đêm tối thiểu",
+        help_text="Yêu cầu số đêm tối thiểu cho ngày này",
+    )
+
+    # Audit
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Điều chỉnh giá theo ngày"
+        verbose_name_plural = "Điều chỉnh giá theo ngày"
+        ordering = ["room_type", "date"]
+        unique_together = [["room_type", "date"]]
+
+    def __str__(self):
+        return f"{self.room_type.name} - {self.date}: {self.rate:,.0f}đ"

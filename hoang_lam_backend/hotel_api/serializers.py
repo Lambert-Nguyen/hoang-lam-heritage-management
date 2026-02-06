@@ -11,7 +11,7 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Room, RoomInspection, RoomType
+from .models import Booking, DateRateOverride, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, RatePlan, Room, RoomInspection, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -2708,5 +2708,233 @@ class RoomInspectionStatisticsSerializer(serializers.Serializer):
     critical_issues = serializers.IntegerField()
     inspections_by_type = serializers.DictField()
     inspections_by_room = serializers.ListField()
+
+
+# ============================================================
+# RatePlan Serializers
+# ============================================================
+
+
+class RatePlanSerializer(serializers.ModelSerializer):
+    """Full serializer for RatePlan with all details."""
+
+    room_type_name = serializers.CharField(source="room_type.name", read_only=True)
+    cancellation_policy_display = serializers.CharField(
+        source="get_cancellation_policy_display", read_only=True
+    )
+
+    class Meta:
+        model = RatePlan
+        fields = [
+            "id",
+            "name",
+            "name_en",
+            "room_type",
+            "room_type_name",
+            "base_rate",
+            "is_active",
+            "min_stay",
+            "max_stay",
+            "advance_booking_days",
+            "cancellation_policy",
+            "cancellation_policy_display",
+            "valid_from",
+            "valid_to",
+            "blackout_dates",
+            "channels",
+            "description",
+            "includes_breakfast",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class RatePlanListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for RatePlan listings."""
+
+    room_type_name = serializers.CharField(source="room_type.name", read_only=True)
+
+    class Meta:
+        model = RatePlan
+        fields = [
+            "id",
+            "name",
+            "room_type",
+            "room_type_name",
+            "base_rate",
+            "is_active",
+            "min_stay",
+            "valid_from",
+            "valid_to",
+            "includes_breakfast",
+        ]
+
+
+class RatePlanCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating RatePlan."""
+
+    class Meta:
+        model = RatePlan
+        fields = [
+            "name",
+            "name_en",
+            "room_type",
+            "base_rate",
+            "is_active",
+            "min_stay",
+            "max_stay",
+            "advance_booking_days",
+            "cancellation_policy",
+            "valid_from",
+            "valid_to",
+            "blackout_dates",
+            "channels",
+            "description",
+            "includes_breakfast",
+        ]
+
+    def validate(self, attrs):
+        """Validate date range."""
+        valid_from = attrs.get("valid_from")
+        valid_to = attrs.get("valid_to")
+        if valid_from and valid_to and valid_from > valid_to:
+            raise serializers.ValidationError(
+                {"valid_to": "Ngày kết thúc phải sau ngày bắt đầu."}
+            )
+        return attrs
+
+
+class RatePlanUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating RatePlan."""
+
+    class Meta:
+        model = RatePlan
+        fields = [
+            "name",
+            "name_en",
+            "base_rate",
+            "is_active",
+            "min_stay",
+            "max_stay",
+            "advance_booking_days",
+            "cancellation_policy",
+            "valid_from",
+            "valid_to",
+            "blackout_dates",
+            "channels",
+            "description",
+            "includes_breakfast",
+        ]
+
+    def validate(self, attrs):
+        """Validate date range."""
+        valid_from = attrs.get("valid_from", self.instance.valid_from if self.instance else None)
+        valid_to = attrs.get("valid_to", self.instance.valid_to if self.instance else None)
+        if valid_from and valid_to and valid_from > valid_to:
+            raise serializers.ValidationError(
+                {"valid_to": "Ngày kết thúc phải sau ngày bắt đầu."}
+            )
+        return attrs
+
+
+# ============================================================
+# DateRateOverride Serializers
+# ============================================================
+
+
+class DateRateOverrideSerializer(serializers.ModelSerializer):
+    """Full serializer for DateRateOverride with all details."""
+
+    room_type_name = serializers.CharField(source="room_type.name", read_only=True)
+
+    class Meta:
+        model = DateRateOverride
+        fields = [
+            "id",
+            "room_type",
+            "room_type_name",
+            "date",
+            "rate",
+            "reason",
+            "closed_to_arrival",
+            "closed_to_departure",
+            "min_stay",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class DateRateOverrideListSerializer(serializers.ModelSerializer):
+    """Lightweight serializer for DateRateOverride listings."""
+
+    room_type_name = serializers.CharField(source="room_type.name", read_only=True)
+
+    class Meta:
+        model = DateRateOverride
+        fields = [
+            "id",
+            "room_type",
+            "room_type_name",
+            "date",
+            "rate",
+            "reason",
+            "closed_to_arrival",
+            "closed_to_departure",
+        ]
+
+
+class DateRateOverrideCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating DateRateOverride."""
+
+    class Meta:
+        model = DateRateOverride
+        fields = [
+            "room_type",
+            "date",
+            "rate",
+            "reason",
+            "closed_to_arrival",
+            "closed_to_departure",
+            "min_stay",
+        ]
+
+
+class DateRateOverrideUpdateSerializer(serializers.ModelSerializer):
+    """Serializer for updating DateRateOverride."""
+
+    class Meta:
+        model = DateRateOverride
+        fields = [
+            "rate",
+            "reason",
+            "closed_to_arrival",
+            "closed_to_departure",
+            "min_stay",
+        ]
+
+
+class DateRateOverrideBulkCreateSerializer(serializers.Serializer):
+    """Serializer for bulk creating DateRateOverride for a date range."""
+
+    room_type = serializers.PrimaryKeyRelatedField(queryset=RoomType.objects.all())
+    start_date = serializers.DateField()
+    end_date = serializers.DateField()
+    rate = serializers.DecimalField(max_digits=12, decimal_places=0)
+    reason = serializers.CharField(max_length=100, required=False, allow_blank=True, default="")
+    closed_to_arrival = serializers.BooleanField(required=False, default=False)
+    closed_to_departure = serializers.BooleanField(required=False, default=False)
+    min_stay = serializers.IntegerField(required=False, min_value=1, allow_null=True, default=None)
+
+    def validate(self, attrs):
+        """Validate date range."""
+        start_date = attrs.get("start_date")
+        end_date = attrs.get("end_date")
+        if start_date > end_date:
+            raise serializers.ValidationError(
+                {"end_date": "Ngày kết thúc phải sau ngày bắt đầu."}
+            )
+        return attrs
 
 

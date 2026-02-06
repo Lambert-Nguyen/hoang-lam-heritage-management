@@ -10,3 +10,4 @@ export 'declaration_repository.dart';
 export 'housekeeping_repository.dart';
 export 'minibar_repository.dart';
 export 'report_repository.dart';
+export 'rate_plan_repository.dart';

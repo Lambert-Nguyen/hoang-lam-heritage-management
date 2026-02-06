@@ -13,3 +13,4 @@ export 'settings_provider.dart';
 export 'housekeeping_provider.dart';
 export 'minibar_provider.dart';
 export 'report_provider.dart';
+export 'rate_plan_provider.dart';

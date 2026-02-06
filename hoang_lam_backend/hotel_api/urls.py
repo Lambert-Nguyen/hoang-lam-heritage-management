@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (
     BookingViewSet,
     DashboardView,
+    DateRateOverrideViewSet,
     ExchangeRateViewSet,
     FinancialCategoryViewSet,
     FinancialEntryViewSet,
@@ -24,6 +25,7 @@ from .views import (
     NightAuditViewSet,
     PasswordChangeView,
     PaymentViewSet,
+    RatePlanViewSet,
     ReceiptViewSet,
     RoomInspectionViewSet,
     RoomTypeViewSet,
@@ -63,6 +65,9 @@ router.register(r"group-bookings", GroupBookingViewSet, basename="groupbooking")
 # Phase 3: Room Inspection
 router.register(r"inspection-templates", InspectionTemplateViewSet, basename="inspectiontemplate")
 router.register(r"room-inspections", RoomInspectionViewSet, basename="roominspection")
+# Pricing: Rate Plans and Date Rate Overrides
+router.register(r"rate-plans", RatePlanViewSet, basename="rateplan")
+router.register(r"date-rate-overrides", DateRateOverrideViewSet, basename="daterateoverride")
 
 urlpatterns = [
     # JWT Authentication

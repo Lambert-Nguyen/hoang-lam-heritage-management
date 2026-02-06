@@ -13,3 +13,5 @@ export 'minibar.dart';
 export 'report.dart';
 export 'lost_found.dart';
 export 'group_booking.dart';
+export 'rate_plan.dart';
+export 'offline_operation.dart';

@@ -54,6 +54,8 @@ class AppConstants {
   static const String groupBookingsEndpoint = '/group-bookings/';
   static const String roomInspectionsEndpoint = '/room-inspections/';
   static const String inspectionTemplatesEndpoint = '/inspection-templates/';
+  static const String ratePlansEndpoint = '/rate-plans/';
+  static const String dateRateOverridesEndpoint = '/date-rate-overrides/';
 
   // Date/Time Formats
   static const String dateFormat = 'dd/MM/yyyy';

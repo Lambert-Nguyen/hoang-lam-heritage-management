@@ -12,6 +12,7 @@ import '../../router/app_router.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/error_display.dart';
 import '../../widgets/common/loading_indicator.dart';
+import '../../widgets/finance/finance_chart.dart';
 import 'finance_form_screen.dart';
 
 /// Finance screen with transactions and reports
@@ -55,6 +56,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
           children: [
             // Monthly summary
             _buildMonthlySummary(context, l10n, monthlySummaryAsync),
+
+            // Weekly chart (GAP-012 fix)
+            _buildChart(monthlySummaryAsync),
 
             // Filter tabs
             _buildFilterTabs(context, l10n),
@@ -123,6 +127,19 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
           Navigator.pop(context);
         },
       ),
+    );
+  }
+
+  Widget _buildChart(AsyncValue<MonthlyFinancialSummary> summaryAsync) {
+    return summaryAsync.when(
+      data: (summary) {
+        if (summary.dailyTotals.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return FinanceChart(dailyTotals: summary.dailyTotals);
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 
