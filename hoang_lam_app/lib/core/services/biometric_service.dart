@@ -2,11 +2,18 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+/// iOS-compatible secure storage options
+const _iOSOptions = IOSOptions(
+  accessibility: KeychainAccessibility.first_unlock,
+);
+
 /// Service for handling biometric authentication
 class BiometricService {
   static BiometricService? _instance;
   final LocalAuthentication _localAuth = LocalAuthentication();
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage(
+    iOptions: _iOSOptions,
+  );
 
   // Storage keys
   static const String _biometricEnabledKey = 'biometric_enabled';

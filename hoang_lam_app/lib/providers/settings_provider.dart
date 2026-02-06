@@ -5,6 +5,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'settings_provider.freezed.dart';
 
+/// iOS-compatible secure storage options
+const _iOSOptions = IOSOptions(
+  accessibility: KeychainAccessibility.first_unlock,
+);
+
 /// Keys for secure storage
 class SettingsStorageKeys {
   static const String themeMode = 'settings_theme_mode';
@@ -33,7 +38,7 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   final FlutterSecureStorage _storage;
 
   SettingsNotifier({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage(),
+      : _storage = storage ?? const FlutterSecureStorage(iOptions: _iOSOptions),
         super(const AppSettings()) {
     _loadSettings();
   }

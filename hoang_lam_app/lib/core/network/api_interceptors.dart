@@ -5,10 +5,17 @@ import '../config/env_config.dart';
 import '../config/app_constants.dart';
 import '../errors/app_exceptions.dart';
 
+/// iOS-compatible secure storage options
+const _iOSOptions = IOSOptions(
+  accessibility: KeychainAccessibility.first_unlock,
+);
+
 /// Auth interceptor for JWT token management
 class AuthInterceptor extends Interceptor {
   final Dio _dio;
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage(
+    iOptions: _iOSOptions,
+  );
   bool _isRefreshing = false;
   final List<RequestOptions> _requestQueue = [];
 
@@ -18,12 +25,18 @@ class AuthInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     // Skip auth for login and refresh endpoints
     if (_isAuthEndpoint(options.path)) {
+      debugPrint('[AuthInterceptor] Skipping auth for: ${options.path}');
       return handler.next(options);
     }
 
-    final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
-    if (accessToken != null) {
-      options.headers['Authorization'] = 'Bearer $accessToken';
+    try {
+      final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
+      debugPrint('[AuthInterceptor] Token read result: ${accessToken != null ? "found" : "null"}');
+      if (accessToken != null) {
+        options.headers['Authorization'] = 'Bearer $accessToken';
+      }
+    } catch (e) {
+      debugPrint('[AuthInterceptor] Error reading token: $e');
     }
 
     handler.next(options);
