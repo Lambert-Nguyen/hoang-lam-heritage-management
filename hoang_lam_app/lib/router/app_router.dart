@@ -13,6 +13,8 @@ import '../screens/auth/password_change_screen.dart';
 import '../screens/home/home_screen.dart';
 import '../screens/rooms/room_detail_screen.dart';
 import '../screens/bookings/bookings_screen.dart';
+import '../screens/bookings/booking_form_screen.dart';
+import '../screens/bookings/booking_detail_screen.dart';
 import '../screens/finance/finance_screen.dart';
 import '../screens/finance/receipt_preview_screen.dart';
 import '../screens/minibar/minibar_screens.dart';
@@ -388,9 +390,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'new',
                 name: 'newBooking',
                 parentNavigatorKey: _rootNavigatorKey,
-                builder: (context, state) => const Placeholder(
-                  child: Center(child: Text('New Booking')),
-                ),
+                builder: (context, state) => const BookingFormScreen(),
               ),
               // Booking Detail
               GoRoute(
@@ -398,10 +398,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'bookingDetail',
                 parentNavigatorKey: _rootNavigatorKey,
                 builder: (context, state) {
-                  final id = state.pathParameters['id']!;
-                  return Placeholder(
-                    child: Center(child: Text('Booking $id')),
-                  );
+                  final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+                  return BookingDetailScreen(bookingId: id);
                 },
               ),
             ],

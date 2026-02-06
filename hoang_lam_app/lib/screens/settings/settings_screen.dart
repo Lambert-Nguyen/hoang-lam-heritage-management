@@ -582,10 +582,14 @@ class SettingsScreen extends ConsumerWidget {
       context: context,
       applicationName: AppConstants.hotelName,
       applicationVersion: 'Phiên bản ${AppConstants.appVersion}',
-      applicationIcon: const Icon(
-        Icons.hotel,
-        size: 48,
-        color: AppColors.primary,
+      applicationIcon: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.asset(
+          'assets/images/logo-vang.png',
+          width: 48,
+          height: 48,
+          fit: BoxFit.contain,
+        ),
       ),
       children: [
         const Text(

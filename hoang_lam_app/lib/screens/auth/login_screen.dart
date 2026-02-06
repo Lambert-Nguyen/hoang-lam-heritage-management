@@ -140,10 +140,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 AppSpacing.gapVerticalXl,
 
                 // Logo/Title
-                const Icon(
-                  Icons.hotel,
-                  size: 80,
-                  color: AppColors.primary,
+                Center(
+                  child: Image.asset(
+                    'assets/images/logo-vang.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.contain,
+                  ),
                 ),
                 AppSpacing.gapVerticalMd,
                 const Text(
