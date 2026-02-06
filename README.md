@@ -446,6 +446,9 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 
+# Set Django settings (required for all commands)
+export DJANGO_SETTINGS_MODULE=backend.settings.development
+
 # Run migrations
 python manage.py migrate
 
