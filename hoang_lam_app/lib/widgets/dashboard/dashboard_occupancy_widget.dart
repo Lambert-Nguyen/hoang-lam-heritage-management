@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/dashboard.dart';
 
 /// Dashboard occupancy widget showing occupancy rate and room status
@@ -16,6 +17,7 @@ class DashboardOccupancyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -40,9 +42,9 @@ class DashboardOccupancyWidget extends StatelessWidget {
                 size: AppSpacing.iconMd,
               ),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Tỷ lệ lấp đầy',
-                style: TextStyle(
+              Text(
+                l10n.occupancyRate,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -116,19 +118,19 @@ class DashboardOccupancyWidget extends StatelessWidget {
           ),
           AppSpacing.gapVerticalMd,
           // Room status breakdown
-          _buildStatusRow('Trống', roomStatus.available, AppColors.available),
+          _buildStatusRow(l10n.available, roomStatus.available, AppColors.available),
           AppSpacing.gapVerticalSm,
-          _buildStatusRow('Có khách', roomStatus.occupied, AppColors.occupied),
+          _buildStatusRow(l10n.occupied, roomStatus.occupied, AppColors.occupied),
           AppSpacing.gapVerticalSm,
-          _buildStatusRow('Dọn dẹp', roomStatus.cleaning, AppColors.cleaning),
+          _buildStatusRow(l10n.cleaning, roomStatus.cleaning, AppColors.cleaning),
           if (roomStatus.maintenance > 0) ...[
             AppSpacing.gapVerticalSm,
             _buildStatusRow(
-                'Bảo trì', roomStatus.maintenance, AppColors.maintenance),
+                l10n.maintenance, roomStatus.maintenance, AppColors.maintenance),
           ],
           if (roomStatus.blocked > 0) ...[
             AppSpacing.gapVerticalSm,
-            _buildStatusRow('Khóa', roomStatus.blocked, AppColors.blocked),
+            _buildStatusRow(l10n.blocked, roomStatus.blocked, AppColors.blocked),
           ],
         ],
       ),

@@ -186,7 +186,8 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildDateHeader(BuildContext context) {
     final now = DateTime.now();
-    final formatter = DateFormat('EEEE, d MMMM yyyy', 'vi');
+    final locale = context.l10n.locale.languageCode;
+    final formatter = DateFormat('EEEE, d MMMM yyyy', locale);
 
     return Text(
       formatter.format(now),

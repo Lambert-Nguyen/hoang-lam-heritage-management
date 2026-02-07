@@ -139,6 +139,7 @@ class AppLocalizations {
   String get todayCheckIns => translate('today_check_ins');
   String get todayCheckOuts => translate('today_check_outs');
   String get todayRevenue => translate('today_revenue');
+  String get occupancyRate => translate('occupancy_rate');
   String get checkoutToday => translate('checkout_today');
   String get checkinToday => translate('checkin_today');
   String get dashboardLoadError => translate('dashboard_load_error');
@@ -553,7 +554,6 @@ class AppLocalizations {
   String get minibarManagement => translate('minibar_management');
   String get addProduct => translate('add_product');
   String get searchProducts => translate('search_products');
-  String get room => translate('room');
   String get editProduct => translate('edit_product');
   String get deleteProduct => translate('delete_product');
   String get pleaseEnterProductName => translate('please_enter_product_name');
@@ -714,7 +714,8 @@ const Map<String, String> _viTranslations = {
   'rooms_available': 'Phòng trống',
   'today_check_ins': 'Check-in hôm nay',
   'today_check_outs': 'Check-out hôm nay',
-  'today_revenue': 'Thu nhập hôm nay',
+  'today_revenue': 'Doanh thu hôm nay',
+  'occupancy_rate': 'Tỷ lệ lấp đầy',
   'checkout_today': 'Check-out hôm nay',
   'checkin_today': 'Check-in hôm nay',
   'dashboard_load_error': 'Không thể tải dữ liệu dashboard',
@@ -1129,7 +1130,6 @@ const Map<String, String> _viTranslations = {
   'minibar_management': 'Quản lý Minibar',
   'add_product': 'Thêm sản phẩm',
   'search_products': 'Tìm kiếm sản phẩm...',
-  'room': 'Phòng',
   'edit_product': 'Chỉnh sửa sản phẩm',
   'delete_product': 'Xóa sản phẩm',
   'please_enter_product_name': 'Vui lòng nhập tên sản phẩm',
@@ -1291,6 +1291,7 @@ const Map<String, String> _enTranslations = {
   'today_check_ins': 'Today\'s check-ins',
   'today_check_outs': 'Today\'s check-outs',
   'today_revenue': 'Today\'s revenue',
+  'occupancy_rate': 'Occupancy rate',
   'checkout_today': 'Check-out today',
   'checkin_today': 'Check-in today',
   'dashboard_load_error': 'Cannot load dashboard data',
@@ -1705,7 +1706,6 @@ const Map<String, String> _enTranslations = {
   'minibar_management': 'Minibar management',
   'add_product': 'Add product',
   'search_products': 'Search products...',
-  'room': 'Room',
   'edit_product': 'Edit product',
   'delete_product': 'Delete product',
   'please_enter_product_name': 'Please enter product name',

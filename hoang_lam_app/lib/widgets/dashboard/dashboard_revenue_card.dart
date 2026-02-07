@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/utils/currency_formatter.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/dashboard.dart';
 import '../common/app_card.dart';
 
@@ -20,6 +21,7 @@ class DashboardRevenueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final revenue = todayRevenue ?? 0.0;
     final expense = todayExpense ?? 0.0;
     final net = revenue - expense;
@@ -36,9 +38,9 @@ class DashboardRevenueCard extends StatelessWidget {
                 size: AppSpacing.iconMd,
               ),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Doanh thu hôm nay',
-                style: TextStyle(
+              Text(
+                l10n.todayRevenue,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -64,7 +66,7 @@ class DashboardRevenueCard extends StatelessWidget {
                     AppSpacing.gapVerticalXs,
                     if (expense > 0)
                       Text(
-                        'Chi: ${CurrencyFormatter.formatVND(expense)}',
+                        '${l10n.expense}: ${CurrencyFormatter.formatVND(expense)}',
                         style: const TextStyle(
                           fontSize: 14,
                           color: AppColors.expense,
