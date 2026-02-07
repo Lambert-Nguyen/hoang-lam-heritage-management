@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/lost_found.dart';
 import '../../providers/lost_found_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -81,22 +82,23 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (widget.isEditing) {
       final itemAsync = ref.watch(lostFoundItemByIdProvider(widget.itemId!));
       return Scaffold(
-        appBar: AppBar(title: const Text('Sửa thông tin')),
+        appBar: AppBar(title: Text(l10n.edit)),
         body: itemAsync.when(
           data: (item) {
             _initializeFromItem(item);
             return _buildForm();
           },
           loading: () => const LoadingIndicator(),
-          error: (e, _) => ErrorDisplay(message: 'Lỗi: $e', onRetry: () => ref.invalidate(lostFoundItemByIdProvider(widget.itemId!))),
+          error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(lostFoundItemByIdProvider(widget.itemId!))),
         ),
       );
     }
     return Scaffold(
-      appBar: AppBar(title: const Text('Thêm đồ thất lạc')),
+      appBar: AppBar(title: Text(l10n.add)),
       body: _buildForm(),
     );
   }

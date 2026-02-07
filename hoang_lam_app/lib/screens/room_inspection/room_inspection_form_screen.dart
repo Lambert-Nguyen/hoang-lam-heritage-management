@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
 import '../../providers/room_inspection_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -75,9 +76,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.isConductMode ? 'Tiến hành kiểm tra' : 'Tạo kiểm tra')),
+        appBar: AppBar(title: Text(widget.isConductMode ? l10n.conductInspection : l10n.createInspection)),
         body: const LoadingIndicator(),
       );
     }
@@ -92,7 +94,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     final templatesAsync = ref.watch(defaultTemplatesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tạo kiểm tra mới')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.createNewInspection)),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(

@@ -11,6 +11,7 @@ import '../../providers/biometric_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_input.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Login screen
 class LoginScreen extends ConsumerStatefulWidget {
@@ -74,7 +75,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Xác thực sinh trắc học thất bại';
+        _errorMessage = context.l10n.biometricAuthFailed;
       });
     } finally {
       if (mounted) {
@@ -160,7 +161,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 AppSpacing.gapVerticalSm,
                 Text(
-                  'Đăng nhập để quản lý',
+                  context.l10n.loginSubtitle,
                   style: TextStyle(
                     fontSize: 16,
                     color: AppColors.textSecondary,
@@ -207,15 +208,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Username field
                 AppTextField(
                   controller: _usernameController,
-                  label: 'Tên đăng nhập',
-                  hint: 'Nhập tên đăng nhập',
+                  label: context.l10n.usernameLabel,
+                  hint: context.l10n.usernameHint,
                   prefixIcon: Icons.person_outline,
                   keyboardType: TextInputType.text,
                   textInputAction: TextInputAction.next,
                   enabled: !isLoading && !_biometricLoading,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Vui lòng nhập tên đăng nhập';
+                      return context.l10n.usernameRequired;
                     }
                     return null;
                   },
@@ -226,7 +227,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Password field
                 AppTextField(
                   controller: _passwordController,
-                  label: 'Mật khẩu',
+                  label: context.l10n.passwordLabel,
                   hint: '••••••••',
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscurePassword,
@@ -244,10 +245,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu';
+                      return context.l10n.passwordRequired;
                     }
                     if (value.length < AppConstants.minPasswordLength) {
-                      return 'Mật khẩu phải có ít nhất ${AppConstants.minPasswordLength} ký tự';
+                      return context.l10n.passwordMinLength;
                     }
                     return null;
                   },
@@ -258,7 +259,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Login button
                 AppButton(
-                  label: 'Đăng nhập',
+                  label: context.l10n.loginButton,
                   onPressed: isLoading || _biometricLoading ? null : _handleLogin,
                   isLoading: isLoading,
                 ),
@@ -291,14 +292,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Forgot password (optional - not implemented for family app)
                 AppTextButton(
-                  label: 'Quên mật khẩu?',
+                  label: context.l10n.forgotPassword,
                   onPressed: isLoading || _biometricLoading
                       ? null
                       : () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
+                            SnackBar(
                               content: Text(
-                                'Vui lòng liên hệ quản trị viên để đặt lại mật khẩu',
+                                context.l10n.contactAdminResetPassword,
                               ),
                             ),
                           );
@@ -309,7 +310,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                 // Version info
                 Text(
-                  'Phiên bản ${AppConstants.appVersion}',
+                  '${context.l10n.version} ${AppConstants.appVersion}',
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textHint,
@@ -327,31 +328,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _showEnableBiometricDialog(String username) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Kích hoạt đăng nhập sinh trắc học'),
-        content: const Text(
-          'Bạn có muốn sử dụng vân tay hoặc Face ID để đăng nhập nhanh hơn trong lần tới?',
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.enableBiometricTitle),
+        content: Text(
+          context.l10n.enableBiometricMessage,
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Để sau'),
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(context.l10n.later),
           ),
           FilledButton(
             onPressed: () async {
               await ref
                   .read(biometricNotifierProvider.notifier)
                   .enableBiometric(username);
-              if (context.mounted) {
-                Navigator.of(context).pop();
+              if (dialogContext.mounted) {
+                Navigator.of(dialogContext).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Đã kích hoạt đăng nhập sinh trắc học'),
+                  SnackBar(
+                    content: Text(context.l10n.biometricEnabled),
                   ),
                 );
               }
             },
-            child: const Text('Kích hoạt'),
+            child: Text(context.l10n.enable),
           ),
         ],
       ),
@@ -388,7 +389,9 @@ class _BiometricLoginButton extends StatelessWidget {
               size: 24,
             ),
       label: Text(
-        isLoading ? 'Đang xác thực...' : 'Đăng nhập bằng $biometricTypeName',
+        isLoading
+            ? context.l10n.authenticating
+            : '${context.l10n.loginWith} $biometricTypeName',
       ),
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),

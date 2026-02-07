@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -50,7 +51,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             onPressed: () {
               // TODO: Navigate to edit room
             },
-            tooltip: 'Chỉnh sửa',
+            tooltip: context.l10n.edit,
           ),
         ],
       ),
@@ -123,7 +124,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           OutlinedButton.icon(
             onPressed: _changeStatus,
             icon: const Icon(Icons.sync),
-            label: const Text('Đổi trạng thái'),
+            label: Text(context.l10n.changeStatus),
             style: OutlinedButton.styleFrom(
               foregroundColor: _room.status.color,
               side: BorderSide(color: _room.status.color),
@@ -140,7 +141,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thông tin phòng',
+            context.l10n.roomInfo,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -148,28 +149,28 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
             Icons.door_front_door,
-            'Số phòng',
+            context.l10n.roomNumber,
             _room.number,
           ),
           _buildInfoRow(
             Icons.stairs,
-            'Tầng',
+            context.l10n.floor,
             _room.floor.toString(),
           ),
           _buildInfoRow(
             Icons.hotel,
-            'Loại phòng',
-            _room.roomTypeName ?? 'Chưa xác định',
+            context.l10n.roomType,
+            _room.roomTypeName ?? context.l10n.undefined,
           ),
           _buildInfoRow(
             Icons.attach_money,
-            'Giá/đêm',
+            context.l10n.ratePerNight,
             _room.formattedRate,
           ),
           if (_room.amenities.isNotEmpty)
             _buildInfoRow(
               Icons.wifi,
-              'Tiện nghi',
+              context.l10n.amenities,
               _room.amenities.join(', '),
             ),
         ],
@@ -215,7 +216,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Thao tác nhanh',
+          context.l10n.changeStatus,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -227,28 +228,28 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           children: [
             _QuickActionChip(
               icon: Icons.check_circle,
-              label: 'Trống',
+              label: context.l10n.available,
               color: AppColors.available,
               isSelected: _room.status == RoomStatus.available,
               onTap: () => _quickStatusChange(RoomStatus.available),
             ),
             _QuickActionChip(
               icon: Icons.person,
-              label: 'Có khách',
+              label: context.l10n.occupied,
               color: AppColors.occupied,
               isSelected: _room.status == RoomStatus.occupied,
               onTap: () => _quickStatusChange(RoomStatus.occupied),
             ),
             _QuickActionChip(
               icon: Icons.cleaning_services,
-              label: 'Dọn dẹp',
+              label: context.l10n.cleaning,
               color: AppColors.cleaning,
               isSelected: _room.status == RoomStatus.cleaning,
               onTap: () => _quickStatusChange(RoomStatus.cleaning),
             ),
             _QuickActionChip(
               icon: Icons.build,
-              label: 'Bảo trì',
+              label: context.l10n.maintenance,
               color: AppColors.maintenance,
               isSelected: _room.status == RoomStatus.maintenance,
               onTap: () => _quickStatusChange(RoomStatus.maintenance),
@@ -274,7 +275,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Đã cập nhật phòng ${_room.number}: ${newStatus.displayName}'),
+          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${newStatus.displayName}'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -291,7 +292,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               const Icon(Icons.note, size: 20, color: AppColors.textSecondary),
               AppSpacing.gapHorizontalSm,
               Text(
-                'Ghi chú',
+                context.l10n.roomNotes,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -334,14 +335,14 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Đang có khách',
+                      context.l10n.hasGuests,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                     ),
-                    const Text(
-                      'Xem chi tiết đặt phòng',
-                      style: TextStyle(color: AppColors.textSecondary),
+                    Text(
+                      context.l10n.viewBookingDetails,
+                      style: const TextStyle(color: AppColors.textSecondary),
                     ),
                   ],
                 ),
@@ -365,7 +366,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Lịch sử',
+              context.l10n.history,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -374,18 +375,18 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               onPressed: () {
                 // TODO: Navigate to full history
               },
-              child: const Text('Xem tất cả'),
+              child: Text(context.l10n.viewAll),
             ),
           ],
         ),
         AppSpacing.gapVerticalSm,
         // Placeholder for history items
-        const Center(
+        Center(
           child: Padding(
-            padding: EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             child: Text(
-              'Chưa có lịch sử',
-              style: TextStyle(color: AppColors.textHint),
+              context.l10n.noHistory,
+              style: const TextStyle(color: AppColors.textHint),
             ),
           ),
         ),
@@ -411,7 +412,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           children: [
             Expanded(
               child: AppButton(
-                label: 'Đặt phòng',
+                label: context.l10n.bookRoom,
                 icon: Icons.book_online,
                 onPressed: _room.status == RoomStatus.available
                     ? () {

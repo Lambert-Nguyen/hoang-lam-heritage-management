@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 import '../../models/room.dart';
 import '../../providers/housekeeping_provider.dart';
@@ -62,11 +63,12 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final roomsAsync = ref.watch(roomsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEditing ? 'Sửa yêu cầu' : 'Tạo yêu cầu bảo trì'),
+        title: Text(widget.isEditing ? l10n.editRequest : l10n.createMaintenanceRequest),
       ),
       body: Form(
         key: _formKey,
@@ -81,7 +83,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Phòng',
+                      l10n.room,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -93,7 +95,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                         child: CircularProgressIndicator(),
                       ),
                       error: (_, __) => Text(
-                        'Không thể tải danh sách phòng',
+                        l10n.cannotLoadRoomList,
                         style: TextStyle(color: AppColors.error),
                       ),
                     ),
@@ -108,7 +110,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tiêu đề',
+                      l10n.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -116,10 +118,10 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     AppSpacing.gapVerticalMd,
                     AppTextField(
                       controller: _titleController,
-                      hint: 'Mô tả ngắn gọn vấn đề',
+                      hint: l10n.describeIssueBriefly,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập tiêu đề';
+                          return l10n.pleaseEnterTitle;
                         }
                         return null;
                       },
@@ -135,7 +137,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Danh mục',
+                      l10n.category,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -153,7 +155,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Mức ưu tiên',
+                      l10n.priorityLevel,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -171,7 +173,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Mô tả chi tiết',
+                      l10n.detailedDescription,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -179,11 +181,11 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     AppSpacing.gapVerticalMd,
                     AppTextField(
                       controller: _descriptionController,
-                      hint: 'Mô tả chi tiết vấn đề cần xử lý...',
+                      hint: l10n.describeIssueInDetail,
                       maxLines: 5,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Vui lòng nhập mô tả';
+                          return l10n.pleaseEnterDescription;
                         }
                         return null;
                       },
@@ -199,7 +201,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Chi phí ước tính (tùy chọn)',
+                      l10n.estimatedCostOptional,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -210,7 +212,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                       hint: '0',
                       keyboardType: TextInputType.number,
                       prefixIcon: Icons.attach_money,
-                      helper: 'VNĐ',
+                      helper: l10n.vnd,
                     ),
                   ],
                 ),
@@ -221,7 +223,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
               SizedBox(
                 width: double.infinity,
                 child: AppButton(
-                  label: widget.isEditing ? 'Cập nhật' : 'Tạo yêu cầu',
+                  label: widget.isEditing ? l10n.update : l10n.createRequest,
                   onPressed: _isLoading ? null : _submit,
                   isLoading: _isLoading,
                 ),
@@ -233,12 +235,13 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     );
   }
   Widget _buildRoomDropdown(List<Room> rooms) {
+    final l10n = AppLocalizations.of(context)!;
     return AppDropdown<int>(
       value: _selectedRoomId,
       items: rooms
           .map((room) => DropdownMenuItem(
                 value: room.id,
-                child: Text('Phòng ${room.number}'),
+                child: Text('${l10n.room} ${room.number}'),
               ))
           .toList(),
       onChanged: (value) {
@@ -246,7 +249,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
           _selectedRoomId = value;
         });
       },
-      hint: 'Chọn phòng',
+      hint: l10n.selectRoom,
     );
   }
 
@@ -369,13 +372,14 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
     if (_selectedRoomId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn phòng')),
+        SnackBar(content: Text(l10n.pleaseSelectRoom)),
       );
       return;
     }
@@ -422,8 +426,8 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
           SnackBar(
             content: Text(
               widget.isEditing
-                  ? 'Đã cập nhật yêu cầu'
-                  : 'Đã tạo yêu cầu bảo trì mới',
+                  ? l10n.requestUpdated
+                  : l10n.newMaintenanceRequestCreated,
             ),
           ),
         );
@@ -432,7 +436,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: AppColors.error,
           ),
         );

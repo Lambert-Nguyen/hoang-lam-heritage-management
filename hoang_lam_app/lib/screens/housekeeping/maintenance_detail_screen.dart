@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -35,12 +36,13 @@ class _MaintenanceDetailScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('dd/MM/yyyy');
     final timeFormat = DateFormat('HH:mm');
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Phòng ${_request.roomNumber ?? _request.room}'),
+        title: Text('${l10n.room} ${_request.roomNumber ?? _request.room}'),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -58,35 +60,35 @@ class _MaintenanceDetailScreenState
             },
             itemBuilder: (context) => [
               if (_request.status.canHold)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'hold',
                   child: Row(
                     children: [
-                      Icon(Icons.pause),
-                      SizedBox(width: 8),
-                      Text('Tạm hoãn'),
+                      const Icon(Icons.pause),
+                      const SizedBox(width: 8),
+                      Text(l10n.hold),
                     ],
                   ),
                 ),
               if (_request.status == MaintenanceStatus.onHold)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'resume',
                   child: Row(
                     children: [
-                      Icon(Icons.play_arrow),
-                      SizedBox(width: 8),
-                      Text('Tiếp tục'),
+                      const Icon(Icons.play_arrow),
+                      const SizedBox(width: 8),
+                      Text(l10n.resume),
                     ],
                   ),
                 ),
               if (_request.status.canCancel)
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'cancel',
                   child: Row(
                     children: [
-                      Icon(Icons.cancel, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Hủy', style: TextStyle(color: Colors.red)),
+                      const Icon(Icons.cancel, color: Colors.red),
+                      const SizedBox(width: 8),
+                      Text(l10n.cancel, style: const TextStyle(color: Colors.red)),
                     ],
                   ),
                 ),
@@ -256,12 +258,13 @@ class _MaintenanceDetailScreenState
   }
 
   Widget _buildInfoCard() {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thông tin yêu cầu',
+            l10n.requestInfo,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -269,28 +272,28 @@ class _MaintenanceDetailScreenState
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
             Icons.meeting_room,
-            'Phòng',
-            _request.roomNumber ?? 'Phòng ${_request.room}',
+            l10n.room,
+            _request.roomNumber ?? '${l10n.room} ${_request.room}',
           ),
           _buildInfoRow(
             Icons.title,
-            'Tiêu đề',
+            l10n.title,
             _request.title,
           ),
           _buildInfoRow(
             Icons.category,
-            'Danh mục',
+            l10n.category,
             _request.category.displayName,
           ),
           _buildInfoRow(
             Icons.priority_high,
-            'Mức ưu tiên',
+            l10n.priorityLevel,
             _request.priority.displayName,
           ),
           if (_request.estimatedCost != null)
             _buildInfoRow(
               Icons.attach_money,
-              'Chi phí ước tính',
+              l10n.estimatedCostOptional,
               NumberFormat.currency(locale: 'vi_VN', symbol: '₫')
                   .format(_request.estimatedCost),
             ),
@@ -300,6 +303,7 @@ class _MaintenanceDetailScreenState
   }
 
   Widget _buildAssignmentCard() {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,7 +312,7 @@ class _MaintenanceDetailScreenState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Phân công',
+                l10n.assign,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -317,7 +321,7 @@ class _MaintenanceDetailScreenState
                 TextButton.icon(
                   onPressed: _assignRequest,
                   icon: const Icon(Icons.person_add, size: 18),
-                  label: const Text('Phân công'),
+                  label: Text(l10n.assign),
                 ),
             ],
           ),
@@ -325,7 +329,7 @@ class _MaintenanceDetailScreenState
           if (_request.assignedTo != null) ...[
             _buildInfoRow(
               Icons.person,
-              'Người thực hiện',
+              l10n.assignee,
               _request.assignedToName ?? 'ID: ${_request.assignedTo}',
             ),
           ] else ...[
@@ -344,7 +348,7 @@ class _MaintenanceDetailScreenState
                   Icon(Icons.info_outline, color: AppColors.warning),
                   AppSpacing.gapHorizontalSm,
                   Text(
-                    'Chưa được phân công',
+                    l10n.notAssigned,
                     style: TextStyle(color: AppColors.warning),
                   ),
                 ],
@@ -355,7 +359,7 @@ class _MaintenanceDetailScreenState
             AppSpacing.gapVerticalMd,
             _buildInfoRow(
               Icons.person_outline,
-              'Người báo cáo',
+              l10n.reporter,
               _request.reportedByName ?? 'ID: ${_request.reportedBy}',
             ),
           ],
@@ -365,12 +369,13 @@ class _MaintenanceDetailScreenState
   }
 
   Widget _buildDescriptionSection() {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Mô tả',
+            l10n.description,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -386,6 +391,7 @@ class _MaintenanceDetailScreenState
   }
 
   Widget _buildResolutionSection() {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,7 +401,7 @@ class _MaintenanceDetailScreenState
               Icon(Icons.check_circle, color: AppColors.success),
               AppSpacing.gapHorizontalSm,
               Text(
-                'Kết quả xử lý',
+                l10n.resolutionResult,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -413,12 +419,13 @@ class _MaintenanceDetailScreenState
   }
 
   Widget _buildTimelineSection(DateFormat dateFormat, DateFormat timeFormat) {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Lịch sử',
+            l10n.historyLabel,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -426,14 +433,14 @@ class _MaintenanceDetailScreenState
           AppSpacing.gapVerticalMd,
           if (_request.createdAt != null)
             _buildTimelineItem(
-              'Tạo lúc',
+              l10n.createdAt,
               '${dateFormat.format(_request.createdAt!)} ${timeFormat.format(_request.createdAt!)}',
               Icons.add_circle_outline,
               AppColors.primary,
             ),
           if (_request.completedAt != null)
             _buildTimelineItem(
-              'Hoàn thành lúc',
+              l10n.completedAt,
               '${dateFormat.format(_request.completedAt!)} ${timeFormat.format(_request.completedAt!)}',
               Icons.check_circle_outline,
               AppColors.success,
@@ -441,7 +448,7 @@ class _MaintenanceDetailScreenState
           if (_request.updatedAt != null &&
               _request.updatedAt != _request.createdAt)
             _buildTimelineItem(
-              'Cập nhật lúc',
+              l10n.updatedAt,
               '${dateFormat.format(_request.updatedAt!)} ${timeFormat.format(_request.updatedAt!)}',
               Icons.update,
               AppColors.textSecondary,
@@ -524,6 +531,7 @@ class _MaintenanceDetailScreenState
   }
 
   Widget _buildBottomBar() {
+    final l10n = AppLocalizations.of(context)!;
     if (!_request.status.canAssign && !_request.status.canComplete) {
       return const SizedBox.shrink();
     }
@@ -536,7 +544,7 @@ class _MaintenanceDetailScreenState
             if (_request.status.canAssign && _request.assignedTo == null)
               Expanded(
                 child: AppButton(
-                  label: 'Phân công',
+                  label: l10n.assign,
                   onPressed: _assignRequest,
                   isOutlined: true,
                   icon: Icons.person_add,
@@ -547,7 +555,7 @@ class _MaintenanceDetailScreenState
             if (_request.status.canComplete)
               Expanded(
                 child: AppButton(
-                  label: 'Hoàn thành',
+                  label: l10n.completed,
                   onPressed: _completeRequest,
                   icon: Icons.check,
                 ),
@@ -559,13 +567,15 @@ class _MaintenanceDetailScreenState
   }
 
   Future<void> _assignRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     // Show assign dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Chức năng phân công đang phát triển')),
+      SnackBar(content: Text(l10n.assignmentInDevelopment)),
     );
   }
 
   Future<void> _completeRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     final notes = await showDialog<String?>(
       context: context,
       builder: (context) => _CompletionDialog(request: _request),
@@ -582,13 +592,14 @@ class _MaintenanceDetailScreenState
           _request = updatedRequest;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã hoàn thành yêu cầu bảo trì')),
+          SnackBar(content: Text(l10n.maintenanceRequestCompleted)),
         );
       }
     }
   }
 
   Future<void> _holdRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     final reason = await showDialog<String?>(
       context: context,
       builder: (context) => _HoldDialog(),
@@ -605,26 +616,27 @@ class _MaintenanceDetailScreenState
           _request = updatedRequest;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã tạm hoãn yêu cầu')),
+          SnackBar(content: Text(l10n.requestOnHold)),
         );
       }
     }
   }
 
   Future<void> _resumeRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Tiếp tục yêu cầu'),
-        content: const Text('Bạn có muốn tiếp tục xử lý yêu cầu này?'),
+        title: Text(l10n.continueRequest),
+        content: Text(l10n.continueRequestConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Tiếp tục'),
+            child: Text(l10n.resume),
           ),
         ],
       ),
@@ -639,29 +651,30 @@ class _MaintenanceDetailScreenState
           _request = updatedRequest;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã tiếp tục yêu cầu')),
+          SnackBar(content: Text(l10n.requestContinued)),
         );
       }
     }
   }
 
   Future<void> _cancelRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hủy yêu cầu'),
-        content: const Text('Bạn có chắc muốn hủy yêu cầu bảo trì này?'),
+        title: Text(l10n.cancelRequest),
+        content: Text(l10n.cancelRequestConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Không'),
+            child: Text(l10n.no),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
             ),
-            child: const Text('Hủy yêu cầu'),
+            child: Text(l10n.cancelRequest),
           ),
         ],
       ),
@@ -676,7 +689,7 @@ class _MaintenanceDetailScreenState
           _request = updatedRequest;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã hủy yêu cầu')),
+          SnackBar(content: Text(l10n.requestCancelled)),
         );
       }
     }
@@ -703,20 +716,21 @@ class _CompletionDialogState extends State<_CompletionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Hoàn thành yêu cầu'),
+      title: Text(l10n.completeRequest),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Nhập ghi chú về kết quả xử lý (tùy chọn):'),
+          Text(l10n.enterResolutionNotes),
           AppSpacing.gapVerticalMd,
           TextField(
             controller: _notesController,
             maxLines: 3,
-            decoration: const InputDecoration(
-              hintText: 'Mô tả công việc đã thực hiện...',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: l10n.describeWorkDone,
+              border: const OutlineInputBorder(),
             ),
           ),
         ],
@@ -724,11 +738,11 @@ class _CompletionDialogState extends State<_CompletionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Hủy'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: () => Navigator.pop(context, _notesController.text),
-          child: const Text('Hoàn thành'),
+          child: Text(l10n.completed),
         ),
       ],
     );
@@ -751,20 +765,21 @@ class _HoldDialogState extends State<_HoldDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Tạm hoãn yêu cầu'),
+      title: Text(l10n.holdRequest),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Nhập lý do tạm hoãn (tùy chọn):'),
+          Text(l10n.enterHoldReason),
           AppSpacing.gapVerticalMd,
           TextField(
             controller: _reasonController,
             maxLines: 2,
-            decoration: const InputDecoration(
-              hintText: 'Lý do...',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              hintText: l10n.reason,
+              border: const OutlineInputBorder(),
             ),
           ),
         ],
@@ -772,11 +787,11 @@ class _HoldDialogState extends State<_HoldDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Hủy'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: () => Navigator.pop(context, _reasonController.text),
-          child: const Text('Tạm hoãn'),
+          child: Text(l10n.hold),
         ),
       ],
     );

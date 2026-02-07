@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -35,18 +36,19 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('dd/MM/yyyy');
     final timeFormat = DateFormat('HH:mm');
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Phòng ${_task.roomNumber ?? _task.room}'),
+        title: Text('${l10n.room} ${_task.roomNumber ?? _task.room}'),
         actions: [
           if (_task.status.canVerify)
             IconButton(
               icon: const Icon(Icons.verified),
               onPressed: _verifyTask,
-              tooltip: 'Xác nhận',
+              tooltip: l10n.verify,
             ),
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -57,13 +59,13 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Xóa', style: TextStyle(color: Colors.red)),
+                    const Icon(Icons.delete, color: Colors.red),
+                    const SizedBox(width: 8),
+                    Text(l10n.delete, style: const TextStyle(color: Colors.red)),
                   ],
                 ),
               ),
@@ -162,12 +164,13 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   }
 
   Widget _buildInfoCard(DateFormat dateFormat) {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thông tin công việc',
+            l10n.taskInfo,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -175,23 +178,23 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
             Icons.meeting_room,
-            'Phòng',
-            _task.roomNumber ?? 'Phòng ${_task.room}',
+            l10n.room,
+            _task.roomNumber ?? '${l10n.room} ${_task.room}',
           ),
           _buildInfoRow(
             Icons.cleaning_services,
-            'Loại công việc',
+            l10n.taskType,
             _task.taskType.displayName,
           ),
           _buildInfoRow(
             Icons.calendar_today,
-            'Ngày dự kiến',
+            l10n.scheduledDate,
             dateFormat.format(_task.scheduledDate),
           ),
           if (_task.booking != null)
             _buildInfoRow(
               Icons.book_online,
-              'Mã đặt phòng',
+              l10n.bookingCode,
               '#${_task.booking}',
             ),
         ],
@@ -200,6 +203,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   }
 
   Widget _buildAssignmentCard() {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,7 +212,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Phân công',
+                l10n.assign,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -217,7 +221,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 TextButton.icon(
                   onPressed: _assignTask,
                   icon: const Icon(Icons.person_add, size: 18),
-                  label: const Text('Phân công'),
+                  label: Text(l10n.assign),
                 ),
             ],
           ),
@@ -225,7 +229,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           if (_task.assignedTo != null) ...[
             _buildInfoRow(
               Icons.person,
-              'Người thực hiện',
+              l10n.assignee,
               _task.assignedToName ?? 'ID: ${_task.assignedTo}',
             ),
           ] else ...[
@@ -244,7 +248,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   Icon(Icons.info_outline, color: AppColors.warning),
                   AppSpacing.gapHorizontalSm,
                   Text(
-                    'Chưa được phân công',
+                    l10n.notAssigned,
                     style: TextStyle(color: AppColors.warning),
                   ),
                 ],
@@ -255,7 +259,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             AppSpacing.gapVerticalMd,
             _buildInfoRow(
               Icons.person_outline,
-              'Người tạo',
+              l10n.creator,
               _task.createdByName ?? 'ID: ${_task.createdBy}',
             ),
           ],
@@ -265,12 +269,13 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   }
 
   Widget _buildNotesSection() {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Ghi chú',
+            l10n.notes,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -286,12 +291,13 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   }
 
   Widget _buildTimelineSection(DateFormat dateFormat, DateFormat timeFormat) {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Lịch sử',
+            l10n.historyLabel,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -299,21 +305,21 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           AppSpacing.gapVerticalMd,
           if (_task.createdAt != null)
             _buildTimelineItem(
-              'Tạo lúc',
+              l10n.createdAt,
               '${dateFormat.format(_task.createdAt!)} ${timeFormat.format(_task.createdAt!)}',
               Icons.add_circle_outline,
               AppColors.primary,
             ),
           if (_task.completedAt != null)
             _buildTimelineItem(
-              'Hoàn thành lúc',
+              l10n.completedAt,
               '${dateFormat.format(_task.completedAt!)} ${timeFormat.format(_task.completedAt!)}',
               Icons.check_circle_outline,
               AppColors.success,
             ),
           if (_task.updatedAt != null && _task.updatedAt != _task.createdAt)
             _buildTimelineItem(
-              'Cập nhật lúc',
+              l10n.updatedAt,
               '${dateFormat.format(_task.updatedAt!)} ${timeFormat.format(_task.updatedAt!)}',
               Icons.update,
               AppColors.textSecondary,
@@ -392,6 +398,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   }
 
   Widget _buildBottomBar() {
+    final l10n = AppLocalizations.of(context)!;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -400,7 +407,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             if (_task.status.canAssign && _task.assignedTo == null)
               Expanded(
                 child: AppButton(
-                  label: 'Phân công',
+                  label: l10n.assign,
                   onPressed: _assignTask,
                   isOutlined: true,
                   icon: Icons.person_add,
@@ -411,7 +418,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             if (_task.status.canComplete)
               Expanded(
                 child: AppButton(
-                  label: 'Hoàn thành',
+                  label: l10n.completed,
                   onPressed: _completeTask,
                   icon: Icons.check,
                 ),
@@ -419,7 +426,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             if (_task.status.canVerify)
               Expanded(
                 child: AppButton(
-                  label: 'Xác nhận',
+                  label: l10n.verify,
                   onPressed: _verifyTask,
                   icon: Icons.verified,
                 ),
@@ -431,6 +438,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   }
 
   Future<void> _assignTask() async {
+    final l10n = AppLocalizations.of(context)!;
     final userId = await showDialog<int>(
       context: context,
       builder: (context) => AssignTaskDialog(task: _task),
@@ -444,13 +452,14 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _task = updatedTask;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã phân công công việc')),
+          SnackBar(content: Text(l10n.taskAssigned)),
         );
       }
     }
   }
 
   Future<void> _completeTask() async {
+    final l10n = AppLocalizations.of(context)!;
     final notes = await showDialog<String?>(
       context: context,
       builder: (context) => CompleteTaskDialog(task: _task),
@@ -465,26 +474,27 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _task = updatedTask;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã hoàn thành công việc')),
+          SnackBar(content: Text(l10n.taskCompleted)),
         );
       }
     }
   }
 
   Future<void> _verifyTask() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận công việc'),
-        content: const Text('Bạn có chắc muốn xác nhận công việc này đã hoàn thành tốt?'),
+        title: Text(l10n.verifyTask),
+        content: Text(l10n.verifyTaskConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Xác nhận'),
+            child: Text(l10n.verify),
           ),
         ],
       ),
@@ -498,29 +508,30 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _task = updatedTask;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã xác nhận công việc')),
+          SnackBar(content: Text(l10n.taskVerified)),
         );
       }
     }
   }
 
   Future<void> _deleteTask() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xóa công việc'),
-        content: const Text('Bạn có chắc muốn xóa công việc này?'),
+        title: Text(l10n.deleteTask),
+        content: Text(l10n.deleteTaskConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
             ),
-            child: const Text('Xóa'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -532,7 +543,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
       if (success && mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã xóa công việc')),
+          SnackBar(content: Text(l10n.taskDeleted)),
         );
       }
     }

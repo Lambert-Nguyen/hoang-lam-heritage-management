@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/rate_plan.dart';
 import '../../providers/rate_plan_provider.dart';
 import '../../providers/room_provider.dart';
@@ -38,16 +39,17 @@ class _PricingManagementScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final roomTypesAsync = ref.watch(roomTypesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quản lý giá'),
+        title: Text(l10n.priceManagement),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Gói giá', icon: Icon(Icons.sell)),
-            Tab(text: 'Giá theo ngày', icon: Icon(Icons.calendar_month)),
+          tabs: [
+            Tab(text: l10n.ratePlans, icon: const Icon(Icons.sell)),
+            Tab(text: l10n.dailyRates, icon: const Icon(Icons.calendar_month)),
           ],
         ),
         actions: [
@@ -56,15 +58,15 @@ class _PricingManagementScreenState
             data:
                 (roomTypes) => PopupMenuButton<int?>(
                   icon: const Icon(Icons.filter_list),
-                  tooltip: 'Lọc theo loại phòng',
+                  tooltip: l10n.filterByRoomType,
                   onSelected: (value) {
                     setState(() => _selectedRoomTypeId = value);
                   },
                   itemBuilder:
                       (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: null,
-                          child: Text('Tất cả loại phòng'),
+                          child: Text(l10n.allRoomTypes),
                         ),
                         ...roomTypes.map(
                           (type) => PopupMenuItem(
@@ -96,7 +98,7 @@ class _PricingManagementScreenState
         },
         icon: const Icon(Icons.add),
         label: Text(
-          _tabController.index == 0 ? 'Thêm gói giá' : 'Thêm giá theo ngày',
+          _tabController.index == 0 ? l10n.addRatePlan : l10n.addDateRate,
         ),
       ),
     );

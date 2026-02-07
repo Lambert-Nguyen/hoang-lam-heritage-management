@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/utils/currency_formatter.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/night_audit.dart';
 import '../../providers/night_audit_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -24,22 +25,23 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final todayAuditAsync = ref.watch(todayAuditProvider);
     final state = ref.watch(nightAuditNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kiểm toán cuối ngày'),
+        title: Text(l10n.nightAuditTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: _showAuditHistory,
-            tooltip: 'Lịch sử',
+            tooltip: l10n.historyLabel,
           ),
           IconButton(
             icon: const Icon(Icons.calendar_today),
             onPressed: _selectDate,
-            tooltip: 'Chọn ngày',
+            tooltip: l10n.selectDate,
           ),
         ],
       ),
@@ -49,7 +51,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
           data: (audit) => _buildAuditContent(context, audit),
           loading: () => const LoadingIndicator(),
           error: (error, stack) => ErrorDisplay(
-            message: 'Lỗi tải kiểm toán: $error',
+            message: '${l10n.auditLoadError}: $error',
             onRetry: _refreshData,
           ),
         ),
@@ -132,6 +134,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
   }
 
   Widget _buildHeader(NightAudit audit) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
@@ -147,8 +150,8 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
               ),
               Text(
                 audit.performedByName != null
-                    ? 'Thực hiện bởi: ${audit.performedByName}'
-                    : 'Chưa hoàn thành',
+                    ? '${l10n.performedBy}: ${audit.performedByName}'
+                    : l10n.notCompleted,
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                 ),
@@ -185,6 +188,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
   }
 
   Widget _buildRoomStats(NightAudit audit) {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -193,9 +197,9 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             children: [
               const Icon(Icons.hotel, color: AppColors.primary),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Thống kê phòng',
-                style: TextStyle(
+              Text(
+                l10n.roomStatistics,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

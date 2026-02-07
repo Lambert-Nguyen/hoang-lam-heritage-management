@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 import '../../models/room.dart';
 import '../../providers/housekeeping_provider.dart';
@@ -54,11 +55,12 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final roomsAsync = ref.watch(roomsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEditing ? 'Sửa công việc' : 'Tạo công việc'),
+        title: Text(widget.isEditing ? l10n.editTask : l10n.createTask),
       ),
       body: Form(
         key: _formKey,
@@ -73,7 +75,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Phòng',
+                      l10n.room,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -85,7 +87,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                         child: CircularProgressIndicator(),
                       ),
                       error: (_, __) => Text(
-                        'Không thể tải danh sách phòng',
+                        l10n.cannotLoadRoomList,
                         style: TextStyle(color: AppColors.error),
                       ),
                     ),
@@ -100,7 +102,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Loại công việc',
+                      l10n.taskType,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -118,7 +120,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Ngày dự kiến',
+                      l10n.scheduledDate,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -136,7 +138,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Ghi chú',
+                      l10n.notes,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -144,7 +146,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                     AppSpacing.gapVerticalMd,
                     AppTextField(
                       controller: _notesController,
-                      hint: 'Nhập ghi chú (tùy chọn)',
+                      hint: l10n.enterNotesOptional,
                       maxLines: 4,
                     ),
                   ],
@@ -156,7 +158,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
               SizedBox(
                 width: double.infinity,
                 child: AppButton(
-                  label: widget.isEditing ? 'Cập nhật' : 'Tạo công việc',
+                  label: widget.isEditing ? l10n.update : l10n.createTask,
                   onPressed: _isLoading ? null : _submit,
                   isLoading: _isLoading,
                 ),
@@ -169,12 +171,13 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
   }
 
   Widget _buildRoomDropdown(List<Room> rooms) {
+    final l10n = AppLocalizations.of(context)!;
     return AppDropdown<int>(
       value: _selectedRoomId,
       items: rooms
           .map((room) => DropdownMenuItem(
                 value: room.id,
-                child: Text('Phòng ${room.number}'),
+                child: Text('${l10n.room} ${room.number}'),
               ))
           .toList(),
       onChanged: (value) {
@@ -184,11 +187,11 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       },
       validator: (value) {
         if (value == null) {
-          return 'Vui lòng chọn phòng';
+          return l10n.pleaseSelectRoom;
         }
         return null;
       },
-      hint: 'Chọn phòng',
+      hint: l10n.selectRoom,
     );
   }
 
@@ -299,8 +302,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     }
 
     if (_selectedRoomId == null) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn phòng')),
+        SnackBar(content: Text(l10n.pleaseSelectRoom)),
       );
       return;
     }
@@ -328,22 +332,24 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       );
 
       if (result != null && mounted) {
+        final l10n = AppLocalizations.of(context)!;
         Navigator.pop(context, result);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
               widget.isEditing
-                  ? 'Đã cập nhật công việc'
-                  : 'Đã tạo công việc mới',
+                  ? l10n.taskUpdated
+                  : l10n.newTaskCreated,
             ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: AppColors.error,
           ),
         );

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/lost_found.dart';
 import '../../providers/lost_found_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -39,17 +40,18 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final itemsAsync = ref.watch(lostFoundItemsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đồ thất lạc'),
+        title: const Text('Lost & Found'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Tất cả'),
-            Tab(text: 'Chưa nhận'),
-            Tab(text: 'Đã nhận'),
+          tabs: [
+            Tab(text: l10n.all),
+            Tab(text: l10n.pending),
+            Tab(text: l10n.completed),
           ],
         ),
         actions: [
@@ -61,7 +63,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterSheet(),
-            tooltip: 'Lọc',
+            tooltip: l10n.filter,
           ),
         ],
       ),
@@ -71,7 +73,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
             padding: AppSpacing.paddingAll,
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Tìm kiếm theo tên đồ vật...',
+                hintText: l10n.search,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppSpacing.radiusMd),

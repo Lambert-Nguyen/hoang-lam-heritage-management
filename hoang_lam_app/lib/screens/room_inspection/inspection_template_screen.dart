@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
 import '../../providers/room_inspection_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -20,10 +21,11 @@ class InspectionTemplateScreen extends ConsumerStatefulWidget {
 class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScreen> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final templatesAsync = ref.watch(inspectionTemplatesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mẫu kiểm tra')),
+      appBar: AppBar(title: Text(l10n.inspectionTemplate)),
       body: templatesAsync.when(
         data: (templates) {
           if (templates.isEmpty) {
@@ -47,19 +49,20 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
         },
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorDisplay(
-          message: 'Lỗi: $e',
+          message: '${l10n.error}: $e',
           onRetry: () => ref.invalidate(inspectionTemplatesProvider),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateTemplateDialog,
         icon: const Icon(Icons.add),
-        label: const Text('Tạo mẫu'),
+        label: Text(l10n.createTemplate),
       ),
     );
   }
 
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -67,14 +70,14 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
           Icon(Icons.library_books, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.5)),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Chưa có mẫu kiểm tra nào',
+            l10n.noTemplates,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.md),
           FilledButton.icon(
             onPressed: _showCreateTemplateDialog,
             icon: const Icon(Icons.add),
-            label: const Text('Tạo mẫu đầu tiên'),
+            label: Text(l10n.createFirstTemplate),
           ),
         ],
       ),

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../l10n/app_localizations.dart';
+
 import '../../models/finance.dart';
 import '../../providers/providers.dart';
 import '../../widgets/widgets.dart';
@@ -38,11 +40,12 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final folioState = ref.watch(folioNotifierProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chi tiết Folio'),
+        title: const Text('Folio'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -59,14 +62,14 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
               ref.read(folioNotifierProvider.notifier).toggleIncludeVoided();
             },
             tooltip: folioState.includeVoided
-                ? 'Ẩn mục đã hủy'
-                : 'Hiện mục đã hủy',
+                ? l10n.hideCancelledItems
+                : l10n.showCancelledItems,
           ),
           // Add charge button
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () => _showAddChargeDialog(context),
-            tooltip: 'Thêm phí',
+            tooltip: l10n.addCharge,
           ),
         ],
       ),
@@ -102,7 +105,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                     .read(folioNotifierProvider.notifier)
                     .loadFolio(widget.bookingId);
               },
-              child: const Text('Thử lại'),
+              child: Text(AppLocalizations.of(context)!.retry),
             ),
           ],
         ),
@@ -111,8 +114,8 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
 
     final summary = folioState.summary;
     if (summary == null) {
-      return const Center(
-        child: Text('Không có dữ liệu folio'),
+      return Center(
+        child: Text(AppLocalizations.of(context)!.noData),
       );
     }
 
@@ -196,7 +199,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
         children: [
           // All filter
           FilterChip(
-            label: const Text('Tất cả'),
+            label: Text(AppLocalizations.of(context)!.all),
             selected: folioState.filterType == null,
             onSelected: (_) {
               ref.read(folioNotifierProvider.notifier).setFilterType(null);

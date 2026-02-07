@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
 import '../../widgets/common/empty_state.dart';
@@ -40,22 +41,23 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bảo trì'),
+        title: Text(l10n.maintenance),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterSheet,
-            tooltip: 'Lọc',
+            tooltip: l10n.filter,
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Khẩn cấp'),
-            Tab(text: 'Tất cả'),
-            Tab(text: 'Của tôi'),
+          tabs: [
+            Tab(text: l10n.urgent),
+            Tab(text: l10n.all),
+            Tab(text: l10n.myTasks),
           ],
         ),
       ),
@@ -70,21 +72,22 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _navigateToForm(context),
         icon: const Icon(Icons.add),
-        label: const Text('Tạo yêu cầu'),
+        label: Text(l10n.createRequest),
       ),
     );
   }
 
   Widget _buildUrgentTab() {
+    final l10n = AppLocalizations.of(context)!;
     final urgentAsync = ref.watch(urgentRequestsProvider);
 
     return urgentAsync.when(
       data: (requests) {
         if (requests.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.check_circle_outline,
-            title: 'Không có yêu cầu khẩn cấp',
-            message: 'Hiện tại không có yêu cầu bảo trì khẩn cấp nào',
+            title: l10n.noUrgentRequests,
+            message: l10n.noUrgentMaintenanceRequests,
           );
         }
         return RefreshIndicator(
@@ -102,15 +105,16 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
   }
 
   Widget _buildAllTab() {
+    final l10n = AppLocalizations.of(context)!;
     final requestsAsync = ref.watch(filteredMaintenanceRequestsProvider(_filter));
 
     return requestsAsync.when(
       data: (requests) {
         if (requests.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.build_outlined,
-            title: 'Không có yêu cầu bảo trì',
-            message: 'Chưa có yêu cầu bảo trì nào được tạo',
+            title: l10n.noMaintenanceRequests,
+            message: l10n.noMaintenanceRequestsCreated,
           );
         }
         return RefreshIndicator(
@@ -128,15 +132,16 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
   }
 
   Widget _buildMyRequestsTab() {
+    final l10n = AppLocalizations.of(context)!;
     final myRequestsAsync = ref.watch(myMaintenanceRequestsProvider);
 
     return myRequestsAsync.when(
       data: (requests) {
         if (requests.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.person_outline,
-            title: 'Không có yêu cầu của bạn',
-            message: 'Bạn chưa được phân công yêu cầu bảo trì nào',
+            title: l10n.noYourRequests,
+            message: l10n.noAssignedMaintenanceRequests,
           );
         }
         return RefreshIndicator(
@@ -154,6 +159,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
   }
 
   Widget _buildRequestList(List<MaintenanceRequest> requests) {
+    final l10n = AppLocalizations.of(context)!;
     // Group requests by status
     final pending = requests.where((r) => r.status == MaintenanceStatus.pending).toList();
     final assigned = requests.where((r) => r.status == MaintenanceStatus.assigned).toList();
@@ -168,23 +174,23 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
       padding: const EdgeInsets.only(bottom: 80),
       children: [
         if (pending.isNotEmpty) ...[
-          _buildSectionHeader('Chờ xử lý', pending.length, MaintenanceStatus.pending.color),
+          _buildSectionHeader(l10n.pending, pending.length, MaintenanceStatus.pending.color),
           ...pending.map((r) => _buildRequestCard(r)),
         ],
         if (assigned.isNotEmpty) ...[
-          _buildSectionHeader('Đã phân công', assigned.length, MaintenanceStatus.assigned.color),
+          _buildSectionHeader(l10n.assigned, assigned.length, MaintenanceStatus.assigned.color),
           ...assigned.map((r) => _buildRequestCard(r)),
         ],
         if (inProgress.isNotEmpty) ...[
-          _buildSectionHeader('Đang thực hiện', inProgress.length, MaintenanceStatus.inProgress.color),
+          _buildSectionHeader(l10n.inProgress, inProgress.length, MaintenanceStatus.inProgress.color),
           ...inProgress.map((r) => _buildRequestCard(r)),
         ],
         if (onHold.isNotEmpty) ...[
-          _buildSectionHeader('Tạm hoãn', onHold.length, MaintenanceStatus.onHold.color),
+          _buildSectionHeader(l10n.onHold, onHold.length, MaintenanceStatus.onHold.color),
           ...onHold.map((r) => _buildRequestCard(r)),
         ],
         if (completed.isNotEmpty) ...[
-          _buildSectionHeader('Hoàn thành/Hủy', completed.length, MaintenanceStatus.completed.color),
+          _buildSectionHeader(l10n.completedCancelled, completed.length, MaintenanceStatus.completed.color),
           ...completed.map((r) => _buildRequestCard(r)),
         ],
       ],
@@ -254,6 +260,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
   }
 
   Widget _buildErrorState(Object error, VoidCallback onRetry) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: AppSpacing.paddingScreen,
@@ -267,7 +274,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
             ),
             AppSpacing.gapVerticalMd,
             Text(
-              'Đã xảy ra lỗi',
+              l10n.errorOccurred,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             AppSpacing.gapVerticalSm,
@@ -282,7 +289,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
             ElevatedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Thử lại'),
+              label: Text(l10n.retry),
             ),
           ],
         ),
@@ -324,26 +331,28 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
   }
 
   Future<void> _assignRequest(MaintenanceRequest request) async {
+    final l10n = AppLocalizations.of(context)!;
     // Show assign dialog - similar to task assignment
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Chức năng phân công đang phát triển')),
+      SnackBar(content: Text(l10n.assignmentInDevelopment)),
     );
   }
 
   Future<void> _completeRequest(MaintenanceRequest request) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hoàn thành yêu cầu'),
-        content: const Text('Bạn có chắc đã hoàn thành yêu cầu bảo trì này?'),
+        title: Text(l10n.completeRequest),
+        content: Text(l10n.completeRequestConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Hoàn thành'),
+            child: Text(l10n.completed),
           ),
         ],
       ),
@@ -354,7 +363,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
       final result = await notifier.completeMaintenanceRequest(request.id);
       if (result != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã hoàn thành yêu cầu bảo trì')),
+          SnackBar(content: Text(l10n.maintenanceRequestCompleted)),
         );
       }
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../widgets/bookings/booking_status_badge.dart';
@@ -31,7 +32,7 @@ class BookingDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chi tiết đặt phòng'),
+        title: Text(context.l10n.bookingDetails),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
@@ -62,11 +63,11 @@ class BookingDetailScreen extends ConsumerWidget {
               children: [
                 const Icon(Icons.error_outline, size: 48, color: Colors.red),
                 const SizedBox(height: 16),
-                Text('Lỗi: $error'),
+                Text('${context.l10n.error}: $error'),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Quay lại'),
+                  child: Text(context.l10n.goBack),
                 ),
               ],
             ),
@@ -96,7 +97,7 @@ class BookingDetailScreen extends ConsumerWidget {
             child: Column(
               children: [
                 Text(
-                  booking.roomNumber ?? 'Phòng ${booking.room}',
+                  booking.roomNumber ?? '${context.l10n.roomNumber} ${booking.room}',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -117,41 +118,41 @@ class BookingDetailScreen extends ConsumerWidget {
           // Guest Information
           _buildSection(
             context,
-            title: '👤 Thông tin khách',
+            title: '👤 ${context.l10n.guestInfo}',
             children: [
-              _buildInfoRow('Tên', booking.guestName),
+              _buildInfoRow(context.l10n.name, booking.guestName),
               if (booking.guestPhone.isNotEmpty)
-                _buildInfoRow('SĐT', booking.guestPhone),
-              _buildInfoRow('Số khách', '${booking.guestCount} người'),
+                _buildInfoRow(context.l10n.phoneNumber, booking.guestPhone),
+              _buildInfoRow(context.l10n.guestCount, '${booking.guestCount} ${context.l10n.people}'),
             ],
           ),
 
           // Dates and Times
           _buildSection(
             context,
-            title: '📅 Thời gian',
+            title: '📅 ${context.l10n.timeLabel}',
             children: [
               _buildInfoRow(
-                'Check-in dự kiến',
+                context.l10n.expectedCheckin,
                 '${dateFormat.format(booking.checkInDate)} ${DateFormat('HH:mm').format(booking.checkInDate)}',
               ),
               _buildInfoRow(
-                'Check-out dự kiến',
+                context.l10n.expectedCheckout,
                 '${dateFormat.format(booking.checkOutDate)} ${DateFormat('HH:mm').format(booking.checkOutDate)}',
               ),
               _buildInfoRow(
-                'Số đêm',
-                '${booking.checkOutDate.difference(booking.checkInDate).inDays} đêm',
+                context.l10n.numberOfNights,
+                '${booking.checkOutDate.difference(booking.checkInDate).inDays} ${context.l10n.nights}',
               ),
               if (booking.actualCheckIn != null)
                 _buildInfoRow(
-                  'Check-in thực tế',
+                  context.l10n.actualCheckin,
                   dateTimeFormat.format(booking.actualCheckIn!),
                   highlight: true,
                 ),
               if (booking.actualCheckOut != null)
                 _buildInfoRow(
-                  'Check-out thực tế',
+                  context.l10n.actualCheckout,
                   dateTimeFormat.format(booking.actualCheckOut!),
                   highlight: true,
                 ),
@@ -161,32 +162,32 @@ class BookingDetailScreen extends ConsumerWidget {
           // Payment Information
           _buildSection(
             context,
-            title: '💰 Thanh toán',
+            title: '💰 ${context.l10n.payment}',
             children: [
               _buildInfoRow(
-                'Giá/đêm',
+                context.l10n.ratePerNight,
                 currencyFormat.format(booking.nightlyRate),
               ),
               _buildInfoRow(
-                'Tổng tiền',
+                context.l10n.totalAmount,
                 currencyFormat.format(booking.totalAmount),
                 bold: true,
               ),
               if (booking.depositAmount > 0) ...[
                 _buildInfoRow(
-                  'Đã đặt cọc',
+                  context.l10n.depositPaid,
                   currencyFormat.format(booking.depositAmount),
                   valueColor: Colors.green,
                 ),
                 _buildInfoRow(
-                  'Còn lại',
+                  context.l10n.balanceDue,
                   currencyFormat.format(booking.totalAmount - booking.depositAmount),
                   valueColor: Colors.orange,
                 ),
               ],
               _buildInfoRow(
-                'Phương thức',
-                _getPaymentMethodLabel(booking.paymentMethod),
+                context.l10n.paymentMethod,
+                _getPaymentMethodLabel(context, booking.paymentMethod),
               ),
             ],
           ),
@@ -194,25 +195,25 @@ class BookingDetailScreen extends ConsumerWidget {
           // Booking Source and Notes
           _buildSection(
             context,
-            title: '📋 Thông tin đặt phòng',
+            title: '📋 ${context.l10n.bookingInfo}',
             children: [
               _buildInfoRow(
-                'Nguồn',
-                _getBookingSourceLabel(booking.source),
+                context.l10n.source,
+                _getBookingSourceLabel(context, booking.source),
               ),
               if (booking.createdAt != null)
                 _buildInfoRow(
-                  'Ngày đặt',
+                  context.l10n.bookingDate,
                   dateTimeFormat.format(booking.createdAt!),
                 ),
               if (booking.specialRequests.isNotEmpty)
                 _buildInfoRow(
-                  'Yêu cầu đặc biệt',
+                  context.l10n.specialRequests,
                   booking.specialRequests,
                 ),
               if (booking.notes.isNotEmpty)
                 _buildInfoRow(
-                  'Ghi chú nội bộ',
+                  context.l10n.internalNotes,
                   booking.notes,
                   valueColor: Colors.grey[600],
                 ),
@@ -321,7 +322,7 @@ class BookingDetailScreen extends ConsumerWidget {
           ElevatedButton.icon(
             onPressed: () => _handleCheckIn(context, ref, booking),
             icon: const Icon(Icons.login),
-            label: const Text('Check-in'),
+            label: Text(context.l10n.checkIn),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
               foregroundColor: Colors.white,
@@ -335,7 +336,7 @@ class BookingDetailScreen extends ConsumerWidget {
           ElevatedButton.icon(
             onPressed: () => _handleCheckOut(context, ref, booking),
             icon: const Icon(Icons.logout),
-            label: const Text('Check-out'),
+            label: Text(context.l10n.checkOut),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
@@ -351,7 +352,7 @@ class BookingDetailScreen extends ConsumerWidget {
           OutlinedButton.icon(
             onPressed: () => _handleCancel(context, ref, booking),
             icon: const Icon(Icons.cancel),
-            label: const Text('Hủy đặt phòng'),
+            label: Text(context.l10n.cancel),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.red,
               padding: const EdgeInsets.all(16),
@@ -366,7 +367,7 @@ class BookingDetailScreen extends ConsumerWidget {
           OutlinedButton.icon(
             onPressed: () => _handleNoShow(context, ref, booking),
             icon: const Icon(Icons.person_off),
-            label: const Text('Đánh dấu không đến'),
+            label: Text(context.l10n.noShow),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.orange,
               padding: const EdgeInsets.all(16),
@@ -377,12 +378,12 @@ class BookingDetailScreen extends ConsumerWidget {
     );
   }
 
-  String _getBookingSourceLabel(BookingSource source) {
+  String _getBookingSourceLabel(BuildContext context, BookingSource source) {
     switch (source) {
       case BookingSource.walkIn:
-        return 'Walk-in (Khách vãng lai)';
+        return 'Walk-in';
       case BookingSource.phone:
-        return 'Điện thoại';
+        return context.l10n.phoneNumber;
       case BookingSource.bookingCom:
         return 'Booking.com';
       case BookingSource.agoda:
@@ -392,47 +393,47 @@ class BookingDetailScreen extends ConsumerWidget {
       case BookingSource.traveloka:
         return 'Traveloka';
       case BookingSource.otherOta:
-        return 'OTA khác';
+        return 'OTA';
       case BookingSource.website:
-        return 'Đặt trực tiếp (Website)';
+        return 'Website';
       case BookingSource.other:
-        return 'Khác';
+        return context.l10n.undefined;
     }
   }
 
-  String _getPaymentMethodLabel(PaymentMethod method) {
+  String _getPaymentMethodLabel(BuildContext context, PaymentMethod method) {
     switch (method) {
       case PaymentMethod.cash:
-        return 'Tiền mặt';
+        return context.l10n.income;
       case PaymentMethod.bankTransfer:
-        return 'Chuyển khoản';
+        return 'Bank Transfer';
       case PaymentMethod.momo:
         return 'MoMo';
       case PaymentMethod.vnpay:
         return 'VNPay';
       case PaymentMethod.card:
-        return 'Thẻ tín dụng';
+        return 'Card';
       case PaymentMethod.otaCollect:
-        return 'OTA thu hộ';
+        return 'OTA';
       case PaymentMethod.other:
-        return 'Khác';
+        return context.l10n.undefined;
     }
   }
 
   void _handleCheckIn(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xác nhận check-in'),
-        content: Text('Xác nhận check-in cho ${booking.guestName}?'),
+      builder: (ctx) => AlertDialog(
+        title: Text('${context.l10n.confirm} ${context.l10n.checkIn}'),
+        content: Text('${context.l10n.confirm} ${context.l10n.checkIn} ${booking.guestName}?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Check-in'),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(context.l10n.checkIn),
           ),
         ],
       ),
@@ -443,13 +444,13 @@ class BookingDetailScreen extends ConsumerWidget {
         await ref.read(bookingNotifierProvider.notifier).checkIn(bookingId);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Check-in thành công')),
+            SnackBar(content: Text('${context.l10n.checkIn} ${context.l10n.success}')),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e')),
+            SnackBar(content: Text('${context.l10n.error}: $e')),
           );
         }
       }
@@ -459,17 +460,17 @@ class BookingDetailScreen extends ConsumerWidget {
   void _handleCheckOut(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xác nhận check-out'),
-        content: Text('Xác nhận check-out cho ${booking.guestName}?'),
+      builder: (ctx) => AlertDialog(
+        title: Text('${context.l10n.confirm} ${context.l10n.checkOut}'),
+        content: Text('${context.l10n.confirm} ${context.l10n.checkOut} ${booking.guestName}?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Check-out'),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(context.l10n.checkOut),
           ),
         ],
       ),
@@ -480,13 +481,13 @@ class BookingDetailScreen extends ConsumerWidget {
         await ref.read(bookingNotifierProvider.notifier).checkOut(bookingId);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Check-out thành công')),
+            SnackBar(content: Text('${context.l10n.checkOut} ${context.l10n.success}')),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e')),
+            SnackBar(content: Text('${context.l10n.error}: $e')),
           );
         }
       }
@@ -496,18 +497,18 @@ class BookingDetailScreen extends ConsumerWidget {
   void _handleCancel(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hủy đặt phòng'),
-        content: Text('Bạn có chắc muốn hủy đặt phòng cho ${booking.guestName}?'),
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.cancel),
+        content: Text('${context.l10n.areYouSure} ${booking.guestName}?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Không'),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Hủy đặt phòng'),
+            child: Text(context.l10n.confirm),
           ),
         ],
       ),
@@ -518,13 +519,13 @@ class BookingDetailScreen extends ConsumerWidget {
         await ref.read(bookingNotifierProvider.notifier).cancelBooking(bookingId);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã hủy đặt phòng')),
+            SnackBar(content: Text(context.l10n.success)),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e')),
+            SnackBar(content: Text('${context.l10n.error}: $e')),
           );
         }
       }
@@ -534,18 +535,18 @@ class BookingDetailScreen extends ConsumerWidget {
   void _handleNoShow(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Đánh dấu không đến'),
-        content: Text('Đánh dấu ${booking.guestName} không đến (no-show)?'),
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.noShow),
+        content: Text('${context.l10n.noShow} ${booking.guestName}?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            child: const Text('Xác nhận'),
+            child: Text(context.l10n.confirm),
           ),
         ],
       ),
@@ -556,13 +557,13 @@ class BookingDetailScreen extends ConsumerWidget {
         await ref.read(bookingNotifierProvider.notifier).markAsNoShow(bookingId);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã đánh dấu không đến')),
+            SnackBar(content: Text(context.l10n.success)),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e')),
+            SnackBar(content: Text('${context.l10n.error}: $e')),
           );
         }
       }
@@ -572,18 +573,18 @@ class BookingDetailScreen extends ConsumerWidget {
   void _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xóa đặt phòng'),
-        content: const Text('Bạn có chắc muốn xóa đặt phòng này?\n\nThao tác này không thể hoàn tác.'),
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.delete),
+        content: Text('${context.l10n.areYouSure}\n\n${context.l10n.actionCannotBeUndone}'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => Navigator.of(ctx).pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Xóa'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),
@@ -595,13 +596,13 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã xóa đặt phòng')),
+            SnackBar(content: Text(context.l10n.success)),
           );
         }
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e')),
+            SnackBar(content: Text('${context.l10n.error}: $e')),
           );
         }
       }

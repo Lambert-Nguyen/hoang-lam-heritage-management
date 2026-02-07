@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/rate_plan.dart';
 import '../../models/room.dart';
 import '../../providers/rate_plan_provider.dart';
@@ -91,6 +92,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
 
     // Load existing rate plan for editing
     if (_isEditing) {
+      final l10n = AppLocalizations.of(context)!;
       final ratePlanAsync = ref.watch(ratePlanByIdProvider(widget.ratePlanId!));
       return ratePlanAsync.when(
         data: (ratePlan) {
@@ -98,12 +100,12 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
           return _buildForm(roomTypesAsync);
         },
         loading: () => Scaffold(
-          appBar: AppBar(title: const Text('Sửa gói giá')),
+          appBar: AppBar(title: Text(l10n.editRatePlan)),
           body: const Center(child: CircularProgressIndicator()),
         ),
         error: (error, _) => Scaffold(
-          appBar: AppBar(title: const Text('Sửa gói giá')),
-          body: Center(child: Text('Lỗi: $error')),
+          appBar: AppBar(title: Text(l10n.editRatePlan)),
+          body: Center(child: Text('${l10n.error}: $error')),
         ),
       );
     }
@@ -112,15 +114,16 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
   }
 
   Widget _buildForm(AsyncValue<List<RoomType>> roomTypesAsync) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Sửa gói giá' : 'Thêm gói giá'),
+        title: Text(_isEditing ? l10n.editRatePlan : l10n.addRatePlan),
         actions: [
           if (_isEditing)
             IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: _confirmDelete,
-              tooltip: 'Xóa gói giá',
+              tooltip: l10n.deleteRatePlan,
             ),
         ],
       ),
@@ -130,19 +133,19 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
           padding: AppSpacing.paddingScreen,
           children: [
             // Basic Info Section
-            _buildSectionHeader('Thông tin cơ bản'),
+            _buildSectionHeader(l10n.basicInfo),
 
             // Name
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Tên gói giá *',
-                hintText: 'VD: Giá cuối tuần, Giá mùa hè...',
-                prefixIcon: Icon(Icons.label),
+              decoration: InputDecoration(
+                labelText: '${l10n.ratePlanName} *',
+                hintText: l10n.ratePlanHint,
+                prefixIcon: const Icon(Icons.label),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Vui lòng nhập tên gói giá';
+                  return l10n.pleaseEnterRatePlanName;
                 }
                 return null;
               },
@@ -153,10 +156,10 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             // Name English (optional)
             TextFormField(
               controller: _nameEnController,
-              decoration: const InputDecoration(
-                labelText: 'Tên tiếng Anh (tùy chọn)',
+              decoration: InputDecoration(
+                labelText: l10n.englishNameOptional,
                 hintText: 'VD: Weekend Rate, Summer Rate...',
-                prefixIcon: Icon(Icons.translate),
+                prefixIcon: const Icon(Icons.translate),
               ),
             ),
 
@@ -166,9 +169,9 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             roomTypesAsync.when(
               data: (roomTypes) => DropdownButtonFormField<int>(
                 value: _selectedRoomTypeId,
-                decoration: const InputDecoration(
-                  labelText: 'Loại phòng *',
-                  prefixIcon: Icon(Icons.meeting_room),
+                decoration: InputDecoration(
+                  labelText: '${l10n.roomType} *',
+                  prefixIcon: const Icon(Icons.meeting_room),
                 ),
                 items: roomTypes
                     .map((type) => DropdownMenuItem(
@@ -179,13 +182,13 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
                 onChanged: (value) => setState(() => _selectedRoomTypeId = value),
                 validator: (value) {
                   if (value == null) {
-                    return 'Vui lòng chọn loại phòng';
+                    return l10n.pleaseSelectRoomType;
                   }
                   return null;
                 },
               ),
               loading: () => const LinearProgressIndicator(),
-              error: (_, __) => const Text('Không thể tải loại phòng'),
+              error: (_, __) => Text(l10n.cannotLoadRoomTypes),
             ),
 
             AppSpacing.gapVerticalMd,
@@ -193,10 +196,10 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             // Base Rate
             TextFormField(
               controller: _baseRateController,
-              decoration: const InputDecoration(
-                labelText: 'Giá cơ bản/đêm *',
-                prefixIcon: Icon(Icons.attach_money),
-                suffixText: 'VNĐ',
+              decoration: InputDecoration(
+                labelText: '${l10n.baseRatePerNight} *',
+                prefixIcon: const Icon(Icons.attach_money),
+                suffixText: l10n.vnd,
               ),
               keyboardType: TextInputType.number,
               validator: (value) {

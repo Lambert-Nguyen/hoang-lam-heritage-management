@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 import '../../providers/minibar_provider.dart';
 import '../../widgets/common/offline_banner.dart';
@@ -41,9 +42,10 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quản lý Minibar'),
+        title: Text(l10n.minibarManagement),
         actions: [
           IconButton(
             icon: const Icon(Icons.point_of_sale),
@@ -53,9 +55,9 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Sản phẩm'),
-            Tab(text: 'Lịch sử bán'),
+          tabs: [
+            Tab(text: l10n.addProduct.replaceAll('Thêm ', '')),
+            Tab(text: l10n.history),
           ],
         ),
       ),
@@ -69,7 +71,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
       floatingActionButton: _tabController.index == 0
           ? FloatingActionButton(
               onPressed: _addNewItem,
-              tooltip: 'Thêm sản phẩm',
+              tooltip: AppLocalizations.of(context)!.addProduct,
               child: const Icon(Icons.add),
             )
           : null,
@@ -96,7 +98,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(
-              hintText: 'Tìm kiếm sản phẩm...',
+              hintText: AppLocalizations.of(context)!.searchProducts,
               prefixIcon: const Icon(Icons.search),
               border: const OutlineInputBorder(),
               suffixIcon: _searchController.text.isNotEmpty
@@ -139,7 +141,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
       child: Row(
         children: [
           FilterChip(
-            label: const Text('Tất cả'),
+            label: Text(AppLocalizations.of(context)!.all),
             selected: _selectedCategory == null,
             onSelected: (_) => setState(() => _selectedCategory = null),
           ),

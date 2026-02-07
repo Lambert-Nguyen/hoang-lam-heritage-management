@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/lost_found.dart';
 import '../../providers/lost_found_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -25,17 +26,18 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final itemAsync = ref.watch(lostFoundItemByIdProvider(widget.itemId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chi tiết đồ thất lạc'),
+        title: const Text('Lost & Found'),
         actions: [
           itemAsync.whenOrNull(
             data: (item) => PopupMenuButton<String>(
               onSelected: (value) => _handleMenuAction(value, item),
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit), title: Text('Sửa'), contentPadding: EdgeInsets.zero)),
+                PopupMenuItem(value: 'edit', child: ListTile(leading: const Icon(Icons.edit), title: Text(l10n.edit), contentPadding: EdgeInsets.zero)),
                 if (item.status == LostFoundStatus.found)
                   const PopupMenuItem(value: 'store', child: ListTile(leading: Icon(Icons.archive), title: Text('Lưu kho'), contentPadding: EdgeInsets.zero)),
                 if (item.status == LostFoundStatus.found || item.status == LostFoundStatus.stored)

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../repositories/finance_repository.dart';
 import '../../widgets/finance/currency_selector.dart';
@@ -61,7 +62,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     // PDF download will be implemented when backend is deployed
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tính năng tải PDF đang phát triển')),
+        SnackBar(content: Text(context.l10n.loading)),
       );
     }
   }
@@ -69,16 +70,17 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
 
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Hóa đơn'),
+            Text(l10n.finance),
             if (widget.roomNumber != null)
               Text(
-                'Phòng ${widget.roomNumber}',
+                '${l10n.room} ${widget.roomNumber}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onPrimary.withOpacity(0.8),
                 ),
@@ -100,7 +102,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
             IconButton(
               onPressed: _downloadPdf,
               icon: const Icon(Icons.download),
-              tooltip: 'Tải PDF',
+              tooltip: l10n.save,
             ),
           const SizedBox(width: 8),
         ],
@@ -110,6 +112,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
   }
 
   Widget _buildBody(ThemeData theme) {
+    final l10n = context.l10n;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -126,7 +129,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Không thể tải hóa đơn',
+              l10n.dataLoadError,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
@@ -141,7 +144,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
             FilledButton.icon(
               onPressed: _loadReceipt,
               icon: const Icon(Icons.refresh),
-              label: const Text('Thử lại'),
+              label: Text(l10n.retry),
             ),
           ],
         ),
@@ -149,7 +152,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     }
 
     if (_receipt == null) {
-      return const Center(child: Text('Không có dữ liệu'));
+      return Center(child: Text(l10n.noData));
     }
 
     return SingleChildScrollView(
@@ -165,11 +168,11 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                   onPressed: () {
                     // Share functionality
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Tính năng chia sẻ đang phát triển')),
+                      SnackBar(content: Text(l10n.loading)),
                     );
                   },
                   icon: const Icon(Icons.share),
-                  label: const Text('Chia sẻ'),
+                  label: Text(l10n.save),
                 ),
               ),
               const SizedBox(width: 16),
@@ -177,7 +180,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                 child: FilledButton.icon(
                   onPressed: _downloadPdf,
                   icon: const Icon(Icons.download),
-                  label: const Text('Tải PDF'),
+                  label: Text(l10n.save),
                 ),
               ),
             ],
@@ -189,6 +192,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
 
   Widget _buildReceiptPreview(ThemeData theme) {
     final receipt = _receipt!;
+    final l10n = context.l10n;
 
     return Container(
       decoration: BoxDecoration(
@@ -214,7 +218,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
             child: Column(
               children: [
                 Text(
-                  'HOÀNG LAM HERITAGE',
+                  l10n.appName,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.onPrimaryContainer,
@@ -222,20 +226,20 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'HÓA ĐƠN',
+                  l10n.finance,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Số: ${receipt.receiptNumber}',
+                  '#${receipt.receiptNumber}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer,
                   ),
                 ),
                 Text(
-                  'Ngày: ${_formatDate(receipt.receiptDate)}',
+                  '${l10n.selectDate}: ${_formatDate(receipt.receiptDate)}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
                   ),
@@ -250,29 +254,29 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildInfoSection(theme, 'THÔNG TIN KHÁCH HÀNG', [
-                  _buildInfoRow('Họ tên:', receipt.guestName),
+                _buildInfoSection(theme, l10n.guestInfo, [
+                  _buildInfoRow('${l10n.guestName}:', receipt.guestName),
                   if (receipt.guestPhone != null)
-                    _buildInfoRow('Điện thoại:', receipt.guestPhone!),
-                  _buildInfoRow('Phòng:', receipt.roomNumber),
+                    _buildInfoRow('${l10n.guestPhone}:', receipt.guestPhone!),
+                  _buildInfoRow('${l10n.room}:', receipt.roomNumber),
                 ]),
                 const Divider(height: 24),
-                _buildInfoSection(theme, 'THÔNG TIN LƯU TRÚ', [
-                  _buildInfoRow('Nhận phòng:', _formatDate(receipt.checkInDate)),
-                  _buildInfoRow('Trả phòng:', _formatDate(receipt.checkOutDate)),
-                  _buildInfoRow('Số đêm:', '${receipt.numberOfNights} đêm'),
-                  _buildInfoRow('Giá phòng/đêm:', _formatAmount(receipt.nightlyRate)),
+                _buildInfoSection(theme, l10n.bookingInfo, [
+                  _buildInfoRow('${l10n.checkIn}:', _formatDate(receipt.checkInDate)),
+                  _buildInfoRow('${l10n.checkOut}:', _formatDate(receipt.checkOutDate)),
+                  _buildInfoRow('${l10n.nights}:', '${receipt.numberOfNights}'),
+                  _buildInfoRow('${l10n.ratePerNight}:', _formatAmount(receipt.nightlyRate)),
                 ]),
                 const Divider(height: 24),
-                _buildInfoSection(theme, 'CHI PHÍ', [
-                  _buildInfoRow('Tiền phòng:', _formatAmount(receipt.roomCharges)),
+                _buildInfoSection(theme, l10n.expense, [
+                  _buildInfoRow('${l10n.room}:', _formatAmount(receipt.roomCharges)),
                   if (receipt.additionalCharges > 0)
-                    _buildInfoRow('Phụ thu:', _formatAmount(receipt.additionalCharges)),
+                    _buildInfoRow('${l10n.total}:', _formatAmount(receipt.additionalCharges)),
                   const Divider(height: 8),
-                  _buildInfoRow('Tổng cộng:', _formatAmount(receipt.totalAmount), bold: true),
-                  _buildInfoRow('Đã thanh toán:', _formatAmount(receipt.depositPaid)),
+                  _buildInfoRow('${l10n.totalAmount}:', _formatAmount(receipt.totalAmount), bold: true),
+                  _buildInfoRow('${l10n.depositPaid}:', _formatAmount(receipt.depositPaid)),
                   _buildInfoRow(
-                    'Còn lại:',
+                    '${l10n.balanceDue}:',
                     _formatAmount(receipt.balanceDue),
                     bold: true,
                     highlight: receipt.balanceDue > 0,
@@ -290,7 +294,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
             ),
             child: Text(
-              'Cảm ơn quý khách đã sử dụng dịch vụ!',
+              l10n.success,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontStyle: FontStyle.italic,
                 color: theme.colorScheme.onSurfaceVariant,

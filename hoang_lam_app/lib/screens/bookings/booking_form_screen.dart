@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../providers/room_provider.dart';
@@ -78,7 +79,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? 'Sửa đặt phòng' : 'Đặt phòng mới'),
+        title: Text(isEdit ? context.l10n.editBooking : context.l10n.createBooking),
       ),
       body: Form(
         key: _formKey,
@@ -137,7 +138,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
               ),
               child: _isSubmitting
                   ? const CircularProgressIndicator()
-                  : Text(isEdit ? 'Cập nhật' : 'Tạo đặt phòng'),
+                  : Text(isEdit ? context.l10n.update : context.l10n.createBooking),
             ),
           ],
         ),
@@ -153,10 +154,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       data: (rooms) {
         return DropdownButtonFormField<int>(
           value: _selectedRoomId,
-          decoration: const InputDecoration(
-            labelText: 'Phòng *',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.hotel),
+          decoration: InputDecoration(
+            labelText: '${context.l10n.roomNumber} *',
+            border: const OutlineInputBorder(),
+            prefixIcon: const Icon(Icons.hotel),
           ),
           items: rooms.map((room) {
             return DropdownMenuItem(
@@ -177,13 +178,13 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             });
           },
           validator: (value) {
-            if (value == null) return 'Vui lòng chọn phòng';
+            if (value == null) return context.l10n.pleaseSelectRoom;
             return null;
           },
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Text('Lỗi: $error'),
+      error: (error, stack) => Text('${context.l10n.error}: $error'),
     );
   }
 
@@ -192,7 +193,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Khách hàng *',
+          '${context.l10n.guest} *',
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
@@ -208,7 +209,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(
-              'Vui lòng chọn hoặc tạo khách hàng',
+              context.l10n.pleaseSelectCreateGuest,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.error,
                 fontSize: 12,
@@ -227,7 +228,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Ngày đặt phòng',
+              context.l10n.bookingDates,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -237,7 +238,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             // Check-in date
             ListTile(
               leading: const Icon(Icons.login),
-              title: const Text('Check-in'),
+              title: Text(context.l10n.checkIn),
               subtitle: Text(DateFormat('dd/MM/yyyy HH:mm', 'vi').format(_checkInDate)),
               onTap: () => _selectDateTime(context, true),
             ),
@@ -245,7 +246,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             // Check-out date
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text('Check-out'),
+              title: Text(context.l10n.checkOut),
               subtitle: Text(DateFormat('dd/MM/yyyy HH:mm', 'vi').format(_checkOutDate)),
               onTap: () => _selectDateTime(context, false),
             ),
@@ -254,9 +255,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             const Divider(),
             ListTile(
               leading: const Icon(Icons.nights_stay),
-              title: const Text('Số đêm'),
+              title: Text(context.l10n.numberOfNights),
               trailing: Text(
-                '${_checkOutDate.difference(_checkInDate).inDays} đêm',
+                '${_checkOutDate.difference(_checkInDate).inDays} ${context.l10n.nights}',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -311,16 +312,16 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildNumberOfGuestsField() {
     return TextFormField(
       initialValue: _numberOfGuests.toString(),
-      decoration: const InputDecoration(
-        labelText: 'Số khách *',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.people),
+      decoration: InputDecoration(
+        labelText: '${context.l10n.guestCount} *',
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.people),
       ),
       keyboardType: TextInputType.number,
       validator: (value) {
-        if (value == null || value.isEmpty) return 'Vui lòng nhập số khách';
+        if (value == null || value.isEmpty) return context.l10n.guestRequired;
         final number = int.tryParse(value);
-        if (number == null || number < 1) return 'Số khách phải >= 1';
+        if (number == null || number < 1) return context.l10n.guestRequired;
         return null;
       },
       onChanged: (value) {
@@ -337,16 +338,16 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildRateField() {
     return TextFormField(
       initialValue: _ratePerNight > 0 ? _ratePerNight.toStringAsFixed(0) : '',
-      decoration: const InputDecoration(
-        labelText: 'Giá/đêm (VND) *',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.attach_money),
+      decoration: InputDecoration(
+        labelText: '${context.l10n.ratePerNight} (VND) *',
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.attach_money),
       ),
       keyboardType: TextInputType.number,
       validator: (value) {
-        if (value == null || value.isEmpty) return 'Vui lòng nhập giá';
+        if (value == null || value.isEmpty) return context.l10n.pleaseEnterRate;
         final number = double.tryParse(value);
-        if (number == null || number <= 0) return 'Giá phải > 0';
+        if (number == null || number <= 0) return context.l10n.rateMustBePositive;
         return null;
       },
       onChanged: (value) {
@@ -377,7 +378,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Tổng tiền',
+              context.l10n.totalAmount,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             Text(
@@ -396,10 +397,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildSourceSelection() {
     return DropdownButtonFormField<BookingSource>(
       value: _source,
-      decoration: const InputDecoration(
-        labelText: 'Nguồn đặt phòng *',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.source),
+      decoration: InputDecoration(
+        labelText: '${context.l10n.source} *',
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.source),
       ),
       items: BookingSource.values.map((source) {
         return DropdownMenuItem(
@@ -420,10 +421,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildPaymentMethodSelection() {
     return DropdownButtonFormField<PaymentMethod>(
       value: _paymentMethod,
-      decoration: const InputDecoration(
-        labelText: 'Phương thức thanh toán *',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.payment),
+      decoration: InputDecoration(
+        labelText: '${context.l10n.paymentMethod} *',
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.payment),
       ),
       items: PaymentMethod.values.map((method) {
         return DropdownMenuItem(
@@ -444,11 +445,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildDepositField() {
     return TextFormField(
       initialValue: _depositAmount > 0 ? _depositAmount.toStringAsFixed(0) : '',
-      decoration: const InputDecoration(
-        labelText: 'Tiền đặt cọc (VND)',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.account_balance_wallet),
-        helperText: 'Để trống nếu chưa đặt cọc',
+      decoration: InputDecoration(
+        labelText: '${context.l10n.deposit} (VND)',
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.account_balance_wallet),
       ),
       keyboardType: TextInputType.number,
       onChanged: (value) {
@@ -463,11 +463,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildSpecialRequestsField() {
     return TextFormField(
       initialValue: _specialRequests,
-      decoration: const InputDecoration(
-        labelText: 'Yêu cầu đặc biệt',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.note),
-        helperText: 'Yêu cầu từ khách hàng',
+      decoration: InputDecoration(
+        labelText: context.l10n.specialRequests,
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.note),
       ),
       maxLines: 3,
       onChanged: (value) {
@@ -479,11 +478,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildInternalNotesField() {
     return TextFormField(
       initialValue: _internalNotes,
-      decoration: const InputDecoration(
-        labelText: 'Ghi chú nội bộ',
-        border: OutlineInputBorder(),
-        prefixIcon: Icon(Icons.notes),
-        helperText: 'Ghi chú cho nhân viên',
+      decoration: InputDecoration(
+        labelText: context.l10n.internalNotes,
+        border: const OutlineInputBorder(),
+        prefixIcon: const Icon(Icons.notes),
       ),
       maxLines: 3,
       onChanged: (value) {
@@ -495,9 +493,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   String _getBookingSourceLabel(BookingSource source) {
     switch (source) {
       case BookingSource.walkIn:
-        return 'Walk-in (Khách vãng lai)';
+        return 'Walk-in';
       case BookingSource.phone:
-        return 'Điện thoại';
+        return 'Phone';
       case BookingSource.bookingCom:
         return 'Booking.com';
       case BookingSource.agoda:
@@ -507,30 +505,30 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       case BookingSource.traveloka:
         return 'Traveloka';
       case BookingSource.otherOta:
-        return 'OTA khác';
+        return 'OTA';
       case BookingSource.website:
         return 'Website';
       case BookingSource.other:
-        return 'Khác';
+        return 'Other';
     }
   }
 
   String _getPaymentMethodLabel(PaymentMethod method) {
     switch (method) {
       case PaymentMethod.cash:
-        return 'Tiền mặt';
+        return 'Cash';
       case PaymentMethod.bankTransfer:
-        return 'Chuyển khoản';
+        return 'Bank Transfer';
       case PaymentMethod.momo:
         return 'MoMo';
       case PaymentMethod.vnpay:
         return 'VNPay';
       case PaymentMethod.card:
-        return 'Thẻ tín dụng';
+        return 'Card';
       case PaymentMethod.otaCollect:
-        return 'OTA thu hộ';
+        return 'OTA';
       case PaymentMethod.other:
-        return 'Khác';
+        return 'Other';
     }
   }
 
@@ -541,14 +539,14 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
     if (_selectedRoomId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn phòng')),
+        SnackBar(content: Text(context.l10n.pleaseSelectRoom)),
       );
       return;
     }
 
     if (_selectedGuestId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn khách hàng')),
+        SnackBar(content: Text(context.l10n.pleaseSelectCreateGuest)),
       );
       return;
     }
@@ -604,8 +602,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           SnackBar(
             content: Text(
               widget.booking == null
-                  ? 'Đã tạo đặt phòng thành công'
-                  : 'Đã cập nhật đặt phòng',
+                  ? context.l10n.success
+                  : context.l10n.success,
             ),
           ),
         );
@@ -613,7 +611,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e')),
+          SnackBar(content: Text('${context.l10n.error}: $e')),
         );
       }
     } finally {

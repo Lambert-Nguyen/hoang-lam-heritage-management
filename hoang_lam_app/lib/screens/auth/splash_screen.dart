@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/config/app_constants.dart';
 import '../../models/auth.dart';
 import '../../providers/auth_provider.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Splash screen shown during app initialization
 /// Checks authentication status and redirects accordingly
@@ -140,7 +141,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
                     // Subtitle
                     Text(
-                      'Quản lý căn hộ',
+                      context.l10n.apartmentManagement,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white.withValues(alpha: 0.8),

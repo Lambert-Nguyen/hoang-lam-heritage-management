@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
@@ -34,12 +35,12 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Khách hàng'),
+        title: Text(context.l10n.guests),
         actions: [
           AppIconButton(
             icon: Icons.filter_list,
             onPressed: _showFilterSheet,
-            tooltip: 'Bộ lọc',
+            tooltip: context.l10n.filter,
           ),
         ],
       ),
@@ -52,7 +53,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
       ),
       floatingActionButton: AppFab(
         icon: Icons.person_add,
-        tooltip: 'Thêm khách hàng',
+        tooltip: context.l10n.addGuest,
         onPressed: () => _navigateToForm(context),
       ),
     );
@@ -64,7 +65,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: 'Tìm kiếm khách hàng...',
+          hintText: context.l10n.searchGuests,
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -105,25 +106,25 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
       child: Row(
         children: [
           _FilterChip(
-            label: 'Tất cả',
+            label: context.l10n.all,
             isSelected: _searchType == 'all',
             onTap: () => setState(() => _searchType = 'all'),
           ),
           AppSpacing.gapHorizontalSm,
           _FilterChip(
-            label: 'Tên',
+            label: context.l10n.name,
             isSelected: _searchType == 'name',
             onTap: () => setState(() => _searchType = 'name'),
           ),
           AppSpacing.gapHorizontalSm,
           _FilterChip(
-            label: 'SĐT',
+            label: context.l10n.phoneNumber,
             isSelected: _searchType == 'phone',
             onTap: () => setState(() => _searchType = 'phone'),
           ),
           AppSpacing.gapHorizontalSm,
           _FilterChip(
-            label: 'CCCD',
+            label: context.l10n.documentNumber,
             isSelected: _searchType == 'id_number',
             onTap: () => setState(() => _searchType = 'id_number'),
           ),
@@ -216,8 +217,8 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             AppSpacing.gapVerticalMd,
             Text(
               hasFilters
-                  ? 'Không tìm thấy khách hàng'
-                  : 'Chưa có khách hàng nào',
+                  ? context.l10n.guestNotFound
+                  : context.l10n.noGuestsYet,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -225,8 +226,8 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             AppSpacing.gapVerticalSm,
             Text(
               hasFilters
-                  ? 'Thử tìm kiếm với từ khóa khác'
-                  : 'Nhấn + để thêm khách hàng mới',
+                  ? context.l10n.tryDifferentSearch
+                  : context.l10n.pressToAddGuest,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textHint,
                   ),
@@ -259,7 +260,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             ),
             AppSpacing.gapVerticalLg,
             AppButton(
-              label: 'Thử lại',
+              label: context.l10n.retry,
               icon: Icons.refresh,
               onPressed: () {
                 ref.read(guestStateProvider.notifier).loadGuests();
@@ -296,7 +297,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.visibility),
-              title: const Text('Xem chi tiết'),
+              title: Text(context.l10n.viewBookingDetails),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToDetail(context, guest);
@@ -304,7 +305,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.edit),
-              title: const Text('Chỉnh sửa'),
+              title: Text(context.l10n.edit),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToForm(context, guest);
@@ -315,7 +316,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
                 guest.isVip ? Icons.star_border : Icons.star,
                 color: AppColors.warning,
               ),
-              title: Text(guest.isVip ? 'Bỏ VIP' : 'Đánh dấu VIP'),
+              title: Text(guest.isVip ? context.l10n.removeVip : context.l10n.markVip),
               onTap: () {
                 Navigator.pop(context);
                 _toggleVipStatus(guest);
@@ -323,7 +324,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.history),
-              title: const Text('Xem lịch sử'),
+              title: Text(context.l10n.history),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToDetail(context, guest);
@@ -343,8 +344,8 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
         SnackBar(
           content: Text(
             result.isVip
-                ? '${guest.fullName} đã được đánh dấu VIP'
-                : '${guest.fullName} đã bỏ đánh dấu VIP',
+                ? '${guest.fullName} ${context.l10n.markedAsVip}'
+                : '${guest.fullName} ${context.l10n.vipRemoved}',
           ),
           backgroundColor: result.isVip ? AppColors.warning : AppColors.success,
         ),
@@ -477,7 +478,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Bộ lọc',
+                    context.l10n.filter,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -489,7 +490,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                         _nationality = null;
                       });
                     },
-                    child: const Text('Đặt lại'),
+                    child: Text(context.l10n.reset),
                   ),
                 ],
               ),
@@ -500,14 +501,14 @@ class _FilterSheetState extends State<_FilterSheet> {
                 padding: AppSpacing.paddingScreen,
                 children: [
                   SwitchListTile(
-                    title: const Text('Chỉ hiện VIP'),
+                    title: Text('VIP ${context.l10n.filter.toLowerCase()}'),
                     secondary: const Icon(Icons.star, color: AppColors.warning),
                     value: _vipOnly,
                     onChanged: (value) => setState(() => _vipOnly = value),
                   ),
                   AppSpacing.gapVerticalMd,
                   Text(
-                    'Quốc tịch',
+                    context.l10n.nationality,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -517,7 +518,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                     spacing: AppSpacing.sm,
                     runSpacing: AppSpacing.sm,
                     children: [
-                      _buildNationalityChip(null, 'Tất cả'),
+                      _buildNationalityChip(null, context.l10n.all),
                       ...Nationalities.common.map(
                         (nat) => _buildNationalityChip(
                           nat,
@@ -540,7 +541,7 @@ class _FilterSheetState extends State<_FilterSheet> {
                 child: SizedBox(
                   width: double.infinity,
                   child: AppButton(
-                    label: 'Áp dụng',
+                    label: context.l10n.confirm,
                     onPressed: () => widget.onApply(_vipOnly, _nationality),
                   ),
                 ),

@@ -7,6 +7,7 @@ import '../../providers/booking_provider.dart';
 import '../../widgets/bookings/booking_card.dart';
 import 'booking_form_screen.dart';
 import 'booking_detail_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class BookingsScreen extends ConsumerStatefulWidget {
   const BookingsScreen({super.key});
@@ -37,7 +38,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Danh sách đặt phòng'),
+        title: Text(context.l10n.bookingList),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -106,7 +107,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Lỗi tải dữ liệu',
+                      context.l10n.dataLoadError,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
@@ -119,7 +120,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ElevatedButton.icon(
                       onPressed: () => ref.invalidate(filteredBookingsProvider(filter)),
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Thử lại'),
+                      label: Text(context.l10n.retry),
                     ),
                   ],
                 ),
@@ -131,7 +132,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _navigateToCreateBooking(),
         icon: const Icon(Icons.add),
-        label: const Text('Đặt phòng mới'),
+        label: Text(context.l10n.newBooking),
       ),
     );
   }
@@ -201,7 +202,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         child: Row(
           children: [
             FilterChip(
-              label: const Text('Tất cả'),
+              label: Text(context.l10n.all),
               selected: _selectedStatus == null,
               onSelected: (selected) {
                 setState(() {
@@ -242,7 +243,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: TextField(
         decoration: InputDecoration(
-          hintText: 'Tìm theo tên khách, số phòng...',
+          hintText: context.l10n.searchGuestRoom,
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
@@ -280,14 +281,14 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Không có đặt phòng',
+            context.l10n.noBookings,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Colors.grey[600],
                 ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Chưa có đặt phòng nào cho bộ lọc này',
+            context.l10n.noBookingsForFilter,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.grey[500],
                 ),
@@ -311,24 +312,24 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Bộ lọc nâng cao'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.advancedFilter),
         content: StatefulBuilder(
-          builder: (context, setDialogState) {
+          builder: (dialogContext, setDialogState) {
             return Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Trạng thái',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  context.l10n.status,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   children: [
                     ChoiceChip(
-                      label: const Text('Tất cả'),
+                      label: Text(context.l10n.all),
                       selected: _selectedStatus == null,
                       onSelected: (selected) {
                         setDialogState(() {
@@ -350,16 +351,16 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                const Text(
-                  'Nguồn đặt phòng',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                Text(
+                  context.l10n.bookingSource,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   children: [
                     ChoiceChip(
-                      label: const Text('Tất cả'),
+                      label: Text(context.l10n.all),
                       selected: _selectedSource == null,
                       onSelected: (selected) {
                         setDialogState(() {
@@ -391,13 +392,13 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                 _selectedStatus = null;
                 _selectedSource = null;
               });
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
-            child: const Text('Xóa bộ lọc'),
+            child: Text(context.l10n.clearFilter),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(context.l10n.close),
           ),
         ],
       ),

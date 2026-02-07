@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
 
@@ -41,17 +42,15 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
   bool get _isEditing => widget.room != null;
 
   // Common amenities for quick selection
-  final List<String> _commonAmenities = [
-    'Điều hòa',
+  List<String> _getCommonAmenities(BuildContext context) => [
+    context.l10n.airConditioning,
     'TV',
     'Wifi',
-    'Tủ lạnh',
-    'Két sắt',
-    'Bồn tắm',
-    'Vòi sen',
-    'Máy sấy tóc',
-    'Bàn làm việc',
-    'Ban công',
+    context.l10n.safe,
+    context.l10n.bathtub,
+    context.l10n.hairDryer,
+    context.l10n.workDesk,
+    context.l10n.balcony,
   ];
 
   @override
@@ -86,13 +85,13 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Sửa phòng' : 'Thêm phòng mới'),
+        title: Text(_isEditing ? context.l10n.editRoom : context.l10n.addNewRoom),
         actions: [
           if (_isEditing)
             IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: _confirmDelete,
-              tooltip: 'Xóa phòng',
+              tooltip: context.l10n.deleteRoom,
             ),
         ],
       ),
@@ -104,15 +103,15 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             // Room Number
             TextFormField(
               controller: _numberController,
-              decoration: const InputDecoration(
-                labelText: 'Số phòng *',
+              decoration: InputDecoration(
+                labelText: context.l10n.roomNumberLabel,
                 hintText: 'Ví dụ: 101, 102, 201...',
-                prefixIcon: Icon(Icons.meeting_room),
+                prefixIcon: const Icon(Icons.meeting_room),
               ),
               textCapitalization: TextCapitalization.characters,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Vui lòng nhập số phòng';
+                  return context.l10n.pleaseEnterRoomNumber;
                 }
                 return null;
               },
@@ -123,10 +122,10 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             // Room Name (optional)
             TextFormField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Tên phòng (tùy chọn)',
-                hintText: 'Ví dụ: Phòng Hướng Biển',
-                prefixIcon: Icon(Icons.label_outline),
+              decoration: InputDecoration(
+                labelText: context.l10n.roomNameOptional,
+                hintText: context.l10n.exampleRoomName,
+                prefixIcon: const Icon(Icons.label_outline),
               ),
             ),
             
@@ -136,9 +135,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             roomTypesAsync.when(
               data: (roomTypes) => DropdownButtonFormField<int>(
                 value: _selectedRoomTypeId,
-                decoration: const InputDecoration(
-                  labelText: 'Loại phòng *',
-                  prefixIcon: Icon(Icons.category),
+                decoration: InputDecoration(
+                  labelText: '${context.l10n.roomType} *',
+                  prefixIcon: const Icon(Icons.category),
                 ),
                 items: roomTypes.map((type) => DropdownMenuItem(
                   value: type.id,
@@ -147,13 +146,13 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                 onChanged: (value) => setState(() => _selectedRoomTypeId = value),
                 validator: (value) {
                   if (value == null) {
-                    return 'Vui lòng chọn loại phòng';
+                    return context.l10n.pleaseSelectRoomType;
                   }
                   return null;
                 },
               ),
               loading: () => const LinearProgressIndicator(),
-              error: (_, __) => const Text('Không thể tải loại phòng'),
+              error: (_, __) => Text(context.l10n.cannotLoadRoomTypes),
             ),
             
             AppSpacing.gapVerticalMd,
@@ -163,9 +162,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               children: [
                 Expanded(
                   child: InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: 'Tầng',
-                      prefixIcon: Icon(Icons.stairs),
+                    decoration: InputDecoration(
+                      labelText: context.l10n.floor,
+                      prefixIcon: const Icon(Icons.stairs),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -197,9 +196,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             
             // Status (only for editing)
             if (_isEditing) ...[
-              const Text(
-                'Trạng thái',
-                style: TextStyle(
+              Text(
+                context.l10n.status,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -224,9 +223,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             ],
             
             // Amenities
-            const Text(
-              'Tiện nghi',
-              style: TextStyle(
+            Text(
+              context.l10n.amenities,
+              style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
@@ -235,7 +234,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _commonAmenities.map((amenity) => FilterChip(
+              children: _getCommonAmenities(context).map((amenity) => FilterChip(
                 label: Text(amenity),
                 selected: _amenities.contains(amenity),
                 onSelected: (selected) {
@@ -255,10 +254,10 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             // Notes
             TextFormField(
               controller: _notesController,
-              decoration: const InputDecoration(
-                labelText: 'Ghi chú',
-                hintText: 'Ghi chú về phòng...',
-                prefixIcon: Icon(Icons.notes),
+              decoration: InputDecoration(
+                labelText: context.l10n.roomNotes,
+                hintText: context.l10n.roomNotes,
+                prefixIcon: const Icon(Icons.notes),
                 alignLabelWithHint: true,
               ),
               maxLines: 3,
@@ -268,11 +267,11 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             
             // Active Status
             SwitchListTile(
-              title: const Text('Phòng đang hoạt động'),
+              title: Text(context.l10n.roomIsActive),
               subtitle: Text(
                 _isActive 
-                  ? 'Phòng có thể được đặt' 
-                  : 'Phòng bị vô hiệu hóa',
+                  ? context.l10n.roomCanBeBooked 
+                  : context.l10n.roomDisabled,
               ),
               value: _isActive,
               onChanged: (value) => setState(() => _isActive = value),
@@ -294,7 +293,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
                 : const Icon(Icons.save),
-              label: Text(_isEditing ? 'Cập nhật' : 'Thêm phòng'),
+              label: Text(_isEditing ? context.l10n.update : context.l10n.addRoom),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(56),
               ),
@@ -339,8 +338,8 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(_isEditing 
-              ? 'Đã cập nhật phòng ${result.number}' 
-              : 'Đã thêm phòng ${result.number}'),
+              ? '${context.l10n.roomUpdated} ${result.number}' 
+              : '${context.l10n.roomAdded} ${result.number}'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -350,7 +349,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${context.l10n.error}: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -365,21 +364,21 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
   void _confirmDelete() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xóa phòng?'),
-        content: Text('Bạn có chắc muốn xóa phòng ${widget.room?.number}?'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text('${context.l10n.deleteRoom}?'),
+        content: Text('${context.l10n.confirmDeleteRoom} ${widget.room?.number}?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               await _deleteRoom();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Xóa'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),
@@ -397,7 +396,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đã xóa phòng ${widget.room!.number}'),
+            content: Text('${context.l10n.roomDeleted} ${widget.room!.number}'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -407,7 +406,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${context.l10n.error}: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );

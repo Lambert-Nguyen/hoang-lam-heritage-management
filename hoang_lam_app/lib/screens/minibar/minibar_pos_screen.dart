@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 import '../../models/booking.dart';
 import '../../providers/minibar_provider.dart';
@@ -34,6 +35,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final cartState = ref.watch(minibarCartProvider);
     final categoriesAsync = ref.watch(minibarCategoriesProvider);
     final itemsAsync = ref.watch(activeItemsProvider);
@@ -45,7 +47,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           IconButton(
             icon: const Icon(Icons.inventory_2),
             onPressed: () => Navigator.pushNamed(context, '/minibar/inventory'),
-            tooltip: 'Quản lý kho',
+            tooltip: l10n.inventoryManagement,
           ),
         ],
       ),
@@ -132,7 +134,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
                     .toList();
                 return DropdownButtonFormField<Booking>(
                   value: _selectedBooking,
-                  hint: const Text('Chọn đặt phòng'),
+                  hint: Text(AppLocalizations.of(context)!.selectBooking),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     contentPadding: EdgeInsets.symmetric(
@@ -158,7 +160,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
                 );
               },
               loading: () => const LinearProgressIndicator(),
-              error: (_, __) => const Text('Lỗi tải danh sách đặt phòng'),
+              error: (_, __) => Text(AppLocalizations.of(context)!.bookingListLoadError),
             ),
           ),
         ],
@@ -176,7 +178,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
       child: Row(
         children: [
           FilterChip(
-            label: const Text('Tất cả'),
+            label: Text(AppLocalizations.of(context)!.all),
             selected: _selectedCategory == null,
             onSelected: (_) => setState(() => _selectedCategory = null),
           ),

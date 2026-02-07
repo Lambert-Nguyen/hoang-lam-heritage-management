@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/utils/currency_formatter.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/report.dart';
 import '../../providers/report_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -18,17 +19,18 @@ class ReportScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final state = ref.watch(reportScreenStateProvider);
     final notifier = ref.read(reportScreenStateProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Báo cáo & Phân tích'),
+        title: Text(l10n.reports),
         actions: [
           IconButton(
             icon: const Icon(Icons.date_range),
             onPressed: () => _showDateRangePicker(context, state, notifier),
-            tooltip: 'Chọn khoảng thời gian',
+            tooltip: l10n.selectDate,
           ),
           PopupMenuButton<ExportFormat>(
             icon: const Icon(Icons.download),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 import '../../providers/minibar_provider.dart';
 import '../../widgets/common/loading_indicator.dart';
@@ -55,17 +56,18 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final categoriesAsync = ref.watch(minibarCategoriesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm'),
+        title: Text(_isEditing ? l10n.editProduct : l10n.addProduct),
         actions: [
           if (_isEditing)
             IconButton(
               icon: const Icon(Icons.delete),
               onPressed: _confirmDelete,
-              tooltip: 'Xóa sản phẩm',
+              tooltip: l10n.deleteProduct,
             ),
         ],
       ),
@@ -79,14 +81,14 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
                   // Name field
                   TextFormField(
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Tên sản phẩm *',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.local_bar),
+                    decoration: InputDecoration(
+                      labelText: '${l10n.name} *',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.local_bar),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Vui lòng nhập tên sản phẩm';
+                        return l10n.pleaseEnterProductName;
                       }
                       return null;
                     },
@@ -120,29 +122,29 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,
-                          decoration: const InputDecoration(
-                            labelText: 'Danh mục',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.category),
-                            hintText: 'Nhập hoặc chọn danh mục',
+                          decoration: InputDecoration(
+                            labelText: l10n.category,
+                            border: const OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.category),
+                            hintText: l10n.enterOrSelectCategory,
                           ),
                         );
                       },
                     ),
                     loading: () => TextFormField(
                       controller: _categoryController,
-                      decoration: const InputDecoration(
-                        labelText: 'Danh mục',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.category),
+                      decoration: InputDecoration(
+                        labelText: l10n.category,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.category),
                       ),
                     ),
                     error: (_, __) => TextFormField(
                       controller: _categoryController,
-                      decoration: const InputDecoration(
-                        labelText: 'Danh mục',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.category),
+                      decoration: InputDecoration(
+                        labelText: l10n.category,
+                        border: const OutlineInputBorder(),
+                        prefixIcon: const Icon(Icons.category),
                       ),
                     ),
                   ),

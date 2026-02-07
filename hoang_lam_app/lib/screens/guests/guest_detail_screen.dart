@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -55,12 +56,12 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                 AppIconButton(
                   icon: Icons.edit,
                   onPressed: _navigateToEdit,
-                  tooltip: 'Chỉnh sửa',
+                  tooltip: context.l10n.edit,
                 ),
                 AppIconButton(
                   icon: Icons.more_vert,
                   onPressed: () => _showMoreActions(context),
-                  tooltip: 'Thêm',
+                  tooltip: context.l10n.add,
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
@@ -68,9 +69,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               ),
               bottom: TabBar(
                 controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Thông tin'),
-                  Tab(text: 'Lịch sử'),
+                tabs: [
+                  Tab(text: context.l10n.info),
+                  Tab(text: context.l10n.history),
                 ],
               ),
             ),
@@ -223,7 +224,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thông tin liên hệ',
+            context.l10n.contactInfo,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -231,7 +232,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
             Icons.phone,
-            'Số điện thoại',
+            context.l10n.phoneNumber,
             _guest.formattedPhone,
             onCopy: () => _copyToClipboard(_guest.phone),
           ),
@@ -245,7 +246,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           if (_guest.address.isNotEmpty)
             _buildInfoRow(
               Icons.location_on,
-              'Địa chỉ',
+              context.l10n.address,
               [_guest.address, _guest.city, _guest.country]
                   .where((s) => s.isNotEmpty)
                   .join(', '),
@@ -261,7 +262,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Giấy tờ tùy thân',
+            context.l10n.identityDocument,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -269,26 +270,26 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
             _guest.idType.icon,
-            'Loại giấy tờ',
+            context.l10n.documentType,
             _guest.idType.fullDisplayName,
           ),
           if (_guest.idNumber != null && _guest.idNumber!.isNotEmpty)
             _buildInfoRow(
               Icons.numbers,
-              'Số giấy tờ',
+              context.l10n.documentNumber,
               _guest.idNumber!,
               onCopy: () => _copyToClipboard(_guest.idNumber!),
             ),
           if (_guest.idIssuePlace.isNotEmpty)
             _buildInfoRow(
               Icons.place,
-              'Nơi cấp',
+              context.l10n.issuedBy,
               _guest.idIssuePlace,
             ),
           if (_guest.idIssueDate != null)
             _buildInfoRow(
               Icons.calendar_today,
-              'Ngày cấp',
+              context.l10n.issueDate,
               _formatDate(_guest.idIssueDate!),
             ),
         ],
@@ -302,7 +303,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Thông tin cá nhân',
+            context.l10n.personalInfo,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -310,26 +311,26 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
             Icons.flag,
-            'Quốc tịch',
+            context.l10n.nationality,
             _guest.nationalityDisplay,
           ),
           if (_guest.gender != null)
             _buildInfoRow(
               _guest.gender!.icon,
-              'Giới tính',
+              context.l10n.gender,
               _guest.gender!.displayName,
             ),
           if (_guest.dateOfBirth != null) ...[
             _buildInfoRow(
               Icons.cake,
-              'Ngày sinh',
+              context.l10n.issueDate,
               _formatDate(_guest.dateOfBirth!),
             ),
             if (_guest.age != null)
               _buildInfoRow(
                 Icons.person,
-                'Tuổi',
-                '${_guest.age} tuổi',
+                context.l10n.age,
+                '${_guest.age} ${context.l10n.yearsOld}',
               ),
           ],
         ],
@@ -347,7 +348,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               const Icon(Icons.note, size: 20, color: AppColors.textSecondary),
               AppSpacing.gapHorizontalSm,
               Text(
-                'Ghi chú',
+                context.l10n.internalNotes,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -369,7 +370,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Thao tác nhanh',
+          context.l10n.edit,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -379,7 +380,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           children: [
             Expanded(
               child: AppButton(
-                label: 'Gọi điện',
+                label: context.l10n.call,
                 icon: Icons.phone,
                 isOutlined: true,
                 onPressed: () => _launchPhone(_guest.phone),
@@ -388,7 +389,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             AppSpacing.gapHorizontalMd,
             Expanded(
               child: AppButton(
-                label: _guest.isVip ? 'Bỏ VIP' : 'Đánh dấu VIP',
+                label: _guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
                 icon: _guest.isVip ? Icons.star_border : Icons.star,
                 isOutlined: true,
                 backgroundColor: AppColors.warning,
@@ -463,9 +464,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Đã sao chép'),
-        duration: Duration(seconds: 1),
+      SnackBar(
+        content: Text(context.l10n.copied),
+        duration: const Duration(seconds: 1),
       ),
     );
   }
@@ -473,7 +474,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   void _launchPhone(String phone) {
     // TODO: Implement phone launch using url_launcher
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Gọi điện: $phone')),
+      SnackBar(content: Text('${context.l10n.call}: $phone')),
     );
   }
 
@@ -501,8 +502,8 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         SnackBar(
           content: Text(
             result.isVip
-                ? '${_guest.fullName} đã được đánh dấu VIP'
-                : '${_guest.fullName} đã bỏ đánh dấu VIP',
+                ? '${_guest.fullName} ${context.l10n.markedAsVip}'
+                : '${_guest.fullName} ${context.l10n.vipRemoved}',
           ),
           backgroundColor: result.isVip ? AppColors.warning : AppColors.success,
         ),
@@ -519,7 +520,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           children: [
             ListTile(
               leading: const Icon(Icons.edit),
-              title: const Text('Chỉnh sửa thông tin'),
+              title: Text(context.l10n.editInfo),
               onTap: () {
                 Navigator.pop(context);
                 _navigateToEdit();
@@ -530,7 +531,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                 _guest.isVip ? Icons.star_border : Icons.star,
                 color: AppColors.warning,
               ),
-              title: Text(_guest.isVip ? 'Bỏ VIP' : 'Đánh dấu VIP'),
+              title: Text(_guest.isVip ? context.l10n.removeVip : context.l10n.markVip),
               onTap: () {
                 Navigator.pop(context);
                 _toggleVipStatus();
@@ -538,7 +539,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             ),
             ListTile(
               leading: const Icon(Icons.phone),
-              title: const Text('Gọi điện'),
+              title: Text(context.l10n.call),
               onTap: () {
                 Navigator.pop(context);
                 _launchPhone(_guest.phone);
@@ -547,9 +548,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             if (_guest.bookingCount == 0)
               ListTile(
                 leading: const Icon(Icons.delete, color: AppColors.error),
-                title: const Text(
-                  'Xóa khách hàng',
-                  style: TextStyle(color: AppColors.error),
+                title: Text(
+                  context.l10n.deleteGuest,
+                  style: const TextStyle(color: AppColors.error),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -565,35 +566,35 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   void _showDeleteConfirmation() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.confirmDelete),
         content: Text(
-          'Bạn có chắc chắn muốn xóa khách hàng "${_guest.fullName}"?',
+          '${context.l10n.confirmDeleteGuest} "${_guest.fullName}"?',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               final success = await ref
                   .read(guestStateProvider.notifier)
                   .deleteGuest(_guest.id);
               if (success && mounted) {
                 Navigator.of(this.context).pop();
                 ScaffoldMessenger.of(this.context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Đã xóa khách hàng'),
+                  SnackBar(
+                    content: Text(context.l10n.guestDeleted),
                     backgroundColor: AppColors.success,
                   ),
                 );
               }
             },
-            child: const Text(
-              'Xóa',
-              style: TextStyle(color: AppColors.error),
+            child: Text(
+              context.l10n.delete,
+              style: const TextStyle(color: AppColors.error),
             ),
           ),
         ],

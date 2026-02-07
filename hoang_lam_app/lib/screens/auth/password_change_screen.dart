@@ -8,6 +8,7 @@ import '../../core/config/app_constants.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_input.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Screen for changing user password
 class PasswordChangeScreen extends ConsumerStatefulWidget {
@@ -58,7 +59,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
 
       if (success) {
         setState(() {
-          _successMessage = 'Mật khẩu đã được thay đổi thành công';
+          _successMessage = context.l10n.passwordChangeSuccess;
         });
 
         // Clear form
@@ -73,12 +74,12 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
         }
       } else {
         setState(() {
-          _errorMessage = 'Không thể thay đổi mật khẩu. Vui lòng kiểm tra lại.';
+          _errorMessage = context.l10n.passwordChangeFailed;
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Đã xảy ra lỗi. Vui lòng thử lại.';
+        _errorMessage = context.l10n.errorTryAgain;
       });
     } finally {
       if (mounted) {
@@ -91,7 +92,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đổi mật khẩu'),
+        title: Text(context.l10n.changePassword),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -124,7 +125,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Mật khẩu mới phải có ít nhất ${AppConstants.minPasswordLength} ký tự',
+                          context.l10n.newPasswordMinLength,
                           style: TextStyle(
                             color: AppColors.info,
                             fontSize: 14,
@@ -206,7 +207,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                 // Old password field
                 AppTextField(
                   controller: _oldPasswordController,
-                  label: 'Mật khẩu hiện tại',
+                  label: context.l10n.currentPassword,
                   hint: '••••••••',
                   prefixIcon: Icons.lock_outline,
                   obscureText: _obscureOldPassword,
@@ -224,7 +225,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu hiện tại';
+                      return context.l10n.pleaseEnterCurrentPassword;
                     }
                     return null;
                   },
@@ -235,7 +236,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                 // New password field
                 AppTextField(
                   controller: _newPasswordController,
-                  label: 'Mật khẩu mới',
+                  label: context.l10n.newPassword,
                   hint: '••••••••',
                   prefixIcon: Icons.lock,
                   obscureText: _obscureNewPassword,
@@ -253,13 +254,13 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu mới';
+                      return context.l10n.pleaseEnterNewPassword;
                     }
                     if (value.length < AppConstants.minPasswordLength) {
-                      return 'Mật khẩu phải có ít nhất ${AppConstants.minPasswordLength} ký tự';
+                      return context.l10n.passwordMinLength;
                     }
                     if (value == _oldPasswordController.text) {
-                      return 'Mật khẩu mới phải khác mật khẩu hiện tại';
+                      return context.l10n.newPasswordMustBeDifferent;
                     }
                     return null;
                   },
@@ -270,7 +271,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                 // Confirm password field
                 AppTextField(
                   controller: _confirmPasswordController,
-                  label: 'Xác nhận mật khẩu mới',
+                  label: context.l10n.confirmNewPassword,
                   hint: '••••••••',
                   prefixIcon: Icons.lock_clock,
                   obscureText: _obscureConfirmPassword,
@@ -289,10 +290,10 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng xác nhận mật khẩu mới';
+                      return context.l10n.pleaseConfirmNewPassword;
                     }
                     if (value != _newPasswordController.text) {
-                      return 'Mật khẩu xác nhận không khớp';
+                      return context.l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -303,7 +304,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
 
                 // Submit button
                 AppButton(
-                  label: 'Đổi mật khẩu',
+                  label: context.l10n.changePassword,
                   onPressed: _isLoading ? null : _handleChangePassword,
                   isLoading: _isLoading,
                 ),
@@ -312,7 +313,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
 
                 // Cancel button
                 AppTextButton(
-                  label: 'Hủy',
+                  label: context.l10n.cancel,
                   onPressed: _isLoading ? null : () => context.pop(),
                 ),
               ],

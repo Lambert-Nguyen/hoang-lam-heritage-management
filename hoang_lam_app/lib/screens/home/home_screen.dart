@@ -37,14 +37,14 @@ class HomeScreen extends ConsumerWidget {
             onPressed: () {
               // TODO: Show notifications
             },
-            tooltip: 'Thông báo',
+            tooltip: context.l10n.notifications,
           ),
           AppIconButton(
             icon: Icons.person_outline,
             onPressed: () {
               context.push(AppRoutes.settings);
             },
-            tooltip: 'Tài khoản',
+            tooltip: context.l10n.account,
           ),
         ],
       ),
@@ -86,7 +86,7 @@ class HomeScreen extends ConsumerWidget {
                   AppSpacing.gapVerticalLg,
 
                   // Room status section
-                  _buildSectionHeader(context, 'Trạng thái phòng', Icons.hotel),
+                  _buildSectionHeader(context, l10n.roomStatus, Icons.hotel),
                   AppSpacing.gapVerticalMd,
                   _buildRoomGrid(context, ref),
                   AppSpacing.gapVerticalSm,
@@ -94,7 +94,7 @@ class HomeScreen extends ConsumerWidget {
                   AppSpacing.gapVerticalLg,
 
                   // Upcoming checkouts
-                  _buildSectionHeader(context, 'Sắp check-out', Icons.logout),
+                  _buildSectionHeader(context, l10n.upcomingCheckout, Icons.logout),
                   AppSpacing.gapVerticalMd,
                   todayBookingsAsync.when(
                     data: (todayBookings) => _buildUpcomingList(
@@ -105,12 +105,12 @@ class HomeScreen extends ConsumerWidget {
                     loading: () => const Center(
                       child: CircularProgressIndicator(),
                     ),
-                    error: (error, _) => Text('Lỗi: $error'),
+                    error: (error, _) => Text('${l10n.error}: $error'),
                   ),
                   AppSpacing.gapVerticalLg,
 
                   // Upcoming checkins
-                  _buildSectionHeader(context, 'Sắp check-in', Icons.login),
+                  _buildSectionHeader(context, l10n.upcomingCheckin, Icons.login),
                   AppSpacing.gapVerticalMd,
                   todayBookingsAsync.when(
                     data: (todayBookings) => _buildUpcomingList(
@@ -121,7 +121,7 @@ class HomeScreen extends ConsumerWidget {
                     loading: () => const Center(
                       child: CircularProgressIndicator(),
                     ),
-                    error: (error, _) => Text('Lỗi: $error'),
+                    error: (error, _) => Text('${l10n.error}: $error'),
                   ),
 
                   // Bottom padding for FAB
@@ -147,7 +147,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   AppSpacing.gapVerticalMd,
                   Text(
-                    'Không thể tải dữ liệu dashboard',
+                    context.l10n.dashboardLoadError,
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -166,7 +166,7 @@ class HomeScreen extends ConsumerWidget {
                     onPressed: () {
                       ref.invalidate(dashboardSummaryProvider);
                     },
-                    child: const Text('Thử lại'),
+                    child: Text(context.l10n.retry),
                   ),
                 ],
               ),
@@ -179,7 +179,7 @@ class HomeScreen extends ConsumerWidget {
           context.push(AppRoutes.newBooking);
         },
         icon: const Icon(Icons.add),
-        label: const Text('Đặt phòng mới'),
+        label: Text(context.l10n.newBooking),
       ),
     );
   }
@@ -203,7 +203,7 @@ class HomeScreen extends ConsumerWidget {
       children: [
         Expanded(
           child: StatCard(
-            label: 'Phòng trống',
+            label: l10n.availableRooms,
             value: '${dashboard.roomStatus.available}/${dashboard.roomStatus.total}',
             icon: Icons.hotel,
             color: AppColors.available,
@@ -212,7 +212,7 @@ class HomeScreen extends ConsumerWidget {
         AppSpacing.gapHorizontalMd,
         Expanded(
           child: StatCard(
-            label: 'Check-out hôm nay',
+            label: l10n.checkoutToday,
             value: dashboard.today.pendingDepartures.toString(),
             icon: Icons.logout,
             color: AppColors.occupied,
@@ -244,11 +244,11 @@ class HomeScreen extends ConsumerWidget {
     return roomsAsync.when(
       data: (rooms) {
         if (rooms.isEmpty) {
-          return const Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
+          return Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Text(
-              'Chưa có phòng nào',
-              style: TextStyle(color: AppColors.textHint),
+              context.l10n.noRooms,
+              style: const TextStyle(color: AppColors.textHint),
             ),
           );
         }
@@ -283,7 +283,7 @@ class HomeScreen extends ConsumerWidget {
       error: (error, stack) => Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Text(
-          'Lỗi tải dữ liệu phòng: $error',
+          '${context.l10n.roomLoadError}: $error',
           style: const TextStyle(color: AppColors.error),
         ),
       ),
@@ -291,16 +291,17 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildRoomLegend(BuildContext context) {
+    final l10n = context.l10n;
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: AppSpacing.md,
       runSpacing: AppSpacing.sm,
       children: [
-        _buildLegendItem('Trống', AppColors.available),
-        _buildLegendItem('Có khách', AppColors.occupied),
-        _buildLegendItem('Dọn dẹp', AppColors.cleaning),
-        _buildLegendItem('Bảo trì', AppColors.maintenance),
-        _buildLegendItem('Khóa', AppColors.blocked),
+        _buildLegendItem(l10n.available, AppColors.available),
+        _buildLegendItem(l10n.occupied, AppColors.occupied),
+        _buildLegendItem(l10n.cleaning, AppColors.cleaning),
+        _buildLegendItem(l10n.maintenance, AppColors.maintenance),
+        _buildLegendItem(l10n.blocked, AppColors.blocked),
       ],
     );
   }
@@ -334,11 +335,12 @@ class HomeScreen extends ConsumerWidget {
     List<Booking> bookings, {
     required bool isCheckout,
   }) {
+    final l10n = context.l10n;
     if (bookings.isEmpty) {
       return Padding(
         padding: AppSpacing.paddingVertical,
         child: Text(
-          isCheckout ? 'Không có check-out hôm nay' : 'Không có check-in hôm nay',
+          isCheckout ? l10n.noCheckoutToday : l10n.noCheckinToday,
           style: const TextStyle(
             color: AppColors.textHint,
             fontStyle: FontStyle.italic,
@@ -358,7 +360,7 @@ class HomeScreen extends ConsumerWidget {
                 : '14:00');
 
         final roomNumber = booking.roomNumber ?? booking.room.toString();
-        final guestName = booking.guestDetails?.fullName ?? 'Khách';
+        final guestName = booking.guestDetails?.fullName ?? l10n.guest;
 
         return AppCard(
           margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -398,7 +400,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      '${isCheckout ? "Check-out" : "Check-in"}: $timeStr',
+                      '${isCheckout ? l10n.checkOut : l10n.checkIn}: $timeStr',
                       style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 14,

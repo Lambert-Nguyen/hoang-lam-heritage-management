@@ -41,12 +41,12 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterDialog,
-            tooltip: 'Lọc',
+            tooltip: l10n.filter,
           ),
           IconButton(
             icon: const Icon(Icons.bar_chart),
             onPressed: _navigateToReports,
-            tooltip: 'Báo cáo',
+            tooltip: l10n.reports,
           ),
         ],
       ),
@@ -78,7 +78,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
             onPressed: () => _navigateToForm(EntryType.expense),
             backgroundColor: AppColors.expense,
             icon: const Icon(Icons.remove, color: Colors.white),
-            label: const Text('Khoản chi', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            label: Text(l10n.expense, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
           ),
           AppSpacing.gapVerticalMd,
           FloatingActionButton.extended(
@@ -86,7 +86,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
             onPressed: () => _navigateToForm(EntryType.income),
             backgroundColor: AppColors.income,
             icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text('Khoản thu', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            label: Text(l10n.income, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -163,7 +163,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         error: (error, _) => Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Text(
-            'Lỗi tải dữ liệu: $error',
+            '${l10n.dataLoadError}: $error',
             style: const TextStyle(color: AppColors.onPrimary),
           ),
         ),
@@ -232,7 +232,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         ),
         AppSpacing.gapVerticalXs,
         Text(
-          '${profitMargin.toStringAsFixed(0)}% lợi nhuận',
+          '${profitMargin.toStringAsFixed(0)}% ${l10n.profit}',
           style: TextStyle(
             color: AppColors.onPrimary.withValues(alpha: 0.8),
             fontSize: 12,
@@ -243,7 +243,8 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   }
 
   String _getMonthYearText(int month, int year) {
-    return 'Tháng $month, $year';
+    final l10n = context.l10n;
+    return '${l10n.month} $month, $year';
   }
 
   Widget _buildSummaryItem({
@@ -279,7 +280,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       color: AppColors.surface,
       child: Row(
         children: [
-          _buildFilterTab(null, 'Tất cả'),
+          _buildFilterTab(null, l10n.all),
           _buildFilterTab(EntryType.income, l10n.income),
           _buildFilterTab(EntryType.expense, l10n.expense),
         ],
@@ -337,9 +338,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                   color: AppColors.textSecondary.withValues(alpha: 0.5),
                 ),
                 AppSpacing.gapVerticalMd,
-                const Text(
-                  'Chưa có giao dịch',
-                  style: TextStyle(
+                Text(
+                  context.l10n.noData,
+                  style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 16,
                   ),
@@ -380,7 +381,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       },
       loading: () => const LoadingIndicator(),
       error: (error, stack) => ErrorDisplay(
-        message: 'Lỗi tải dữ liệu giao dịch: $error',
+        message: '${context.l10n.dataLoadError}: $error',
         onRetry: _refreshData,
       ),
     );
@@ -399,9 +400,10 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final dateOnly = DateTime(date.year, date.month, date.day);
+    final l10n = context.l10n;
 
-    if (dateOnly == today) return 'Hôm nay';
-    if (dateOnly == today.subtract(const Duration(days: 1))) return 'Hôm qua';
+    if (dateOnly == today) return l10n.today;
+    if (dateOnly == today.subtract(const Duration(days: 1))) return l10n.yesterday;
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
@@ -433,14 +435,14 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  entry.categoryName ?? 'Không phân loại',
+                  entry.categoryName ?? context.l10n.noData,
                   style: const TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 16,
                   ),
                 ),
                 Text(
-                  '${entry.description.isNotEmpty ? entry.description : "Không có mô tả"} • ${entry.paymentMethod.displayName}',
+                  '${entry.description.isNotEmpty ? entry.description : context.l10n.noData} • ${entry.paymentMethod.displayName}',
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
@@ -502,20 +504,21 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   }
 
   Future<void> _deleteEntry(FinancialEntry entry) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: Text('Bạn có chắc muốn xóa giao dịch "${entry.categoryName ?? "này"}"?'),
+        title: Text(l10n.confirmDelete),
+        content: Text('${l10n.areYouSure} "${entry.categoryName ?? ""}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Xóa'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -526,14 +529,14 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         await ref.read(financeNotifierProvider.notifier).deleteEntry(entry.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã xóa giao dịch')),
+            SnackBar(content: Text(context.l10n.success)),
           );
           _refreshData();
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi xóa giao dịch: $e')),
+            SnackBar(content: Text('${context.l10n.error}: $e')),
           );
         }
       }
@@ -553,23 +556,24 @@ class _FilterBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       padding: AppSpacing.paddingAll,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Lọc theo loại',
-            style: TextStyle(
+          Text(
+            l10n.filter,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           AppSpacing.gapVerticalMd,
-          _buildOption(context, null, 'Tất cả', Icons.list),
-          _buildOption(context, EntryType.income, 'Thu', Icons.arrow_downward),
-          _buildOption(context, EntryType.expense, 'Chi', Icons.arrow_upward),
+          _buildOption(context, null, l10n.all, Icons.list),
+          _buildOption(context, EntryType.income, l10n.income, Icons.arrow_downward),
+          _buildOption(context, EntryType.expense, l10n.expense, Icons.arrow_upward),
           AppSpacing.gapVerticalMd,
         ],
       ),
@@ -643,14 +647,14 @@ class _EntryDetailSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      entry.categoryName ?? 'Không phân loại',
+                      entry.categoryName ?? context.l10n.noData,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
                     ),
                     Text(
-                      isIncome ? 'Thu' : 'Chi',
+                      isIncome ? context.l10n.income : context.l10n.expense,
                       style: TextStyle(
                         color: isIncome ? AppColors.income : AppColors.expense,
                         fontSize: 14,
@@ -689,7 +693,9 @@ class _EntryDetailSheet extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit),
-                  label: const Text('Sửa'),
+                  label: Builder(
+                    builder: (context) => Text(context.l10n.edit),
+                  ),
                 ),
               ),
               AppSpacing.gapHorizontalMd,
@@ -697,7 +703,9 @@ class _EntryDetailSheet extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onDelete,
                   icon: const Icon(Icons.delete, color: AppColors.error),
-                  label: const Text('Xóa', style: TextStyle(color: AppColors.error)),
+                  label: Builder(
+                    builder: (context) => Text(context.l10n.delete, style: const TextStyle(color: AppColors.error)),
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.error),
                   ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
 import '../../widgets/common/empty_state.dart';
@@ -39,22 +40,23 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Công việc Housekeeping'),
+        title: Text(l10n.housekeepingTasks),
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: _showFilterSheet,
-            tooltip: 'Lọc',
+            tooltip: l10n.filter,
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Hôm nay'),
-            Tab(text: 'Tất cả'),
-            Tab(text: 'Của tôi'),
+          tabs: [
+            Tab(text: l10n.today),
+            Tab(text: l10n.all),
+            Tab(text: l10n.myTasks),
           ],
         ),
       ),
@@ -68,22 +70,23 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _createTask,
-        tooltip: 'Tạo công việc mới',
+        tooltip: l10n.createNewTask,
         child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildTodayTab() {
+    final l10n = AppLocalizations.of(context)!;
     final todayTasksAsync = ref.watch(todayTasksProvider);
 
     return todayTasksAsync.when(
       data: (tasks) {
         if (tasks.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.check_circle_outline,
-            title: 'Không có công việc',
-            message: 'Không có công việc nào được lên lịch cho hôm nay',
+            title: l10n.noTasks,
+            message: l10n.noTasksScheduledToday,
           );
         }
         return _buildTaskList(tasks);
@@ -94,15 +97,16 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   }
 
   Widget _buildAllTasksTab() {
+    final l10n = AppLocalizations.of(context)!;
     final tasksAsync = ref.watch(filteredTasksProvider(_filter));
 
     return tasksAsync.when(
       data: (tasks) {
         if (tasks.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.cleaning_services,
-            title: 'Không có công việc',
-            message: 'Chưa có công việc nào được tạo',
+            title: l10n.noTasks,
+            message: l10n.noTasksCreated,
           );
         }
         return _buildTaskList(tasks);
@@ -113,15 +117,16 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   }
 
   Widget _buildMyTasksTab() {
+    final l10n = AppLocalizations.of(context)!;
     final myTasksAsync = ref.watch(myTasksProvider);
 
     return myTasksAsync.when(
       data: (tasks) {
         if (tasks.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.person_outline,
-            title: 'Không có công việc',
-            message: 'Bạn chưa được phân công công việc nào',
+            title: l10n.noTasks,
+            message: l10n.noTasksAssigned,
           );
         }
         return _buildTaskList(tasks);
@@ -132,6 +137,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   }
 
   Widget _buildTaskList(List<HousekeepingTask> tasks) {
+    final l10n = AppLocalizations.of(context)!;
     // Group tasks by status
     final pendingTasks =
         tasks.where((t) => t.status == HousekeepingTaskStatus.pending).toList();
@@ -149,7 +155,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         padding: AppSpacing.paddingScreen,
         children: [
           if (pendingTasks.isNotEmpty) ...[
-            _buildSectionHeader('Chờ xử lý', pendingTasks.length),
+            _buildSectionHeader(l10n.pending, pendingTasks.length),
             ...pendingTasks.map((task) => TaskCard(
                   task: task,
                   onTap: () => _viewTask(task),
@@ -157,7 +163,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
           ],
           if (inProgressTasks.isNotEmpty) ...[
             if (pendingTasks.isNotEmpty) AppSpacing.gapVerticalLg,
-            _buildSectionHeader('Đang làm', inProgressTasks.length),
+            _buildSectionHeader(l10n.inProgress, inProgressTasks.length),
             ...inProgressTasks.map((task) => TaskCard(
                   task: task,
                   onTap: () => _viewTask(task),
@@ -166,7 +172,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
           if (completedTasks.isNotEmpty) ...[
             if (pendingTasks.isNotEmpty || inProgressTasks.isNotEmpty)
               AppSpacing.gapVerticalLg,
-            _buildSectionHeader('Hoàn thành', completedTasks.length),
+            _buildSectionHeader(l10n.completed, completedTasks.length),
             ...completedTasks.map((task) => TaskCard(
                   task: task,
                   onTap: () => _viewTask(task),
@@ -212,6 +218,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   }
 
   Widget _buildErrorState(String error) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: AppSpacing.paddingScreen,
@@ -221,7 +228,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
             Icon(Icons.error_outline, size: 64, color: AppColors.error),
             AppSpacing.gapVerticalMd,
             Text(
-              'Đã xảy ra lỗi',
+              l10n.errorOccurred,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             AppSpacing.gapVerticalSm,
@@ -235,7 +242,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
             AppSpacing.gapVerticalLg,
             ElevatedButton(
               onPressed: _refreshTasks,
-              child: const Text('Thử lại'),
+              child: Text(l10n.retry),
             ),
           ],
         ),

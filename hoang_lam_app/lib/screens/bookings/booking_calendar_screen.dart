@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../widgets/bookings/booking_card.dart';
@@ -49,7 +50,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đặt phòng'),
+        title: Text(context.l10n.bookings),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -79,7 +80,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             error: (error, stack) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text('Lỗi: $error'),
+                child: Text('${context.l10n.error}: $error'),
               ),
             ),
           ),
@@ -106,7 +107,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
           );
         },
         icon: const Icon(Icons.add),
-        label: const Text('Đặt phòng mới'),
+        label: Text(context.l10n.newBooking),
       ),
     );
   }
@@ -197,13 +198,13 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         children: [
-          _buildFilterChip('Tất cả', 'all'),
+          _buildFilterChip(context.l10n.all, 'all'),
           const SizedBox(width: 8),
-          _buildFilterChip('Check-in', 'check_in'),
+          _buildFilterChip(context.l10n.checkIn, 'check_in'),
           const SizedBox(width: 8),
-          _buildFilterChip('Check-out', 'check_out'),
+          _buildFilterChip(context.l10n.checkOut, 'check_out'),
           const SizedBox(width: 8),
-          _buildFilterChip('Đang ở', 'staying'),
+          _buildFilterChip(context.l10n.occupied, 'staying'),
         ],
       ),
     );
@@ -224,8 +225,8 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
 
   Widget _buildBookingsList() {
     if (_selectedDay == null) {
-      return const Center(
-        child: Text('Chọn một ngày để xem đặt phòng'),
+      return Center(
+        child: Text(context.l10n.selectBooking),
       );
     }
 
@@ -266,7 +267,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Không có đặt phòng nào',
+                  context.l10n.noBookings,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[600],
@@ -291,7 +292,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Booking ngày ${DateFormat('dd/MM/yyyy', 'vi').format(_selectedDay!)}',
+                '${context.l10n.bookingDate}: ${DateFormat('dd/MM/yyyy').format(_selectedDay!)}',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -312,7 +313,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             children: [
               const Icon(Icons.error_outline, size: 48, color: Colors.red),
               const SizedBox(height: 16),
-              Text('Lỗi: $error'),
+              Text('${context.l10n.error}: $error'),
             ],
           ),
         ),
@@ -395,7 +396,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
 
     // Check-ins
     if (checkIns.isNotEmpty && (_filterType == 'all' || _filterType == 'check_in')) {
-      widgets.add(_buildGroupHeader('🟢 Check-in', checkIns.length));
+      widgets.add(_buildGroupHeader('🟢 ${context.l10n.checkIn}', checkIns.length));
       widgets.addAll(checkIns.map((b) => BookingCard(
             booking: b,
             onTap: () => _navigateToBookingDetail(b),
@@ -404,7 +405,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
 
     // Check-outs
     if (checkOuts.isNotEmpty && (_filterType == 'all' || _filterType == 'check_out')) {
-      widgets.add(_buildGroupHeader('🔴 Check-out', checkOuts.length));
+      widgets.add(_buildGroupHeader('🔴 ${context.l10n.checkOut}', checkOuts.length));
       widgets.addAll(checkOuts.map((b) => BookingCard(
             booking: b,
             onTap: () => _navigateToBookingDetail(b),
@@ -413,7 +414,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
 
     // Staying
     if (staying.isNotEmpty && (_filterType == 'all' || _filterType == 'staying')) {
-      widgets.add(_buildGroupHeader('🔵 Đang ở', staying.length));
+      widgets.add(_buildGroupHeader('🔵 ${context.l10n.occupied}', staying.length));
       widgets.addAll(staying.map((b) => BookingCard(
             booking: b,
             onTap: () => _navigateToBookingDetail(b),
@@ -467,13 +468,13 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
     // TODO: Implement advanced filter dialog
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Lọc đặt phòng'),
-        content: const Text('Chức năng đang phát triển'),
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.filter),
+        content: Text(context.l10n.loading),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Đóng'),
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(context.l10n.close),
           ),
         ],
       ),

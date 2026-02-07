@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../providers/finance_provider.dart';
 
@@ -75,6 +76,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final categoriesAsync = isIncome
         ? ref.watch(incomeCategoriesProvider)
         : ref.watch(expenseCategoriesProvider);
@@ -82,8 +84,8 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEdit
-            ? (isIncome ? 'Sửa khoản thu' : 'Sửa khoản chi')
-            : (isIncome ? 'Thêm khoản thu' : 'Thêm khoản chi')),
+            ? (isIncome ? '${l10n.edit} ${l10n.income}' : '${l10n.edit} ${l10n.expense}')
+            : (isIncome ? '${l10n.add} ${l10n.income}' : '${l10n.add} ${l10n.expense}')),
         backgroundColor: isIncome ? AppColors.income : AppColors.expense,
         foregroundColor: Colors.white,
       ),
@@ -96,7 +98,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               AppSpacing.gapVerticalMd,
-              Text('Lỗi tải danh mục: $error'),
+              Text('${l10n.dataLoadError}: $error'),
               AppSpacing.gapVerticalMd,
               ElevatedButton(
                 onPressed: () {
@@ -106,7 +108,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
                     ref.invalidate(expenseCategoriesProvider);
                   }
                 },
-                child: const Text('Thử lại'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -158,6 +160,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
   }
 
   Widget _buildAmountField() {
+    final l10n = context.l10n;
     return Container(
       padding: AppSpacing.paddingAll,
       decoration: BoxDecoration(
@@ -168,7 +171,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Số tiền',
+            l10n.totalAmount,
             style: TextStyle(
               color: isIncome ? AppColors.income : AppColors.expense,
               fontWeight: FontWeight.w500,
@@ -203,11 +206,11 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Vui lòng nhập số tiền';
+                return l10n.errorTryAgain;
               }
               final amount = _parseAmount(value);
               if (amount <= 0) {
-                return 'Số tiền phải lớn hơn 0';
+                return l10n.errorOccurred;
               }
               return null;
             },
@@ -218,12 +221,13 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
   }
 
   Widget _buildCategorySelection(List<FinancialCategory> categories) {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Danh mục',
-          style: TextStyle(
+        Text(
+          l10n.financialCategories,
+          style: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 16,
           ),
@@ -237,10 +241,10 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
               borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
               border: Border.all(color: AppColors.border),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Chưa có danh mục. Vui lòng tạo danh mục trước.',
-                style: TextStyle(color: AppColors.textSecondary),
+                l10n.noData,
+                style: const TextStyle(color: AppColors.textSecondary),
               ),
             ),
           )
@@ -280,7 +284,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.xs),
             child: Text(
-              'Vui lòng chọn danh mục',
+              l10n.enterOrSelectCategory,
               style: TextStyle(
                 color: AppColors.error,
                 fontSize: 12,
@@ -292,22 +296,24 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
   }
 
   Widget _buildDescriptionField() {
+    final l10n = context.l10n;
     return TextFormField(
       controller: _descriptionController,
-      decoration: const InputDecoration(
-        labelText: 'Mô tả',
-        hintText: 'VD: Tiền phòng 101, Điện tháng 12...',
-        prefixIcon: Icon(Icons.description),
+      decoration: InputDecoration(
+        labelText: l10n.descriptionOptional,
+        hintText: l10n.descriptionOptional,
+        prefixIcon: const Icon(Icons.description),
       ),
       maxLength: 200,
     );
   }
 
   Widget _buildDateField() {
+    final l10n = context.l10n;
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: const Icon(Icons.calendar_today),
-      title: const Text('Ngày'),
+      title: Text(l10n.selectDate),
       subtitle: Text(
         DateFormat('dd/MM/yyyy HH:mm').format(_entryDate),
         style: const TextStyle(
@@ -349,12 +355,13 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
   }
 
   Widget _buildPaymentMethodSelection() {
+    final l10n = context.l10n;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Phương thức thanh toán',
-          style: TextStyle(
+        Text(
+          l10n.paymentMethod,
+          style: const TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 16,
           ),
@@ -395,29 +402,32 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
   }
 
   Widget _buildReferenceField() {
+    final l10n = context.l10n;
     return TextFormField(
       controller: _referenceController,
-      decoration: const InputDecoration(
-        labelText: 'Mã tham chiếu (tùy chọn)',
-        hintText: 'VD: Số hóa đơn, mã chuyển khoản...',
-        prefixIcon: Icon(Icons.tag),
+      decoration: InputDecoration(
+        labelText: l10n.info,
+        hintText: l10n.info,
+        prefixIcon: const Icon(Icons.tag),
       ),
     );
   }
 
   Widget _buildNotesField() {
+    final l10n = context.l10n;
     return TextFormField(
       controller: _notesController,
-      decoration: const InputDecoration(
-        labelText: 'Ghi chú (tùy chọn)',
-        hintText: 'Thêm ghi chú...',
-        prefixIcon: Icon(Icons.note),
+      decoration: InputDecoration(
+        labelText: l10n.internalNotes,
+        hintText: l10n.internalNotes,
+        prefixIcon: const Icon(Icons.note),
       ),
       maxLines: 3,
     );
   }
 
   Widget _buildSubmitButton() {
+    final l10n = context.l10n;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -437,7 +447,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
                 ),
               )
             : Text(
-                isEdit ? 'Cập nhật' : 'Lưu',
+                isEdit ? l10n.update : l10n.save,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -454,6 +464,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
   }
 
   Future<void> _handleSubmit() async {
+    final l10n = context.l10n;
     // Validate form
     if (!_formKey.currentState!.validate()) {
       return;
@@ -462,8 +473,8 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
     // Validate category selection
     if (_selectedCategoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chọn danh mục'),
+        SnackBar(
+          content: Text(l10n.enterOrSelectCategory),
           backgroundColor: AppColors.error,
         ),
       );
@@ -478,7 +489,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       final description = _descriptionController.text.trim();
       // Combine description and notes if notes are provided
       final fullDescription = notes.isNotEmpty
-          ? '$description\n\nGhi chú: $notes'
+          ? '$description\n\n${l10n.internalNotes}: $notes'
           : description;
 
       final request = FinancialEntryRequest(
@@ -504,7 +515,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isEdit ? 'Đã cập nhật giao dịch' : 'Đã thêm giao dịch'),
+            content: Text(l10n.success),
             backgroundColor: AppColors.success,
           ),
         );
@@ -514,7 +525,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: $e'),
+            content: Text('${l10n.error}: $e'),
             backgroundColor: AppColors.error,
           ),
         );

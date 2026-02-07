@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/group_booking.dart';
 import '../../providers/group_booking_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -53,15 +54,16 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bookingsAsync = ref.watch(groupBookingsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Đặt phòng đoàn'),
+        title: Text(l10n.groupBooking),
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
-          tabs: const [Tab(text: 'Tất cả'), Tab(text: 'Đã xác nhận'), Tab(text: 'Đang ở'), Tab(text: 'Đã trả')],
+          tabs: [Tab(text: l10n.all), Tab(text: l10n.confirmedStatus), Tab(text: l10n.checkedInStatus), Tab(text: l10n.checkedOutStatus)],
         ),
       ),
       body: Column(
@@ -70,7 +72,7 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
             padding: AppSpacing.paddingAll,
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Tìm kiếm theo tên đoàn...',
+                hintText: l10n.search,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
               ),
@@ -95,7 +97,7 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
                 );
               },
               loading: () => const LoadingIndicator(),
-              error: (e, _) => ErrorDisplay(message: 'Lỗi: $e', onRetry: () => ref.invalidate(groupBookingsProvider)),
+              error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(groupBookingsProvider)),
             ),
           ),
         ],

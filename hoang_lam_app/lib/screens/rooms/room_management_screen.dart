@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
 import 'room_form_screen.dart';
@@ -31,11 +32,11 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quản lý phòng'),
+        title: Text(context.l10n.roomManagement),
         actions: [
           IconButton(
             icon: Icon(_showInactive ? Icons.visibility : Icons.visibility_off),
-            tooltip: _showInactive ? 'Ẩn phòng vô hiệu' : 'Hiện phòng vô hiệu',
+            tooltip: _showInactive ? context.l10n.hideInactiveRooms : context.l10n.showInactiveRooms,
             onPressed: () => setState(() => _showInactive = !_showInactive),
           ),
         ],
@@ -47,7 +48,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
             padding: const EdgeInsets.all(16),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Tìm kiếm phòng...',
+                hintText: context.l10n.searchRooms,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
@@ -75,11 +76,11 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _buildStatChip('Tổng: $totalRooms', AppColors.primary),
+                      _buildStatChip('${context.l10n.total}: $totalRooms', AppColors.primary),
                       const SizedBox(width: 8),
-                      _buildStatChip('Hoạt động: $activeRooms', AppColors.success),
+                      _buildStatChip('${context.l10n.active}: $activeRooms', AppColors.success),
                       const SizedBox(width: 8),
-                      _buildStatChip('Vô hiệu: ${totalRooms - activeRooms}', AppColors.mutedAccent),
+                      _buildStatChip('${context.l10n.inactive}: ${totalRooms - activeRooms}', AppColors.mutedAccent),
                     ],
                   ),
                 ),
@@ -127,8 +128,8 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                         AppSpacing.gapVerticalMd,
                         Text(
                           _searchQuery.isNotEmpty
-                            ? 'Không tìm thấy phòng'
-                            : 'Chưa có phòng nào',
+                            ? context.l10n.roomNotFound
+                            : context.l10n.noRoomsYet,
                           style: TextStyle(
                             fontSize: 18,
                             color: AppColors.textSecondary,
@@ -138,7 +139,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                         ElevatedButton.icon(
                           onPressed: () => _navigateToAddRoom(),
                           icon: const Icon(Icons.add),
-                          label: const Text('Thêm phòng đầu tiên'),
+                          label: Text(context.l10n.addFirstRoom),
                         ),
                       ],
                     ),
@@ -171,7 +172,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: Text(
-                              'Tầng $floor',
+                              '${context.l10n.floor} $floor',
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.primary,
@@ -192,11 +193,11 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                   children: [
                     const Icon(Icons.error_outline, size: 48, color: AppColors.error),
                     AppSpacing.gapVerticalMd,
-                    Text('Lỗi: $error'),
+                    Text('${context.l10n.error}: $error'),
                     AppSpacing.gapVerticalMd,
                     ElevatedButton(
                       onPressed: () => ref.invalidate(roomsProvider),
-                      child: const Text('Thử lại'),
+                      child: Text(context.l10n.retry),
                     ),
                   ],
                 ),
@@ -208,7 +209,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToAddRoom,
         icon: const Icon(Icons.add),
-        label: const Text('Thêm phòng'),
+        label: Text(context.l10n.addRoom),
       ),
     );
   }
@@ -271,9 +272,9 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                   color: AppColors.mutedAccent.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
-                  'Vô hiệu',
-                  style: TextStyle(fontSize: 10),
+                child: Text(
+                  context.l10n.inactive,
+                  style: const TextStyle(fontSize: 10),
                 ),
               ),
             ],
@@ -309,12 +310,12 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (action) => _handleRoomAction(action, room),
-          itemBuilder: (context) => [
-            const PopupMenuItem(
+          itemBuilder: (ctx) => [
+            PopupMenuItem(
               value: 'edit',
               child: ListTile(
-                leading: Icon(Icons.edit),
-                title: Text('Sửa'),
+                leading: const Icon(Icons.edit),
+                title: Text(context.l10n.edit),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -322,16 +323,16 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
               value: room.isActive ? 'deactivate' : 'activate',
               child: ListTile(
                 leading: Icon(room.isActive ? Icons.block : Icons.check_circle),
-                title: Text(room.isActive ? 'Vô hiệu hóa' : 'Kích hoạt'),
+                title: Text(room.isActive ? context.l10n.deactivate : context.l10n.activate),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
             const PopupMenuDivider(),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'delete',
               child: ListTile(
-                leading: Icon(Icons.delete, color: AppColors.error),
-                title: Text('Xóa', style: TextStyle(color: AppColors.error)),
+                leading: const Icon(Icons.delete, color: AppColors.error),
+                title: Text(context.l10n.delete, style: const TextStyle(color: AppColors.error)),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -378,8 +379,8 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
         SnackBar(
           content: Text(
             room.isActive 
-              ? 'Đã vô hiệu hóa phòng ${room.number}' 
-              : 'Đã kích hoạt phòng ${room.number}',
+              ? '${context.l10n.roomDeactivated} ${room.number}' 
+              : '${context.l10n.roomActivated} ${room.number}',
           ),
           backgroundColor: AppColors.success,
         ),
@@ -390,29 +391,29 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
   void _confirmDeleteRoom(Room room) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Xóa phòng?'),
-        content: Text('Bạn có chắc muốn xóa phòng ${room.number}? Hành động này không thể hoàn tác.'),
+      builder: (dialogContext) => AlertDialog(
+        title: Text('${context.l10n.deleteRoom}?'),
+        content: Text('${context.l10n.confirmDeleteRoom} ${room.number}? ${context.l10n.actionCannotBeUndone}'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               final success = await ref.read(roomStateProvider.notifier).deleteRoom(room.id);
               if (success && mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Đã xóa phòng ${room.number}'),
+                    content: Text('${context.l10n.roomDeleted} ${room.number}'),
                     backgroundColor: AppColors.success,
                   ),
                 );
               }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Xóa'),
+            child: Text(context.l10n.delete),
           ),
         ],
       ),

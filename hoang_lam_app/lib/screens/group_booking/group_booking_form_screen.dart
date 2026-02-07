@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/group_booking.dart';
 import '../../providers/group_booking_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -97,22 +98,23 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (widget.isEditing) {
       final bookingAsync = ref.watch(groupBookingByIdProvider(widget.bookingId!));
       return Scaffold(
-        appBar: AppBar(title: const Text('Sửa đặt phòng đoàn')),
+        appBar: AppBar(title: Text(l10n.editGroupBooking)),
         body: bookingAsync.when(
           data: (booking) {
             _initializeFromBooking(booking);
             return _buildForm();
           },
           loading: () => const LoadingIndicator(),
-          error: (e, _) => ErrorDisplay(message: 'Lỗi: $e', onRetry: () => ref.invalidate(groupBookingByIdProvider(widget.bookingId!))),
+          error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(groupBookingByIdProvider(widget.bookingId!))),
         ),
       );
     }
     return Scaffold(
-      appBar: AppBar(title: const Text('Tạo đặt phòng đoàn')),
+      appBar: AppBar(title: Text(l10n.createGroupBooking)),
       body: _buildForm(),
     );
   }

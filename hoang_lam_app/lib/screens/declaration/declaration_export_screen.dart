@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../l10n/app_localizations.dart';
+
 import '../../models/declaration.dart';
 import '../../providers/declaration_provider.dart';
 
@@ -26,6 +28,7 @@ class _DeclarationExportScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final exportState = ref.watch(declarationExportProvider);
 
     // Listen for state changes
@@ -35,9 +38,9 @@ class _DeclarationExportScreenState
         success: (filePath) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Xuất file thành công!'),
+              content: Text(l10n.exportSuccess),
               action: SnackBarAction(
-                label: 'Mở',
+                label: l10n.open,
                 onPressed: () => _openFile(filePath),
               ),
               duration: const Duration(seconds: 5),
@@ -47,7 +50,7 @@ class _DeclarationExportScreenState
         error: (message) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Lỗi: $message'),
+              content: Text('${l10n.error}: $message'),
               backgroundColor: Colors.red,
             ),
           );
@@ -57,7 +60,7 @@ class _DeclarationExportScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Khai báo lưu trú'),
+        title: Text(l10n.residenceDeclarationTitle),
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -80,15 +83,14 @@ class _DeclarationExportScreenState
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Thông tin',
+                          l10n.info,
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Xuất danh sách khách lưu trú để khai báo tạm trú với công an. '
-                      'Danh sách bao gồm tất cả khách đã nhận phòng trong khoảng thời gian được chọn.',
+                      l10n.exportGuestListDescription,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],

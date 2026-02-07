@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
 import '../../providers/room_inspection_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -38,30 +39,31 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final inspectionsAsync = ref.watch(roomInspectionsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kiểm tra phòng'),
+        title: Text(l10n.roomInspection),
         actions: [
           IconButton(
             icon: const Icon(Icons.bar_chart),
-            tooltip: 'Thống kê',
+            tooltip: l10n.statistics,
             onPressed: _showStatistics,
           ),
           IconButton(
             icon: const Icon(Icons.library_books),
-            tooltip: 'Mẫu kiểm tra',
+            tooltip: l10n.inspectionTemplate,
             onPressed: () => context.push('/inspection-templates'),
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Tất cả'),
-            Tab(text: 'Chờ'),
-            Tab(text: 'Hoàn thành'),
-            Tab(text: 'Cần xử lý'),
+          tabs: [
+            Tab(text: l10n.all),
+            Tab(text: l10n.pending),
+            Tab(text: l10n.completed),
+            Tab(text: l10n.requiresAction),
           ],
         ),
       ),
@@ -81,7 +83,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
               ),
               loading: () => const LoadingIndicator(),
               error: (e, _) => ErrorDisplay(
-                message: 'Lỗi: $e',
+                message: '${l10n.error}: $e',
                 onRetry: () => ref.invalidate(roomInspectionsProvider),
               ),
             ),
@@ -91,7 +93,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/room-inspections/new'),
         icon: const Icon(Icons.add),
-        label: const Text('Tạo kiểm tra'),
+        label: Text(l10n.createInspection),
       ),
     );
   }
@@ -104,7 +106,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
           const SizedBox(height: AppSpacing.sm),
           TextField(
             decoration: InputDecoration(
-              hintText: 'Tìm theo số phòng...',
+              hintText: AppLocalizations.of(context)!.search,
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

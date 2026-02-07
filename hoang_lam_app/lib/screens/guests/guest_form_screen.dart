@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -87,14 +88,14 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Chỉnh sửa khách hàng' : 'Thêm khách hàng'),
+        title: Text(_isEditing ? context.l10n.editGuestTitle : context.l10n.addGuest),
         actions: [
           if (_isEditing)
             AppIconButton(
               icon: _isVip ? Icons.star : Icons.star_border,
               color: _isVip ? AppColors.warning : null,
               onPressed: () => setState(() => _isVip = !_isVip),
-              tooltip: _isVip ? 'Bỏ VIP' : 'Đánh dấu VIP',
+              tooltip: _isVip ? context.l10n.removeVip : context.l10n.markVip,
             ),
         ],
       ),
@@ -106,31 +107,31 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Required information
-              _buildSectionHeader('Thông tin bắt buộc', isRequired: true),
+              _buildSectionHeader(context.l10n.requiredInfo, isRequired: true),
               AppSpacing.gapVerticalSm,
               _buildRequiredSection(),
               AppSpacing.gapVerticalLg,
 
               // ID information
-              _buildSectionHeader('Giấy tờ tùy thân'),
+              _buildSectionHeader(context.l10n.identityDocument),
               AppSpacing.gapVerticalSm,
               _buildIdSection(),
               AppSpacing.gapVerticalLg,
 
               // Personal information
-              _buildSectionHeader('Thông tin cá nhân'),
+              _buildSectionHeader(context.l10n.personalInfo),
               AppSpacing.gapVerticalSm,
               _buildPersonalSection(),
               AppSpacing.gapVerticalLg,
 
               // Address
-              _buildSectionHeader('Địa chỉ'),
+              _buildSectionHeader(context.l10n.address),
               AppSpacing.gapVerticalSm,
               _buildAddressSection(),
               AppSpacing.gapVerticalLg,
 
               // Notes
-              _buildSectionHeader('Ghi chú'),
+              _buildSectionHeader(context.l10n.internalNotes),
               AppSpacing.gapVerticalSm,
               _buildNotesSection(),
               AppSpacing.gapVerticalXl,
@@ -168,15 +169,15 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         children: [
           AppTextField(
             controller: _fullNameController,
-            label: 'Họ và tên',
+            label: context.l10n.fullName,
             prefixIcon: Icons.person,
             textInputAction: TextInputAction.next,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Vui lòng nhập họ và tên';
+                return context.l10n.pleaseEnterFullName;
               }
               if (value.trim().length < 2) {
-                return 'Họ và tên phải có ít nhất 2 ký tự';
+                return context.l10n.fullNameMinLength;
               }
               return null;
             },
@@ -186,13 +187,13 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             controller: _phoneController,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Vui lòng nhập số điện thoại';
+                return context.l10n.pleaseEnterPhone;
               }
               if (value.length != 10) {
-                return 'Số điện thoại phải có 10 số';
+                return context.l10n.phoneMustBe10;
               }
               if (!value.startsWith('0')) {
-                return 'Số điện thoại phải bắt đầu bằng 0';
+                return context.l10n.phoneMustStartWith0;
               }
               return null;
             },
@@ -208,7 +209,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         children: [
           // ID Type dropdown
           AppDropdown<IDType>(
-            label: 'Loại giấy tờ',
+            label: context.l10n.documentType,
             value: _idType,
             prefixIcon: _idType.icon,
             items: IDType.values
@@ -236,7 +237,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
           // ID Number
           AppTextField(
             controller: _idNumberController,
-            label: 'Số giấy tờ',
+            label: context.l10n.documentNumber,
             prefixIcon: Icons.numbers,
             textInputAction: TextInputAction.next,
             keyboardType: _idType == IDType.passport
@@ -255,7 +256,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
           // ID Issue Place
           AppTextField(
             controller: _idIssuePlaceController,
-            label: 'Nơi cấp',
+            label: context.l10n.issuedBy,
             prefixIcon: Icons.place,
             textInputAction: TextInputAction.next,
           ),
@@ -263,7 +264,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
 
           // ID Issue Date
           _buildDateField(
-            label: 'Ngày cấp',
+            label: context.l10n.issueDate,
             value: _idIssueDate,
             lastDate: DateTime.now(),
             firstDate: DateTime(1950),
@@ -289,7 +290,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
               if (value != null && value.isNotEmpty) {
                 final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                 if (!emailRegex.hasMatch(value)) {
-                  return 'Email không hợp lệ';
+                  return context.l10n.invalidEmail;
                 }
               }
               return null;
@@ -310,13 +311,13 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
 
           // Gender dropdown
           AppDropdown<Gender?>(
-            label: 'Giới tính',
+            label: context.l10n.gender,
             value: _gender,
             prefixIcon: _gender?.icon ?? Icons.person,
             items: [
-              const DropdownMenuItem(
+              DropdownMenuItem(
                 value: null,
-                child: Text('Không xác định'),
+                child: Text(context.l10n.notSpecified),
               ),
               ...Gender.values.map(
                 (gender) => DropdownMenuItem(
@@ -337,7 +338,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
 
           // Date of birth
           _buildDateField(
-            label: 'Ngày sinh',
+            label: context.l10n.issueDate,
             value: _dateOfBirth,
             lastDate: DateTime.now(),
             firstDate: DateTime(1920),
@@ -354,7 +355,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         children: [
           AppTextField(
             controller: _addressController,
-            label: 'Địa chỉ',
+            label: context.l10n.address,
             prefixIcon: Icons.location_on,
             textInputAction: TextInputAction.next,
             maxLines: 2,
@@ -362,7 +363,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
           AppSpacing.gapVerticalMd,
           AppTextField(
             controller: _cityController,
-            label: 'Thành phố',
+            label: context.l10n.city,
             prefixIcon: Icons.location_city,
             textInputAction: TextInputAction.next,
           ),
@@ -375,10 +376,10 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
     return AppCard(
       child: AppTextField(
         controller: _notesController,
-        label: 'Ghi chú',
+        label: context.l10n.internalNotes,
         prefixIcon: Icons.note,
         maxLines: 3,
-        hint: 'Sở thích, yêu cầu đặc biệt...',
+        hint: context.l10n.preferencesHint,
       ),
     );
   }
@@ -448,7 +449,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
           children: [
             Expanded(
               child: AppButton(
-                label: 'Hủy',
+                label: context.l10n.cancel,
                 isOutlined: true,
                 onPressed: () => Navigator.pop(context),
               ),
@@ -457,7 +458,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             Expanded(
               flex: 2,
               child: AppButton(
-                label: _isEditing ? 'Lưu thay đổi' : 'Thêm khách hàng',
+                label: _isEditing ? context.l10n.saveChanges : context.l10n.addGuest,
                 icon: _isEditing ? Icons.save : Icons.person_add,
                 isLoading: _isLoading,
                 onPressed: _submitForm,
@@ -510,8 +511,8 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
           SnackBar(
             content: Text(
               _isEditing
-                  ? 'Đã cập nhật thông tin khách hàng'
-                  : 'Đã thêm khách hàng mới',
+                  ? context.l10n.guestInfoUpdated
+                  : context.l10n.newGuestAdded,
             ),
             backgroundColor: AppColors.success,
           ),
@@ -522,7 +523,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${context.l10n.error}: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -572,7 +573,7 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
         children: [
           Expanded(
             child: AppTextField(
-              label: widget.label ?? 'Quốc tịch',
+              label: widget.label ?? context.l10n.nationality,
               controller: TextEditingController(text: _customNationality),
               prefixIcon: Icons.flag,
               onChanged: (value) {
@@ -590,14 +591,14 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
                 widget.onChanged('Vietnam');
               });
             },
-            tooltip: 'Chọn từ danh sách',
+            tooltip: context.l10n.selectFromList,
           ),
         ],
       );
     }
 
     return AppDropdown<String>(
-      label: widget.label ?? 'Quốc tịch',
+      label: widget.label ?? context.l10n.nationality,
       value: Nationalities.common.contains(widget.value) ? widget.value : 'Other',
       prefixIcon: Icons.flag,
       items: [

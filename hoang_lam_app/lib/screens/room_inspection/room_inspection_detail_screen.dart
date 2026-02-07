@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
 import '../../providers/room_inspection_provider.dart';
 import '../../widgets/common/app_card.dart';
@@ -18,18 +19,19 @@ class RoomInspectionDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final inspectionAsync = ref.watch(roomInspectionByIdProvider(inspectionId));
 
     return inspectionAsync.when(
       data: (inspection) => _InspectionDetailContent(inspection: inspection),
       loading: () => Scaffold(
-        appBar: AppBar(title: const Text('Chi tiết kiểm tra')),
+        appBar: AppBar(title: Text(l10n.inspectionDetails)),
         body: const LoadingIndicator(),
       ),
       error: (e, _) => Scaffold(
-        appBar: AppBar(title: const Text('Chi tiết kiểm tra')),
+        appBar: AppBar(title: Text(l10n.inspectionDetails)),
         body: ErrorDisplay(
-          message: 'Lỗi: $e',
+          message: '${l10n.error}: $e',
           onRetry: () => ref.invalidate(roomInspectionByIdProvider(inspectionId)),
         ),
       ),
@@ -51,23 +53,24 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final inspection = widget.inspection;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Phòng ${inspection.roomNumber}'),
+        title: Text('${l10n.room} ${inspection.roomNumber}'),
         actions: [
           if (inspection.status == InspectionStatus.pending)
             TextButton.icon(
               onPressed: _isLoading ? null : _startInspection,
               icon: const Icon(Icons.play_arrow),
-              label: const Text('Bắt đầu'),
+              label: Text(l10n.start),
             ),
           if (inspection.status == InspectionStatus.inProgress)
             TextButton.icon(
               onPressed: () => context.push('/room-inspections/${inspection.id}/conduct'),
               icon: const Icon(Icons.checklist),
-              label: const Text('Tiếp tục'),
+              label: Text(l10n.continueLabel),
             ),
         ],
       ),

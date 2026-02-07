@@ -34,11 +34,11 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // Security settings
-          _buildSectionHeader(context, 'Bảo mật'),
+          _buildSectionHeader(context, l10n.security),
           _buildSettingsTile(
             context,
             icon: Icons.lock_outline,
-            title: 'Đổi mật khẩu',
+            title: l10n.changePassword,
             onTap: () {
               context.push(AppRoutes.passwordChange);
             },
@@ -58,12 +58,12 @@ class SettingsScreen extends ConsumerWidget {
                   color: AppColors.primary,
                 ),
                 title: Text(
-                  'Đăng nhập bằng ${biometricState.biometricTypeName}',
+                  '${l10n.loginWith} ${biometricState.biometricTypeName}',
                 ),
                 subtitle: Text(
                   biometricState.isEnabled
-                      ? 'Đã bật'
-                      : 'Đăng nhập nhanh hơn với sinh trắc học',
+                      ? l10n.enabled
+                      : l10n.fasterLoginBiometric,
                 ),
                 value: biometricState.isEnabled,
                 onChanged: (value) async {
@@ -77,8 +77,8 @@ class SettingsScreen extends ConsumerWidget {
                           .enableBiometric(currentUser.username);
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Đã bật đăng nhập sinh trắc học'),
+                          SnackBar(
+                            content: Text(l10n.biometricLoginEnabled),
                           ),
                         );
                       }
@@ -89,8 +89,8 @@ class SettingsScreen extends ConsumerWidget {
                         .disableBiometric();
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Đã tắt đăng nhập sinh trắc học'),
+                        SnackBar(
+                          content: Text(l10n.biometricLoginDisabled),
                         ),
                       );
                     }
@@ -98,13 +98,13 @@ class SettingsScreen extends ConsumerWidget {
                 },
               );
             },
-            loading: () => const ListTile(
-              leading: SizedBox(
+            loading: () => ListTile(
+              leading: const SizedBox(
                 width: 24,
                 height: 24,
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
-              title: Text('Đang tải...'),
+              title: Text(l10n.loading),
             ),
             error: (_, __) => const SizedBox.shrink(),
           ),
@@ -112,12 +112,12 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // Property Management section
-          _buildSectionHeader(context, 'Quản lý căn hộ'),
+          _buildSectionHeader(context, l10n.propertyManagement),
           _buildSettingsTile(
             context,
             icon: Icons.meeting_room,
-            title: 'Quản lý phòng',
-            subtitle: 'Thêm, sửa, xóa phòng',
+            title: l10n.roomManagement,
+            subtitle: l10n.addEditDeleteRooms,
             onTap: () {
               context.push(AppRoutes.roomManagement);
             },
@@ -125,8 +125,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildSettingsTile(
             context,
             icon: Icons.sell,
-            title: 'Quản lý giá',
-            subtitle: 'Gói giá, giá theo ngày, khuyến mãi',
+            title: l10n.priceManagement,
+            subtitle: l10n.ratePlansPromotions,
             onTap: () {
               context.push(AppRoutes.pricing);
             },
@@ -135,14 +135,14 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // General settings
-          _buildSectionHeader(context, 'Cài đặt chung'),
+          _buildSectionHeader(context, l10n.generalSettings),
 
           // Theme toggle
           _buildSettingsTile(
             context,
             icon: Icons.dark_mode_outlined,
-            title: 'Giao diện',
-            subtitle: _getThemeModeText(settings.themeMode),
+            title: l10n.theme,
+            subtitle: _getThemeModeText(l10n, settings.themeMode),
             onTap: () {
               _showThemePicker(context, ref, settings.themeMode);
             },
@@ -152,8 +152,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildSettingsTile(
             context,
             icon: Icons.language,
-            title: 'Ngôn ngữ',
-            subtitle: settings.locale == 'vi' ? 'Tiếng Việt' : 'English',
+            title: l10n.language,
+            subtitle: settings.locale == 'vi' ? l10n.vietnamese : 'English',
             onTap: () {
               _showLanguagePicker(context, ref, settings.locale);
             },
@@ -163,8 +163,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildSettingsTile(
             context,
             icon: Icons.text_fields,
-            title: 'Cỡ chữ',
-            subtitle: _getTextSizeText(settings.textScaleFactor),
+            title: l10n.textSize,
+            subtitle: _getTextSizeText(l10n, settings.textScaleFactor),
             onTap: () {
               _showTextSizePicker(context, ref, settings.textScaleFactor);
             },
@@ -174,8 +174,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildSettingsTile(
             context,
             icon: Icons.notifications_outlined,
-            title: 'Thông báo',
-            subtitle: _getNotificationText(settings),
+            title: l10n.notificationsSettings,
+            subtitle: _getNotificationText(l10n, settings),
             onTap: () {
               _showNotificationSettings(context, ref, settings);
             },
@@ -183,14 +183,14 @@ class SettingsScreen extends ConsumerWidget {
 
           const Divider(),
 
-          // Hotel management (admin only)
+          // Management (admin only)
           if (currentUser?.isAdmin == true) ...[
-            _buildSectionHeader(context, 'Quản lý'),
+            _buildSectionHeader(context, l10n.management),
             _buildSettingsTile(
               context,
               icon: Icons.nightlight_outlined,
-              title: 'Chốt ca đêm',
-              subtitle: 'Kiểm tra số liệu cuối ngày',
+              title: l10n.nightAudit,
+              subtitle: l10n.checkDailyFigures,
               onTap: () {
                 context.push(AppRoutes.nightAudit);
               },
@@ -198,8 +198,8 @@ class SettingsScreen extends ConsumerWidget {
             _buildSettingsTile(
               context,
               icon: Icons.description_outlined,
-              title: 'Khai báo lưu trú',
-              subtitle: 'Xuất danh sách khách cho công an',
+              title: l10n.residenceDeclaration,
+              subtitle: l10n.exportGuestListPolice,
               onTap: () {
                 context.push(AppRoutes.declaration);
               },
@@ -207,7 +207,7 @@ class SettingsScreen extends ConsumerWidget {
             _buildSettingsTile(
               context,
               icon: Icons.category_outlined,
-              title: 'Danh mục thu chi',
+              title: l10n.financialCategories,
               onTap: () {
                 // TODO: Show categories
               },
@@ -215,7 +215,7 @@ class SettingsScreen extends ConsumerWidget {
             _buildSettingsTile(
               context,
               icon: Icons.people_outline,
-              title: 'Quản lý tài khoản',
+              title: l10n.accountManagement,
               onTap: () {
                 // TODO: Show user management
               },
@@ -224,12 +224,12 @@ class SettingsScreen extends ConsumerWidget {
           ],
 
           // Data section
-          _buildSectionHeader(context, 'Dữ liệu'),
+          _buildSectionHeader(context, l10n.data),
           _buildSettingsTile(
             context,
             icon: Icons.sync,
-            title: 'Đồng bộ dữ liệu',
-            subtitle: 'Cập nhật lần cuối: Vừa xong',
+            title: l10n.syncData,
+            subtitle: l10n.lastUpdateJustNow,
             onTap: () {
               // TODO: Manual sync
             },
@@ -237,7 +237,7 @@ class SettingsScreen extends ConsumerWidget {
           _buildSettingsTile(
             context,
             icon: Icons.backup,
-            title: 'Sao lưu',
+            title: l10n.backup,
             onTap: () {
               // TODO: Show backup options
             },
@@ -246,11 +246,11 @@ class SettingsScreen extends ConsumerWidget {
           const Divider(),
 
           // Help section
-          _buildSectionHeader(context, 'Hỗ trợ'),
+          _buildSectionHeader(context, l10n.support),
           _buildSettingsTile(
             context,
             icon: Icons.help_outline,
-            title: 'Hướng dẫn sử dụng',
+            title: l10n.userGuide,
             onTap: () {
               // TODO: Show help
             },
@@ -258,8 +258,8 @@ class SettingsScreen extends ConsumerWidget {
           _buildSettingsTile(
             context,
             icon: Icons.info_outline,
-            title: 'Thông tin ứng dụng',
-            subtitle: 'Phiên bản ${AppConstants.appVersion}',
+            title: l10n.aboutApp,
+            subtitle: '${l10n.version} ${AppConstants.appVersion}',
             onTap: () {
               _showAboutDialog(context);
             },
@@ -284,35 +284,36 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  String _getThemeModeText(ThemeMode mode) {
+  String _getThemeModeText(AppLocalizations l10n, ThemeMode mode) {
     return switch (mode) {
-      ThemeMode.light => 'Sáng',
-      ThemeMode.dark => 'Tối',
-      ThemeMode.system => 'Theo hệ thống',
+      ThemeMode.light => l10n.light,
+      ThemeMode.dark => l10n.dark,
+      ThemeMode.system => l10n.systemDefault,
     };
   }
 
-  String _getTextSizeText(double scaleFactor) {
-    if (scaleFactor <= 0.85) return 'Nhỏ';
-    if (scaleFactor <= 1.0) return 'Bình thường';
-    if (scaleFactor <= 1.15) return 'Lớn';
-    return 'Rất lớn';
+  String _getTextSizeText(AppLocalizations l10n, double scaleFactor) {
+    if (scaleFactor <= 0.85) return l10n.small;
+    if (scaleFactor <= 1.0) return l10n.normal;
+    if (scaleFactor <= 1.15) return l10n.large;
+    return l10n.extraLarge;
   }
 
-  String _getNotificationText(AppSettings settings) {
+  String _getNotificationText(AppLocalizations l10n, AppSettings settings) {
     final enabled = <String>[];
     if (settings.notifyCheckIn) enabled.add('Check-in');
     if (settings.notifyCheckOut) enabled.add('Check-out');
-    if (settings.notifyCleaning) enabled.add('Dọn phòng');
+    if (settings.notifyCleaning) enabled.add(l10n.roomCleaning);
 
-    if (enabled.isEmpty) return 'Tắt tất cả';
+    if (enabled.isEmpty) return l10n.allOff;
     return enabled.join(', ');
   }
 
   Widget _buildProfileSection(
       BuildContext context, WidgetRef ref, dynamic currentUser) {
-    final displayName = currentUser?.displayName ?? 'Người dùng';
-    final roleDisplay = currentUser?.roleDisplay ?? 'Nhân viên';
+    final l10n = context.l10n;
+    final displayName = currentUser?.displayName ?? l10n.user;
+    final roleDisplay = currentUser?.roleDisplay ?? l10n.staff;
     final initial =
         displayName.isNotEmpty ? displayName[0].toUpperCase() : 'U';
 
@@ -412,16 +413,17 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showThemePicker(BuildContext context, WidgetRef ref, ThemeMode current) {
+    final l10n = context.l10n;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Chọn giao diện'),
+        title: Text(l10n.selectTheme),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<ThemeMode>(
-              title: const Text('Theo hệ thống'),
-              subtitle: const Text('Tự động theo cài đặt điện thoại'),
+              title: Text(l10n.systemDefault),
+              subtitle: Text(l10n.autoPhoneSettings),
               value: ThemeMode.system,
               groupValue: current,
               onChanged: (value) {
@@ -430,7 +432,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('Sáng'),
+              title: Text(l10n.light),
               value: ThemeMode.light,
               groupValue: current,
               onChanged: (value) {
@@ -439,7 +441,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<ThemeMode>(
-              title: const Text('Tối'),
+              title: Text(l10n.dark),
               value: ThemeMode.dark,
               groupValue: current,
               onChanged: (value) {
@@ -452,7 +454,7 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Đóng'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -460,15 +462,16 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showLanguagePicker(BuildContext context, WidgetRef ref, String current) {
+    final l10n = context.l10n;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Chọn ngôn ngữ'),
+        title: Text(l10n.selectLanguage),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<String>(
-              title: const Text('Tiếng Việt'),
+              title: Text(l10n.vietnamese),
               value: 'vi',
               groupValue: current,
               onChanged: (value) {
@@ -490,7 +493,7 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Đóng'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -498,15 +501,16 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showTextSizePicker(BuildContext context, WidgetRef ref, double current) {
+    final l10n = context.l10n;
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Cỡ chữ'),
+        title: Text(l10n.textSize),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             RadioListTile<double>(
-              title: const Text('Nhỏ', style: TextStyle(fontSize: 12)),
+              title: Text(l10n.small, style: const TextStyle(fontSize: 12)),
               value: 0.85,
               groupValue: current,
               onChanged: (value) {
@@ -515,7 +519,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<double>(
-              title: const Text('Bình thường', style: TextStyle(fontSize: 14)),
+              title: Text(l10n.normal, style: const TextStyle(fontSize: 14)),
               value: 1.0,
               groupValue: current,
               onChanged: (value) {
@@ -524,7 +528,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<double>(
-              title: const Text('Lớn', style: TextStyle(fontSize: 16)),
+              title: Text(l10n.large, style: const TextStyle(fontSize: 16)),
               value: 1.15,
               groupValue: current,
               onChanged: (value) {
@@ -533,7 +537,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<double>(
-              title: const Text('Rất lớn', style: TextStyle(fontSize: 18)),
+              title: Text(l10n.extraLarge, style: const TextStyle(fontSize: 18)),
               value: 1.3,
               groupValue: current,
               onChanged: (value) {
@@ -546,7 +550,7 @@ class SettingsScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Đóng'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -554,34 +558,35 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showNotificationSettings(BuildContext context, WidgetRef ref, AppSettings settings) {
+    final l10n = context.l10n;
     showDialog(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Cài đặt thông báo'),
+          title: Text(l10n.notificationSettings),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SwitchListTile(
-                title: const Text('Nhắc nhở check-in'),
-                subtitle: const Text('Thông báo khi có khách check-in hôm nay'),
+                title: Text(l10n.checkinReminder),
+                subtitle: Text(l10n.notifyCheckinToday),
                 value: settings.notifyCheckIn,
                 onChanged: (value) {
                   ref.read(settingsProvider.notifier).setNotifyCheckIn(value);
                 },
               ),
               SwitchListTile(
-                title: const Text('Nhắc nhở check-out'),
-                subtitle: const Text('Thông báo khi có khách check-out hôm nay'),
+                title: Text(l10n.checkoutReminder),
+                subtitle: Text(l10n.notifyCheckoutToday),
                 value: settings.notifyCheckOut,
                 onChanged: (value) {
                   ref.read(settingsProvider.notifier).setNotifyCheckOut(value);
                 },
               ),
               SwitchListTile(
-                title: const Text('Nhắc nhở dọn phòng'),
-                subtitle: const Text('Thông báo khi có phòng cần dọn dẹp'),
+                title: Text(l10n.cleaningReminder),
+                subtitle: Text(l10n.notifyRoomNeedsCleaning),
                 value: settings.notifyCleaning,
                 onChanged: (value) {
                   ref.read(settingsProvider.notifier).setNotifyCleaning(value);
@@ -592,7 +597,7 @@ class SettingsScreen extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Đóng'),
+              child: Text(l10n.cancel),
             ),
           ],
         ),
@@ -640,8 +645,8 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text('Xác nhận ${l10n.logout.toLowerCase()}?'),
-        content: const Text('Bạn có chắc muốn đăng xuất khỏi ứng dụng?'),
+        title: Text(l10n.confirmLogout),
+        content: Text(l10n.confirmLogoutMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),

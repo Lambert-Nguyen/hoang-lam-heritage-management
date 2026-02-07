@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/rate_plan.dart';
 import '../../models/room.dart';
 import '../../providers/rate_plan_provider.dart';
@@ -87,6 +88,7 @@ class _DateRateOverrideFormScreenState
 
     // Load existing override for editing
     if (_isEditing) {
+      final l10n = AppLocalizations.of(context)!;
       final overrideAsync = ref.watch(dateRateOverrideByIdProvider(widget.overrideId!));
       return overrideAsync.when(
         data: (override) {
@@ -94,12 +96,12 @@ class _DateRateOverrideFormScreenState
           return _buildForm(roomTypesAsync);
         },
         loading: () => Scaffold(
-          appBar: AppBar(title: const Text('Sửa giá theo ngày')),
+          appBar: AppBar(title: Text(l10n.editDateRate)),
           body: const Center(child: CircularProgressIndicator()),
         ),
         error: (error, _) => Scaffold(
-          appBar: AppBar(title: const Text('Sửa giá theo ngày')),
-          body: Center(child: Text('Lỗi: $error')),
+          appBar: AppBar(title: Text(l10n.editDateRate)),
+          body: Center(child: Text('${l10n.error}: $error')),
         ),
       );
     }
@@ -108,15 +110,16 @@ class _DateRateOverrideFormScreenState
   }
 
   Widget _buildForm(AsyncValue<List<RoomType>> roomTypesAsync) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Sửa giá theo ngày' : 'Thêm giá theo ngày'),
+        title: Text(_isEditing ? l10n.editDateRate : l10n.addDateRate),
         actions: [
           if (_isEditing)
             IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: _confirmDelete,
-              tooltip: 'Xóa',
+              tooltip: l10n.delete,
             ),
         ],
       ),
@@ -128,8 +131,8 @@ class _DateRateOverrideFormScreenState
             // Bulk mode toggle (only for new)
             if (!_isEditing) ...[
               SwitchListTile(
-                title: const Text('Tạo cho nhiều ngày'),
-                subtitle: const Text('Áp dụng cho một khoảng thời gian'),
+                title: Text(l10n.createForMultipleDays),
+                subtitle: Text(l10n.applyForDateRange),
                 value: _isBulkMode,
                 onChanged: (value) => setState(() => _isBulkMode = value),
                 secondary: const Icon(Icons.date_range),
@@ -138,13 +141,13 @@ class _DateRateOverrideFormScreenState
             ],
 
             // Room Type
-            _buildSectionHeader('Loại phòng'),
+            _buildSectionHeader(l10n.roomType),
             roomTypesAsync.when(
               data: (roomTypes) => DropdownButtonFormField<int>(
                 value: _selectedRoomTypeId,
-                decoration: const InputDecoration(
-                  labelText: 'Chọn loại phòng *',
-                  prefixIcon: Icon(Icons.meeting_room),
+                decoration: InputDecoration(
+                  labelText: '${l10n.selectRoomType} *',
+                  prefixIcon: const Icon(Icons.meeting_room),
                 ),
                 items: roomTypes
                     .map((type) => DropdownMenuItem(
@@ -155,19 +158,19 @@ class _DateRateOverrideFormScreenState
                 onChanged: (value) => setState(() => _selectedRoomTypeId = value),
                 validator: (value) {
                   if (value == null) {
-                    return 'Vui lòng chọn loại phòng';
+                    return l10n.pleaseSelectRoomType;
                   }
                   return null;
                 },
               ),
               loading: () => const LinearProgressIndicator(),
-              error: (_, __) => const Text('Không thể tải loại phòng'),
+              error: (_, __) => Text(l10n.cannotLoadRoomTypes),
             ),
 
             AppSpacing.gapVerticalLg,
 
             // Date Selection
-            _buildSectionHeader(_isBulkMode ? 'Khoảng thời gian' : 'Ngày áp dụng'),
+            _buildSectionHeader(_isBulkMode ? l10n.dateRange : l10n.applyDate),
 
             if (_isBulkMode) ...[
               Row(

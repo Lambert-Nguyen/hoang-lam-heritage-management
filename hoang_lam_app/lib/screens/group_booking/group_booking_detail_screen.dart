@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/group_booking.dart';
 import '../../providers/group_booking_provider.dart';
 import '../../widgets/common/app_button.dart';
@@ -25,25 +26,26 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final bookingAsync = ref.watch(groupBookingByIdProvider(widget.bookingId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chi tiết đặt phòng đoàn'),
+        title: Text(l10n.groupBookingDetails),
         actions: [
           bookingAsync.whenOrNull(
             data: (booking) => PopupMenuButton<String>(
               onSelected: (v) => _handleMenuAction(v, booking),
               itemBuilder: (context) => [
-                const PopupMenuItem(value: 'edit', child: ListTile(leading: Icon(Icons.edit), title: Text('Sửa'), contentPadding: EdgeInsets.zero)),
+                PopupMenuItem(value: 'edit', child: ListTile(leading: const Icon(Icons.edit), title: Text(l10n.edit), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.tentative)
-                  const PopupMenuItem(value: 'confirm', child: ListTile(leading: Icon(Icons.check_circle, color: Colors.green), title: Text('Xác nhận'), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'confirm', child: ListTile(leading: const Icon(Icons.check_circle, color: Colors.green), title: Text(l10n.confirm), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.confirmed)
-                  const PopupMenuItem(value: 'check_in', child: ListTile(leading: Icon(Icons.login, color: Colors.blue), title: Text('Check-in'), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'check_in', child: ListTile(leading: const Icon(Icons.login, color: Colors.blue), title: Text(l10n.checkIn), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.checkedIn)
-                  const PopupMenuItem(value: 'check_out', child: ListTile(leading: Icon(Icons.logout, color: Colors.purple), title: Text('Check-out'), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'check_out', child: ListTile(leading: const Icon(Icons.logout, color: Colors.purple), title: Text(l10n.checkOut), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.tentative || booking.status == GroupBookingStatus.confirmed)
-                  const PopupMenuItem(value: 'cancel', child: ListTile(leading: Icon(Icons.cancel, color: Colors.red), title: Text('Hủy'), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'cancel', child: ListTile(leading: const Icon(Icons.cancel, color: Colors.red), title: Text(l10n.cancel), contentPadding: EdgeInsets.zero)),
               ],
             ),
           ) ?? const SizedBox.shrink(),
@@ -52,7 +54,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
       body: bookingAsync.when(
         data: (booking) => _buildContent(booking),
         loading: () => const LoadingIndicator(),
-        error: (e, _) => ErrorDisplay(message: 'Lỗi: $e', onRetry: () => ref.invalidate(groupBookingByIdProvider(widget.bookingId))),
+        error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(groupBookingByIdProvider(widget.bookingId))),
       ),
       bottomNavigationBar: bookingAsync.whenOrNull(data: (booking) => _buildBottomBar(booking)),
     );
