@@ -269,7 +269,7 @@ class RoomStatusUpdateSerializer(serializers.Serializer):
     """Serializer for updating room status."""
 
     status = serializers.ChoiceField(choices=Room.Status.choices, required=True)
-    notes = serializers.CharField(required=False, allow_blank=True)
+    notes = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     def validate_status(self, value):
         """Validate status transition."""
