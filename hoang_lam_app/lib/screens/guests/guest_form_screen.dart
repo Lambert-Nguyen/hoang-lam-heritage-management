@@ -531,7 +531,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         result = await ref.read(guestStateProvider.notifier).createGuest(guest);
       }
 
-      if (result != null && mounted) {
+      if (!context.mounted) return;
+
+      if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -543,16 +545,23 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
           ),
         );
         Navigator.pop(context, result);
-      }
-    } catch (e) {
-      if (mounted) {
+      } else {
+        // Show error if result is null but no exception was thrown
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.error}: ${e.toString()}'),
+            content: Text(context.l10n.error),
             backgroundColor: AppColors.error,
           ),
         );
       }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${context.l10n.error}: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
