@@ -256,7 +256,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
     ref.invalidate(filteredTasksProvider(_filter));
   }
 
-  void _showFilterSheet() async {
+  Future<void> _showFilterSheet() async {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,

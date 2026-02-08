@@ -49,6 +49,12 @@ final isAuthLoadingProvider = Provider<bool>((ref) {
   );
 });
 
+/// Provider for staff list
+final staffListProvider = FutureProvider<List<User>>((ref) async {
+  final repository = ref.watch(authRepositoryProvider);
+  return repository.getStaffList();
+});
+
 /// Auth state notifier
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
@@ -160,7 +166,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Change password
-  Future<bool> changePassword({
+  /// Returns null on success, or an error message string on failure
+  Future<String?> changePassword({
     required String oldPassword,
     required String newPassword,
     required String confirmPassword,
@@ -172,8 +179,37 @@ class AuthNotifier extends StateNotifier<AuthState> {
         confirmPassword: confirmPassword,
       );
       await _repository.changePassword(request);
+      return null;
+    } catch (e) {
+      return _getErrorMessage(e);
+    }
+  }
+
+  /// Refresh session by validating/refreshing the token with the server
+  /// Returns true if session is still valid
+  Future<bool> refreshSession() async {
+    try {
+      final refreshResponse = await _repository.refreshToken();
+      if (refreshResponse == null) {
+        state = const AuthState.unauthenticated();
+        return false;
+      }
+
+      // Token is valid, update session timer
+      _startSessionTimer(refreshResponse.access);
+
+      // Ensure we have user data
+      final cachedUser = await _repository.getCachedUser();
+      if (cachedUser != null) {
+        state = AuthState.authenticated(user: cachedUser);
+      } else {
+        final user = await _repository.getCurrentUser();
+        state = AuthState.authenticated(user: user);
+      }
       return true;
     } catch (e) {
+      await _repository.clearAuthData();
+      state = const AuthState.unauthenticated();
       return false;
     }
   }
@@ -231,6 +267,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       }
 
       _sessionTimer = Timer(duration, () {
+        if (!mounted) return;
         handleSessionExpired();
       });
     } catch (e) {

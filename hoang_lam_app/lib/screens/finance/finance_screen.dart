@@ -52,22 +52,26 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _refreshData,
-        child: Column(
-          children: [
-            // Monthly summary
-            _buildMonthlySummary(context, l10n, monthlySummaryAsync),
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              // Monthly summary
+              _buildMonthlySummary(context, l10n, monthlySummaryAsync),
 
-            // Weekly chart (GAP-012 fix)
-            _buildChart(monthlySummaryAsync),
+              // Weekly chart (GAP-012 fix)
+              _buildChart(monthlySummaryAsync),
 
-            // Filter tabs
-            _buildFilterTabs(context, l10n),
+              // Filter tabs
+              _buildFilterTabs(context, l10n),
 
-            // Transaction list
-            Expanded(
-              child: _buildTransactionList(context, entriesAsync),
-            ),
-          ],
+              // Transaction list
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: _buildTransactionList(context, entriesAsync),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Column(
@@ -98,11 +102,14 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     ref.invalidate(currentMonthSummaryProvider);
     ref.invalidate(financialEntriesProvider);
     ref.invalidate(financialCategoriesProvider);
-    // Wait a bit for the UI to update
-    await Future.delayed(const Duration(milliseconds: 300));
+    // Wait for the providers to actually reload
+    await Future.wait([
+      ref.read(currentMonthSummaryProvider.future),
+      ref.read(financialEntriesProvider.future),
+    ]);
   }
 
-  void _navigateToForm(EntryType type) async {
+  Future<void> _navigateToForm(EntryType type) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (context) => FinanceFormScreen(entryType: type),
@@ -466,7 +473,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     );
   }
 
-  void _showEntryDetail(FinancialEntryListItem listItem) async {
+  Future<void> _showEntryDetail(FinancialEntryListItem listItem) async {
     // Fetch full entry details
     final entry = await ref.read(financialEntryByIdProvider(listItem.id).future);
     if (!mounted) return;
@@ -488,7 +495,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     );
   }
 
-  void _editEntry(FinancialEntry entry) async {
+  Future<void> _editEntry(FinancialEntry entry) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (context) => FinanceFormScreen(

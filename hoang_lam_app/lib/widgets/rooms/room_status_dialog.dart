@@ -15,9 +15,9 @@ class RoomStatusDialog extends ConsumerStatefulWidget {
     required this.room,
   });
 
-  /// Show the dialog and return the selected status
-  static Future<bool?> show(BuildContext context, Room room) {
-    return showDialog<bool>(
+  /// Show the dialog and return the new RoomStatus on success, or null on cancel/failure
+  static Future<RoomStatus?> show(BuildContext context, Room room) {
+    return showDialog<RoomStatus>(
       context: context,
       builder: (context) => RoomStatusDialog(room: room),
     );
@@ -31,6 +31,19 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
   late RoomStatus _selectedStatus;
   final _notesController = TextEditingController();
   bool _isLoading = false;
+
+  /// Valid status transitions: from -> list of allowed targets
+  static const Map<RoomStatus, List<RoomStatus>> _validTransitions = {
+    RoomStatus.available: [RoomStatus.occupied, RoomStatus.cleaning, RoomStatus.maintenance, RoomStatus.blocked],
+    RoomStatus.occupied: [RoomStatus.cleaning, RoomStatus.available],
+    RoomStatus.cleaning: [RoomStatus.available, RoomStatus.maintenance],
+    RoomStatus.maintenance: [RoomStatus.available, RoomStatus.blocked],
+    RoomStatus.blocked: [RoomStatus.available, RoomStatus.maintenance],
+  };
+
+  List<RoomStatus> get _allowedStatuses {
+    return _validTransitions[widget.room.status] ?? RoomStatus.values;
+  }
 
   @override
   void initState() {
@@ -95,7 +108,8 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
             ),
             const SizedBox(height: AppSpacing.sm),
 
-            ...RoomStatus.values.map((status) {
+            // Only show valid transition targets plus the current status
+            ...{widget.room.status, ..._allowedStatuses}.toList().map((status) {
               final isSelected = _selectedStatus == status;
               final isCurrentStatus = widget.room.status == status;
 
@@ -183,7 +197,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.pop(context, false),
+          onPressed: _isLoading ? null : () => Navigator.pop(context, null),
           child: const Text('Hủy'),
         ),
         ElevatedButton(
@@ -221,22 +235,18 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
     });
 
     if (success) {
-      Navigator.pop(context, true);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Đã cập nhật phòng ${widget.room.number} thành ${_selectedStatus.displayName}',
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
+      // Return the new status to the calling screen; let it show the SnackBar
+      Navigator.pop(context, _selectedStatus);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Không thể cập nhật trạng thái phòng'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // Stay in the dialog and show error
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Không thể cập nhật trạng thái phòng'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 }

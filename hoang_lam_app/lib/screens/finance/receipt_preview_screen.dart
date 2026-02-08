@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
-import '../../repositories/finance_repository.dart';
+import '../../providers/finance_provider.dart';
 import '../../widgets/finance/currency_selector.dart';
 
 /// Screen to preview and download a receipt for a booking
-class ReceiptPreviewScreen extends StatefulWidget {
+class ReceiptPreviewScreen extends ConsumerStatefulWidget {
   final int bookingId;
   final String? guestName;
   final String? roomNumber;
@@ -18,12 +23,10 @@ class ReceiptPreviewScreen extends StatefulWidget {
   });
 
   @override
-  State<ReceiptPreviewScreen> createState() => _ReceiptPreviewScreenState();
+  ConsumerState<ReceiptPreviewScreen> createState() => _ReceiptPreviewScreenState();
 }
 
-class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
-  final FinanceRepository _repository = FinanceRepository();
-  
+class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
   ReceiptData? _receipt;
   bool _isLoading = true;
   String? _error;
@@ -42,7 +45,8 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     });
 
     try {
-      final receipt = await _repository.generateReceipt(
+      final repository = ref.read(financeRepositoryProvider);
+      final receipt = await repository.generateReceipt(
         widget.bookingId,
         currency: _selectedCurrency,
       );
@@ -58,12 +62,85 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
     }
   }
 
-  Future<void> _downloadPdf() async {
-    // PDF download will be implemented when backend is deployed
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.loading)),
+  String _buildReceiptText() {
+    final receipt = _receipt!;
+    final l10n = context.l10n;
+    final buffer = StringBuffer();
+
+    buffer.writeln(l10n.appName);
+    buffer.writeln(l10n.finance);
+    buffer.writeln('#${receipt.receiptNumber}');
+    buffer.writeln('${l10n.selectDate}: ${_formatDate(receipt.receiptDate)}');
+    buffer.writeln();
+    buffer.writeln('--- ${l10n.guestInfo} ---');
+    buffer.writeln('${l10n.guestName}: ${receipt.guestName}');
+    if (receipt.guestPhone != null) {
+      buffer.writeln('${l10n.guestPhone}: ${receipt.guestPhone}');
+    }
+    buffer.writeln('${l10n.room}: ${receipt.roomNumber}');
+    buffer.writeln();
+    buffer.writeln('--- ${l10n.bookingInfo} ---');
+    buffer.writeln('${l10n.checkIn}: ${_formatDate(receipt.checkInDate)}');
+    buffer.writeln('${l10n.checkOut}: ${_formatDate(receipt.checkOutDate)}');
+    buffer.writeln('${l10n.nights}: ${receipt.numberOfNights}');
+    buffer.writeln('${l10n.ratePerNight}: ${_formatAmount(receipt.nightlyRate)}');
+    buffer.writeln();
+    buffer.writeln('--- ${l10n.expense} ---');
+    buffer.writeln('${l10n.room}: ${_formatAmount(receipt.roomCharges)}');
+    if (receipt.additionalCharges > 0) {
+      buffer.writeln('${l10n.total}: ${_formatAmount(receipt.additionalCharges)}');
+    }
+    buffer.writeln('${l10n.totalAmount}: ${_formatAmount(receipt.totalAmount)}');
+    buffer.writeln('${l10n.depositPaid}: ${_formatAmount(receipt.depositPaid)}');
+    buffer.writeln('${l10n.balanceDue}: ${_formatAmount(receipt.balanceDue)}');
+
+    return buffer.toString();
+  }
+
+  Future<void> _downloadReceipt() async {
+    if (_receipt == null) return;
+
+    try {
+      final receiptText = _buildReceiptText();
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/receipt_${_receipt!.receiptNumber}.txt');
+      await file.writeAsString(receiptText);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.l10n.success}: ${file.path}')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.l10n.error}: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _shareReceipt() async {
+    if (_receipt == null) return;
+
+    try {
+      final receiptText = _buildReceiptText();
+      final directory = await getTemporaryDirectory();
+      final file = File('${directory.path}/receipt_${_receipt!.receiptNumber}.txt');
+      await file.writeAsString(receiptText);
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: '${context.l10n.finance} #${_receipt!.receiptNumber}',
+        ),
       );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.l10n.error}: $e')),
+        );
+      }
     }
   }
 
@@ -82,7 +159,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
               Text(
                 '${l10n.room} ${widget.roomNumber}',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onPrimary.withOpacity(0.8),
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                 ),
               ),
           ],
@@ -100,7 +177,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
           const SizedBox(width: 8),
           if (_receipt != null)
             IconButton(
-              onPressed: _downloadPdf,
+              onPressed: _downloadReceipt,
               icon: const Icon(Icons.download),
               tooltip: l10n.save,
             ),
@@ -165,12 +242,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    // Share functionality
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.loading)),
-                    );
-                  },
+                  onPressed: _shareReceipt,
                   icon: const Icon(Icons.share),
                   label: Text(l10n.save),
                 ),
@@ -178,7 +250,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: FilledButton.icon(
-                  onPressed: _downloadPdf,
+                  onPressed: _downloadReceipt,
                   icon: const Icon(Icons.download),
                   label: Text(l10n.save),
                 ),
@@ -200,7 +272,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -241,7 +313,7 @@ class _ReceiptPreviewScreenState extends State<ReceiptPreviewScreen> {
                 Text(
                   '${l10n.selectDate}: ${_formatDate(receipt.receiptDate)}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
+                    color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   ),
                 ),
               ],

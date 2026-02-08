@@ -147,7 +147,11 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _buildRoomSelection() {
-    // Use all rooms for now, filter available in the future
+    // TODO: Filter rooms by availability for the selected date range using
+    // availableRoomsProvider. Currently shows all active rooms regardless of
+    // existing bookings. A full implementation should query the backend
+    // availability endpoint and only display rooms that are free for the
+    // chosen check-in/check-out window.
     final roomsAsync = ref.watch(roomsProvider);
 
     return roomsAsync.when(
@@ -271,11 +275,17 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Future<void> _selectDateTime(BuildContext context, bool isCheckIn) async {
     final initialDate = isCheckIn ? _checkInDate : _checkOutDate;
-    
+    // For check-out, the earliest selectable date is the day after check-in
+    final firstDate = isCheckIn
+        ? DateTime.now().subtract(const Duration(days: 30))
+        : _checkInDate.add(const Duration(days: 1));
+    // Ensure initialDate is not before firstDate
+    final adjustedInitialDate = initialDate.isBefore(firstDate) ? firstDate : initialDate;
+
     final date = await showDatePicker(
       context: context,
-      initialDate: initialDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 30)),
+      initialDate: adjustedInitialDate,
+      firstDate: firstDate,
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     
@@ -532,7 +542,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     }
   }
 
-  void _handleSubmit() async {
+  Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -549,6 +559,59 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         SnackBar(content: Text(context.l10n.pleaseSelectCreateGuest)),
       );
       return;
+    }
+
+    if (!_checkOutDate.isAfter(_checkInDate)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${context.l10n.checkOut} must be after ${context.l10n.checkIn}')),
+      );
+      return;
+    }
+
+    // TODO: Replace with a proper server-side availability check using
+    // availableRoomsProvider once the backend endpoint is fully integrated.
+    // For now, warn if the selected room has overlapping bookings.
+    if (_selectedRoomId != null && widget.booking == null) {
+      try {
+        final existingBookings = await ref.read(
+          bookingsByRoomProvider(BookingsByRoomParams(
+            roomId: _selectedRoomId!,
+            from: _checkInDate,
+            to: _checkOutDate,
+          )).future,
+        );
+        final overlapping = existingBookings.where((b) =>
+          b.status != BookingStatus.cancelled &&
+          b.status != BookingStatus.noShow &&
+          b.checkInDate.isBefore(_checkOutDate) &&
+          b.checkOutDate.isAfter(_checkInDate),
+        ).toList();
+
+        if (overlapping.isNotEmpty && mounted) {
+          final proceed = await showDialog<bool>(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              title: const Text('Cảnh báo trùng lịch'),
+              content: Text(
+                'Phòng này đã có ${overlapping.length} đặt phòng trong khoảng thời gian đã chọn. Bạn có muốn tiếp tục?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: Text(context.l10n.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: Text(context.l10n.confirm),
+                ),
+              ],
+            ),
+          );
+          if (proceed != true) return;
+        }
+      } catch (_) {
+        // If availability check fails, allow the booking to proceed
+      }
     }
 
     setState(() {

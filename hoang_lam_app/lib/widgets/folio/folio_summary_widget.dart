@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 
 /// Widget to display folio summary (totals, balance, guest info)
@@ -30,7 +31,7 @@ class FolioSummaryWidget extends StatelessWidget {
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: AppColors.primary.withOpacity(0.1),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                   child: const Icon(
                     Icons.person,
                     color: AppColors.primary,
@@ -58,7 +59,7 @@ class FolioSummaryWidget extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'Phòng ${summary.roomNumber}',
+                            '${context.l10n.room} ${summary.roomNumber}',
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 13,
@@ -76,9 +77,9 @@ class FolioSummaryWidget extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: balanceColor.withOpacity(0.1),
+                    color: balanceColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: balanceColor.withOpacity(0.5)),
+                    border: Border.all(color: balanceColor.withValues(alpha: 0.5)),
                   ),
                   child: Text(
                     isSettled ? 'Đã thanh toán' : 'Còn nợ',

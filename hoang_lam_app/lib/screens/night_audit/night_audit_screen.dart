@@ -68,7 +68,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     await Future.delayed(const Duration(milliseconds: 300));
   }
 
-  void _selectDate() async {
+  Future<void> _selectDate() async {
     final date = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
@@ -531,10 +531,20 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     if (audit == null) return;
 
     final result = await ref.read(nightAuditNotifierProvider.notifier).recalculateAudit(audit.id);
-    if (result != null && mounted) {
+    if (!mounted) return;
+
+    if (result != null) {
       ref.invalidate(todayAuditProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Đã tính lại thống kê')),
+      );
+    } else {
+      final error = ref.read(nightAuditNotifierProvider).error;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Lỗi tính lại: ${error ?? 'Không xác định'}'),
+          backgroundColor: AppColors.error,
+        ),
       );
     }
   }
@@ -562,10 +572,20 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
 
     if (confirmed == true) {
       final result = await ref.read(nightAuditNotifierProvider.notifier).closeAudit(audit.id);
-      if (result != null && mounted) {
+      if (!mounted) return;
+
+      if (result != null) {
         ref.invalidate(todayAuditProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Đã đóng kiểm toán')),
+        );
+      } else {
+        final error = ref.read(nightAuditNotifierProvider).error;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi đóng kiểm toán: ${error ?? 'Không xác định'}'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     }

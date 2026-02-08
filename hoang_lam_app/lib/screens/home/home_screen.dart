@@ -35,7 +35,11 @@ class HomeScreen extends ConsumerWidget {
           AppIconButton(
             icon: Icons.notifications_outlined,
             onPressed: () {
-              // TODO: Show notifications
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(context.l10n.featureComingSoon),
+                ),
+              );
             },
             tooltip: context.l10n.notifications,
           ),
@@ -53,6 +57,8 @@ class HomeScreen extends ConsumerWidget {
           ref.invalidate(dashboardSummaryProvider);
           ref.invalidate(todayBookingsProvider);
           ref.invalidate(roomsProvider);
+          // Await the refreshed data so the indicator stays visible
+          await ref.read(dashboardSummaryProvider.future);
         },
         child: dashboardAsync.when(
           data: (dashboard) {
@@ -131,44 +137,60 @@ class HomeScreen extends ConsumerWidget {
               ),
             );
           },
-          loading: () => const Center(
-            child: CircularProgressIndicator(),
+          loading: () => LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+            ),
           ),
-          error: (error, stack) => Center(
-            child: Padding(
-              padding: AppSpacing.paddingScreen,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 48,
-                    color: AppColors.error,
-                  ),
-                  AppSpacing.gapVerticalMd,
-                  Text(
-                    context.l10n.dashboardLoadError,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+          error: (error, stack) => LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: Center(
+                  child: Padding(
+                    padding: AppSpacing.paddingScreen,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: AppColors.error,
+                        ),
+                        AppSpacing.gapVerticalMd,
+                        Text(
+                          context.l10n.dashboardLoadError,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        AppSpacing.gapVerticalSm,
+                        Text(
+                          error.toString(),
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        AppSpacing.gapVerticalMd,
+                        ElevatedButton(
+                          onPressed: () {
+                            ref.invalidate(dashboardSummaryProvider);
+                          },
+                          child: Text(context.l10n.retry),
+                        ),
+                      ],
                     ),
                   ),
-                  AppSpacing.gapVerticalSm,
-                  Text(
-                    error.toString(),
-                    style: const TextStyle(
-                      color: AppColors.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  AppSpacing.gapVerticalMd,
-                  ElevatedButton(
-                    onPressed: () {
-                      ref.invalidate(dashboardSummaryProvider);
-                    },
-                    child: Text(context.l10n.retry),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -268,10 +290,12 @@ class HomeScreen extends ConsumerWidget {
                 // Show quick status update
                 final newStatus = await QuickStatusBottomSheet.show(context, room);
                 if (newStatus != null) {
-                  ref.read(roomStateProvider.notifier).updateRoomStatus(
+                  await ref.read(roomStateProvider.notifier).updateRoomStatus(
                     room.id,
                     newStatus,
                   );
+                  // Refresh dashboard stats after room status change
+                  ref.invalidate(dashboardSummaryProvider);
                 }
               },
             );

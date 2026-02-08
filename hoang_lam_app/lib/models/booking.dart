@@ -267,6 +267,30 @@ extension BookingSourceExtension on BookingSource {
     }
   }
 
+  /// Get the snake_case API value for this source
+  String get toApiValue {
+    switch (this) {
+      case BookingSource.walkIn:
+        return 'walk_in';
+      case BookingSource.phone:
+        return 'phone';
+      case BookingSource.website:
+        return 'website';
+      case BookingSource.bookingCom:
+        return 'booking_com';
+      case BookingSource.agoda:
+        return 'agoda';
+      case BookingSource.airbnb:
+        return 'airbnb';
+      case BookingSource.traveloka:
+        return 'traveloka';
+      case BookingSource.otherOta:
+        return 'other_ota';
+      case BookingSource.other:
+        return 'other';
+    }
+  }
+
   /// Whether this source is from an OTA
   bool get isOta => [
         BookingSource.bookingCom,

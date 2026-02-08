@@ -75,7 +75,7 @@ class FolioItemListWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: type.color.withOpacity(0.1),
+                  color: type.color.withValues(alpha: 0.1),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(12),
                   ),
@@ -144,7 +144,7 @@ class FolioItemListWidget extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: isVoided
               ? Colors.grey[300]
-              : item.itemType.color.withOpacity(0.2),
+              : item.itemType.color.withValues(alpha: 0.2),
           child: Icon(
             item.itemType.icon,
             color: isVoided ? Colors.grey : item.itemType.color,
@@ -230,39 +230,52 @@ class FolioItemListWidget extends StatelessWidget {
               ),
           ],
         ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              currencyFormat.format(item.totalPrice),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: isVoided ? Colors.grey : AppColors.primary,
-                decoration: isVoided ? TextDecoration.lineThrough : null,
-              ),
-            ),
-            if (!isVoided && item.isPaid)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    'Đã TT',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: Colors.green[700],
-                    ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  currencyFormat.format(item.totalPrice),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: isVoided ? Colors.grey : AppColors.primary,
+                    decoration: isVoided ? TextDecoration.lineThrough : null,
                   ),
                 ),
+                if (!isVoided && item.isPaid)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green[100],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Đã TT',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.green[700],
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            if (!isVoided && onVoid != null)
+              IconButton(
+                icon: Icon(Icons.block, color: Colors.red[400], size: 20),
+                tooltip: 'Hủy phí',
+                onPressed: () => onVoid!(item),
+                padding: const EdgeInsets.only(left: 8),
+                constraints: const BoxConstraints(),
               ),
           ],
         ),

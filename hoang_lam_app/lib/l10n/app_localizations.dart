@@ -69,6 +69,7 @@ class AppLocalizations {
   String get actionCannotBeUndone => translate('action_cannot_be_undone');
   String get errorOccurred => translate('error_occurred');
   String get errorTryAgain => translate('error_try_again');
+  String get featureComingSoon => translate('feature_coming_soon');
   String get update => translate('update');
   String get create => translate('create');
   String get viewAll => translate('view_all');
@@ -264,6 +265,7 @@ class AppLocalizations {
   String get personalInfo => translate('personal_info');
   String get nationality => translate('nationality');
   String get gender => translate('gender');
+  String get dateOfBirth => translate('date_of_birth');
   String get age => translate('age');
   String get yearsOld => translate('years_old');
   String get call => translate('call');
@@ -637,6 +639,7 @@ const Map<String, String> _viTranslations = {
   'success': 'Thành công',
   'retry': 'Thử lại',
   'no_data': 'Không có dữ liệu',
+  'feature_coming_soon': 'Tính năng sắp ra mắt',
   'offline': 'Đang offline',
   'close': 'Đóng',
   'continue': 'Tiếp tục',
@@ -840,6 +843,7 @@ const Map<String, String> _viTranslations = {
   'personal_info': 'Thông tin cá nhân',
   'nationality': 'Quốc tịch',
   'gender': 'Giới tính',
+  'date_of_birth': 'Ngày sinh',
   'age': 'Tuổi',
   'years_old': 'tuổi',
   'call': 'Gọi điện',
@@ -858,7 +862,7 @@ const Map<String, String> _viTranslations = {
   'please_enter_full_name': 'Vui lòng nhập họ và tên',
   'full_name_min_length': 'Họ và tên phải có ít nhất 2 ký tự',
   'please_enter_phone': 'Vui lòng nhập số điện thoại',
-  'phone_must_be_10': 'Số điện thoại phải có 10 số',
+  'phone_must_be_10': 'Số điện thoại phải có 10-11 số',
   'phone_must_start_with_0': 'Số điện thoại phải bắt đầu bằng 0',
   'invalid_email': 'Email không hợp lệ',
   'not_specified': 'Không xác định',
@@ -1213,6 +1217,7 @@ const Map<String, String> _enTranslations = {
   'success': 'Success',
   'retry': 'Retry',
   'no_data': 'No data',
+  'feature_coming_soon': 'Feature coming soon',
   'offline': 'Offline',
   'close': 'Close',
   'continue': 'Continue',
@@ -1416,6 +1421,7 @@ const Map<String, String> _enTranslations = {
   'personal_info': 'Personal information',
   'nationality': 'Nationality',
   'gender': 'Gender',
+  'date_of_birth': 'Date of birth',
   'age': 'Age',
   'years_old': 'years old',
   'call': 'Call',
@@ -1434,7 +1440,7 @@ const Map<String, String> _enTranslations = {
   'please_enter_full_name': 'Please enter full name',
   'full_name_min_length': 'Full name must be at least 2 characters',
   'please_enter_phone': 'Please enter phone number',
-  'phone_must_be_10': 'Phone number must have 10 digits',
+  'phone_must_be_10': 'Phone number must have 10-11 digits',
   'phone_must_start_with_0': 'Phone number must start with 0',
   'invalid_email': 'Invalid email',
   'not_specified': 'Not specified',

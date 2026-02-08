@@ -319,17 +319,24 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       HousekeepingTask? result;
       // Format date as YYYY-MM-DD string for API
       final formattedDate = '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
-      
-      // Note: Update functionality not yet implemented in notifier
-      // For now, only create new tasks
-      result = await notifier.createTask(
-        HousekeepingTaskCreate(
-          room: _selectedRoomId!,
-          taskType: _selectedTaskType.apiValue,
-          scheduledDate: formattedDate,
-          notes: _notesController.text.isNotEmpty ? _notesController.text : null,
-        ),
-      );
+
+      if (widget.isEditing) {
+        result = await notifier.updateTask(
+          widget.task!.id,
+          HousekeepingTaskUpdate(
+            notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+          ),
+        );
+      } else {
+        result = await notifier.createTask(
+          HousekeepingTaskCreate(
+            room: _selectedRoomId!,
+            taskType: _selectedTaskType.apiValue,
+            scheduledDate: formattedDate,
+            notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+          ),
+        );
+      }
 
       if (result != null && mounted) {
         final l10n = AppLocalizations.of(context)!;

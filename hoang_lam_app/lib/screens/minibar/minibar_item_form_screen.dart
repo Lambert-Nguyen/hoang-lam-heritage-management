@@ -29,6 +29,9 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
   bool _isActive = true;
   bool _isLoading = false;
 
+  TextEditingController? _autocompleteController;
+  VoidCallback? _autocompleteSyncListener;
+
   bool get _isEditing => widget.item != null;
 
   @override
@@ -47,11 +50,20 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
 
   @override
   void dispose() {
+    _removeAutocompleteListener();
     _nameController.dispose();
     _categoryController.dispose();
     _costController.dispose();
     _priceController.dispose();
     super.dispose();
+  }
+
+  void _removeAutocompleteListener() {
+    if (_autocompleteController != null && _autocompleteSyncListener != null) {
+      _autocompleteController!.removeListener(_autocompleteSyncListener!);
+    }
+    _autocompleteController = null;
+    _autocompleteSyncListener = null;
   }
 
   @override
@@ -114,11 +126,16 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
                       },
                       fieldViewBuilder: (context, controller, focusNode,
                           onFieldSubmitted) {
-                        // Sync with our controller
-                        controller.text = _categoryController.text;
-                        controller.addListener(() {
-                          _categoryController.text = controller.text;
-                        });
+                        // Sync with our controller, avoiding listener accumulation
+                        if (_autocompleteController != controller) {
+                          _removeAutocompleteListener();
+                          _autocompleteController = controller;
+                          controller.text = _categoryController.text;
+                          _autocompleteSyncListener = () {
+                            _categoryController.text = controller.text;
+                          };
+                          controller.addListener(_autocompleteSyncListener!);
+                        }
                         return TextFormField(
                           controller: controller,
                           focusNode: focusNode,

@@ -51,13 +51,13 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final success = await ref.read(authStateProvider.notifier).changePassword(
+      final errorMessage = await ref.read(authStateProvider.notifier).changePassword(
             oldPassword: _oldPasswordController.text,
             newPassword: _newPasswordController.text,
             confirmPassword: _confirmPasswordController.text,
           );
 
-      if (success) {
+      if (errorMessage == null) {
         setState(() {
           _successMessage = context.l10n.passwordChangeSuccess;
         });
@@ -74,7 +74,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
         }
       } else {
         setState(() {
-          _errorMessage = context.l10n.passwordChangeFailed;
+          _errorMessage = errorMessage;
         });
       }
     } catch (e) {
@@ -273,7 +273,7 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                   controller: _confirmPasswordController,
                   label: context.l10n.confirmNewPassword,
                   hint: '••••••••',
-                  prefixIcon: Icons.lock_clock,
+                  prefixIcon: Icons.lock,
                   obscureText: _obscureConfirmPassword,
                   textInputAction: TextInputAction.done,
                   enabled: !_isLoading,

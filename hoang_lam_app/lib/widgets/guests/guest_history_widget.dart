@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
 
@@ -100,7 +101,7 @@ class GuestHistoryWidget extends ConsumerWidget {
           ),
           AppSpacing.gapVerticalSm,
           Text(
-            'Chưa có lịch sử đặt phòng',
+            context.l10n.noHistory,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -122,7 +123,7 @@ class GuestHistoryWidget extends ConsumerWidget {
           const Icon(Icons.error_outline, color: AppColors.error, size: 48),
           AppSpacing.gapVerticalSm,
           Text(
-            'Không thể tải lịch sử',
+            context.l10n.dataLoadError,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColors.error,
                 ),
@@ -131,7 +132,7 @@ class GuestHistoryWidget extends ConsumerWidget {
           TextButton.icon(
             onPressed: () => ref.invalidate(guestHistoryProvider(guestId)),
             icon: const Icon(Icons.refresh),
-            label: const Text('Thử lại'),
+            label: Text(context.l10n.retry),
           ),
         ],
       ),

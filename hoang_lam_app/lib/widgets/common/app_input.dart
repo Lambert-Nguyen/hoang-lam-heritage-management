@@ -109,10 +109,10 @@ class PhoneTextField extends StatelessWidget {
       error: error,
       keyboardType: TextInputType.phone,
       prefixIcon: Icons.phone,
-      maxLength: 10,
+      maxLength: 11,
       inputFormatters: [
         FilteringTextInputFormatter.digitsOnly,
-        LengthLimitingTextInputFormatter(10),
+        LengthLimitingTextInputFormatter(11),
       ],
       onChanged: onChanged,
       validator: validator ?? _defaultPhoneValidator,
@@ -123,8 +123,8 @@ class PhoneTextField extends StatelessWidget {
     if (value == null || value.isEmpty) {
       return null; // Optional field
     }
-    if (value.length != 10) {
-      return 'Số điện thoại phải có 10 số';
+    if (value.length < 10 || value.length > 11) {
+      return 'Số điện thoại phải có 10-11 số';
     }
     if (!value.startsWith('0')) {
       return 'Số điện thoại phải bắt đầu bằng 0';

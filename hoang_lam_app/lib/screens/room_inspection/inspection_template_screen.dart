@@ -260,7 +260,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
     );
   }
 
-  void _duplicateTemplate(InspectionTemplate template) async {
+  Future<void> _duplicateTemplate(InspectionTemplate template) async {
     try {
       final newTemplate = InspectionTemplateCreate(
         name: '${template.name} (Copy)',

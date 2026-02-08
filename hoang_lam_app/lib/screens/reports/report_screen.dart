@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -255,12 +259,27 @@ class ReportScreen extends ConsumerWidget {
 
     if (context.mounted) {
       if (result != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Đã xuất báo cáo (${result.length} bytes)'),
-            backgroundColor: AppColors.success,
-          ),
-        );
+        try {
+          final dir = await getTemporaryDirectory();
+          final extension = format == ExportFormat.xlsx ? 'xlsx' : 'csv';
+          final timestamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+          final fileName = 'report_$timestamp.$extension';
+          final file = File('${dir.path}/$fileName');
+          await file.writeAsBytes(result);
+
+          await SharePlus.instance.share(
+            ShareParams(files: [XFile(file.path)]),
+          );
+        } catch (e) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Lỗi lưu file: $e'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+          }
+        }
       } else {
         final state = ref.read(reportScreenStateProvider);
         if (state.error != null) {
@@ -381,8 +400,8 @@ class _OccupancyReportTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: report.occupancyRate >= 70
-            ? AppColors.success.withOpacity(0.2)
-            : AppColors.warning.withOpacity(0.2),
+            ? AppColors.success.withValues(alpha: 0.2)
+            : AppColors.warning.withValues(alpha: 0.2),
         child: Text(
           '${report.occupancyRate.toInt()}%',
           style: TextStyle(
@@ -496,8 +515,8 @@ class _RevenueReportTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: report.netProfit >= 0
-            ? AppColors.success.withOpacity(0.2)
-            : AppColors.error.withOpacity(0.2),
+            ? AppColors.success.withValues(alpha: 0.2)
+            : AppColors.error.withValues(alpha: 0.2),
         child: Icon(
           report.netProfit >= 0 ? Icons.trending_up : Icons.trending_down,
           color: report.netProfit >= 0 ? AppColors.success : AppColors.error,
@@ -762,7 +781,7 @@ class _ExpenseReportTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: report.colorValue.withOpacity(0.2),
+        backgroundColor: report.colorValue.withValues(alpha: 0.2),
         child: Icon(report.iconData, color: report.colorValue),
       ),
       title: Text(report.categoryName),
@@ -866,7 +885,7 @@ class _ChannelPerformanceTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: channel.isHighPerforming
-            ? AppColors.success.withOpacity(0.2)
+            ? AppColors.success.withValues(alpha: 0.2)
             : AppColors.surfaceVariant,
         child: Icon(
           Icons.source,
@@ -1028,7 +1047,7 @@ class _MetricCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppSpacing.sm),
             ),
             child: Icon(icon, color: color),

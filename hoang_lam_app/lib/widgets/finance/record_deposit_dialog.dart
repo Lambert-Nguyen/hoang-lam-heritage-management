@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/finance.dart';
-import '../../repositories/finance_repository.dart';
+import '../../providers/finance_provider.dart';
 
 /// Dialog to record a deposit payment
-class RecordDepositDialog extends StatefulWidget {
+class RecordDepositDialog extends ConsumerStatefulWidget {
   final int bookingId;
   final double? suggestedAmount;
   final String? roomNumber;
@@ -19,10 +20,10 @@ class RecordDepositDialog extends StatefulWidget {
   });
 
   @override
-  State<RecordDepositDialog> createState() => _RecordDepositDialogState();
+  ConsumerState<RecordDepositDialog> createState() => _RecordDepositDialogState();
 }
 
-class _RecordDepositDialogState extends State<RecordDepositDialog> {
+class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
@@ -30,8 +31,6 @@ class _RecordDepositDialogState extends State<RecordDepositDialog> {
   PaymentMethod _selectedMethod = PaymentMethod.cash;
   bool _isLoading = false;
   String? _error;
-
-  final FinanceRepository _repository = FinanceRepository();
 
   @override
   void initState() {
@@ -66,7 +65,8 @@ class _RecordDepositDialogState extends State<RecordDepositDialog> {
         notes: _notesController.text.isNotEmpty ? _notesController.text : null,
       );
 
-      final payment = await _repository.recordDeposit(request);
+      final repository = ref.read(financeRepositoryProvider);
+      final payment = await repository.recordDeposit(request);
 
       if (mounted) {
         Navigator.of(context).pop(payment);

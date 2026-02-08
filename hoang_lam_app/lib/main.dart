@@ -24,13 +24,10 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Set system UI overlay style
+  // Set status bar to transparent (nav bar color set dynamically in app builder)
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
 
@@ -67,10 +64,19 @@ class HoangLamApp extends ConsumerWidget {
       // Router
       routerConfig: router,
 
-      // Builder for text scaling (accessibility)
+      // Builder for text scaling (accessibility) and system UI styling
       builder: (context, child) {
         // Get saved text scale from settings (default 1.0)
         final textScale = ref.watch(textScaleFactorProvider);
+
+        // Set system nav bar color based on current theme brightness
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          systemNavigationBarColor: isDark ? Colors.black : Colors.white,
+          systemNavigationBarIconBrightness:
+              isDark ? Brightness.light : Brightness.dark,
+        ));
 
         return MediaQuery(
           data: MediaQuery.of(context).copyWith(

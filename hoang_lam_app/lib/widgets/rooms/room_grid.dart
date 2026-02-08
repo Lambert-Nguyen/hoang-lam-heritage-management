@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
 import 'room_status_card.dart';
@@ -44,7 +45,7 @@ class RoomGrid extends ConsumerWidget {
         child: CircularProgressIndicator(),
       ),
       error: (error, stack) => _ErrorWidget(
-        message: 'Không thể tải danh sách phòng',
+        message: context.l10n.cannotLoadRoomList,
         onRetry: () => ref.refresh(roomsByFloorProvider),
       ),
     );
@@ -77,7 +78,7 @@ class _FloorSection extends StatelessWidget {
             vertical: AppSpacing.sm,
           ),
           child: Text(
-            'Tầng $floor',
+            '${context.l10n.floor} $floor',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: AppColors.textSecondary,
@@ -119,11 +120,11 @@ class _EmptyRoomGrid extends StatelessWidget {
           Icon(
             Icons.hotel_outlined,
             size: 64,
-            color: AppColors.textSecondary.withOpacity(0.5),
+            color: AppColors.textSecondary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
-            'Chưa có phòng nào',
+            context.l10n.noRoomsYet,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -153,7 +154,7 @@ class _ErrorWidget extends StatelessWidget {
           Icon(
             Icons.error_outline,
             size: 64,
-            color: AppColors.error.withOpacity(0.5),
+            color: AppColors.error.withValues(alpha: 0.5),
           ),
           const SizedBox(height: AppSpacing.md),
           Text(
@@ -240,7 +241,7 @@ class RoomStatusSummary extends ConsumerWidget {
                     ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
-                      'Trạng thái phòng',
+                      context.l10n.roomStatus,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -253,19 +254,19 @@ class RoomStatusSummary extends ConsumerWidget {
                   children: [
                     _StatItem(
                       value: '$availableCount/$totalRooms',
-                      label: 'Phòng trống',
+                      label: context.l10n.availableRooms,
                       color: RoomStatus.available.color,
                     ),
                     const SizedBox(width: AppSpacing.lg),
                     _StatItem(
                       value: '${counts[RoomStatus.occupied] ?? 0}',
-                      label: 'Có khách',
+                      label: context.l10n.occupied,
                       color: RoomStatus.occupied.color,
                     ),
                     const SizedBox(width: AppSpacing.lg),
                     _StatItem(
                       value: '${counts[RoomStatus.cleaning] ?? 0}',
-                      label: 'Đang dọn',
+                      label: context.l10n.cleaning,
                       color: RoomStatus.cleaning.color,
                     ),
                   ],

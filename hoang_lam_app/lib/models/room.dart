@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../core/theme/app_colors.dart';
+
 part 'room.freezed.dart';
 part 'room.g.dart';
 
@@ -85,15 +87,15 @@ extension RoomStatusExtension on RoomStatus {
   Color get color {
     switch (this) {
       case RoomStatus.available:
-        return const Color(0xFF4CAF50); // Green
+        return AppColors.available;
       case RoomStatus.occupied:
-        return const Color(0xFFF44336); // Red
+        return AppColors.occupied;
       case RoomStatus.cleaning:
-        return const Color(0xFFFFC107); // Amber
+        return AppColors.cleaning;
       case RoomStatus.maintenance:
-        return const Color(0xFF9E9E9E); // Grey
+        return AppColors.maintenance;
       case RoomStatus.blocked:
-        return const Color(0xFF795548); // Brown
+        return AppColors.blocked;
     }
   }
 

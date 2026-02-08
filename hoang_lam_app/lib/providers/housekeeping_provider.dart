@@ -197,6 +197,23 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
     }
   }
 
+  /// Update an existing task
+  Future<HousekeepingTask?> updateTask(int taskId, HousekeepingTaskUpdate update) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    try {
+      final updatedTask = await _repository.updateTask(taskId, update);
+      _updateTaskInList(updatedTask);
+      _invalidateProviders();
+      return updatedTask;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      );
+      return null;
+    }
+  }
+
   /// Assign a task to a staff member
   Future<HousekeepingTask?> assignTask(int taskId, int userId) async {
     state = state.copyWith(isLoading: true, errorMessage: null);

@@ -147,6 +147,21 @@ class AuthRepository {
     );
   }
 
+  /// Get list of staff members
+  Future<List<User>> getStaffList() async {
+    final response = await _apiClient.get<List<dynamic>>(
+      AppConstants.authStaffEndpoint,
+    );
+
+    if (response.data == null) {
+      throw Exception('Failed to get staff list');
+    }
+
+    return response.data!
+        .map((json) => User.fromJson(json as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Check if user is currently authenticated (has stored tokens)
   Future<bool> isAuthenticated() async {
     try {

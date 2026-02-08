@@ -485,19 +485,14 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
 
     try {
       final amount = _parseAmount(_amountController.text);
-      final notes = _notesController.text.trim();
       final description = _descriptionController.text.trim();
-      // Combine description and notes if notes are provided
-      final fullDescription = notes.isNotEmpty
-          ? '$description\n\n${l10n.internalNotes}: $notes'
-          : description;
 
       final request = FinancialEntryRequest(
         category: _selectedCategoryId!,
         entryType: widget.entryType,
         amount: amount,
         date: _entryDate,
-        description: fullDescription,
+        description: description,
         paymentMethod: _paymentMethod,
         receiptNumber: _referenceController.text.trim().isNotEmpty
             ? _referenceController.text.trim()

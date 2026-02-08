@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 
 /// Widget to display deposit status for a booking
@@ -26,8 +28,8 @@ class DepositStatusIndicator extends StatelessWidget {
     return Colors.red;
   }
 
-  String _getStatusText() {
-    if (isFullyPaid) return 'Đã đủ cọc';
+  String _getStatusText(BuildContext context) {
+    if (isFullyPaid) return context.l10n.depositPaid;
     if (paidDeposit > 0) return 'Thiếu cọc';
     return 'Chưa cọc';
   }
@@ -43,9 +45,9 @@ class DepositStatusIndicator extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: statusColor.withOpacity(0.1),
+          color: statusColor.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: statusColor.withOpacity(0.3)),
+          border: Border.all(color: statusColor.withValues(alpha: 0.3)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,7 +63,7 @@ class DepositStatusIndicator extends StatelessWidget {
                 const SizedBox(width: 8),
                 if (showLabel)
                   Text(
-                    _getStatusText(),
+                    _getStatusText(context),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: statusColor,
@@ -82,7 +84,7 @@ class DepositStatusIndicator extends StatelessWidget {
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: progress,
-                backgroundColor: statusColor.withOpacity(0.2),
+                backgroundColor: statusColor.withValues(alpha: 0.2),
                 valueColor: AlwaysStoppedAnimation(statusColor),
                 minHeight: 6,
               ),
@@ -108,10 +110,8 @@ class DepositStatusIndicator extends StatelessWidget {
   }
 
   String _formatAmount(double amount) {
-    return '${amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
-    )}₫';
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return '${formatter.format(amount.toInt())}₫';
   }
 }
 
@@ -229,10 +229,8 @@ class OutstandingDepositCard extends StatelessWidget {
   }
 
   String _formatAmount(double amount) {
-    return '${amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
-    )}₫';
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    return '${formatter.format(amount.toInt())}₫';
   }
 }
 
@@ -269,7 +267,7 @@ class OutstandingDepositsList extends StatelessWidget {
             Icon(
               Icons.check_circle_outline,
               size: 64,
-              color: theme.colorScheme.primary.withOpacity(0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(

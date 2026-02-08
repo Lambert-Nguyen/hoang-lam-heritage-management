@@ -33,24 +33,30 @@ class BookingDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.bookingDetails),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            onPressed: () {
-              bookingAsync.whenData((booking) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => BookingFormScreen(booking: booking),
-                  ),
-                );
-              });
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => _showDeleteConfirmation(context, ref),
-          ),
-        ],
+        actions: bookingAsync.whenOrNull(
+          data: (booking) {
+            final isEditable = booking.status != BookingStatus.checkedOut &&
+                booking.status != BookingStatus.cancelled &&
+                booking.status != BookingStatus.noShow;
+            if (!isEditable) return <Widget>[];
+            return <Widget>[
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => BookingFormScreen(booking: booking),
+                    ),
+                  );
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () => _showDeleteConfirmation(context, ref),
+              ),
+            ];
+          },
+        ),
       ),
       body: bookingAsync.when(
         data: (booking) => _buildContent(context, ref, booking),
@@ -243,7 +249,7 @@ class BookingDetailScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -420,7 +426,7 @@ class BookingDetailScreen extends ConsumerWidget {
     }
   }
 
-  void _handleCheckIn(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleCheckIn(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -442,6 +448,7 @@ class BookingDetailScreen extends ConsumerWidget {
     if (confirmed == true && context.mounted) {
       try {
         await ref.read(bookingNotifierProvider.notifier).checkIn(bookingId);
+        ref.invalidate(bookingByIdProvider(bookingId));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('${context.l10n.checkIn} ${context.l10n.success}')),
@@ -457,7 +464,7 @@ class BookingDetailScreen extends ConsumerWidget {
     }
   }
 
-  void _handleCheckOut(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleCheckOut(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -479,6 +486,7 @@ class BookingDetailScreen extends ConsumerWidget {
     if (confirmed == true && context.mounted) {
       try {
         await ref.read(bookingNotifierProvider.notifier).checkOut(bookingId);
+        ref.invalidate(bookingByIdProvider(bookingId));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('${context.l10n.checkOut} ${context.l10n.success}')),
@@ -494,7 +502,7 @@ class BookingDetailScreen extends ConsumerWidget {
     }
   }
 
-  void _handleCancel(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleCancel(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -517,6 +525,7 @@ class BookingDetailScreen extends ConsumerWidget {
     if (confirmed == true && context.mounted) {
       try {
         await ref.read(bookingNotifierProvider.notifier).cancelBooking(bookingId);
+        ref.invalidate(bookingByIdProvider(bookingId));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.success)),
@@ -532,7 +541,7 @@ class BookingDetailScreen extends ConsumerWidget {
     }
   }
 
-  void _handleNoShow(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleNoShow(BuildContext context, WidgetRef ref, Booking booking) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -555,6 +564,7 @@ class BookingDetailScreen extends ConsumerWidget {
     if (confirmed == true && context.mounted) {
       try {
         await ref.read(bookingNotifierProvider.notifier).markAsNoShow(bookingId);
+        ref.invalidate(bookingByIdProvider(bookingId));
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.success)),
@@ -570,7 +580,7 @@ class BookingDetailScreen extends ConsumerWidget {
     }
   }
 
-  void _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
+  Future<void> _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(

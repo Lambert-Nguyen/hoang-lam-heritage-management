@@ -229,6 +229,32 @@ class UserProfileView(APIView):
 
 
 @extend_schema_view(
+    get=extend_schema(
+        summary="List staff members",
+        description="List all active staff members (users with hotel profiles).",
+        responses={
+            200: UserProfileSerializer(many=True),
+            401: OpenApiResponse(description="Unauthorized"),
+        },
+        tags=["Authentication"],
+    )
+)
+class StaffListView(APIView):
+    """Staff list endpoint for task assignment."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Get list of all active staff members."""
+        users = User.objects.filter(
+            is_active=True,
+            hotel_profile__isnull=False,
+        ).select_related("hotel_profile")
+        serializer = UserProfileSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@extend_schema_view(
     post=extend_schema(
         summary="Change password",
         description="Change the authenticated user's password.",

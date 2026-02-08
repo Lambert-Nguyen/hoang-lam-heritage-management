@@ -23,12 +23,19 @@ class RoomManagementScreen extends ConsumerStatefulWidget {
 }
 
 class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
+  final _searchController = TextEditingController();
   String _searchQuery = '';
   bool _showInactive = false;
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final roomsAsync = ref.watch(roomsProvider);
+    final roomsAsync = ref.watch(allRoomsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -47,13 +54,17 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: context.l10n.searchRooms,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
                       icon: const Icon(Icons.clear),
-                      onPressed: () => setState(() => _searchQuery = ''),
+                      onPressed: () {
+                        _searchController.clear();
+                        setState(() => _searchQuery = '');
+                      },
                     )
                   : null,
                 border: OutlineInputBorder(
@@ -156,7 +167,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
 
                 return RefreshIndicator(
                   onRefresh: () async {
-                    ref.invalidate(roomsProvider);
+                    ref.invalidate(allRoomsProvider);
                   },
                   child: ListView.builder(
                     padding: const EdgeInsets.only(bottom: 80),
@@ -196,7 +207,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                     Text('${context.l10n.error}: $error'),
                     AppSpacing.gapVerticalMd,
                     ElevatedButton(
-                      onPressed: () => ref.invalidate(roomsProvider),
+                      onPressed: () => ref.invalidate(allRoomsProvider),
                       child: Text(context.l10n.retry),
                     ),
                   ],
@@ -343,7 +354,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
     );
   }
 
-  void _handleRoomAction(String action, Room room) async {
+  Future<void> _handleRoomAction(String action, Room room) async {
     switch (action) {
       case 'edit':
         _navigateToEditRoom(room);
@@ -420,7 +431,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
     );
   }
 
-  void _navigateToAddRoom() async {
+  Future<void> _navigateToAddRoom() async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (context) => const RoomFormScreen(),
@@ -429,11 +440,11 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
     );
 
     if (result == true) {
-      ref.invalidate(roomsProvider);
+      ref.invalidate(allRoomsProvider);
     }
   }
 
-  void _navigateToEditRoom(Room room) async {
+  Future<void> _navigateToEditRoom(Room room) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (context) => RoomFormScreen(room: room),
@@ -441,7 +452,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
     );
 
     if (result == true) {
-      ref.invalidate(roomsProvider);
+      ref.invalidate(allRoomsProvider);
     }
   }
 }

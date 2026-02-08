@@ -22,14 +22,6 @@ class AssignTaskDialog extends ConsumerStatefulWidget {
 
 class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
   int? _selectedUserId;
-  
-  // Mock staff list - in real app, this would come from API
-  final List<_StaffMember> _staffList = [
-    _StaffMember(id: 1, name: 'Nguyễn Văn A', role: 'Housekeeping'),
-    _StaffMember(id: 2, name: 'Trần Thị B', role: 'Housekeeping'),
-    _StaffMember(id: 3, name: 'Lê Văn C', role: 'Housekeeping'),
-    _StaffMember(id: 4, name: 'Phạm Thị D', role: 'Housekeeping'),
-  ];
 
   @override
   void initState() {
@@ -39,6 +31,8 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final staffAsync = ref.watch(staffListProvider);
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -107,13 +101,43 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
 
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 250),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: _staffList.length,
-                itemBuilder: (context, index) {
-                  final staff = _staffList[index];
-                  return _buildStaffTile(staff);
+              child: staffAsync.when(
+                data: (staffList) {
+                  if (staffList.isEmpty) {
+                    return const Center(
+                      child: Text('Không có nhân viên'),
+                    );
+                  }
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: staffList.length,
+                    itemBuilder: (context, index) {
+                      final staff = staffList[index];
+                      return _buildStaffTile(staff);
+                    },
+                  );
                 },
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(AppSpacing.lg),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (error, _) => Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        'Lỗi tải danh sách nhân viên',
+                        style: TextStyle(color: AppColors.error),
+                      ),
+                      TextButton(
+                        onPressed: () => ref.invalidate(staffListProvider),
+                        child: const Text('Thử lại'),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
 
@@ -214,7 +238,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
     );
   }
 
-  Widget _buildStaffTile(_StaffMember staff) {
+  Widget _buildStaffTile(dynamic staff) {
     final isSelected = _selectedUserId == staff.id;
 
     return ListTile(
@@ -232,7 +256,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
             ? AppColors.primary
             : AppColors.textSecondary.withValues(alpha: 0.2),
         child: Text(
-          staff.name[0],
+          staff.displayName[0],
           style: TextStyle(
             color: isSelected ? Colors.white : AppColors.textSecondary,
             fontWeight: FontWeight.bold,
@@ -240,13 +264,13 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
         ),
       ),
       title: Text(
-        staff.name,
+        staff.displayName,
         style: TextStyle(
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
         ),
       ),
       subtitle: Text(
-        staff.role,
+        staff.roleDisplay ?? staff.role?.displayName ?? '',
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),
@@ -256,16 +280,4 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
           : null,
     );
   }
-}
-
-class _StaffMember {
-  final int id;
-  final String name;
-  final String role;
-
-  _StaffMember({
-    required this.id,
-    required this.name,
-    required this.role,
-  });
 }

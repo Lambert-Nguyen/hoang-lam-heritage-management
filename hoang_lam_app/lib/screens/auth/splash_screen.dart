@@ -57,10 +57,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     debugPrint('[SplashScreen] Starting auth check delay...');
     await Future.delayed(const Duration(milliseconds: 800));
 
-    // Check auth status
+    // Check auth status with a 10-second timeout fallback
     debugPrint('[SplashScreen] Calling checkAuthStatus...');
-    await ref.read(authStateProvider.notifier).checkAuthStatus();
-    debugPrint('[SplashScreen] checkAuthStatus completed');
+    try {
+      await ref
+          .read(authStateProvider.notifier)
+          .checkAuthStatus()
+          .timeout(const Duration(seconds: 10));
+      debugPrint('[SplashScreen] checkAuthStatus completed');
+    } catch (e) {
+      debugPrint('[SplashScreen] checkAuthStatus timed out or failed: $e');
+      if (mounted) {
+        // Fall back to unauthenticated state so router redirects to login
+        ref.read(authStateProvider.notifier).handleSessionExpired();
+      }
+    }
   }
 
   @override

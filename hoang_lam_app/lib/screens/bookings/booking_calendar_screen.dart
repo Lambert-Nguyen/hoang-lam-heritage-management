@@ -164,7 +164,9 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
           }
         },
         onPageChanged: (focusedDay) {
-          _focusedDay = focusedDay;
+          setState(() {
+            _focusedDay = focusedDay;
+          });
         },
         eventLoader: (day) {
           final normalizedDay = DateTime(day.year, day.month, day.day);
@@ -177,7 +179,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             shape: BoxShape.circle,
           ),
           todayDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(

@@ -62,32 +62,29 @@ class CurrencyFormatter {
   }
 
   /// Parse formatted string to number
-  /// 
-  /// Supports both VND (e.g., "1.000.000đ" or "1,000,000đ") 
-  /// and USD (e.g., "$1,234.56") formats
+  ///
+  /// Supports both VND (e.g., "1.000.000đ" or "1,000,000đ")
+  /// and USD (e.g., "$1,234.56") formats.
+  /// Defaults to VND unless the string contains a '$' symbol.
   static num? parse(String value) {
     try {
+      final isUsd = value.contains('\$');
+
       // Remove currency symbols and spaces
       String cleaned = value
           .replaceAll('₫', '')
           .replaceAll('\$', '')
           .replaceAll(' ', '')
           .trim();
-      
-      // Detect format: if it has commas as thousand separators and dots as decimal
-      // (USD style: 1,234.56) vs VND style (1.234.567 or 1,234,567)
-      final hasDecimalDot = cleaned.contains('.') && 
-          cleaned.indexOf('.') > cleaned.length - 4 &&
-          !cleaned.substring(cleaned.indexOf('.')).contains(',');
-      
-      if (hasDecimalDot) {
+
+      if (isUsd) {
         // USD format: remove thousand separators (commas), keep decimal dot
         cleaned = cleaned.replaceAll(',', '');
       } else {
         // VND format: remove all separators (dots and commas)
         cleaned = cleaned.replaceAll(',', '').replaceAll('.', '');
       }
-      
+
       return num.tryParse(cleaned);
     } catch (e) {
       return null;

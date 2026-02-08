@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -17,7 +19,7 @@ class AuthInterceptor extends Interceptor {
     iOptions: _iOSOptions,
   );
   bool _isRefreshing = false;
-  final List<RequestOptions> _requestQueue = [];
+  Completer<bool>? _refreshCompleter;
 
   AuthInterceptor(this._dio);
 
@@ -45,85 +47,51 @@ class AuthInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
-      // If already refreshing, queue this request
       if (_isRefreshing) {
-        _requestQueue.add(err.requestOptions);
-        // Wait for refresh to complete
-        await _waitForRefresh();
-        
-        // Retry with new token
+        // Another request is already refreshing - wait for it
         try {
-          final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
-          if (accessToken != null) {
-            err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
-            final response = await _dio.fetch(err.requestOptions);
-            return handler.resolve(response);
+          final success = await _refreshCompleter!.future;
+          if (success) {
+            // Retry with new token
+            final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
+            if (accessToken != null) {
+              err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
+              final response = await _dio.fetch(err.requestOptions);
+              return handler.resolve(response);
+            }
           }
         } catch (e) {
-          // Retry failed, pass error through
           return handler.next(err);
         }
       } else {
         // First 401, start refresh process
         _isRefreshing = true;
+        _refreshCompleter = Completer<bool>();
 
         try {
           final refreshed = await _refreshToken();
+          _refreshCompleter!.complete(refreshed);
+          _isRefreshing = false;
+
           if (refreshed) {
             // Retry the original request
             final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
             err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
-
             final response = await _dio.fetch(err.requestOptions);
-            
-            // Process queued requests
-            await _retryQueuedRequests();
-            
-            _isRefreshing = false;
             return handler.resolve(response);
           }
         } catch (e) {
           // Refresh failed, clear tokens
           await _clearTokens();
+          if (!_refreshCompleter!.isCompleted) {
+            _refreshCompleter!.complete(false);
+          }
+          _isRefreshing = false;
         }
-
-        _isRefreshing = false;
-        _requestQueue.clear();
       }
     }
 
     handler.next(err);
-  }
-
-  Future<void> _waitForRefresh() async {
-    // Poll until refresh is complete (max 5 seconds)
-    int attempts = 0;
-    while (_isRefreshing && attempts < 50) {
-      await Future.delayed(const Duration(milliseconds: 100));
-      attempts++;
-    }
-  }
-
-  Future<void> _retryQueuedRequests() async {
-    if (_requestQueue.isEmpty) return;
-    
-    final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
-    if (accessToken == null) return;
-
-    // Copy queue and clear it
-    final requests = List<RequestOptions>.from(_requestQueue);
-    _requestQueue.clear();
-
-    // Retry all queued requests
-    for (final request in requests) {
-      try {
-        request.headers['Authorization'] = 'Bearer $accessToken';
-        await _dio.fetch(request);
-      } catch (e) {
-        // Individual request failed, but don't block others
-        debugPrint('Queued request failed: $e');
-      }
-    }
   }
 
   Future<bool> _refreshToken() async {

@@ -232,6 +232,16 @@ class GuestNotifier extends StateNotifier<GuestState> {
       _invalidateGuestProviders();
       _ref.invalidate(guestByIdProvider(guestId));
 
+      // Update local guest list state if currently loaded
+      state.whenOrNull(
+        loaded: (guests) {
+          final updatedList = guests.map((g) {
+            return g.id == guestId ? updatedGuest : g;
+          }).toList();
+          state = GuestState.loaded(guests: updatedList);
+        },
+      );
+
       return updatedGuest;
     } catch (e) {
       state = GuestState.error(message: _getErrorMessage(e));

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 
 /// A card widget displaying a single room's status
@@ -22,7 +23,7 @@ class RoomStatusCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      color: room.status.color.withOpacity(0.15),
+      color: room.status.color.withValues(alpha: 0.15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         side: BorderSide(
@@ -125,7 +126,7 @@ class RoomDetailCard extends StatelessWidget {
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        color: room.status.color.withOpacity(0.15),
+                        color: room.status.color.withValues(alpha: 0.15),
                         borderRadius:
                             BorderRadius.circular(AppSpacing.radiusSm),
                         border: Border.all(color: room.status.color),
@@ -159,7 +160,7 @@ class RoomDetailCard extends StatelessWidget {
                   // Floor
                   _InfoChip(
                     icon: Icons.stairs,
-                    label: 'Tầng ${room.floor}',
+                    label: '${context.l10n.floor} ${room.floor}',
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   // Rate

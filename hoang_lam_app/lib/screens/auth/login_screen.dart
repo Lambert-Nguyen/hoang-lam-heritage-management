@@ -64,13 +64,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final authenticated = await biometricNotifier.authenticate();
 
       if (authenticated) {
-        // Get stored username and use cached token
+        // Get stored username and validate token with server
         final biometricState = await ref.read(biometricNotifierProvider.future);
         final storedUsername = biometricState.storedUsername;
 
         if (storedUsername != null) {
-          // Check if we still have a valid session
-          await ref.read(authStateProvider.notifier).checkAuthStatus();
+          // Refresh token with server to validate session is still valid
+          final sessionValid =
+              await ref.read(authStateProvider.notifier).refreshSession();
+          if (!sessionValid && mounted) {
+            setState(() {
+              _errorMessage = context.l10n.biometricAuthFailed;
+            });
+          }
         }
       }
     } catch (e) {
@@ -106,9 +112,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           final biometricState =
               await ref.read(biometricNotifierProvider.future);
           if (biometricState.isSupported && !biometricState.isEnabled) {
-            // Show dialog to enable biometric
+            // Show dialog to enable biometric and await result before navigating
             if (mounted) {
-              _showEnableBiometricDialog(user.username);
+              await _showEnableBiometricDialog(user.username);
             }
           }
 
@@ -325,8 +331,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  void _showEnableBiometricDialog(String username) {
-    showDialog(
+  Future<void> _showEnableBiometricDialog(String username) {
+    return showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(context.l10n.enableBiometricTitle),

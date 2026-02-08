@@ -61,7 +61,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                 AppIconButton(
                   icon: Icons.more_vert,
                   onPressed: () => _showMoreActions(context),
-                  tooltip: context.l10n.add,
+                  tooltip: 'Menu',
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
@@ -196,12 +196,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           AppSpacing.gapVerticalLg,
 
           // Stats section
-          GuestStatsSummary(
-            totalStays: _guest.totalStays,
-            totalBookings: _guest.bookingCount,
-            totalSpent: 0,
-            isVip: _guest.isVip,
-          ),
+          _buildStatsSection(),
           AppSpacing.gapVerticalLg,
 
           // Notes section
@@ -323,7 +318,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           if (_guest.dateOfBirth != null) ...[
             _buildInfoRow(
               Icons.cake,
-              context.l10n.issueDate,
+              context.l10n.dateOfBirth,
               _formatDate(_guest.dateOfBirth!),
             ),
             if (_guest.age != null)
@@ -335,6 +330,17 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildStatsSection() {
+    final historyAsync = ref.watch(guestHistoryProvider(_guest.id));
+    final totalSpent = historyAsync.whenOrNull(data: (history) => history.totalSpent) ?? 0;
+    return GuestStatsSummary(
+      totalStays: _guest.totalStays,
+      totalBookings: _guest.bookingCount,
+      totalSpent: totalSpent,
+      isVip: _guest.isVip,
     );
   }
 
@@ -478,7 +484,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
     );
   }
 
-  void _navigateToEdit() async {
+  Future<void> _navigateToEdit() async {
     final result = await Navigator.of(context).push<Guest>(
       MaterialPageRoute(
         builder: (_) => GuestFormScreen(guest: _guest),
@@ -491,7 +497,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
     }
   }
 
-  void _toggleVipStatus() async {
+  Future<void> _toggleVipStatus() async {
     final result =
         await ref.read(guestStateProvider.notifier).toggleVipStatus(_guest.id);
     if (result != null && mounted) {

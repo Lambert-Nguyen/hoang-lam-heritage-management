@@ -6,6 +6,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
+import '../../models/user.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/housekeeping_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
@@ -568,10 +570,23 @@ class _MaintenanceDetailScreenState
 
   Future<void> _assignRequest() async {
     final l10n = AppLocalizations.of(context)!;
-    // Show assign dialog
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.assignmentInDevelopment)),
+    final userId = await showDialog<int>(
+      context: context,
+      builder: (context) => _AssignDialog(request: _request),
     );
+
+    if (userId != null && mounted) {
+      final notifier = ref.read(housekeepingNotifierProvider.notifier);
+      final result = await notifier.assignMaintenanceRequest(_request.id, userId);
+      if (result != null && mounted) {
+        setState(() {
+          _request = result;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.taskAssigned)),
+        );
+      }
+    }
   }
 
   Future<void> _completeRequest() async {
@@ -743,6 +758,101 @@ class _CompletionDialogState extends State<_CompletionDialog> {
         ElevatedButton(
           onPressed: () => Navigator.pop(context, _notesController.text),
           child: Text(l10n.completed),
+        ),
+      ],
+    );
+  }
+}
+
+class _AssignDialog extends ConsumerStatefulWidget {
+  final MaintenanceRequest request;
+
+  const _AssignDialog({required this.request});
+
+  @override
+  ConsumerState<_AssignDialog> createState() => _AssignDialogState();
+}
+
+class _AssignDialogState extends ConsumerState<_AssignDialog> {
+  int? _selectedUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedUserId = widget.request.assignedTo;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final staffAsync = ref.watch(staffListProvider);
+    final currentUser = ref.watch(currentUserProvider);
+
+    return AlertDialog(
+      title: const Text('Phân công sửa chữa'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (currentUser != null)
+              ListTile(
+                onTap: () => setState(() => _selectedUserId = currentUser.id),
+                selected: _selectedUserId == currentUser.id,
+                leading: const CircleAvatar(child: Icon(Icons.person)),
+                title: const Text('Tự nhận việc'),
+                subtitle: Text(currentUser.displayName),
+                trailing: _selectedUserId == currentUser.id
+                    ? Icon(Icons.check_circle,
+                        color: Theme.of(context).colorScheme.primary)
+                    : null,
+              ),
+            const Divider(),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 200),
+              child: staffAsync.when(
+                data: (staffList) => ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: staffList.length,
+                  itemBuilder: (context, index) {
+                    final staff = staffList[index];
+                    final isSelected = _selectedUserId == staff.id;
+                    return ListTile(
+                      onTap: () =>
+                          setState(() => _selectedUserId = staff.id),
+                      selected: isSelected,
+                      leading: CircleAvatar(
+                        child: Text(staff.displayName[0]),
+                      ),
+                      title: Text(staff.displayName),
+                      subtitle: Text(staff.roleDisplay ??
+                          staff.role?.displayName ??
+                          ''),
+                      trailing: isSelected
+                          ? Icon(Icons.check_circle,
+                              color: Theme.of(context).colorScheme.primary)
+                          : null,
+                    );
+                  },
+                ),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (_, __) => const Center(
+                    child: Text('Lỗi tải danh sách nhân viên')),
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(AppLocalizations.of(context)!.cancel),
+        ),
+        ElevatedButton(
+          onPressed: _selectedUserId != null
+              ? () => Navigator.pop(context, _selectedUserId)
+              : null,
+          child: Text(AppLocalizations.of(context)!.confirm),
         ),
       ],
     );

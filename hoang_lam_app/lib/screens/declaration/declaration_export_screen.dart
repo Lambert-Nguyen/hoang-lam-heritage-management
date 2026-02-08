@@ -364,7 +364,7 @@ class _FormatCard extends StatelessWidget {
             width: isSelected ? 2 : 1,
           ),
           color: isSelected
-              ? colorScheme.primaryContainer.withOpacity(0.3)
+              ? colorScheme.primaryContainer.withValues(alpha: 0.3)
               : null,
         ),
         child: Column(
@@ -413,7 +413,7 @@ class _ExportedFileCard extends StatelessWidget {
     final filename = filePath.split('/').last;
 
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

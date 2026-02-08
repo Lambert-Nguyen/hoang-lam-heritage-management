@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
+import '../../screens/guests/guest_form_screen.dart';
 
 /// Guest Quick Search Widget
 /// 
@@ -24,7 +25,6 @@ class GuestQuickSearch extends ConsumerStatefulWidget {
 }
 
 class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
-  final TextEditingController _searchController = TextEditingController();
   int? _selectedGuestId;
   Guest? _selectedGuest;
 
@@ -45,17 +45,10 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
       final guest = await ref.read(guestByIdProvider(_selectedGuestId!).future);
       setState(() {
         _selectedGuest = guest;
-        _searchController.text = guest.fullName;
       });
     } catch (e) {
       // Guest not found, ignore
     }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   @override
@@ -81,7 +74,6 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
             setState(() {
               _selectedGuest = null;
               _selectedGuestId = null;
-              _searchController.clear();
             });
           },
         ),
@@ -114,35 +106,26 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
             setState(() {
               _selectedGuest = guest;
               _selectedGuestId = guest.id;
-              _searchController.text = guest.fullName;
             });
             widget.onGuestSelected(guest);
           },
           fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-            _searchController.text = controller.text;
-            _searchController.selection = controller.selection;
-
             return TextField(
-              controller: _searchController,
+              controller: controller,
               focusNode: focusNode,
               decoration: InputDecoration(
                 labelText: 'Tìm khách hàng',
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.person_search),
-                suffixIcon: _searchController.text.isNotEmpty
+                suffixIcon: controller.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          _searchController.clear();
                           controller.clear();
                         },
                       )
                     : null,
               ),
-              onChanged: (value) {
-                controller.text = value;
-                controller.selection = _searchController.selection;
-              },
             );
           },
           optionsViewBuilder: (context, onSelected, options) {
@@ -178,13 +161,20 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
         ),
         const SizedBox(height: 8),
         TextButton.icon(
-          onPressed: () {
-            // TODO: Navigate to guest form screen
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Tạo khách hàng mới - đang phát triển'),
+          onPressed: () async {
+            final result = await Navigator.of(context).push<Guest>(
+              MaterialPageRoute(
+                builder: (context) => const GuestFormScreen(),
+                fullscreenDialog: true,
               ),
             );
+            if (result != null) {
+              setState(() {
+                _selectedGuest = result;
+                _selectedGuestId = result.id;
+              });
+              widget.onGuestSelected(result);
+            }
           },
           icon: const Icon(Icons.person_add),
           label: const Text('Tạo khách hàng mới'),

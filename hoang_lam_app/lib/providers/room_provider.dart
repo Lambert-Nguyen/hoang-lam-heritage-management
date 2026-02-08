@@ -17,10 +17,16 @@ final roomTypesProvider = FutureProvider<List<RoomType>>((ref) async {
   return repository.getRoomTypes(isActive: true);
 });
 
-/// Provider for all rooms
+/// Provider for active rooms (default for most screens)
 final roomsProvider = FutureProvider<List<Room>>((ref) async {
   final repository = ref.watch(roomRepositoryProvider);
   return repository.getRooms(isActive: true);
+});
+
+/// Provider for all rooms including inactive (for room management screen)
+final allRoomsProvider = FutureProvider<List<Room>>((ref) async {
+  final repository = ref.watch(roomRepositoryProvider);
+  return repository.getRooms();
 });
 
 /// Provider for rooms grouped by floor (for dashboard display)
@@ -144,12 +150,10 @@ class RoomNotifier extends StateNotifier<RoomState> {
 
       // Refresh the room providers
       _ref.invalidate(roomsProvider);
+      _ref.invalidate(allRoomsProvider);
       _ref.invalidate(roomsByFloorProvider);
       _ref.invalidate(roomStatusCountsProvider);
       _ref.invalidate(roomByIdProvider(roomId));
-
-      // Reload current rooms
-      await loadRooms();
 
       return true;
     } catch (e) {
@@ -165,6 +169,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
 
       // Refresh providers
       _ref.invalidate(roomsProvider);
+      _ref.invalidate(allRoomsProvider);
       _ref.invalidate(roomsByFloorProvider);
       _ref.invalidate(roomStatusCountsProvider);
 
@@ -182,6 +187,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
 
       // Refresh providers
       _ref.invalidate(roomsProvider);
+      _ref.invalidate(allRoomsProvider);
       _ref.invalidate(roomsByFloorProvider);
       _ref.invalidate(roomByIdProvider(room.id));
 
@@ -199,6 +205,7 @@ class RoomNotifier extends StateNotifier<RoomState> {
 
       // Refresh providers
       _ref.invalidate(roomsProvider);
+      _ref.invalidate(allRoomsProvider);
       _ref.invalidate(roomsByFloorProvider);
       _ref.invalidate(roomStatusCountsProvider);
 

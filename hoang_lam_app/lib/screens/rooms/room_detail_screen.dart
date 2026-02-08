@@ -9,6 +9,7 @@ import '../../providers/room_provider.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/rooms/room_status_dialog.dart';
+import 'room_form_screen.dart';
 
 /// Screen showing detailed information about a single room
 class RoomDetailScreen extends ConsumerStatefulWidget {
@@ -33,10 +34,22 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   }
 
   Future<void> _changeStatus() async {
-    final success = await RoomStatusDialog.show(context, _room);
-    if (success == true && mounted) {
-      // Refresh room data from provider
+    final result = await RoomStatusDialog.show(context, _room);
+    if (result != null && mounted) {
+      // Update local state with the new status returned from the dialog
+      setState(() {
+        _room = _room.copyWith(status: result);
+      });
+      // Also refresh the provider so other screens get updated data
       ref.invalidate(roomsProvider);
+      ref.invalidate(roomByIdProvider(_room.id));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${result.displayName}'),
+          backgroundColor: AppColors.success,
+        ),
+      );
     }
   }
 
@@ -48,8 +61,23 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
         actions: [
           AppIconButton(
             icon: Icons.edit,
-            onPressed: () {
-              // TODO: Navigate to edit room
+            onPressed: () async {
+              final result = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(
+                  builder: (context) => RoomFormScreen(room: _room),
+                ),
+              );
+              if (result == true && mounted) {
+                // Refresh data after edit
+                ref.invalidate(roomsProvider);
+                ref.invalidate(roomByIdProvider(_room.id));
+                final updatedRoom = await ref.read(roomByIdProvider(_room.id).future);
+                if (mounted) {
+                  setState(() {
+                    _room = updatedRoom;
+                  });
+                }
+              }
             },
             tooltip: context.l10n.edit,
           ),

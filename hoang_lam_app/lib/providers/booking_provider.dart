@@ -80,10 +80,10 @@ final filteredBookingsProvider =
     FutureProvider.family<List<Booking>, BookingFilter>((ref, filter) async {
   final repository = ref.watch(bookingRepositoryProvider);
   return repository.getBookings(
-    status: filter.status?.name,
+    status: filter.status?.toApiValue,
     roomId: filter.roomId,
     guestId: filter.guestId,
-    source: filter.source?.name,
+    source: filter.source?.toApiValue,
     checkInFrom: filter.startDate,
     checkInTo: filter.endDate,
     ordering: filter.ordering,
@@ -114,10 +114,10 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     state = const AsyncValue.loading();
     try {
       final bookings = await _repository.getBookings(
-        status: _currentFilter?.status?.name,
+        status: _currentFilter?.status?.toApiValue,
         roomId: _currentFilter?.roomId,
         guestId: _currentFilter?.guestId,
-        source: _currentFilter?.source?.name,
+        source: _currentFilter?.source?.toApiValue,
         checkInFrom: _currentFilter?.startDate,
         checkInTo: _currentFilter?.endDate,
         ordering: _currentFilter?.ordering ?? '-check_in_date',

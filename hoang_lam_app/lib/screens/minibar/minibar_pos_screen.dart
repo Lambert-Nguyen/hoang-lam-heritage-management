@@ -275,8 +275,29 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
     ref.read(minibarCartProvider.notifier).updateQuantity(itemId, quantity);
   }
 
-  void _handleClearCart() {
-    ref.read(minibarCartProvider.notifier).clearCart();
+  Future<void> _handleClearCart() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Xóa giỏ hàng'),
+        content: const Text('Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Xóa'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      ref.read(minibarCartProvider.notifier).clearCart();
+    }
   }
 
   Future<void> _handleCheckout() async {

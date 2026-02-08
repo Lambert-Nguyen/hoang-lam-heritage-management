@@ -24,6 +24,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   String _searchType = 'all';
   bool _showVipOnly = false;
   String? _selectedNationality;
+  bool _isReloadingAfterSuccess = false;
 
   @override
   void dispose() {
@@ -160,10 +161,19 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
       loading: () => const Center(child: CircularProgressIndicator()),
       loaded: (guests) => _buildGuestListView(guests),
       success: (guest, message) {
-        // Reload list after success
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(guestStateProvider.notifier).loadGuests();
-        });
+        // Guard against infinite rebuild: only reload once per success state
+        if (!_isReloadingAfterSuccess) {
+          _isReloadingAfterSuccess = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) {
+              _isReloadingAfterSuccess = false;
+              ref.read(guestStateProvider.notifier).loadGuests(
+                    isVip: _showVipOnly ? true : null,
+                    nationality: _selectedNationality,
+                  );
+            }
+          });
+        }
         return const Center(child: CircularProgressIndicator());
       },
       error: (message) => _buildErrorState(message),
@@ -336,7 +346,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
     );
   }
 
-  void _toggleVipStatus(Guest guest) async {
+  Future<void> _toggleVipStatus(Guest guest) async {
     final result =
         await ref.read(guestStateProvider.notifier).toggleVipStatus(guest.id);
     if (result != null && mounted) {

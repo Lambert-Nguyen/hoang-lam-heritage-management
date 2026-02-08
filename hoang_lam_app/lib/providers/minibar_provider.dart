@@ -247,9 +247,14 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
 
       await _repository.bulkCreateSales(request);
 
-      // Clear cart and refresh providers
+      // Capture bookingId before clearing state
+      final currentBookingId = state.bookingId;
+
+      // Clear cart
       state = const MinibarCartState();
-      _invalidateProviders();
+
+      // Invalidate providers with the captured bookingId
+      _invalidateProviders(currentBookingId);
 
       return true;
     } catch (e) {
@@ -261,12 +266,13 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
     }
   }
 
-  void _invalidateProviders() {
+  void _invalidateProviders([int? bookingId]) {
     _ref.invalidate(minibarSalesProvider);
-    if (state.bookingId != null) {
-      _ref.invalidate(salesByBookingProvider(state.bookingId!));
-      _ref.invalidate(unchargedSalesProvider(state.bookingId!));
-      _ref.invalidate(salesSummaryProvider(state.bookingId!));
+    final id = bookingId ?? state.bookingId;
+    if (id != null) {
+      _ref.invalidate(salesByBookingProvider(id));
+      _ref.invalidate(unchargedSalesProvider(id));
+      _ref.invalidate(salesSummaryProvider(id));
     }
   }
 }

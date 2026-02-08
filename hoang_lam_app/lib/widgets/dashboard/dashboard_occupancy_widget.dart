@@ -21,7 +21,7 @@ class DashboardOccupancyWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         boxShadow: [
           BoxShadow(

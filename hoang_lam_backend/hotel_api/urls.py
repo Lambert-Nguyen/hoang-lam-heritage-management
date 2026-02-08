@@ -24,6 +24,7 @@ from .views import (
     MinibarSaleViewSet,
     NightAuditViewSet,
     PasswordChangeView,
+    StaffListView,
     PaymentViewSet,
     RatePlanViewSet,
     ReceiptViewSet,
@@ -76,6 +77,7 @@ urlpatterns = [
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("auth/me/", UserProfileView.as_view(), name="user_profile"),
     path("auth/password/change/", PasswordChangeView.as_view(), name="password_change"),
+    path("auth/staff/", StaffListView.as_view(), name="staff_list"),
     # Dashboard
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     # Reports (Phase 4)

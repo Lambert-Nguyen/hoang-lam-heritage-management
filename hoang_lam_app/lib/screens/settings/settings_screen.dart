@@ -559,6 +559,10 @@ class SettingsScreen extends ConsumerWidget {
 
   void _showNotificationSettings(BuildContext context, WidgetRef ref, AppSettings settings) {
     final l10n = context.l10n;
+    var notifyCheckIn = settings.notifyCheckIn;
+    var notifyCheckOut = settings.notifyCheckOut;
+    var notifyCleaning = settings.notifyCleaning;
+
     showDialog(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
@@ -571,24 +575,27 @@ class SettingsScreen extends ConsumerWidget {
               SwitchListTile(
                 title: Text(l10n.checkinReminder),
                 subtitle: Text(l10n.notifyCheckinToday),
-                value: settings.notifyCheckIn,
+                value: notifyCheckIn,
                 onChanged: (value) {
+                  setState(() => notifyCheckIn = value);
                   ref.read(settingsProvider.notifier).setNotifyCheckIn(value);
                 },
               ),
               SwitchListTile(
                 title: Text(l10n.checkoutReminder),
                 subtitle: Text(l10n.notifyCheckoutToday),
-                value: settings.notifyCheckOut,
+                value: notifyCheckOut,
                 onChanged: (value) {
+                  setState(() => notifyCheckOut = value);
                   ref.read(settingsProvider.notifier).setNotifyCheckOut(value);
                 },
               ),
               SwitchListTile(
                 title: Text(l10n.cleaningReminder),
                 subtitle: Text(l10n.notifyRoomNeedsCleaning),
-                value: settings.notifyCleaning,
+                value: notifyCleaning,
                 onChanged: (value) {
+                  setState(() => notifyCleaning = value);
                   ref.read(settingsProvider.notifier).setNotifyCleaning(value);
                 },
               ),

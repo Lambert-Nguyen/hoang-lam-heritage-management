@@ -184,10 +184,10 @@ class BookingCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: sourceInfo.color.withOpacity(0.1),
+        color: sourceInfo.color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: sourceInfo.color.withOpacity(0.3),
+          color: sourceInfo.color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

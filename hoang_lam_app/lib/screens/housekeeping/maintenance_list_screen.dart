@@ -5,7 +5,10 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
+import '../../models/user.dart';
+import '../../providers/auth_provider.dart';
 import '../../providers/housekeeping_provider.dart';
+import '../../widgets/common/app_button.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/housekeeping/maintenance_card.dart';
@@ -332,10 +335,21 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
 
   Future<void> _assignRequest(MaintenanceRequest request) async {
     final l10n = AppLocalizations.of(context)!;
-    // Show assign dialog - similar to task assignment
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.assignmentInDevelopment)),
+    final userId = await showDialog<int>(
+      context: context,
+      builder: (context) => _MaintenanceAssignDialog(request: request),
     );
+
+    if (userId != null && mounted) {
+      final notifier = ref.read(housekeepingNotifierProvider.notifier);
+      final result = await notifier.assignMaintenanceRequest(request.id, userId);
+      if (result != null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.taskAssigned)),
+        );
+        ref.invalidate(maintenanceRequestsProvider);
+      }
+    }
   }
 
   Future<void> _completeRequest(MaintenanceRequest request) async {
@@ -367,5 +381,145 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         );
       }
     }
+  }
+}
+
+/// Dialog for assigning a maintenance request to a staff member
+class _MaintenanceAssignDialog extends ConsumerStatefulWidget {
+  final MaintenanceRequest request;
+
+  const _MaintenanceAssignDialog({required this.request});
+
+  @override
+  ConsumerState<_MaintenanceAssignDialog> createState() =>
+      _MaintenanceAssignDialogState();
+}
+
+class _MaintenanceAssignDialogState
+    extends ConsumerState<_MaintenanceAssignDialog> {
+  int? _selectedUserId;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedUserId = widget.request.assignedTo;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final staffAsync = ref.watch(staffListProvider);
+    final currentUser = ref.watch(currentUserProvider);
+
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Phân công sửa chữa',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+            Text(
+              widget.request.title,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            AppSpacing.gapVerticalLg,
+            // Self-assign
+            if (currentUser != null)
+              ListTile(
+                onTap: () => setState(() => _selectedUserId = currentUser.id),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                tileColor: _selectedUserId == currentUser.id
+                    ? AppColors.primary.withValues(alpha: 0.1)
+                    : null,
+                leading: const CircleAvatar(child: Icon(Icons.person)),
+                title: const Text('Tự nhận việc'),
+                subtitle: Text(currentUser.displayName),
+                trailing: _selectedUserId == currentUser.id
+                    ? Icon(Icons.check_circle, color: AppColors.primary)
+                    : null,
+              ),
+            const Divider(),
+            Text(
+              'Chọn nhân viên',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                  ),
+            ),
+            AppSpacing.gapVerticalSm,
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 200),
+              child: staffAsync.when(
+                data: (staffList) => ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: staffList.length,
+                  itemBuilder: (context, index) {
+                    final staff = staffList[index];
+                    final isSelected = _selectedUserId == staff.id;
+                    return ListTile(
+                      onTap: () =>
+                          setState(() => _selectedUserId = staff.id),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      tileColor: isSelected
+                          ? AppColors.primary.withValues(alpha: 0.1)
+                          : null,
+                      leading: CircleAvatar(
+                        child: Text(staff.displayName[0]),
+                      ),
+                      title: Text(staff.displayName),
+                      subtitle: Text(
+                          staff.roleDisplay ?? staff.role?.displayName ?? ''),
+                      trailing: isSelected
+                          ? Icon(Icons.check_circle,
+                              color: AppColors.primary)
+                          : null,
+                    );
+                  },
+                ),
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (_, __) => const Center(
+                    child: Text('Lỗi tải danh sách nhân viên')),
+              ),
+            ),
+            AppSpacing.gapVerticalLg,
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    label: 'Hủy',
+                    onPressed: () => Navigator.pop(context),
+                    isOutlined: true,
+                  ),
+                ),
+                AppSpacing.gapHorizontalMd,
+                Expanded(
+                  child: AppButton(
+                    label: 'Xác nhận',
+                    onPressed: _selectedUserId != null
+                        ? () => Navigator.pop(context, _selectedUserId)
+                        : null,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

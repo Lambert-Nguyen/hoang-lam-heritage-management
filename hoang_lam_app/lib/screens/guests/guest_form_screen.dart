@@ -37,6 +37,8 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
   late final TextEditingController _addressController;
   late final TextEditingController _cityController;
   late final TextEditingController _notesController;
+  late final TextEditingController _dateOfBirthController;
+  late final TextEditingController _idIssueDateController;
 
   // Form state
   late IDType _idType;
@@ -63,6 +65,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
     _cityController = TextEditingController(text: guest?.city ?? '');
     _notesController = TextEditingController(text: guest?.notes ?? '');
 
+    _dateOfBirthController = TextEditingController(text: _formatDateValue(guest?.dateOfBirth));
+    _idIssueDateController = TextEditingController(text: _formatDateValue(guest?.idIssueDate));
+
     _idType = guest?.idType ?? IDType.cccd;
     _nationality = guest?.nationality ?? 'Vietnam';
     _gender = guest?.gender;
@@ -81,6 +86,8 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
     _addressController.dispose();
     _cityController.dispose();
     _notesController.dispose();
+    _dateOfBirthController.dispose();
+    _idIssueDateController.dispose();
     super.dispose();
   }
 
@@ -189,7 +196,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
               if (value == null || value.isEmpty) {
                 return context.l10n.pleaseEnterPhone;
               }
-              if (value.length != 10) {
+              if (value.length < 10 || value.length > 11) {
                 return context.l10n.phoneMustBe10;
               }
               if (!value.startsWith('0')) {
@@ -268,7 +275,15 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             value: _idIssueDate,
             lastDate: DateTime.now(),
             firstDate: DateTime(1950),
-            onChanged: (date) => setState(() => _idIssueDate = date),
+            controller: _idIssueDateController,
+            onChanged: (date) => setState(() {
+              _idIssueDate = date;
+              _idIssueDateController.text = _formatDateValue(date);
+            }),
+            onClear: () => setState(() {
+              _idIssueDate = null;
+              _idIssueDateController.text = '';
+            }),
           ),
         ],
       ),
@@ -288,7 +303,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             textInputAction: TextInputAction.next,
             validator: (value) {
               if (value != null && value.isNotEmpty) {
-                final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                final emailRegex = RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,63}$');
                 if (!emailRegex.hasMatch(value)) {
                   return context.l10n.invalidEmail;
                 }
@@ -338,11 +353,19 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
 
           // Date of birth
           _buildDateField(
-            label: context.l10n.issueDate,
+            label: context.l10n.dateOfBirth,
             value: _dateOfBirth,
             lastDate: DateTime.now(),
             firstDate: DateTime(1920),
-            onChanged: (date) => setState(() => _dateOfBirth = date),
+            controller: _dateOfBirthController,
+            onChanged: (date) => setState(() {
+              _dateOfBirth = date;
+              _dateOfBirthController.text = _formatDateValue(date);
+            }),
+            onClear: () => setState(() {
+              _dateOfBirth = null;
+              _dateOfBirthController.text = '';
+            }),
           ),
         ],
       ),
@@ -384,50 +407,52 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
     );
   }
 
+  static String _formatDateValue(DateTime? value) {
+    if (value == null) return '';
+    return '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
+  }
+
   Widget _buildDateField({
     required String label,
     required DateTime? value,
     required DateTime firstDate,
     required DateTime lastDate,
+    required TextEditingController controller,
     required ValueChanged<DateTime> onChanged,
+    VoidCallback? onClear,
   }) {
-    final displayValue = value != null
-        ? '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}'
-        : '';
-
-    return GestureDetector(
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: value ?? DateTime.now().subtract(const Duration(days: 365 * 30)),
-          firstDate: firstDate,
-          lastDate: lastDate,
-          locale: const Locale('vi'),
-        );
-        if (picked != null) {
-          onChanged(picked);
-        }
-      },
-      child: AbsorbPointer(
-        child: AppTextField(
-          label: label,
-          hint: 'dd/mm/yyyy',
-          controller: TextEditingController(text: displayValue),
-          prefixIcon: Icons.calendar_today,
-          suffix: value != null
-              ? IconButton(
-                  icon: const Icon(Icons.clear, size: 18),
-                  onPressed: () {
-                    if (label == 'Ngày sinh') {
-                      setState(() => _dateOfBirth = null);
-                    } else {
-                      setState(() => _idIssueDate = null);
-                    }
-                  },
-                )
-              : null,
+    return Row(
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: value ?? DateTime.now().subtract(const Duration(days: 365 * 30)),
+                firstDate: firstDate,
+                lastDate: lastDate,
+                locale: const Locale('vi'),
+              );
+              if (picked != null) {
+                onChanged(picked);
+              }
+            },
+            child: IgnorePointer(
+              child: AppTextField(
+                label: label,
+                hint: 'dd/mm/yyyy',
+                controller: controller,
+                prefixIcon: Icons.calendar_today,
+              ),
+            ),
+          ),
         ),
-      ),
+        if (value != null && onClear != null)
+          IconButton(
+            icon: const Icon(Icons.clear, size: 18),
+            onPressed: onClear,
+          ),
+      ],
     );
   }
 
@@ -556,6 +581,7 @@ class NationalityDropdown extends StatefulWidget {
 class _NationalityDropdownState extends State<NationalityDropdown> {
   String? _customNationality;
   bool _showCustomInput = false;
+  late final TextEditingController _customNationalityController;
 
   @override
   void initState() {
@@ -564,6 +590,13 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
       _customNationality = widget.value;
       _showCustomInput = true;
     }
+    _customNationalityController = TextEditingController(text: _customNationality ?? '');
+  }
+
+  @override
+  void dispose() {
+    _customNationalityController.dispose();
+    super.dispose();
   }
 
   @override
@@ -574,7 +607,7 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
           Expanded(
             child: AppTextField(
               label: widget.label ?? context.l10n.nationality,
-              controller: TextEditingController(text: _customNationality),
+              controller: _customNationalityController,
               prefixIcon: Icons.flag,
               onChanged: (value) {
                 _customNationality = value;
