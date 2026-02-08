@@ -90,7 +90,7 @@ class Room(models.Model):
         max_length=20, choices=Status.choices, default=Status.AVAILABLE, verbose_name="Trạng thái"
     )
     amenities = models.JSONField(default=list, blank=True, verbose_name="Tiện nghi")
-    notes = models.TextField(blank=True, verbose_name="Ghi chú")
+    notes = models.TextField(blank=True, null=True, default="", verbose_name="Ghi chú")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
