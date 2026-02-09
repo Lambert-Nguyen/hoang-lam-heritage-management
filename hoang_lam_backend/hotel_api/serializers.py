@@ -11,7 +11,7 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, DateRateOverride, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, RatePlan, Room, RoomInspection, RoomType
+from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -2936,5 +2936,93 @@ class DateRateOverrideBulkCreateSerializer(serializers.Serializer):
                 {"end_date": "Ngày kết thúc phải sau ngày bắt đầu."}
             )
         return attrs
+
+
+# ===== Phase 5: Notification Serializers =====
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """Full notification serializer."""
+
+    notification_type_display = serializers.CharField(
+        source="get_notification_type_display", read_only=True
+    )
+
+    class Meta:
+        model = Notification
+        fields = [
+            "id",
+            "notification_type",
+            "notification_type_display",
+            "title",
+            "body",
+            "data",
+            "booking",
+            "is_read",
+            "read_at",
+            "is_sent",
+            "created_at",
+        ]
+        read_only_fields = [
+            "id",
+            "notification_type",
+            "title",
+            "body",
+            "data",
+            "booking",
+            "is_sent",
+            "created_at",
+        ]
+
+
+class NotificationListSerializer(serializers.ModelSerializer):
+    """Lightweight notification serializer for listing."""
+
+    notification_type_display = serializers.CharField(
+        source="get_notification_type_display", read_only=True
+    )
+
+    class Meta:
+        model = Notification
+        fields = [
+            "id",
+            "notification_type",
+            "notification_type_display",
+            "title",
+            "body",
+            "is_read",
+            "created_at",
+        ]
+
+
+class DeviceTokenSerializer(serializers.ModelSerializer):
+    """Serializer for device token registration."""
+
+    class Meta:
+        model = DeviceToken
+        fields = ["id", "token", "platform", "device_name"]
+        read_only_fields = ["id"]
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        token = validated_data["token"]
+
+        # Upsert: reassign token if it exists for another user
+        device, created = DeviceToken.objects.update_or_create(
+            token=token,
+            defaults={
+                "user": user,
+                "platform": validated_data.get("platform", DeviceToken.Platform.ANDROID),
+                "device_name": validated_data.get("device_name", ""),
+                "is_active": True,
+            },
+        )
+        return device
+
+
+class NotificationPreferencesSerializer(serializers.Serializer):
+    """Serializer for notification preferences."""
+
+    receive_notifications = serializers.BooleanField()
 
 

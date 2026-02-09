@@ -41,6 +41,10 @@ from .views import (
     GuestDemographicsView,
     ComparativeReportView,
     ExportReportView,
+    # Phase 5: Notifications
+    NotificationViewSet,
+    DeviceTokenView,
+    NotificationPreferencesView,
 )
 
 # Register ViewSets
@@ -69,6 +73,8 @@ router.register(r"room-inspections", RoomInspectionViewSet, basename="roominspec
 # Pricing: Rate Plans and Date Rate Overrides
 router.register(r"rate-plans", RatePlanViewSet, basename="rateplan")
 router.register(r"date-rate-overrides", DateRateOverrideViewSet, basename="daterateoverride")
+# Phase 5: Notifications
+router.register(r"notifications", NotificationViewSet, basename="notification")
 
 urlpatterns = [
     # JWT Authentication
@@ -89,6 +95,9 @@ urlpatterns = [
     path("reports/demographics/", GuestDemographicsView.as_view(), name="report_demographics"),
     path("reports/comparative/", ComparativeReportView.as_view(), name="report_comparative"),
     path("reports/export/", ExportReportView.as_view(), name="report_export"),
+    # Phase 5: Notifications
+    path("devices/token/", DeviceTokenView.as_view(), name="device_token"),
+    path("notifications/preferences/", NotificationPreferencesView.as_view(), name="notification_preferences"),
     # API endpoints
     path("", include(router.urls)),
 ]

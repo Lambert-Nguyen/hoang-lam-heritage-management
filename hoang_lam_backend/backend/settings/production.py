@@ -116,6 +116,15 @@ ADMINS = [
 ]
 MANAGERS = ADMINS
 
+# FCM configuration for push notifications
+FCM_ENABLED = os.getenv("FCM_ENABLED", "True").lower() == "true"
+if FCM_ENABLED and not FCM_CREDENTIALS_FILE and not FCM_CREDENTIALS_JSON:
+    import warnings
+
+    warnings.warn(
+        "FCM_ENABLED is True but no credentials configured. Push notifications will not work."
+    )
+
 # Cache configuration (optional - requires Redis)
 if os.getenv("REDIS_URL"):
     CACHES = {

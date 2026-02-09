@@ -74,3 +74,6 @@ if "debug_toolbar" in INSTALLED_APPS:
 
 # Email backend for development (console)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# FCM disabled in development
+FCM_ENABLED = False

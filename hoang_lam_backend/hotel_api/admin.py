@@ -4,6 +4,7 @@ from django.contrib import admin
 
 from .models import (
     Booking,
+    DeviceToken,
     ExchangeRate,
     FinancialCategory,
     FinancialEntry,
@@ -11,6 +12,7 @@ from .models import (
     HousekeepingTask,
     MinibarItem,
     MinibarSale,
+    Notification,
     Room,
     RoomType,
 )
@@ -104,3 +106,19 @@ class ExchangeRateAdmin(admin.ModelAdmin):
     list_display = ["from_currency", "to_currency", "rate", "date", "source"]
     list_filter = ["from_currency", "source"]
     date_hierarchy = "date"
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ["recipient", "notification_type", "title", "is_read", "is_sent", "created_at"]
+    list_filter = ["notification_type", "is_read", "is_sent"]
+    search_fields = ["title", "body", "recipient__username"]
+    raw_id_fields = ["recipient", "booking"]
+
+
+@admin.register(DeviceToken)
+class DeviceTokenAdmin(admin.ModelAdmin):
+    list_display = ["user", "platform", "is_active", "device_name", "created_at"]
+    list_filter = ["platform", "is_active"]
+    search_fields = ["user__username", "device_name"]
+    raw_id_fields = ["user"]

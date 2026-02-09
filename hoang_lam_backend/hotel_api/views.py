@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, DateRateOverride, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, RatePlan, Room, RoomInspection, RoomType
+from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -108,6 +108,11 @@ from .serializers import (
     DateRateOverrideCreateSerializer,
     DateRateOverrideUpdateSerializer,
     DateRateOverrideBulkCreateSerializer,
+    # Phase 5: Notification serializers
+    NotificationSerializer,
+    NotificationListSerializer,
+    DeviceTokenSerializer,
+    NotificationPreferencesSerializer,
 )
 
 User = get_user_model()
@@ -1037,6 +1042,25 @@ class BookingViewSet(viewsets.ModelViewSet):
             return CheckOutSerializer
         return BookingSerializer
 
+    def perform_create(self, serializer):
+        """Create booking and notify staff."""
+        booking = serializer.save()
+
+        from .services import PushNotificationService
+
+        PushNotificationService.notify_staff(
+            notification_type=Notification.NotificationType.BOOKING_CREATED,
+            title=f"Đặt phòng mới: Phòng {booking.room.number}",
+            body=f"{booking.guest.full_name} - {booking.check_in_date} → {booking.check_out_date}",
+            data={
+                "booking_id": str(booking.id),
+                "room_number": booking.room.number,
+                "action": "booking_created",
+            },
+            booking=booking,
+            exclude_user=self.request.user,
+        )
+
     @extend_schema(
         summary="Update booking status",
         description="Update the status of a booking (e.g., confirm, cancel, no-show).",
@@ -1051,6 +1075,36 @@ class BookingViewSet(viewsets.ModelViewSet):
         serializer = BookingStatusUpdateSerializer(booking, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        # Send notification for status changes
+        from .services import PushNotificationService
+
+        if booking.status == Booking.Status.CONFIRMED:
+            PushNotificationService.notify_staff(
+                notification_type=Notification.NotificationType.BOOKING_CONFIRMED,
+                title=f"Xác nhận: Phòng {booking.room.number}",
+                body=f"{booking.guest.full_name} - {booking.check_in_date} → {booking.check_out_date}",
+                data={
+                    "booking_id": str(booking.id),
+                    "room_number": booking.room.number,
+                    "action": "booking_confirmed",
+                },
+                booking=booking,
+                exclude_user=request.user,
+            )
+        elif booking.status == Booking.Status.CANCELLED:
+            PushNotificationService.notify_staff(
+                notification_type=Notification.NotificationType.BOOKING_CANCELLED,
+                title=f"Hủy đặt phòng: Phòng {booking.room.number}",
+                body=f"{booking.guest.full_name} - {booking.check_in_date}",
+                data={
+                    "booking_id": str(booking.id),
+                    "room_number": booking.room.number,
+                    "action": "booking_cancelled",
+                },
+                booking=booking,
+                exclude_user=request.user,
+            )
 
         return Response(
             BookingSerializer(booking).data,
@@ -1098,6 +1152,22 @@ class BookingViewSet(viewsets.ModelViewSet):
             room = booking.room
             room.status = Room.Status.OCCUPIED
             room.save()
+
+        # Notify staff about check-in
+        from .services import PushNotificationService
+
+        PushNotificationService.notify_staff(
+            notification_type=Notification.NotificationType.CHECKIN_COMPLETED,
+            title=f"Check-in: Phòng {booking.room.number}",
+            body=f"{booking.guest.full_name} đã nhận phòng {booking.room.number}",
+            data={
+                "booking_id": str(booking.id),
+                "room_number": booking.room.number,
+                "action": "check_in",
+            },
+            booking=booking,
+            exclude_user=request.user,
+        )
 
         return Response(
             BookingSerializer(booking).data,
@@ -1155,6 +1225,22 @@ class BookingViewSet(viewsets.ModelViewSet):
             guest = booking.guest
             guest.total_stays += 1
             guest.save()
+
+        # Notify staff about check-out
+        from .services import PushNotificationService
+
+        PushNotificationService.notify_staff(
+            notification_type=Notification.NotificationType.CHECKOUT_COMPLETED,
+            title=f"Check-out: Phòng {booking.room.number}",
+            body=f"{booking.guest.full_name} đã trả phòng {booking.room.number}",
+            data={
+                "booking_id": str(booking.id),
+                "room_number": booking.room.number,
+                "action": "check_out",
+            },
+            booking=booking,
+            exclude_user=request.user,
+        )
 
         return Response(
             BookingSerializer(booking).data,
@@ -6125,3 +6211,143 @@ class DateRateOverrideViewSet(viewsets.ModelViewSet):
 
         serializer = DateRateOverrideListSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+# ===== Phase 5: Notification Views =====
+
+
+class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for viewing and managing notifications."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = NotificationSerializer
+
+    def get_queryset(self):
+        """Return notifications for the authenticated user."""
+        return Notification.objects.filter(
+            recipient=self.request.user
+        ).order_by("-created_at")
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return NotificationListSerializer
+        return NotificationSerializer
+
+    @extend_schema(
+        summary="Mark notification as read",
+        responses={200: NotificationSerializer},
+        tags=["Notifications"],
+    )
+    @action(detail=True, methods=["post"], url_path="read")
+    def mark_read(self, request, pk=None):
+        """Mark a single notification as read."""
+        notification = self.get_object()
+        notification.mark_read()
+        return Response(NotificationSerializer(notification).data)
+
+    @extend_schema(
+        summary="Mark all notifications as read",
+        responses={200: OpenApiResponse(description="All notifications marked as read")},
+        tags=["Notifications"],
+    )
+    @action(detail=False, methods=["post"], url_path="read-all")
+    def mark_all_read(self, request):
+        """Mark all unread notifications as read."""
+        from django.utils import timezone
+
+        count = Notification.objects.filter(
+            recipient=request.user,
+            is_read=False,
+        ).update(is_read=True, read_at=timezone.now())
+
+        return Response({"marked_read": count})
+
+    @extend_schema(
+        summary="Get unread notification count",
+        responses={200: OpenApiResponse(description="Unread count")},
+        tags=["Notifications"],
+    )
+    @action(detail=False, methods=["get"], url_path="unread-count")
+    def unread_count(self, request):
+        """Get count of unread notifications."""
+        count = Notification.objects.filter(
+            recipient=request.user,
+            is_read=False,
+        ).count()
+        return Response({"unread_count": count})
+
+
+class DeviceTokenView(APIView):
+    """Register/unregister FCM device tokens."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Register device token",
+        request=DeviceTokenSerializer,
+        responses={201: DeviceTokenSerializer},
+        tags=["Notifications"],
+    )
+    def post(self, request):
+        """Register a device token."""
+        serializer = DeviceTokenSerializer(
+            data=request.data, context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(
+        summary="Unregister device token",
+        responses={200: OpenApiResponse(description="Token deactivated")},
+        tags=["Notifications"],
+    )
+    def delete(self, request):
+        """Deactivate a device token."""
+        token = request.data.get("token")
+        if not token:
+            return Response(
+                {"detail": "Token is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        DeviceToken.objects.filter(
+            user=request.user, token=token
+        ).update(is_active=False)
+        return Response({"detail": "Token deactivated."})
+
+
+class NotificationPreferencesView(APIView):
+    """Get/update notification preferences."""
+
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        summary="Get notification preferences",
+        responses={200: NotificationPreferencesSerializer},
+        tags=["Notifications"],
+    )
+    def get(self, request):
+        """Get user's notification preferences."""
+        profile = request.user.hotel_profile
+        return Response({
+            "receive_notifications": profile.receive_notifications,
+        })
+
+    @extend_schema(
+        summary="Update notification preferences",
+        request=NotificationPreferencesSerializer,
+        responses={200: NotificationPreferencesSerializer},
+        tags=["Notifications"],
+    )
+    def put(self, request):
+        """Update user's notification preferences."""
+        serializer = NotificationPreferencesSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        profile = request.user.hotel_profile
+        profile.receive_notifications = serializer.validated_data["receive_notifications"]
+        profile.save(update_fields=["receive_notifications"])
+
+        return Response({
+            "receive_notifications": profile.receive_notifications,
+        })

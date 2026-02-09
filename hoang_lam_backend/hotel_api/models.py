@@ -9,6 +9,8 @@ Models:
 - HousekeepingTask: Room cleaning tasks
 - MinibarItem, MinibarSale: Minibar inventory and sales
 - ExchangeRate: Currency conversion
+- Notification: Push notification records
+- DeviceToken: FCM device tokens
 """
 
 from decimal import Decimal
@@ -1893,3 +1895,115 @@ class DateRateOverride(models.Model):
 
     def __str__(self):
         return f"{self.room_type.name} - {self.date}: {self.rate:,.0f}đ"
+
+
+class Notification(models.Model):
+    """Push notification records for hotel staff."""
+
+    class NotificationType(models.TextChoices):
+        BOOKING_CREATED = "booking_created", "Đặt phòng mới"
+        BOOKING_CONFIRMED = "booking_confirmed", "Xác nhận đặt phòng"
+        BOOKING_CANCELLED = "booking_cancelled", "Hủy đặt phòng"
+        CHECKIN_REMINDER = "checkin_reminder", "Nhắc nhận phòng"
+        CHECKOUT_REMINDER = "checkout_reminder", "Nhắc trả phòng"
+        CHECKIN_COMPLETED = "checkin_completed", "Đã nhận phòng"
+        CHECKOUT_COMPLETED = "checkout_completed", "Đã trả phòng"
+        GENERAL = "general", "Thông báo chung"
+
+    recipient = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        verbose_name="Người nhận",
+    )
+    notification_type = models.CharField(
+        max_length=30,
+        choices=NotificationType.choices,
+        default=NotificationType.GENERAL,
+        verbose_name="Loại thông báo",
+    )
+    title = models.CharField(max_length=200, verbose_name="Tiêu đề")
+    body = models.TextField(verbose_name="Nội dung")
+    data = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Dữ liệu bổ sung",
+    )
+    booking = models.ForeignKey(
+        "Booking",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="notifications",
+        verbose_name="Đặt phòng liên quan",
+    )
+
+    # Status
+    is_read = models.BooleanField(default=False, verbose_name="Đã đọc")
+    read_at = models.DateTimeField(null=True, blank=True, verbose_name="Đọc lúc")
+    is_sent = models.BooleanField(default=False, verbose_name="Đã gửi push")
+    sent_at = models.DateTimeField(null=True, blank=True, verbose_name="Gửi lúc")
+    send_error = models.TextField(blank=True, verbose_name="Lỗi gửi")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Thông báo"
+        verbose_name_plural = "Thông báo"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["recipient", "-created_at"]),
+            models.Index(fields=["recipient", "is_read"]),
+        ]
+
+    def __str__(self):
+        return f"{self.recipient.username} - {self.title[:50]}"
+
+    def mark_read(self):
+        """Mark notification as read."""
+        from django.utils import timezone
+
+        self.is_read = True
+        self.read_at = timezone.now()
+        self.save(update_fields=["is_read", "read_at"])
+
+
+class DeviceToken(models.Model):
+    """FCM device tokens for push notification delivery."""
+
+    class Platform(models.TextChoices):
+        ANDROID = "android", "Android"
+        IOS = "ios", "iOS"
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="device_tokens",
+        verbose_name="Người dùng",
+    )
+    token = models.TextField(unique=True, verbose_name="FCM Token")
+    platform = models.CharField(
+        max_length=10,
+        choices=Platform.choices,
+        default=Platform.ANDROID,
+        verbose_name="Nền tảng",
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Đang hoạt động")
+    device_name = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name="Tên thiết bị",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Token thiết bị"
+        verbose_name_plural = "Token thiết bị"
+        indexes = [
+            models.Index(fields=["user", "is_active"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.platform} ({self.token[:20]}...)"

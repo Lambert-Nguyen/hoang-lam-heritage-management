@@ -708,13 +708,13 @@
 ## Phase 5: Guest Communication
 
 ### 5.1 Notifications (Backend)
-- [ ] **5.1.1** Set up Firebase Cloud Messaging
-- [ ] **5.1.2** Create notification model
-- [ ] **5.1.3** Create push notification service
-- [ ] **5.1.4** Create booking confirmation notification
-- [ ] **5.1.5** Create check-out reminder notification
-- [ ] **5.1.6** Create notification preferences endpoint
-- [ ] **5.1.7** Write notification tests
+- [x] **5.1.1** Set up Firebase Cloud Messaging ✅ (firebase-admin SDK, FCM settings in base/dev/prod)
+- [x] **5.1.2** Create notification model ✅ (Notification + DeviceToken models, migration 0013)
+- [x] **5.1.3** Create push notification service ✅ (PushNotificationService with lazy FCM init, graceful degradation)
+- [x] **5.1.4** Create booking confirmation notification ✅ (Wired into BookingViewSet: create, status update, check-in, check-out)
+- [x] **5.1.5** Create check-out reminder notification ✅ (Management commands: send_checkin_reminders, send_checkout_reminders)
+- [x] **5.1.6** Create notification preferences endpoint ✅ (NotificationViewSet, DeviceTokenView, NotificationPreferencesView)
+- [x] **5.1.7** Write notification tests ✅ (26 tests: models, service, API, integration, commands)
 
 ### 5.2 Notifications (Frontend)
 `[BLOCKED BY: 5.1.1-5.1.6]`

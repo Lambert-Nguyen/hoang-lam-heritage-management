@@ -167,3 +167,9 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+
+# Firebase Cloud Messaging (Push Notifications - Phase 5)
+FCM_ENABLED = os.getenv("FCM_ENABLED", "False").lower() == "true"
+FCM_CREDENTIALS_FILE = os.getenv("FCM_CREDENTIALS_FILE", "")
+FCM_CREDENTIALS_JSON = os.getenv("FCM_CREDENTIALS_JSON", "")
