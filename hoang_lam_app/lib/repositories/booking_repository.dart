@@ -208,6 +208,62 @@ class BookingRepository {
     return Booking.fromJson(response.data!);
   }
 
+  // ==================== Early/Late Fees ====================
+
+  /// Record early check-in fee
+  Future<Booking> recordEarlyCheckIn(
+    int id, {
+    required double hours,
+    required int fee,
+    String? notes,
+    bool createFolioItem = true,
+  }) async {
+    final data = <String, dynamic>{
+      'hours': hours,
+      'fee': fee,
+      'create_folio_item': createFolioItem,
+    };
+    if (notes != null && notes.isNotEmpty) {
+      data['notes'] = notes;
+    }
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/record-early-checkin/',
+      data: data,
+    );
+    if (response.data == null) {
+      throw Exception('Failed to record early check-in fee');
+    }
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Record late check-out fee
+  Future<Booking> recordLateCheckOut(
+    int id, {
+    required double hours,
+    required int fee,
+    String? notes,
+    bool createFolioItem = true,
+  }) async {
+    final data = <String, dynamic>{
+      'hours': hours,
+      'fee': fee,
+      'create_folio_item': createFolioItem,
+    };
+    if (notes != null && notes.isNotEmpty) {
+      data['notes'] = notes;
+    }
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$id/record-late-checkout/',
+      data: data,
+    );
+    if (response.data == null) {
+      throw Exception('Failed to record late check-out fee');
+    }
+    return Booking.fromJson(response.data!);
+  }
+
   // ==================== Calendar & Today ====================
 
   /// Get bookings for calendar view

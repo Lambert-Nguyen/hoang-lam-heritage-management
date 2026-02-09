@@ -621,6 +621,70 @@ class CheckOutSerializer(serializers.Serializer):
     )
 
 
+class EarlyCheckInFeeSerializer(serializers.Serializer):
+    """Serializer for recording early check-in fee."""
+
+    hours = serializers.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        help_text="Number of hours early (e.g. 2.0)",
+    )
+    fee = serializers.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        help_text="Fee amount in VND",
+    )
+    notes = serializers.CharField(required=False, allow_blank=True)
+    create_folio_item = serializers.BooleanField(
+        default=True,
+        help_text="Also create a FolioItem for tracking",
+    )
+
+    def validate_hours(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Số giờ phải lớn hơn 0.")
+        if value > 24:
+            raise serializers.ValidationError("Số giờ không được vượt quá 24.")
+        return value
+
+    def validate_fee(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Phí không được âm.")
+        return value
+
+
+class LateCheckOutFeeSerializer(serializers.Serializer):
+    """Serializer for recording late check-out fee."""
+
+    hours = serializers.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        help_text="Number of hours late (e.g. 3.0)",
+    )
+    fee = serializers.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        help_text="Fee amount in VND",
+    )
+    notes = serializers.CharField(required=False, allow_blank=True)
+    create_folio_item = serializers.BooleanField(
+        default=True,
+        help_text="Also create a FolioItem for tracking",
+    )
+
+    def validate_hours(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Số giờ phải lớn hơn 0.")
+        if value > 24:
+            raise serializers.ValidationError("Số giờ không được vượt quá 24.")
+        return value
+
+    def validate_fee(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Phí không được âm.")
+        return value
+
+
 # ==================== Financial Serializers ====================
 
 

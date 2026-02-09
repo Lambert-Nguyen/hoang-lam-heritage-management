@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../widgets/bookings/booking_status_badge.dart';
+import '../../widgets/bookings/early_late_fee_dialog.dart';
 import 'booking_form_screen.dart';
 
 /// Booking Detail Screen - Phase 1.9.7
@@ -185,11 +186,6 @@ class BookingDetailScreen extends ConsumerWidget {
                   currencyFormat.format(booking.depositAmount),
                   valueColor: Colors.green,
                 ),
-                _buildInfoRow(
-                  context.l10n.balanceDue,
-                  currencyFormat.format(booking.totalAmount - booking.depositAmount),
-                  valueColor: Colors.orange,
-                ),
               ],
               _buildInfoRow(
                 context.l10n.paymentMethod,
@@ -197,6 +193,84 @@ class BookingDetailScreen extends ConsumerWidget {
               ),
             ],
           ),
+
+          // Early/Late Fees Section
+          if (booking.earlyCheckInFee > 0 || booking.lateCheckOutFee > 0 ||
+              booking.status == BookingStatus.checkedIn ||
+              booking.status == BookingStatus.confirmed)
+            _buildSection(
+              context,
+              title: '⏰ ${context.l10n.feesAndCharges}',
+              children: [
+                if (booking.earlyCheckInFee > 0) ...[
+                  _buildInfoRow(
+                    '${context.l10n.earlyCheckInFee} (${booking.earlyCheckInHours}h)',
+                    currencyFormat.format(booking.earlyCheckInFee),
+                    valueColor: const Color(0xFF4CAF50),
+                  ),
+                ],
+                if (booking.lateCheckOutFee > 0) ...[
+                  _buildInfoRow(
+                    '${context.l10n.lateCheckOutFee} (${booking.lateCheckOutHours}h)',
+                    currencyFormat.format(booking.lateCheckOutFee),
+                    valueColor: const Color(0xFFFF9800),
+                  ),
+                ],
+                if (booking.totalFees > 0) ...[
+                  const Divider(),
+                  _buildInfoRow(
+                    context.l10n.balanceDue,
+                    currencyFormat.format(booking.calculatedBalanceDue),
+                    bold: true,
+                    valueColor: Colors.orange,
+                  ),
+                ],
+                // Fee action buttons
+                if (booking.status == BookingStatus.checkedIn ||
+                    booking.status == BookingStatus.confirmed) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      if (booking.status == BookingStatus.checkedIn ||
+                          booking.status == BookingStatus.confirmed)
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => _handleRecordEarlyCheckIn(context, ref, booking),
+                            icon: const Icon(Icons.login, size: 16),
+                            label: Text(
+                              context.l10n.earlyCheckIn,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF4CAF50),
+                              side: const BorderSide(color: Color(0xFF4CAF50)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                            ),
+                          ),
+                        ),
+                      if (booking.status == BookingStatus.checkedIn) ...[
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: () => _handleRecordLateCheckOut(context, ref, booking),
+                            icon: const Icon(Icons.logout, size: 16),
+                            label: Text(
+                              context.l10n.lateCheckOut,
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFFFF9800),
+                              side: const BorderSide(color: Color(0xFFFF9800)),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ],
+            ),
 
           // Booking Source and Notes
           _buildSection(
@@ -607,6 +681,86 @@ class BookingDetailScreen extends ConsumerWidget {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.success)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${context.l10n.error}: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handleRecordEarlyCheckIn(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (ctx) => EarlyLateFeeDialog(
+        isEarlyCheckIn: true,
+        nightlyRate: booking.nightlyRate,
+        currentHours: booking.earlyCheckInHours,
+        currentFee: booking.earlyCheckInFee,
+      ),
+    );
+
+    if (result != null && context.mounted) {
+      try {
+        await ref.read(bookingNotifierProvider.notifier).recordEarlyCheckIn(
+              bookingId,
+              hours: result['hours'] as double,
+              fee: result['fee'] as int,
+              notes: result['notes'] as String?,
+              createFolioItem: result['create_folio_item'] as bool,
+            );
+        ref.invalidate(bookingByIdProvider(bookingId));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.earlyCheckInRecorded)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${context.l10n.error}: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handleRecordLateCheckOut(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (ctx) => EarlyLateFeeDialog(
+        isEarlyCheckIn: false,
+        nightlyRate: booking.nightlyRate,
+        currentHours: booking.lateCheckOutHours,
+        currentFee: booking.lateCheckOutFee,
+      ),
+    );
+
+    if (result != null && context.mounted) {
+      try {
+        await ref.read(bookingNotifierProvider.notifier).recordLateCheckOut(
+              bookingId,
+              hours: result['hours'] as double,
+              fee: result['fee'] as int,
+              notes: result['notes'] as String?,
+              createFolioItem: result['create_folio_item'] as bool,
+            );
+        ref.invalidate(bookingByIdProvider(bookingId));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.lateCheckOutRecorded)),
           );
         }
       } catch (e) {

@@ -198,6 +198,27 @@ class AppLocalizations {
   String get bookingListLoadError => translate('booking_list_load_error');
   String get bookRoom => translate('book_room');
 
+  // ===== EARLY/LATE FEES =====
+  String get earlyCheckIn => translate('early_check_in');
+  String get lateCheckOut => translate('late_check_out');
+  String get earlyCheckInFee => translate('early_check_in_fee');
+  String get lateCheckOutFee => translate('late_check_out_fee');
+  String get quickSelect => translate('quick_select');
+  String get numberOfHours => translate('number_of_hours');
+  String get hours => translate('hours');
+  String get feeAmount => translate('fee_amount');
+  String get optionalNotes => translate('optional_notes');
+  String get createFolioItem => translate('create_folio_item');
+  String get trackInFinancials => translate('track_in_financials');
+  String get maxHours24 => translate('max_hours_24');
+  String get invalidValue => translate('invalid_value');
+  String get required => translate('required');
+  String get recordEarlyCheckIn => translate('record_early_check_in');
+  String get recordLateCheckOut => translate('record_late_check_out');
+  String get earlyCheckInRecorded => translate('early_check_in_recorded');
+  String get lateCheckOutRecorded => translate('late_check_out_recorded');
+  String get feesAndCharges => translate('fees_and_charges');
+
   // ===== ROOM =====
   String get roomManagement => translate('room_management');
   String get hideInactiveRooms => translate('hide_inactive_rooms');
@@ -803,6 +824,27 @@ const Map<String, String> _viTranslations = {
   'booking_list_load_error': 'Lỗi tải danh sách đặt phòng',
   'book_room': 'Đặt phòng',
 
+  // ===== EARLY/LATE FEES =====
+  'early_check_in': 'Nhận sớm',
+  'late_check_out': 'Trả muộn',
+  'early_check_in_fee': 'Phí nhận sớm',
+  'late_check_out_fee': 'Phí trả muộn',
+  'quick_select': 'Chọn nhanh',
+  'number_of_hours': 'Số giờ',
+  'hours': 'giờ',
+  'fee_amount': 'Số tiền phí',
+  'optional_notes': 'Ghi chú (không bắt buộc)',
+  'create_folio_item': 'Tạo mục trong folio',
+  'track_in_financials': 'Theo dõi trong tài chính',
+  'max_hours_24': 'Tối đa 24 giờ',
+  'invalid_value': 'Giá trị không hợp lệ',
+  'required': 'Bắt buộc',
+  'record_early_check_in': 'Ghi nhận nhận sớm',
+  'record_late_check_out': 'Ghi nhận trả muộn',
+  'early_check_in_recorded': 'Đã ghi nhận phí nhận sớm',
+  'late_check_out_recorded': 'Đã ghi nhận phí trả muộn',
+  'fees_and_charges': 'Phí & Phụ thu',
+
   // ===== ROOM =====
   'room_management': 'Quản lý phòng',
   'hide_inactive_rooms': 'Ẩn phòng vô hiệu',
@@ -1407,6 +1449,27 @@ const Map<String, String> _enTranslations = {
   'select_booking': 'Select booking',
   'booking_list_load_error': 'Booking list load error',
   'book_room': 'Book room',
+
+  // ===== EARLY/LATE FEES =====
+  'early_check_in': 'Early Check-in',
+  'late_check_out': 'Late Check-out',
+  'early_check_in_fee': 'Early check-in fee',
+  'late_check_out_fee': 'Late check-out fee',
+  'quick_select': 'Quick select',
+  'number_of_hours': 'Number of hours',
+  'hours': 'hours',
+  'fee_amount': 'Fee amount',
+  'optional_notes': 'Notes (optional)',
+  'create_folio_item': 'Create folio item',
+  'track_in_financials': 'Track in financials',
+  'max_hours_24': 'Maximum 24 hours',
+  'invalid_value': 'Invalid value',
+  'required': 'Required',
+  'record_early_check_in': 'Record early check-in',
+  'record_late_check_out': 'Record late check-out',
+  'early_check_in_recorded': 'Early check-in fee recorded',
+  'late_check_out_recorded': 'Late check-out fee recorded',
+  'fees_and_charges': 'Fees & Charges',
 
   // ===== ROOM =====
   'room_management': 'Room management',

@@ -58,9 +58,9 @@
 > | Task | Original Phase | Status | Notes |
 > |------|----------------|--------|-------|
 > | 1.7 ID Scanning | Phase 1 | 🔄 Phase 5+ | OCR/camera integration deferred |
-> | 1.8.2 GroupBooking model | Phase 1.8 | 🔄 Phase 5+ | Complex feature, not needed for 7-room hotel MVP |
+> | 1.8.2 GroupBooking model | Phase 1.8 | ✅ DONE | Full CRUD + status transitions + room assignment. 22 backend + 25 Flutter tests |
 > | 1.8.11 Hourly booking logic | Phase 1.8 | 🔄 Phase 5+ | Specialized feature for later |
-> | 1.8.12 Early/late check fees | Phase 1.8 | 🔄 Phase 5+ | Enhancement, not core functionality |
+> | 1.8.12 Early/late check fees | Phase 1.8 | ✅ DONE | Backend API + Flutter UI with dialog, fee calc, folio tracking. 26 backend + 13 Flutter tests |
 > | 1.9.13 Hourly booking UI | Phase 1.9 | 🔄 Phase 5+ | Depends on 1.8.11 |
 > | 1.11-1.12 Night Audit | Phase 1 | ✅ DONE | Backend + Frontend + 21 tests complete |
 > | 1.13-1.14 Temp Residence | Phase 1 | ✅ DONE | CSV/Excel export + 13 tests complete |
@@ -363,7 +363,7 @@
 > **Status**: ✅ PHASE 1.8 MOSTLY COMPLETE - Full CRUD, check-in/out with timestamps, calendar, conflict detection, 21 tests passing.
 
 - [x] **1.8.1** Create `Booking` model ✅ (with Guest FK, status, source, pricing, deposits)
-- [ ] **1.8.2** Create `GroupBooking` model (deferred to Phase 3)
+- [x] **1.8.2** Create `GroupBooking` model ✅ (Full CRUD + status transitions + room assignment — backend model, serializers, views, Flutter model/screens/providers all implemented. 22 backend tests + 25 Flutter tests)
 - [x] **1.8.3** Create Booking serializer and CRUD endpoints ✅ (BookingViewSet with full CRUD)
 - [x] **1.8.4** Create booking status update endpoint ✅ (POST /api/v1/bookings/{id}/update-status/)
 - [x] **1.8.5** Create check-in endpoint with timestamp ✅ (POST /api/v1/bookings/{id}/check-in/ - auto room→OCCUPIED)
@@ -373,7 +373,7 @@
 - [x] **1.8.9** Create booking conflict detection ✅ (overlap validation in serializer)
 - [x] **1.8.10** Create booking source list endpoint ✅ (BOOKING_SOURCE choices: walk_in, phone, booking_com, agoda, airbnb, etc.)
 - [ ] **1.8.11** Implement hourly booking logic — 🔄 **DEFERRED TO PHASE 3** (specialized feature)
-- [ ] **1.8.12** Implement early check-in / late check-out fees — 🔄 **DEFERRED TO PHASE 3** (enhancement)
+- [x] **1.8.12** Implement early check-in / late check-out fees ✅ (Backend: record-early-checkin/record-late-checkout API actions with fee validation, FolioItem tracking, balance_due integration. Frontend: EarlyLateFeeDialog widget with preset hours, auto fee calc, folio toggle. Integrated into booking detail screen. 26 backend tests + 13 Flutter tests)
 - [x] **1.8.13** Write booking management tests ✅ (21 tests passing)
 
 ### 1.9 Booking Management (Frontend)
@@ -839,7 +839,7 @@ When claiming a task, add your agent ID:
 
 | Target Phase | Tasks Moved | Description |
 |--------------|-------------|-------------|
-| Phase 3 | 15 | ID Scanning (9), Hourly booking logic (1), Early/late fees (1), Hourly booking UI (1), GroupBooking (1), Offline Support (8) |
+| Phase 3 | 13 | ID Scanning (9), Hourly booking logic (1), Hourly booking UI (1), Offline Support (8). **NOTE:** GroupBooking (1) and Early/late fees (1) now COMPLETE. |
 | Phase 5 | 1 | Notification preferences (depends on Push Notifications) |
 
 **Legend:**
@@ -867,8 +867,8 @@ When claiming a task, add your agent ID:
 **What's Deferred (Phase 3):**
 - 🔄 ID Scanning (OCR camera capture)
 - 🔄 Hourly Booking (specialized pricing)
-- 🔄 Group Booking (multiple rooms)
-- 🔄 Early check-in / Late check-out fees
+- ✅ Group Booking (multiple rooms) — **IMPLEMENTED**
+- ✅ Early check-in / Late check-out fees — **IMPLEMENTED**
 - 🔄 Offline Support (sync, conflict resolution)
 
 **Recent Progress:**

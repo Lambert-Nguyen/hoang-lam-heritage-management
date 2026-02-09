@@ -212,6 +212,52 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     }
   }
 
+  /// Record early check-in fee
+  Future<Booking> recordEarlyCheckIn(
+    int id, {
+    required double hours,
+    required int fee,
+    String? notes,
+    bool createFolioItem = true,
+  }) async {
+    try {
+      final booking = await _repository.recordEarlyCheckIn(
+        id,
+        hours: hours,
+        fee: fee,
+        notes: notes,
+        createFolioItem: createFolioItem,
+      );
+      await loadBookings();
+      return booking;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  /// Record late check-out fee
+  Future<Booking> recordLateCheckOut(
+    int id, {
+    required double hours,
+    required int fee,
+    String? notes,
+    bool createFolioItem = true,
+  }) async {
+    try {
+      final booking = await _repository.recordLateCheckOut(
+        id,
+        hours: hours,
+        fee: fee,
+        notes: notes,
+        createFolioItem: createFolioItem,
+      );
+      await loadBookings();
+      return booking;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   /// Cancel a booking
   Future<Booking> cancelBooking(int id, {String? reason}) async {
     try {

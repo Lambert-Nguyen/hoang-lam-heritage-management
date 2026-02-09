@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, GroupBooking, Guest, GuestMessage, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MessageTemplate, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
+from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, FolioItem, GroupBooking, Guest, GuestMessage, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MessageTemplate, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -1248,6 +1248,117 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking=booking,
             exclude_user=request.user,
         )
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="record-early-checkin")
+    def record_early_checkin(self, request, pk=None):
+        """Record early check-in fee for a booking."""
+        from django.db import transaction
+
+        booking = self.get_object()
+
+        if booking.status not in [Booking.Status.CHECKED_IN, Booking.Status.CONFIRMED]:
+            return Response(
+                {"detail": "Chỉ có thể ghi phí nhận sớm cho booking đã xác nhận hoặc đang ở."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from .serializers import EarlyCheckInFeeSerializer
+
+        serializer = EarlyCheckInFeeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        hours = serializer.validated_data["hours"]
+        fee = serializer.validated_data["fee"]
+        notes = serializer.validated_data.get("notes", "")
+        create_folio = serializer.validated_data.get("create_folio_item", True)
+
+        with transaction.atomic():
+            booking.early_check_in_hours = hours
+            booking.early_check_in_fee = fee
+            if notes:
+                booking.notes = f"{booking.notes}\n[Nhận sớm] {notes}" if booking.notes else f"[Nhận sớm] {notes}"
+            booking.save(update_fields=[
+                "early_check_in_hours", "early_check_in_fee", "notes",
+            ])
+
+            # Optionally create a FolioItem for tracking
+            # Mark as is_paid=True to prevent double-counting in additional_charges
+            # (fees are already tracked via dedicated fields in balance_due)
+            if create_folio and fee > 0:
+                from datetime import date as date_today
+                FolioItem.objects.get_or_create(
+                    booking=booking,
+                    item_type="early_checkin",
+                    defaults={
+                        "description": f"Phí nhận sớm ({hours}h)",
+                        "unit_price": fee,
+                        "total_price": fee,
+                        "quantity": 1,
+                        "date": date_today.today(),
+                        "is_paid": True,
+                        "created_by": request.user,
+                    },
+                )
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["post"], url_path="record-late-checkout")
+    def record_late_checkout(self, request, pk=None):
+        """Record late check-out fee for a booking."""
+        from django.db import transaction
+
+        booking = self.get_object()
+
+        if booking.status != Booking.Status.CHECKED_IN:
+            return Response(
+                {"detail": "Chỉ có thể ghi phí trả muộn cho booking đang ở."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from .serializers import LateCheckOutFeeSerializer
+
+        serializer = LateCheckOutFeeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        hours = serializer.validated_data["hours"]
+        fee = serializer.validated_data["fee"]
+        notes = serializer.validated_data.get("notes", "")
+        create_folio = serializer.validated_data.get("create_folio_item", True)
+
+        with transaction.atomic():
+            booking.late_check_out_hours = hours
+            booking.late_check_out_fee = fee
+            if notes:
+                booking.notes = f"{booking.notes}\n[Trả muộn] {notes}" if booking.notes else f"[Trả muộn] {notes}"
+            booking.save(update_fields=[
+                "late_check_out_hours", "late_check_out_fee", "notes",
+            ])
+
+            # Optionally create a FolioItem for tracking
+            # Mark as is_paid=True to prevent double-counting in additional_charges
+            if create_folio and fee > 0:
+                from datetime import date as date_today
+                FolioItem.objects.get_or_create(
+                    booking=booking,
+                    item_type="late_checkout",
+                    defaults={
+                        "description": f"Phí trả muộn ({hours}h)",
+                        "unit_price": fee,
+                        "total_price": fee,
+                        "quantity": 1,
+                        "date": date_today.today(),
+                        "is_paid": True,
+                        "created_by": request.user,
+                    },
+                )
 
         return Response(
             BookingSerializer(booking).data,
