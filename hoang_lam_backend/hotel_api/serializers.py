@@ -11,7 +11,7 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, Guest, GroupBooking, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
+from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, Guest, GroupBooking, GuestMessage, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MessageTemplate, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
 
 
 class LoginSerializer(serializers.Serializer):
@@ -2574,7 +2574,7 @@ class RoomInspectionSerializer(serializers.ModelSerializer):
             return None
         return {
             "id": obj.booking.id,
-            "guest_name": obj.booking.guest.name if obj.booking.guest else None,
+            "guest_name": obj.booking.guest.full_name if obj.booking.guest else None,
             "check_in_date": obj.booking.check_in_date,
             "check_out_date": obj.booking.check_out_date,
         }
@@ -3024,5 +3024,168 @@ class NotificationPreferencesSerializer(serializers.Serializer):
     """Serializer for notification preferences."""
 
     receive_notifications = serializers.BooleanField()
+
+
+# ===== Phase 5.3: Guest Messaging Serializers =====
+
+
+class MessageTemplateSerializer(serializers.ModelSerializer):
+    """Full message template serializer."""
+
+    template_type_display = serializers.CharField(
+        source="get_template_type_display", read_only=True
+    )
+    channel_display = serializers.CharField(
+        source="get_channel_display", read_only=True
+    )
+    available_variables = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MessageTemplate
+        fields = [
+            "id",
+            "name",
+            "template_type",
+            "template_type_display",
+            "subject",
+            "body",
+            "channel",
+            "channel_display",
+            "is_active",
+            "available_variables",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at"]
+
+    def get_available_variables(self, obj):
+        return MessageTemplate.AVAILABLE_VARIABLES
+
+
+class MessageTemplateListSerializer(serializers.ModelSerializer):
+    """Lightweight message template serializer for listing."""
+
+    template_type_display = serializers.CharField(
+        source="get_template_type_display", read_only=True
+    )
+    channel_display = serializers.CharField(
+        source="get_channel_display", read_only=True
+    )
+
+    class Meta:
+        model = MessageTemplate
+        fields = [
+            "id",
+            "name",
+            "template_type",
+            "template_type_display",
+            "channel",
+            "channel_display",
+            "is_active",
+        ]
+
+
+class GuestMessageSerializer(serializers.ModelSerializer):
+    """Full guest message serializer."""
+
+    guest_name = serializers.CharField(source="guest.full_name", read_only=True)
+    booking_display = serializers.SerializerMethodField()
+    template_name = serializers.CharField(
+        source="template.name", read_only=True, default=None
+    )
+    channel_display = serializers.CharField(
+        source="get_channel_display", read_only=True
+    )
+    status_display = serializers.CharField(
+        source="get_status_display", read_only=True
+    )
+    sent_by_name = serializers.CharField(
+        source="sent_by.get_full_name", read_only=True, default=None
+    )
+
+    class Meta:
+        model = GuestMessage
+        fields = [
+            "id",
+            "guest",
+            "guest_name",
+            "booking",
+            "booking_display",
+            "template",
+            "template_name",
+            "channel",
+            "channel_display",
+            "subject",
+            "body",
+            "recipient_address",
+            "status",
+            "status_display",
+            "sent_at",
+            "send_error",
+            "sent_by",
+            "sent_by_name",
+            "created_at",
+        ]
+        read_only_fields = [
+            "id",
+            "status",
+            "sent_at",
+            "send_error",
+            "sent_by",
+            "recipient_address",
+            "created_at",
+        ]
+
+    def get_booking_display(self, obj):
+        if obj.booking:
+            return f"#{obj.booking.id} - {obj.booking.room.number if obj.booking.room else 'N/A'}"
+        return None
+
+
+class GuestMessageListSerializer(serializers.ModelSerializer):
+    """Lightweight guest message serializer for listing."""
+
+    guest_name = serializers.CharField(source="guest.full_name", read_only=True)
+    channel_display = serializers.CharField(
+        source="get_channel_display", read_only=True
+    )
+    status_display = serializers.CharField(
+        source="get_status_display", read_only=True
+    )
+
+    class Meta:
+        model = GuestMessage
+        fields = [
+            "id",
+            "guest",
+            "guest_name",
+            "booking",
+            "channel",
+            "channel_display",
+            "subject",
+            "status",
+            "status_display",
+            "sent_at",
+            "created_at",
+        ]
+
+
+class SendMessageSerializer(serializers.Serializer):
+    """Serializer for sending a guest message."""
+
+    guest = serializers.IntegerField()
+    booking = serializers.IntegerField(required=False, allow_null=True)
+    template = serializers.IntegerField(required=False, allow_null=True)
+    channel = serializers.ChoiceField(choices=MessageTemplate.Channel.choices)
+    subject = serializers.CharField(max_length=200)
+    body = serializers.CharField()
+
+
+class PreviewMessageSerializer(serializers.Serializer):
+    """Serializer for previewing a rendered message template."""
+
+    template = serializers.IntegerField()
+    guest = serializers.IntegerField()
+    booking = serializers.IntegerField(required=False, allow_null=True)
 
 

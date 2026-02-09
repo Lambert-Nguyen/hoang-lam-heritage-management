@@ -45,6 +45,9 @@ from .views import (
     NotificationViewSet,
     DeviceTokenView,
     NotificationPreferencesView,
+    # Phase 5.3: Guest Messaging
+    MessageTemplateViewSet,
+    GuestMessageViewSet,
 )
 
 # Register ViewSets
@@ -75,6 +78,9 @@ router.register(r"rate-plans", RatePlanViewSet, basename="rateplan")
 router.register(r"date-rate-overrides", DateRateOverrideViewSet, basename="daterateoverride")
 # Phase 5: Notifications
 router.register(r"notifications", NotificationViewSet, basename="notification")
+# Phase 5.3: Guest Messaging
+router.register(r"message-templates", MessageTemplateViewSet, basename="messagetemplate")
+router.register(r"guest-messages", GuestMessageViewSet, basename="guestmessage")
 
 urlpatterns = [
     # JWT Authentication

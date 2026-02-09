@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, GroupBooking, Guest, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
+from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, GroupBooking, Guest, GuestMessage, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MessageTemplate, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -113,6 +113,13 @@ from .serializers import (
     NotificationListSerializer,
     DeviceTokenSerializer,
     NotificationPreferencesSerializer,
+    # Phase 5.3: Guest Messaging serializers
+    MessageTemplateSerializer,
+    MessageTemplateListSerializer,
+    GuestMessageSerializer,
+    GuestMessageListSerializer,
+    SendMessageSerializer,
+    PreviewMessageSerializer,
 )
 
 User = get_user_model()
@@ -6351,3 +6358,232 @@ class NotificationPreferencesView(APIView):
         return Response({
             "receive_notifications": profile.receive_notifications,
         })
+
+
+# ===== Phase 5.3: Guest Messaging Views =====
+
+
+@extend_schema_view(
+    list=extend_schema(summary="List message templates", tags=["Guest Messaging"]),
+    create=extend_schema(summary="Create message template", tags=["Guest Messaging"]),
+    retrieve=extend_schema(summary="Get message template", tags=["Guest Messaging"]),
+    update=extend_schema(summary="Update message template", tags=["Guest Messaging"]),
+    partial_update=extend_schema(summary="Partial update template", tags=["Guest Messaging"]),
+    destroy=extend_schema(summary="Delete message template", tags=["Guest Messaging"]),
+)
+class MessageTemplateViewSet(viewsets.ModelViewSet):
+    """CRUD for message templates."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageTemplateSerializer
+    queryset = MessageTemplate.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return MessageTemplateListSerializer
+        return MessageTemplateSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # Filter by template_type
+        template_type = self.request.query_params.get("template_type")
+        if template_type:
+            qs = qs.filter(template_type=template_type)
+        # Filter by channel
+        channel = self.request.query_params.get("channel")
+        if channel:
+            qs = qs.filter(channel=channel)
+        # Filter by active status
+        is_active = self.request.query_params.get("is_active")
+        if is_active is not None:
+            qs = qs.filter(is_active=is_active.lower() == "true")
+        return qs
+
+    @extend_schema(
+        summary="Preview rendered template",
+        request=PreviewMessageSerializer,
+        responses={200: OpenApiResponse(description="Rendered message preview")},
+        tags=["Guest Messaging"],
+    )
+    @action(detail=False, methods=["post"], url_path="preview")
+    def preview(self, request):
+        """Preview a rendered template with guest/booking context."""
+        serializer = PreviewMessageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            template = MessageTemplate.objects.get(pk=serializer.validated_data["template"])
+        except MessageTemplate.DoesNotExist:
+            return Response(
+                {"detail": "Không tìm thấy mẫu tin nhắn."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            guest = Guest.objects.get(pk=serializer.validated_data["guest"])
+        except Guest.DoesNotExist:
+            return Response(
+                {"detail": "Không tìm thấy khách."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        booking = None
+        booking_id = serializer.validated_data.get("booking")
+        if booking_id:
+            try:
+                booking = Booking.objects.select_related("room", "room__room_type").get(
+                    pk=booking_id
+                )
+            except Booking.DoesNotExist:
+                pass
+
+        from .messaging_service import GuestMessagingService
+
+        rendered_subject, rendered_body = GuestMessagingService.render_template(
+            template, guest, booking
+        )
+
+        recipient = GuestMessagingService.get_recipient_address(guest, template.channel)
+
+        return Response({
+            "subject": rendered_subject,
+            "body": rendered_body,
+            "recipient_address": recipient,
+            "channel": template.channel,
+        })
+
+
+@extend_schema_view(
+    list=extend_schema(summary="List guest messages", tags=["Guest Messaging"]),
+    retrieve=extend_schema(summary="Get guest message", tags=["Guest Messaging"]),
+)
+class GuestMessageViewSet(viewsets.ReadOnlyModelViewSet):
+    """ViewSet for viewing guest messages and sending new ones."""
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = GuestMessageSerializer
+
+    def get_queryset(self):
+        qs = GuestMessage.objects.select_related(
+            "guest", "booking", "booking__room", "template", "sent_by"
+        ).all()
+
+        # Filter by guest
+        guest_id = self.request.query_params.get("guest")
+        if guest_id:
+            qs = qs.filter(guest_id=guest_id)
+
+        # Filter by booking
+        booking_id = self.request.query_params.get("booking")
+        if booking_id:
+            qs = qs.filter(booking_id=booking_id)
+
+        # Filter by channel
+        channel = self.request.query_params.get("channel")
+        if channel:
+            qs = qs.filter(channel=channel)
+
+        # Filter by status
+        msg_status = self.request.query_params.get("status")
+        if msg_status:
+            qs = qs.filter(status=msg_status)
+
+        return qs
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return GuestMessageListSerializer
+        return GuestMessageSerializer
+
+    @extend_schema(
+        summary="Send a message to a guest",
+        request=SendMessageSerializer,
+        responses={201: GuestMessageSerializer},
+        tags=["Guest Messaging"],
+    )
+    @action(detail=False, methods=["post"], url_path="send")
+    def send_message(self, request):
+        """Send a new message to a guest."""
+        serializer = SendMessageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        # Validate guest
+        try:
+            guest = Guest.objects.get(pk=data["guest"])
+        except Guest.DoesNotExist:
+            return Response(
+                {"detail": "Không tìm thấy khách."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        # Validate booking (optional)
+        booking = None
+        if data.get("booking"):
+            try:
+                booking = Booking.objects.get(pk=data["booking"])
+            except Booking.DoesNotExist:
+                return Response(
+                    {"detail": "Không tìm thấy đặt phòng."},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+        # Validate template (optional)
+        template = None
+        if data.get("template"):
+            try:
+                template = MessageTemplate.objects.get(pk=data["template"])
+            except MessageTemplate.DoesNotExist:
+                pass
+
+        from .messaging_service import GuestMessagingService
+
+        # Get recipient address
+        recipient = GuestMessagingService.get_recipient_address(
+            guest, data["channel"]
+        )
+
+        # Create message record
+        message = GuestMessage.objects.create(
+            guest=guest,
+            booking=booking,
+            template=template,
+            channel=data["channel"],
+            subject=data["subject"],
+            body=data["body"],
+            recipient_address=recipient,
+            sent_by=request.user,
+        )
+
+        # Send the message
+        GuestMessagingService.send_message(message)
+
+        # Refresh from DB
+        message.refresh_from_db()
+
+        return Response(
+            GuestMessageSerializer(message).data,
+            status=status.HTTP_201_CREATED,
+        )
+
+    @extend_schema(
+        summary="Resend a failed message",
+        responses={200: GuestMessageSerializer},
+        tags=["Guest Messaging"],
+    )
+    @action(detail=True, methods=["post"], url_path="resend")
+    def resend(self, request, pk=None):
+        """Resend a failed message."""
+        message = self.get_object()
+        if message.status not in ("failed", "draft"):
+            return Response(
+                {"detail": "Chỉ có thể gửi lại tin nhắn thất bại hoặc nháp."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from .messaging_service import GuestMessagingService
+
+        GuestMessagingService.send_message(message)
+        message.refresh_from_db()
+
+        return Response(GuestMessageSerializer(message).data)

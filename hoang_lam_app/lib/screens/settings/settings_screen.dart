@@ -8,6 +8,7 @@ import '../../core/config/app_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/biometric_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../providers/settings_provider.dart';
 import '../../router/app_router.dart';
 
@@ -568,43 +569,110 @@ class SettingsScreen extends ConsumerWidget {
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
           title: Text(l10n.notificationSettings),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SwitchListTile(
-                title: Text(l10n.checkinReminder),
-                subtitle: Text(l10n.notifyCheckinToday),
-                value: notifyCheckIn,
-                onChanged: (value) {
-                  setState(() => notifyCheckIn = value);
-                  ref.read(settingsProvider.notifier).setNotifyCheckIn(value);
-                },
-              ),
-              SwitchListTile(
-                title: Text(l10n.checkoutReminder),
-                subtitle: Text(l10n.notifyCheckoutToday),
-                value: notifyCheckOut,
-                onChanged: (value) {
-                  setState(() => notifyCheckOut = value);
-                  ref.read(settingsProvider.notifier).setNotifyCheckOut(value);
-                },
-              ),
-              SwitchListTile(
-                title: Text(l10n.cleaningReminder),
-                subtitle: Text(l10n.notifyRoomNeedsCleaning),
-                value: notifyCleaning,
-                onChanged: (value) {
-                  setState(() => notifyCleaning = value);
-                  ref.read(settingsProvider.notifier).setNotifyCleaning(value);
-                },
-              ),
-            ],
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Backend-synced push notification toggle
+                Consumer(
+                  builder: (context, innerRef, _) {
+                    final prefsAsync = innerRef.watch(notificationPreferencesProvider);
+                    return prefsAsync.when(
+                      data: (prefs) => SwitchListTile(
+                        title: Text(l10n.pushNotifications),
+                        subtitle: Text(l10n.receivePushNotifications),
+                        value: prefs.receiveNotifications,
+                        onChanged: (value) async {
+                          try {
+                            await innerRef
+                                .read(notificationRepositoryProvider)
+                                .updatePreferences(
+                                  receiveNotifications: value,
+                                );
+                            innerRef.invalidate(notificationPreferencesProvider);
+                          } catch (e) {
+                            if (dialogContext.mounted) {
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '${l10n.error}: $e',
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                      loading: () => const ListTile(
+                        leading: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        title: Text('Push notifications'),
+                      ),
+                      error: (_, __) => SwitchListTile(
+                        title: Text(l10n.pushNotifications),
+                        subtitle: Text(l10n.tapToRetry),
+                        value: true,
+                        onChanged: (_) {
+                          innerRef.invalidate(notificationPreferencesProvider);
+                        },
+                      ),
+                    );
+                  },
+                ),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 16,
+                    top: 8,
+                    bottom: 4,
+                  ),
+                  child: Text(
+                    l10n.localReminders,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+                SwitchListTile(
+                  title: Text(l10n.checkinReminder),
+                  subtitle: Text(l10n.notifyCheckinToday),
+                  value: notifyCheckIn,
+                  onChanged: (value) {
+                    setState(() => notifyCheckIn = value);
+                    ref.read(settingsProvider.notifier).setNotifyCheckIn(value);
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.checkoutReminder),
+                  subtitle: Text(l10n.notifyCheckoutToday),
+                  value: notifyCheckOut,
+                  onChanged: (value) {
+                    setState(() => notifyCheckOut = value);
+                    ref.read(settingsProvider.notifier).setNotifyCheckOut(value);
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.cleaningReminder),
+                  subtitle: Text(l10n.notifyRoomNeedsCleaning),
+                  value: notifyCleaning,
+                  onChanged: (value) {
+                    setState(() => notifyCleaning = value);
+                    ref.read(settingsProvider.notifier).setNotifyCleaning(value);
+                  },
+                ),
+              ],
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: Text(l10n.cancel),
+              child: Text(l10n.close),
             ),
           ],
         ),

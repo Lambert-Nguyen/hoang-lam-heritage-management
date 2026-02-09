@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/booking_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/common/app_card.dart';
@@ -32,17 +33,7 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(AppConstants.hotelName),
         actions: [
-          AppIconButton(
-            icon: Icons.notifications_outlined,
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(context.l10n.featureComingSoon),
-                ),
-              );
-            },
-            tooltip: context.l10n.notifications,
-          ),
+          _NotificationIconButton(),
           AppIconButton(
             icon: Icons.person_outline,
             onPressed: () {
@@ -442,6 +433,49 @@ class HomeScreen extends ConsumerWidget {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+/// Notification icon button with unread badge
+class _NotificationIconButton extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final unreadAsync = ref.watch(unreadNotificationCountProvider);
+    final unreadCount = unreadAsync.valueOrNull ?? 0;
+
+    return Stack(
+      children: [
+        AppIconButton(
+          icon: Icons.notifications_outlined,
+          onPressed: () {
+            context.push(AppRoutes.notifications);
+          },
+          tooltip: context.l10n.notifications,
+        ),
+        if (unreadCount > 0)
+          Positioned(
+            right: 4,
+            top: 4,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
+              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+              child: Text(
+                unreadCount > 99 ? '99+' : '$unreadCount',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

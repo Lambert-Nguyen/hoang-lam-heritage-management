@@ -355,6 +355,10 @@ class AppLocalizations {
   String get notifyCheckoutToday => translate('notify_checkout_today');
   String get cleaningReminder => translate('cleaning_reminder');
   String get notifyRoomNeedsCleaning => translate('notify_room_needs_cleaning');
+  String get pushNotifications => translate('push_notifications');
+  String get receivePushNotifications => translate('receive_push_notifications');
+  String get localReminders => translate('local_reminders');
+  String get tapToRetry => translate('tap_to_retry');
   String get confirmLogout => translate('confirm_logout');
   String get confirmLogoutMessage => translate('confirm_logout_message');
 
@@ -615,6 +619,29 @@ class AppLocalizations {
   String get groupBookingDetails => translate('group_booking_details');
   String get editGroupBooking => translate('edit_group_booking');
   String get createGroupBooking => translate('create_group_booking');
+
+  // ===== PHASE 5: NOTIFICATIONS & MESSAGING =====
+  String get markAllRead => translate('mark_all_read');
+  String get noNotifications => translate('no_notifications');
+  String get noNotificationsDescription => translate('no_notifications_description');
+  String get errorLoadingData => translate('error_loading_data');
+  String get sendMessage => translate('send_message');
+  String get channel => translate('channel');
+  String get noMessagingTemplates => translate('no_templates_messaging');
+  String get writeCustomMessage => translate('write_custom_message');
+  String get writeCustomMessageDescription => translate('write_custom_message_description');
+  String get messagePreview => translate('message_preview');
+  String get recipient => translate('recipient');
+  String get subject => translate('subject');
+  String get messageContent => translate('message_content');
+  String get send => translate('send');
+  String get messageSentSuccess => translate('message_sent_success');
+  String get messageSentPending => translate('message_sent_pending');
+  String get messageSendFailed => translate('message_send_failed');
+  String get noMessages => translate('no_messages');
+  String get resendMessage => translate('resend_message');
+  String get resendMessageConfirm => translate('resend_message_confirm');
+  String get messageHistory => translate('message_history');
 }
 
 // Vietnamese translations
@@ -927,6 +954,10 @@ const Map<String, String> _viTranslations = {
   'auto_phone_settings': 'Tự động theo cài đặt điện thoại',
   'select_language': 'Chọn ngôn ngữ',
   'notification_settings': 'Cài đặt thông báo',
+  'push_notifications': 'Thông báo đẩy',
+  'receive_push_notifications': 'Nhận thông báo đẩy từ máy chủ',
+  'local_reminders': 'Nhắc nhở cục bộ',
+  'tap_to_retry': 'Nhấn để thử lại',
   'checkin_reminder': 'Nhắc nhở check-in',
   'notify_checkin_today': 'Thông báo khi có khách check-in hôm nay',
   'checkout_reminder': 'Nhắc nhở check-out',
@@ -1193,6 +1224,29 @@ const Map<String, String> _viTranslations = {
   'group_booking_details': 'Chi tiết đặt phòng đoàn',
   'edit_group_booking': 'Sửa đặt phòng đoàn',
   'create_group_booking': 'Tạo đặt phòng đoàn',
+
+  // ===== PHASE 5: NOTIFICATIONS & MESSAGING =====
+  'mark_all_read': 'Đánh dấu tất cả đã đọc',
+  'no_notifications': 'Không có thông báo',
+  'no_notifications_description': 'Khi có thông báo mới, chúng sẽ hiển thị ở đây',
+  'error_loading_data': 'Không thể tải dữ liệu',
+  'send_message': 'Gửi tin nhắn',
+  'channel': 'Kênh',
+  'no_templates_messaging': 'Chưa có mẫu tin nhắn',
+  'write_custom_message': 'Viết tin nhắn tùy chỉnh',
+  'write_custom_message_description': 'Soạn tin nhắn tự do cho khách',
+  'message_preview': 'Xem trước tin nhắn',
+  'recipient': 'Người nhận',
+  'subject': 'Tiêu đề',
+  'message_content': 'Nội dung',
+  'send': 'Gửi',
+  'message_sent_success': 'Tin nhắn đã được gửi thành công!',
+  'message_sent_pending': 'Tin nhắn đang được xử lý',
+  'message_send_failed': 'Gửi tin nhắn thất bại',
+  'no_messages': 'Chưa có tin nhắn nào',
+  'resend_message': 'Gửi lại tin nhắn',
+  'resend_message_confirm': 'Bạn có muốn gửi lại tin nhắn này?',
+  'message_history': 'Lịch sử tin nhắn',
 };
 
 // English translations
@@ -1505,6 +1559,10 @@ const Map<String, String> _enTranslations = {
   'auto_phone_settings': 'Auto based on phone settings',
   'select_language': 'Select language',
   'notification_settings': 'Notification settings',
+  'push_notifications': 'Push notifications',
+  'receive_push_notifications': 'Receive push notifications from server',
+  'local_reminders': 'Local reminders',
+  'tap_to_retry': 'Tap to retry',
   'checkin_reminder': 'Check-in reminder',
   'notify_checkin_today': 'Notify when guests check in today',
   'checkout_reminder': 'Check-out reminder',
@@ -1771,6 +1829,29 @@ const Map<String, String> _enTranslations = {
   'group_booking_details': 'Group Booking Details',
   'edit_group_booking': 'Edit Group Booking',
   'create_group_booking': 'Create Group Booking',
+
+  // ===== PHASE 5: NOTIFICATIONS & MESSAGING =====
+  'mark_all_read': 'Mark all as read',
+  'no_notifications': 'No notifications',
+  'no_notifications_description': 'When there are new notifications, they will appear here',
+  'error_loading_data': 'Failed to load data',
+  'send_message': 'Send message',
+  'channel': 'Channel',
+  'no_templates_messaging': 'No message templates yet',
+  'write_custom_message': 'Write custom message',
+  'write_custom_message_description': 'Compose a free-form message for guest',
+  'message_preview': 'Message preview',
+  'recipient': 'Recipient',
+  'subject': 'Subject',
+  'message_content': 'Content',
+  'send': 'Send',
+  'message_sent_success': 'Message sent successfully!',
+  'message_sent_pending': 'Message is being processed',
+  'message_send_failed': 'Failed to send message',
+  'no_messages': 'No messages yet',
+  'resend_message': 'Resend message',
+  'resend_message_confirm': 'Do you want to resend this message?',
+  'message_history': 'Message history',
 };
 
 // Delegate

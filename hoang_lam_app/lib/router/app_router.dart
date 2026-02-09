@@ -39,6 +39,9 @@ import '../screens/room_inspection/inspection_template_screen.dart';
 import '../screens/pricing/pricing_management_screen.dart';
 import '../screens/pricing/rate_plan_form_screen.dart';
 import '../screens/pricing/date_rate_override_form_screen.dart';
+import '../screens/notifications/notification_list_screen.dart';
+import '../screens/messaging/message_template_screen.dart';
+import '../screens/messaging/message_history_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -91,6 +94,10 @@ class AppRoutes {
   static const String ratePlanEdit = '/pricing/rate-plans/:id';
   static const String dateOverrideNew = '/pricing/date-overrides/new';
   static const String dateOverrideEdit = '/pricing/date-overrides/:id';
+  // Notification & Messaging routes
+  static const String notifications = '/notifications';
+  static const String sendMessage = '/send-message';
+  static const String messageHistory = '/message-history';
 }
 
 /// Navigation keys for bottom nav
@@ -395,6 +402,43 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.inspectionTemplates,
         name: 'inspectionTemplates',
         builder: (context, state) => const InspectionTemplateScreen(),
+      ),
+
+      // Notification & Messaging routes (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        builder: (context, state) => const NotificationListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.sendMessage,
+        name: 'sendMessage',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          if (extra == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Lỗi')),
+              body: const Center(child: Text('Thiếu thông tin khách')),
+            );
+          }
+          return MessageTemplateScreen(
+            guestId: extra['guestId'] as int,
+            guestName: extra['guestName'] as String,
+            bookingId: extra['bookingId'] as int?,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.messageHistory,
+        name: 'messageHistory',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return MessageHistoryScreen(
+            guestId: extra?['guestId'] as int?,
+            bookingId: extra?['bookingId'] as int?,
+            title: extra?['title'] as String? ?? 'Lịch sử tin nhắn',
+          );
+        },
       ),
 
       // Pricing routes (outside shell for full screen)

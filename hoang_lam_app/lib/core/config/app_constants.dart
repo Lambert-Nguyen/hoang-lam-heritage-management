@@ -57,6 +57,12 @@ class AppConstants {
   static const String inspectionTemplatesEndpoint = '/inspection-templates/';
   static const String ratePlansEndpoint = '/rate-plans/';
   static const String dateRateOverridesEndpoint = '/date-rate-overrides/';
+  // Phase 5: Notifications & Messaging
+  static const String notificationsEndpoint = '/notifications/';
+  static const String deviceTokenEndpoint = '/devices/token/';
+  static const String notificationPreferencesEndpoint = '/notifications/preferences/';
+  static const String messageTemplatesEndpoint = '/message-templates/';
+  static const String guestMessagesEndpoint = '/guest-messages/';
 
   // Date/Time Formats
   static const String dateFormat = 'dd/MM/yyyy';

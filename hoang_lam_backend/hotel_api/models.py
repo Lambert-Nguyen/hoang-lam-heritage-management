@@ -11,6 +11,8 @@ Models:
 - ExchangeRate: Currency conversion
 - Notification: Push notification records
 - DeviceToken: FCM device tokens
+- MessageTemplate: Guest message templates (Phase 5)
+- GuestMessage: Guest communication records (Phase 5)
 """
 
 from decimal import Decimal
@@ -2007,3 +2009,172 @@ class DeviceToken(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.platform} ({self.token[:20]}...)"
+
+
+# ===== Phase 5.3: Guest Messaging Models =====
+
+
+class MessageTemplate(models.Model):
+    """Templates for guest messages (confirmation, pre-arrival, etc.)."""
+
+    class TemplateType(models.TextChoices):
+        BOOKING_CONFIRMATION = "booking_confirmation", "Xác nhận đặt phòng"
+        PRE_ARRIVAL = "pre_arrival", "Thông tin trước khi đến"
+        CHECKOUT_REMINDER = "checkout_reminder", "Nhắc trả phòng"
+        REVIEW_REQUEST = "review_request", "Yêu cầu đánh giá"
+        CUSTOM = "custom", "Tùy chỉnh"
+
+    class Channel(models.TextChoices):
+        SMS = "sms", "SMS"
+        EMAIL = "email", "Email"
+        ZALO = "zalo", "Zalo"
+
+    name = models.CharField(max_length=100, verbose_name="Tên mẫu")
+    template_type = models.CharField(
+        max_length=30,
+        choices=TemplateType.choices,
+        default=TemplateType.CUSTOM,
+        verbose_name="Loại mẫu",
+    )
+    subject = models.CharField(
+        max_length=200,
+        verbose_name="Tiêu đề",
+        help_text="Dùng {guest_name}, {room_number}, {check_in_date}, {check_out_date}, {hotel_name} làm biến",
+    )
+    body = models.TextField(
+        verbose_name="Nội dung",
+        help_text="Dùng {guest_name}, {room_number}, {check_in_date}, {check_out_date}, {hotel_name}, {total_amount}, {nights} làm biến",
+    )
+    channel = models.CharField(
+        max_length=10,
+        choices=Channel.choices,
+        default=Channel.SMS,
+        verbose_name="Kênh gửi",
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Đang hoạt động")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # Available template variables
+    AVAILABLE_VARIABLES = [
+        "guest_name",
+        "room_number",
+        "room_type",
+        "check_in_date",
+        "check_out_date",
+        "hotel_name",
+        "hotel_phone",
+        "total_amount",
+        "nights",
+        "booking_source",
+        "wifi_password",
+    ]
+
+    class Meta:
+        verbose_name = "Mẫu tin nhắn"
+        verbose_name_plural = "Mẫu tin nhắn"
+        ordering = ["template_type", "name"]
+
+    def __str__(self):
+        return f"{self.name} ({self.get_template_type_display()}) - {self.get_channel_display()}"
+
+    def render(self, context: dict) -> tuple:
+        """
+        Render the template with context variables.
+
+        Args:
+            context: Dict with variable values (guest_name, room_number, etc.)
+
+        Returns:
+            tuple: (rendered_subject, rendered_body)
+        """
+        rendered_subject = self.subject
+        rendered_body = self.body
+
+        for key, value in context.items():
+            placeholder = "{" + key + "}"
+            rendered_subject = rendered_subject.replace(placeholder, str(value))
+            rendered_body = rendered_body.replace(placeholder, str(value))
+
+        return rendered_subject, rendered_body
+
+
+class GuestMessage(models.Model):
+    """Records of messages sent to guests."""
+
+    class Status(models.TextChoices):
+        DRAFT = "draft", "Nháp"
+        PENDING = "pending", "Đang gửi"
+        SENT = "sent", "Đã gửi"
+        DELIVERED = "delivered", "Đã nhận"
+        FAILED = "failed", "Thất bại"
+
+    guest = models.ForeignKey(
+        "Guest",
+        on_delete=models.CASCADE,
+        related_name="messages",
+        verbose_name="Khách",
+    )
+    booking = models.ForeignKey(
+        "Booking",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="guest_messages",
+        verbose_name="Đặt phòng",
+    )
+    template = models.ForeignKey(
+        MessageTemplate,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_messages",
+        verbose_name="Mẫu",
+    )
+
+    channel = models.CharField(
+        max_length=10,
+        choices=MessageTemplate.Channel.choices,
+        verbose_name="Kênh gửi",
+    )
+    subject = models.CharField(max_length=200, verbose_name="Tiêu đề")
+    body = models.TextField(verbose_name="Nội dung")
+    recipient_address = models.CharField(
+        max_length=200,
+        blank=True,
+        verbose_name="Địa chỉ nhận",
+        help_text="Số điện thoại hoặc email",
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.DRAFT,
+        verbose_name="Trạng thái",
+    )
+    sent_at = models.DateTimeField(null=True, blank=True, verbose_name="Gửi lúc")
+    send_error = models.TextField(blank=True, verbose_name="Lỗi gửi")
+    sent_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="sent_guest_messages",
+        verbose_name="Người gửi",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Tin nhắn khách"
+        verbose_name_plural = "Tin nhắn khách"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["guest", "-created_at"]),
+            models.Index(fields=["booking", "-created_at"]),
+            models.Index(fields=["status"]),
+        ]
+
+    def __str__(self):
+        return f"{self.guest.full_name} - {self.subject[:50]} ({self.get_status_display()})"
