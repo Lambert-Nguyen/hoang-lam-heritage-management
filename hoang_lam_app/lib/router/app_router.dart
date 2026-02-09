@@ -42,6 +42,8 @@ import '../screens/pricing/date_rate_override_form_screen.dart';
 import '../screens/notifications/notification_list_screen.dart';
 import '../screens/messaging/message_template_screen.dart';
 import '../screens/messaging/message_history_screen.dart';
+import '../screens/finance/financial_category_screen.dart';
+import '../screens/settings/staff_management_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -98,6 +100,9 @@ class AppRoutes {
   static const String notifications = '/notifications';
   static const String sendMessage = '/send-message';
   static const String messageHistory = '/message-history';
+  // Settings sub-routes
+  static const String financialCategories = '/financial-categories';
+  static const String staffManagement = '/staff-management';
 }
 
 /// Navigation keys for bottom nav
@@ -488,6 +493,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           }
           return DateRateOverrideFormScreen(overrideId: id);
         },
+      ),
+
+      // Financial Categories management
+      GoRoute(
+        path: AppRoutes.financialCategories,
+        name: 'financialCategories',
+        builder: (context, state) => const FinancialCategoryScreen(),
+      ),
+
+      // Staff / Account management
+      GoRoute(
+        path: AppRoutes.staffManagement,
+        name: 'staffManagement',
+        builder: (context, state) => const StaffManagementScreen(),
       ),
 
       // Main app shell with bottom navigation

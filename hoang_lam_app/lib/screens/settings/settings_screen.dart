@@ -209,16 +209,18 @@ class SettingsScreen extends ConsumerWidget {
               context,
               icon: Icons.category_outlined,
               title: l10n.financialCategories,
+              subtitle: 'Xem danh mục thu, chi',
               onTap: () {
-                // TODO: Show categories
+                context.push(AppRoutes.financialCategories);
               },
             ),
             _buildSettingsTile(
               context,
               icon: Icons.people_outline,
               title: l10n.accountManagement,
+              subtitle: 'Xem danh sách nhân sự',
               onTap: () {
-                // TODO: Show user management
+                context.push(AppRoutes.staffManagement);
               },
             ),
             const Divider(),
