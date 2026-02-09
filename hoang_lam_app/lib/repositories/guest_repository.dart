@@ -123,7 +123,7 @@ class GuestRepository {
     required String query,
     String searchBy = 'all',
   }) async {
-    final response = await _apiClient.post<Map<String, dynamic>>(
+    final response = await _apiClient.post<dynamic>(
       '${AppConstants.guestsEndpoint}search/',
       data: {
         'query': query,
@@ -135,7 +135,15 @@ class GuestRepository {
       return [];
     }
 
-    // Handle response format
+    // Direct list response (backend returns array directly)
+    if (response.data is List) {
+      final list = response.data as List<dynamic>;
+      return list
+          .map((json) => Guest.fromJson(json as Map<String, dynamic>))
+          .toList();
+    }
+
+    // Handle response format wrapped in object
     if (response.data is Map<String, dynamic>) {
       final dataMap = response.data as Map<String, dynamic>;
       if (dataMap.containsKey('results')) {
@@ -147,14 +155,6 @@ class GuestRepository {
             .map((json) => Guest.fromJson(json as Map<String, dynamic>))
             .toList();
       }
-    }
-
-    // Direct list response
-    if (response.data is List) {
-      final list = response.data as List<dynamic>;
-      return list
-          .map((json) => Guest.fromJson(json as Map<String, dynamic>))
-          .toList();
     }
 
     return [];

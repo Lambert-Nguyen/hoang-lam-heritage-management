@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/guest.dart';
@@ -27,6 +28,13 @@ class GuestQuickSearch extends ConsumerStatefulWidget {
 class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
   int? _selectedGuestId;
   Guest? _selectedGuest;
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+  List<Guest> _searchResults = [];
+  bool _isSearching = false;
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -37,6 +45,133 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
         _loadInitialGuest();
       });
     }
+    _searchController.addListener(_onSearchChanged);
+    _focusNode.addListener(_onFocusChanged);
+  }
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _focusNode.removeListener(_onFocusChanged);
+    _focusNode.dispose();
+    _removeOverlay();
+    super.dispose();
+  }
+
+  void _onFocusChanged() {
+    if (!_focusNode.hasFocus) {
+      _removeOverlay();
+    }
+  }
+
+  void _onSearchChanged() {
+    _debounce?.cancel();
+    final query = _searchController.text.trim();
+    if (query.length < 2) {
+      _removeOverlay();
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+      });
+      return;
+    }
+    setState(() => _isSearching = true);
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _performSearch(query);
+    });
+  }
+
+  Future<void> _performSearch(String query) async {
+    try {
+      final repository = ref.read(guestRepositoryProvider);
+      final results = await repository.searchGuests(query: query);
+      if (!mounted) return;
+      setState(() {
+        _searchResults = results;
+        _isSearching = false;
+      });
+      _showOverlay();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _searchResults = [];
+        _isSearching = false;
+      });
+      _removeOverlay();
+    }
+  }
+
+  void _showOverlay() {
+    _removeOverlay();
+    if (_searchResults.isEmpty && !_isSearching) {
+      // Show "no results" overlay
+      _overlayEntry = _createOverlayEntry();
+      Overlay.of(context).insert(_overlayEntry!);
+      return;
+    }
+    if (_searchResults.isNotEmpty) {
+      _overlayEntry = _createOverlayEntry();
+      Overlay.of(context).insert(_overlayEntry!);
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    final renderBox = context.findRenderObject() as RenderBox;
+    final size = renderBox.size;
+
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, size.height + 4),
+          child: Material(
+            elevation: 4.0,
+            borderRadius: BorderRadius.circular(8),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 250),
+              child: _searchResults.isEmpty
+                  ? const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Text('Không tìm thấy khách hàng'),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      shrinkWrap: true,
+                      itemCount: _searchResults.length,
+                      itemBuilder: (context, index) {
+                        final guest = _searchResults[index];
+                        return ListTile(
+                          leading: CircleAvatar(
+                            child: Text(guest.initials),
+                          ),
+                          title: Text(guest.fullName),
+                          subtitle: Text(guest.phone),
+                          onTap: () {
+                            _removeOverlay();
+                            _searchController.clear();
+                            setState(() {
+                              _selectedGuest = guest;
+                              _selectedGuestId = guest.id;
+                            });
+                            widget.onGuestSelected(guest);
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _loadInitialGuest() async {
@@ -82,106 +217,61 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
   }
 
   Widget _buildSearchField() {
-    return Column(
-      children: [
-        Autocomplete<Guest>(
-          optionsBuilder: (textEditingValue) async {
-            // Require at least 2 characters to match backend validation
-            if (textEditingValue.text.length < 2) {
-              return const Iterable<Guest>.empty();
-            }
-
-            try {
-              final guests = await ref.read(
-                guestSearchProvider(GuestSearchParams(
-                  query: textEditingValue.text,
-                )).future,
-              );
-              return guests;
-            } catch (e) {
-              return const Iterable<Guest>.empty();
-            }
-          },
-          displayStringForOption: (guest) => guest.fullName,
-          onSelected: (guest) {
-            setState(() {
-              _selectedGuest = guest;
-              _selectedGuestId = guest.id;
-            });
-            widget.onGuestSelected(guest);
-          },
-          fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-            return TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: InputDecoration(
-                labelText: 'Tìm khách hàng',
-                hintText: 'Nhập ít nhất 2 ký tự',
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.person_search),
-                suffixIcon: controller.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          controller.clear();
-                        },
-                      )
-                    : null,
-              ),
-            );
-          },
-          optionsViewBuilder: (context, onSelected, options) {
-            return Align(
-              alignment: Alignment.topLeft,
-              child: Material(
-                elevation: 4.0,
-                child: Container(
-                  constraints: const BoxConstraints(maxHeight: 300),
-                  width: MediaQuery.of(context).size.width - 32,
-                  child: ListView.builder(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    itemCount: options.length,
-                    itemBuilder: (context, index) {
-                      final guest = options.elementAt(index);
-                      return ListTile(
-                        leading: CircleAvatar(
-                          child: Text(guest.initials),
-                        ),
-                        title: Text(guest.fullName),
-                        subtitle: Text(guest.phone),
-                        onTap: () {
-                          onSelected(guest);
-                        },
-                      );
-                    },
-                  ),
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Column(
+        children: [
+          TextField(
+            controller: _searchController,
+            focusNode: _focusNode,
+            decoration: InputDecoration(
+              labelText: 'Tìm khách hàng',
+              hintText: 'Nhập ít nhất 2 ký tự',
+              border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.person_search),
+              suffixIcon: _isSearching
+                  ? const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                            _removeOverlay();
+                          },
+                        )
+                      : null,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () async {
+              _removeOverlay();
+              final result = await Navigator.of(context).push<Guest>(
+                MaterialPageRoute(
+                  builder: (context) => const GuestFormScreen(),
+                  fullscreenDialog: true,
                 ),
-              ),
-            );
-          },
-        ),
-        const SizedBox(height: 8),
-        TextButton.icon(
-          onPressed: () async {
-            final result = await Navigator.of(context).push<Guest>(
-              MaterialPageRoute(
-                builder: (context) => const GuestFormScreen(),
-                fullscreenDialog: true,
-              ),
-            );
-            if (result != null) {
-              setState(() {
-                _selectedGuest = result;
-                _selectedGuestId = result.id;
-              });
-              widget.onGuestSelected(result);
-            }
-          },
-          icon: const Icon(Icons.person_add),
-          label: const Text('Tạo khách hàng mới'),
-        ),
-      ],
+              );
+              if (result != null) {
+                setState(() {
+                  _selectedGuest = result;
+                  _selectedGuestId = result.id;
+                });
+                widget.onGuestSelected(result);
+              }
+            },
+            icon: const Icon(Icons.person_add),
+            label: const Text('Tạo khách hàng mới'),
+          ),
+        ],
+      ),
     );
   }
 }
