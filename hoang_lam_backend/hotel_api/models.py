@@ -567,7 +567,7 @@ class FinancialEntry(models.Model):
 
     # Details
     date = models.DateField(verbose_name="Ngày")
-    description = models.TextField(verbose_name="Mô tả")
+    description = models.TextField(blank=True, default="", verbose_name="Mô tả")
 
     # Link to booking (for room income)
     booking = models.ForeignKey(

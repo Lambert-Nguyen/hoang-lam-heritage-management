@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart' show ShareParams, SharePlus, XFile;
 
 import '../../l10n/app_localizations.dart';
 
@@ -330,7 +330,9 @@ class _DeclarationExportScreenState
 
   Future<void> _shareFile(String filePath) async {
     try {
-      await Share.shareXFiles([XFile(filePath)]);
+      await SharePlus.instance.share(
+        ShareParams(files: [XFile(filePath)]),
+      );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

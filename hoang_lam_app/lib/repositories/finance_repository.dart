@@ -163,7 +163,7 @@ class FinanceRepository {
     final data = {
       'entry_type': entry.entryType.toApiValue,
       'category': entry.category,
-      'amount': entry.amount,
+      'amount': entry.amount.truncate(), // Send as integer (backend decimal_places=0)
       'currency': entry.currency,
       'exchange_rate': entry.exchangeRate,
       'date': entry.date.toIso8601String().split('T')[0],
@@ -230,7 +230,7 @@ class FinanceRepository {
     final data = {
       'entry_type': entry.entryType.toApiValue,
       'category': entry.category,
-      'amount': entry.amount,
+      'amount': entry.amount.truncate(), // Send as integer (backend decimal_places=0)
       'currency': entry.currency,
       'exchange_rate': entry.exchangeRate,
       'date': entry.date.toIso8601String().split('T')[0],
