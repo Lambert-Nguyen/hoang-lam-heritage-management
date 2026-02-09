@@ -86,7 +86,8 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
       children: [
         Autocomplete<Guest>(
           optionsBuilder: (textEditingValue) async {
-            if (textEditingValue.text.isEmpty) {
+            // Require at least 2 characters to match backend validation
+            if (textEditingValue.text.length < 2) {
               return const Iterable<Guest>.empty();
             }
 
@@ -115,6 +116,7 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
               focusNode: focusNode,
               decoration: InputDecoration(
                 labelText: 'Tìm khách hàng',
+                hintText: 'Nhập ít nhất 2 ký tự',
                 border: const OutlineInputBorder(),
                 prefixIcon: const Icon(Icons.person_search),
                 suffixIcon: controller.text.isNotEmpty
