@@ -304,6 +304,8 @@ class GuestSerializer(serializers.ModelSerializer):
     is_returning_guest = serializers.ReadOnlyField()
     booking_count = serializers.SerializerMethodField()
 
+    is_foreign_guest = serializers.ReadOnlyField()
+
     class Meta:
         model = Guest
         fields = [
@@ -322,11 +324,23 @@ class GuestSerializer(serializers.ModelSerializer):
             "address",
             "city",
             "country",
+            # Foreign guest fields (NA17)
+            "passport_type",
+            "visa_type",
+            "visa_number",
+            "visa_issue_date",
+            "visa_expiry_date",
+            "visa_issuing_authority",
+            "entry_date",
+            "entry_port",
+            "entry_purpose",
+            # Status
             "is_vip",
             "total_stays",
             "preferences",
             "notes",
             "is_returning_guest",
+            "is_foreign_guest",
             "booking_count",
             "created_at",
             "updated_at",

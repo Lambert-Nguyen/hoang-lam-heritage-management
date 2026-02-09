@@ -137,7 +137,7 @@ class Guest(models.Model):
     )
 
     # Demographics
-    nationality = models.CharField(max_length=50, default="Vietnam", verbose_name="Quốc tịch")
+    nationality = models.CharField(max_length=50, default="Việt Nam", verbose_name="Quốc tịch")
     date_of_birth = models.DateField(null=True, blank=True, verbose_name="Ngày sinh")
     gender = models.CharField(
         max_length=10,
@@ -150,6 +150,58 @@ class Guest(models.Model):
     address = models.TextField(blank=True, verbose_name="Địa chỉ")
     city = models.CharField(max_length=100, blank=True, verbose_name="Thành phố")
     country = models.CharField(max_length=100, blank=True, verbose_name="Quốc gia")
+
+    # === Foreign guest fields (NA17 - Phiếu khai báo tạm trú người nước ngoài) ===
+    class PassportType(models.TextChoices):
+        ORDINARY = "ordinary", "Phổ thông"
+        OFFICIAL = "official", "Công vụ"
+        DIPLOMATIC = "diplomatic", "Ngoại giao"
+        OTHER = "other", "Khác"
+
+    class VisaType(models.TextChoices):
+        VISA = "visa", "Thị thực (Visa)"
+        TEMP_RESIDENCE_CARD = "temp_residence_card", "Thẻ tạm trú"
+        VISA_EXEMPTION = "visa_exemption", "Giấy miễn thị thực"
+        ABTC = "abtc", "Thẻ ABTC"
+        NONE = "none", "Miễn thị thực"
+
+    passport_type = models.CharField(
+        max_length=20,
+        choices=PassportType.choices,
+        blank=True,
+        verbose_name="Loại hộ chiếu",
+        help_text="Phổ thông, công vụ, ngoại giao...",
+    )
+    visa_type = models.CharField(
+        max_length=30,
+        choices=VisaType.choices,
+        blank=True,
+        verbose_name="Loại giấy tờ nhập cảnh",
+        help_text="Thị thực, thẻ tạm trú, giấy miễn thị thực, thẻ ABTC",
+    )
+    visa_number = models.CharField(
+        max_length=50, blank=True, verbose_name="Số thị thực/thẻ tạm trú",
+    )
+    visa_issue_date = models.DateField(
+        null=True, blank=True, verbose_name="Ngày cấp thị thực",
+    )
+    visa_expiry_date = models.DateField(
+        null=True, blank=True, verbose_name="Thời hạn thị thực",
+    )
+    visa_issuing_authority = models.CharField(
+        max_length=200, blank=True, verbose_name="Cơ quan cấp thị thực",
+    )
+    entry_date = models.DateField(
+        null=True, blank=True, verbose_name="Ngày nhập cảnh",
+    )
+    entry_port = models.CharField(
+        max_length=100, blank=True, verbose_name="Cửa khẩu nhập cảnh",
+        help_text="Ví dụ: Sân bay Tân Sơn Nhất, Sân bay Nội Bài...",
+    )
+    entry_purpose = models.CharField(
+        max_length=200, blank=True, verbose_name="Mục đích nhập cảnh",
+        help_text="Ví dụ: Du lịch, Công tác, Thăm thân...",
+    )
 
     # Guest status and preferences
     is_vip = models.BooleanField(default=False, verbose_name="Khách VIP")
@@ -199,6 +251,12 @@ class Guest(models.Model):
     def is_returning_guest(self):
         """Check if guest has stayed before"""
         return self.total_stays > 0
+
+    @property
+    def is_foreign_guest(self):
+        """Check if guest is a foreign national (not Vietnamese)."""
+        vn_aliases = {"việt nam", "vietnam", "vn", "viet nam", ""}
+        return (self.nationality or "").strip().lower() not in vn_aliases
 
 
 class Booking(models.Model):

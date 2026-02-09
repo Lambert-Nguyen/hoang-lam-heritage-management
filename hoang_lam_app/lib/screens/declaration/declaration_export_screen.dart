@@ -9,7 +9,11 @@ import '../../l10n/app_localizations.dart';
 import '../../models/declaration.dart';
 import '../../providers/declaration_provider.dart';
 
-/// Screen for exporting temporary residence declarations
+/// Screen for exporting temporary residence declarations.
+///
+/// Supports two official Vietnamese forms:
+/// - Mẫu ĐD10 (Nghị định 144/2021): Sổ quản lý lưu trú — Vietnamese guests
+/// - Mẫu NA17 (Thông tư 04/2015): Phiếu khai báo tạm trú — Foreign guests
 class DeclarationExportScreen extends ConsumerStatefulWidget {
   const DeclarationExportScreen({super.key});
 
@@ -22,7 +26,8 @@ class _DeclarationExportScreenState
     extends ConsumerState<DeclarationExportScreen> {
   DateTime _dateFrom = DateTime.now();
   DateTime _dateTo = DateTime.now();
-  ExportFormat _format = ExportFormat.csv;
+  ExportFormat _format = ExportFormat.excel;
+  DeclarationFormType _formType = DeclarationFormType.all;
 
   final _dateFormat = DateFormat('dd/MM/yyyy');
 
@@ -30,6 +35,7 @@ class _DeclarationExportScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final exportState = ref.watch(declarationExportProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     // Listen for state changes
     ref.listen<DeclarationExportState>(declarationExportProvider,
@@ -79,7 +85,7 @@ class _DeclarationExportScreenState
                       children: [
                         Icon(
                           Icons.info_outline,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -93,10 +99,52 @@ class _DeclarationExportScreenState
                       l10n.exportGuestListDescription,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '• ĐD10: Sổ quản lý lưu trú (khách Việt Nam)\n'
+                      '• NA17: Phiếu khai báo tạm trú (khách nước ngoài)',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                    ),
                   ],
                 ),
               ),
             ),
+            const SizedBox(height: 24),
+
+            // Form type selection
+            Text(
+              'Loại biểu mẫu',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: DeclarationFormType.values.map((type) {
+                final isSelected = _formType == type;
+                return ChoiceChip(
+                  label: Text(type.displayName),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() => _formType = type);
+                    }
+                  },
+                );
+              }).toList(),
+            ),
+            if (_formType != DeclarationFormType.all) ...[
+              const SizedBox(height: 4),
+              Text(
+                _formType.description,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                    ),
+              ),
+            ],
             const SizedBox(height: 24),
 
             // Date range section
@@ -198,17 +246,19 @@ class _DeclarationExportScreenState
               children: [
                 Expanded(
                   child: _FormatCard(
-                    format: ExportFormat.csv,
-                    isSelected: _format == ExportFormat.csv,
-                    onTap: () => setState(() => _format = ExportFormat.csv),
+                    format: ExportFormat.excel,
+                    isSelected: _format == ExportFormat.excel,
+                    onTap: () => setState(() => _format = ExportFormat.excel),
+                    subtitle: 'Có format, nhiều sheet',
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: _FormatCard(
-                    format: ExportFormat.excel,
-                    isSelected: _format == ExportFormat.excel,
-                    onTap: () => setState(() => _format = ExportFormat.excel),
+                    format: ExportFormat.csv,
+                    isSelected: _format == ExportFormat.csv,
+                    onTap: () => setState(() => _format = ExportFormat.csv),
+                    subtitle: 'Dạng text, phổ biến',
                   ),
                 ),
               ],
@@ -259,6 +309,7 @@ class _DeclarationExportScreenState
           dateFrom: _dateFrom,
           dateTo: _dateTo,
           format: _format,
+          formType: _formType,
         );
   }
 
@@ -341,11 +392,13 @@ class _FormatCard extends StatelessWidget {
   final ExportFormat format;
   final bool isSelected;
   final VoidCallback onTap;
+  final String subtitle;
 
   const _FormatCard({
     required this.format,
     required this.isSelected,
     required this.onTap,
+    required this.subtitle,
   });
 
   @override
@@ -386,8 +439,9 @@ class _FormatCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              format == ExportFormat.csv ? 'Phổ biến' : 'Có format',
+              subtitle,
               style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -428,7 +482,7 @@ class _ExportedFileCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'File đã được xuất',
+                    'File đã được xuất thành công',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -440,6 +494,13 @@ class _ExportedFileCard extends StatelessWidget {
             Text(
               filename,
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Các đặt phòng đã được đánh dấu "Đã khai báo"',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
             const SizedBox(height: 12),
             Row(

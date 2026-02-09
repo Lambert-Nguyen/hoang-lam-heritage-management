@@ -127,6 +127,92 @@ extension GenderExtension on Gender {
   }
 }
 
+/// Passport type for foreign guests (matching backend Guest.PassportType)
+enum PassportType {
+  @JsonValue('ordinary')
+  ordinary,
+  @JsonValue('official')
+  official,
+  @JsonValue('diplomatic')
+  diplomatic,
+  @JsonValue('other')
+  other,
+}
+
+extension PassportTypeExtension on PassportType {
+  String get displayName {
+    switch (this) {
+      case PassportType.ordinary:
+        return 'Phổ thông';
+      case PassportType.official:
+        return 'Công vụ';
+      case PassportType.diplomatic:
+        return 'Ngoại giao';
+      case PassportType.other:
+        return 'Khác';
+    }
+  }
+
+  String get displayNameEn {
+    switch (this) {
+      case PassportType.ordinary:
+        return 'Ordinary';
+      case PassportType.official:
+        return 'Official';
+      case PassportType.diplomatic:
+        return 'Diplomatic';
+      case PassportType.other:
+        return 'Other';
+    }
+  }
+}
+
+/// Visa/entry document type for foreign guests (matching backend Guest.VisaType)
+enum VisaType {
+  @JsonValue('visa')
+  visa,
+  @JsonValue('temp_residence_card')
+  tempResidenceCard,
+  @JsonValue('visa_exemption')
+  visaExemption,
+  @JsonValue('abtc')
+  abtc,
+  @JsonValue('none')
+  none,
+}
+
+extension VisaTypeExtension on VisaType {
+  String get displayName {
+    switch (this) {
+      case VisaType.visa:
+        return 'Thị thực (Visa)';
+      case VisaType.tempResidenceCard:
+        return 'Thẻ tạm trú';
+      case VisaType.visaExemption:
+        return 'Giấy miễn thị thực';
+      case VisaType.abtc:
+        return 'Thẻ ABTC';
+      case VisaType.none:
+        return 'Miễn thị thực';
+    }
+  }
+
+  String get displayNameEn {
+    switch (this) {
+      case VisaType.visa:
+        return 'Visa';
+      case VisaType.tempResidenceCard:
+        return 'Temporary Residence Card';
+      case VisaType.visaExemption:
+        return 'Visa Exemption';
+      case VisaType.abtc:
+        return 'ABTC Card';
+      case VisaType.none:
+        return 'Visa Exempt';
+    }
+  }
+}
+
 /// Common nationalities for Vietnamese hotels
 class Nationalities {
   Nationalities._();
@@ -217,6 +303,17 @@ sealed class Guest with _$Guest {
     @Default('') String city,
     @Default('') String country,
 
+    // Foreign guest fields (NA17)
+    @JsonKey(name: 'passport_type') PassportType? passportType,
+    @JsonKey(name: 'visa_type') VisaType? visaType,
+    @JsonKey(name: 'visa_number') @Default('') String visaNumber,
+    @JsonKey(name: 'visa_issue_date') DateTime? visaIssueDate,
+    @JsonKey(name: 'visa_expiry_date') DateTime? visaExpiryDate,
+    @JsonKey(name: 'visa_issuing_authority') @Default('') String visaIssuingAuthority,
+    @JsonKey(name: 'entry_date') DateTime? entryDate,
+    @JsonKey(name: 'entry_port') @Default('') String entryPort,
+    @JsonKey(name: 'entry_purpose') @Default('') String entryPurpose,
+
     // Status and preferences
     @JsonKey(name: 'is_vip') @Default(false) bool isVip,
     @JsonKey(name: 'total_stays') @Default(0) int totalStays,
@@ -225,6 +322,7 @@ sealed class Guest with _$Guest {
 
     // Computed fields from backend
     @JsonKey(name: 'is_returning_guest') @Default(false) bool isReturningGuest,
+    @JsonKey(name: 'is_foreign_guest') @Default(false) bool isForeignGuest,
     @JsonKey(name: 'booking_count') @Default(0) int bookingCount,
 
     // Timestamps

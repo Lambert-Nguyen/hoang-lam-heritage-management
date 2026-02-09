@@ -749,8 +749,14 @@ class GuestViewSet(viewsets.ModelViewSet):
 
     @extend_schema(
         summary="Export temporary residence declaration",
-        description="Export guest data for temporary residence declaration to police. "
-                    "Returns CSV or Excel file with guest information for a date range.",
+        description=(
+            "Export guest data for temporary residence declaration to police.\n"
+            "Supports two official Vietnamese formats:\n"
+            "- **dd10**: Mẫu ĐD10 - Sổ quản lý lưu trú (Vietnamese guests, Nghị định 144/2021)\n"
+            "- **na17**: Mẫu NA17 - Phiếu khai báo tạm trú (Foreign guests, Thông tư 04/2015)\n"
+            "- **all**: Both formats in one Excel workbook (separate sheets) or combined CSV\n"
+            "\nReturns CSV or Excel file with guest information for a date range."
+        ),
         parameters=[
             OpenApiParameter(
                 name="date_from",
@@ -765,9 +771,15 @@ class GuestViewSet(viewsets.ModelViewSet):
                 required=False,
             ),
             OpenApiParameter(
-                name="format",
+                name="export_format",
                 type=str,
-                description="Export format: 'csv' or 'excel'. Defaults to 'csv'.",
+                description="Export format: 'csv' or 'excel'. Defaults to 'excel'.",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="form_type",
+                type=str,
+                description="Form type: 'dd10' (Vietnamese), 'na17' (Foreign), 'all' (both). Defaults to 'all'.",
                 required=False,
             ),
         ],
@@ -780,17 +792,29 @@ class GuestViewSet(viewsets.ModelViewSet):
     )
     @action(detail=False, methods=["get"], url_path="declaration-export")
     def declaration_export(self, request):
-        """Export temporary residence declaration for police reporting."""
+        """Export temporary residence declaration for police reporting.
+
+        Supports two official Vietnamese forms:
+        - ĐD10 (Nghị định 144/2021): For Vietnamese guests → reported to Công an phường
+        - NA17 (Thông tư 04/2015): For foreign guests → reported to Phòng Quản lý XNC
+        """
         import csv
         import io
         from datetime import date
 
         from django.http import HttpResponse
+        from django.utils import timezone as tz
 
-        # Get date range parameters
+        # ── Hotel establishment info (used in form headers) ──
+        HOTEL_NAME = "Hoàng Lâm Heritage Suites"
+        HOTEL_ADDRESS = "123 Đường ABC, Phường XYZ, TP.HCM"
+        HOTEL_PHONE = "028 1234 5678"
+
+        # ── Parse query parameters ──
         date_from = request.query_params.get("date_from")
         date_to = request.query_params.get("date_to")
-        export_format = request.query_params.get("format", "csv").lower()
+        export_format = request.query_params.get("export_format", "excel").lower()
+        form_type = request.query_params.get("form_type", "all").lower()
 
         today = date.today()
         try:
@@ -808,123 +832,282 @@ class GuestViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Get guests who checked in during the date range
+        if form_type not in ("dd10", "na17", "all"):
+            return Response(
+                {"detail": "form_type không hợp lệ. Sử dụng: dd10, na17, all."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # ── Fetch bookings ──
         bookings = Booking.objects.filter(
             check_in_date__gte=date_from,
             check_in_date__lte=date_to,
             status__in=[Booking.Status.CHECKED_IN, Booking.Status.CHECKED_OUT],
         ).select_related("guest", "room")
 
-        # Prepare data rows
-        rows = []
+        # ── Separate Vietnamese and foreign guests ──
+        vn_aliases = {"việt nam", "vietnam", "vn", "viet nam"}
+        vietnamese_bookings = []
+        foreign_bookings = []
         for booking in bookings:
-            guest = booking.guest
-            rows.append({
-                "stt": len(rows) + 1,
-                "ho_ten": guest.full_name,
-                "ngay_sinh": guest.date_of_birth.strftime("%d/%m/%Y") if guest.date_of_birth else "",
-                "gioi_tinh": "Nam" if guest.gender == "male" else "Nữ" if guest.gender == "female" else "",
-                "quoc_tich": guest.nationality or "Việt Nam",
-                "loai_giay_to": guest.get_id_type_display() if hasattr(guest, "get_id_type_display") else guest.id_type,
-                "so_giay_to": guest.id_number or "",
-                "ngay_cap": guest.id_issue_date.strftime("%d/%m/%Y") if guest.id_issue_date else "",
-                "noi_cap": guest.id_issue_place or "",
-                "dia_chi_thuong_tru": guest.address or "",
-                "so_dien_thoai": guest.phone or "",
-                "so_phong": booking.room.number,
-                "ngay_den": booking.check_in_date.strftime("%d/%m/%Y"),
-                "ngay_di": booking.check_out_date.strftime("%d/%m/%Y") if booking.actual_check_out else "",
-            })
+            nationality = (booking.guest.nationality or "").strip().lower()
+            if nationality in vn_aliases or not nationality:
+                vietnamese_bookings.append(booking)
+            else:
+                foreign_bookings.append(booking)
 
+        # ── Helper: format date DD/MM/YYYY ──
+        def fmt_date(d):
+            return d.strftime("%d/%m/%Y") if d else ""
+
+        # ── Helper: gender display ──
+        def fmt_gender(g):
+            return "Nam" if g == "male" else ("Nữ" if g == "female" else "")
+
+        # ── Helper: nationality display (Vietnamese name for official forms) ──
+        nationality_map = {
+            "vietnam": "Việt Nam", "united states": "Mỹ", "usa": "Mỹ",
+            "china": "Trung Quốc", "south korea": "Hàn Quốc", "japan": "Nhật Bản",
+            "france": "Pháp", "uk": "Anh", "australia": "Úc", "germany": "Đức",
+            "russia": "Nga", "thailand": "Thái Lan",
+        }
+
+        def fmt_nationality(nat):
+            return nationality_map.get((nat or "").strip().lower(), nat or "Việt Nam")
+
+        # ═══════════════════════════════════════════════════════════
+        # Build ĐD10 rows (Vietnamese guests - Nghị định 144/2021)
+        # ═══════════════════════════════════════════════════════════
+        DD10_HEADERS = [
+            "STT", "Họ và tên", "Ngày sinh", "Giới tính", "Quốc tịch",
+            "Số CMND/CCCD/Hộ chiếu", "Địa chỉ thường trú",
+            "Ngày đến", "Ngày đi", "Số phòng", "Ghi chú",
+        ]
+
+        def build_dd10_rows(bkings):
+            rows = []
+            for i, bk in enumerate(bkings, 1):
+                g = bk.guest
+                rows.append([
+                    i,
+                    g.full_name,
+                    fmt_date(g.date_of_birth),
+                    fmt_gender(g.gender),
+                    fmt_nationality(g.nationality),
+                    g.id_number or "",
+                    g.address or "",
+                    fmt_date(bk.check_in_date),
+                    fmt_date(bk.check_out_date),
+                    bk.room.number,
+                    bk.notes or "",
+                ])
+            return rows
+
+        # ═══════════════════════════════════════════════════════════
+        # Build NA17 rows (Foreign guests - Thông tư 04/2015/TT-BCA)
+        # ═══════════════════════════════════════════════════════════
+        NA17_HEADERS = [
+            "STT", "Họ tên", "Giới tính", "Ngày tháng năm sinh",
+            "Quốc tịch", "Số hộ chiếu", "Loại hộ chiếu",
+            "Loại giấy tờ nhập cảnh", "Số giấy tờ", "Thời hạn",
+            "Ngày cấp", "Cơ quan cấp",
+            "Ngày nhập cảnh", "Cửa khẩu nhập cảnh",
+            "Mục đích nhập cảnh",
+            "Tạm trú từ ngày", "Tạm trú đến ngày",
+            "Số phòng",
+        ]
+
+        def build_na17_rows(bkings):
+            rows = []
+            for i, bk in enumerate(bkings, 1):
+                g = bk.guest
+                rows.append([
+                    i,
+                    g.full_name,
+                    fmt_gender(g.gender),
+                    fmt_date(g.date_of_birth),
+                    fmt_nationality(g.nationality),
+                    g.id_number or "",
+                    g.get_passport_type_display() if g.passport_type else "",
+                    g.get_visa_type_display() if g.visa_type else "",
+                    g.visa_number or "",
+                    fmt_date(g.visa_expiry_date),
+                    fmt_date(g.visa_issue_date),
+                    g.visa_issuing_authority or "",
+                    fmt_date(g.entry_date),
+                    g.entry_port or "",
+                    g.entry_purpose or "",
+                    fmt_date(bk.check_in_date),
+                    fmt_date(bk.check_out_date),
+                    bk.room.number,
+                ])
+            return rows
+
+        # ── Mark bookings as declared ──
+        now = tz.now()
+        booking_ids = [b.id for b in bookings]
+        if booking_ids:
+            Booking.objects.filter(id__in=booking_ids, declaration_submitted=False).update(
+                declaration_submitted=True,
+                declaration_submitted_at=now,
+            )
+
+        # ═══════════════════════════════════════════════════════════
+        # EXCEL EXPORT (recommended - separate sheets per form)
+        # ═══════════════════════════════════════════════════════════
         if export_format == "excel":
             try:
                 import openpyxl
-                from openpyxl.utils import get_column_letter
-
-                wb = openpyxl.Workbook()
-                ws = wb.active
-                ws.title = "Khai báo lưu trú"
-
-                # Headers
-                headers = [
-                    "STT", "Họ và tên", "Ngày sinh", "Giới tính", "Quốc tịch",
-                    "Loại giấy tờ", "Số giấy tờ", "Ngày cấp", "Nơi cấp",
-                    "Địa chỉ thường trú", "Số điện thoại", "Số phòng",
-                    "Ngày đến", "Ngày đi"
-                ]
-                for col, header in enumerate(headers, 1):
-                    ws.cell(row=1, column=col, value=header)
-
-                # Data rows
-                for row_idx, row_data in enumerate(rows, 2):
-                    ws.cell(row=row_idx, column=1, value=row_data["stt"])
-                    ws.cell(row=row_idx, column=2, value=row_data["ho_ten"])
-                    ws.cell(row=row_idx, column=3, value=row_data["ngay_sinh"])
-                    ws.cell(row=row_idx, column=4, value=row_data["gioi_tinh"])
-                    ws.cell(row=row_idx, column=5, value=row_data["quoc_tich"])
-                    ws.cell(row=row_idx, column=6, value=row_data["loai_giay_to"])
-                    ws.cell(row=row_idx, column=7, value=row_data["so_giay_to"])
-                    ws.cell(row=row_idx, column=8, value=row_data["ngay_cap"])
-                    ws.cell(row=row_idx, column=9, value=row_data["noi_cap"])
-                    ws.cell(row=row_idx, column=10, value=row_data["dia_chi_thuong_tru"])
-                    ws.cell(row=row_idx, column=11, value=row_data["so_dien_thoai"])
-                    ws.cell(row=row_idx, column=12, value=row_data["so_phong"])
-                    ws.cell(row=row_idx, column=13, value=row_data["ngay_den"])
-                    ws.cell(row=row_idx, column=14, value=row_data["ngay_di"])
-
-                # Save to buffer
-                buffer = io.BytesIO()
-                wb.save(buffer)
-                buffer.seek(0)
-
-                response = HttpResponse(
-                    buffer.getvalue(),
-                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                )
-                filename = f"khai_bao_luu_tru_{date_from}_{date_to}.xlsx"
-                response["Content-Disposition"] = f'attachment; filename="{filename}"'
-                return response
-
+                from openpyxl.styles import Alignment, Font, PatternFill
             except ImportError:
                 return Response(
                     {"detail": "Thư viện openpyxl chưa được cài đặt. Vui lòng sử dụng format=csv."},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-        else:
-            # CSV export
-            buffer = io.StringIO()
-            writer = csv.writer(buffer)
 
-            # Headers
-            writer.writerow([
-                "STT", "Họ và tên", "Ngày sinh", "Giới tính", "Quốc tịch",
-                "Loại giấy tờ", "Số giấy tờ", "Ngày cấp", "Nơi cấp",
-                "Địa chỉ thường trú", "Số điện thoại", "Số phòng",
-                "Ngày đến", "Ngày đi"
-            ])
+            wb = openpyxl.Workbook()
+            wb.remove(wb.active)  # Remove default sheet
 
-            # Data rows
-            for row_data in rows:
-                writer.writerow([
-                    row_data["stt"],
-                    row_data["ho_ten"],
-                    row_data["ngay_sinh"],
-                    row_data["gioi_tinh"],
-                    row_data["quoc_tich"],
-                    row_data["loai_giay_to"],
-                    row_data["so_giay_to"],
-                    row_data["ngay_cap"],
-                    row_data["noi_cap"],
-                    row_data["dia_chi_thuong_tru"],
-                    row_data["so_dien_thoai"],
-                    row_data["so_phong"],
-                    row_data["ngay_den"],
-                    row_data["ngay_di"],
-                ])
+            header_font = Font(bold=True)
+            header_fill = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+            title_font = Font(bold=True, size=14)
+
+            def write_sheet(ws, title, headers, rows, establishment_header):
+                """Write a properly formatted declaration sheet."""
+                # Row 1: Establishment name
+                ws.cell(row=1, column=1, value=establishment_header[0]).font = title_font
+                ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=len(headers))
+                # Row 2: Address
+                ws.cell(row=2, column=1, value=f"Địa chỉ: {establishment_header[1]}")
+                ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=len(headers))
+                # Row 3: Phone
+                ws.cell(row=3, column=1, value=f"Điện thoại: {establishment_header[2]}")
+                ws.merge_cells(start_row=3, start_column=1, end_row=3, end_column=len(headers))
+                # Row 4: Empty
+                # Row 5: Title
+                ws.cell(row=5, column=1, value=title).font = Font(bold=True, size=12)
+                ws.merge_cells(start_row=5, start_column=1, end_row=5, end_column=len(headers))
+                ws.cell(row=5, column=1).alignment = Alignment(horizontal="center")
+                # Row 6: Date range
+                date_range_str = f"Từ ngày {fmt_date(date_from)} đến ngày {fmt_date(date_to)}"
+                ws.cell(row=6, column=1, value=date_range_str)
+                ws.merge_cells(start_row=6, start_column=1, end_row=6, end_column=len(headers))
+                ws.cell(row=6, column=1).alignment = Alignment(horizontal="center")
+
+                # Row 8: Column headers
+                for col, h in enumerate(headers, 1):
+                    cell = ws.cell(row=8, column=col, value=h)
+                    cell.font = header_font
+                    cell.fill = header_fill
+                    cell.alignment = Alignment(horizontal="center", wrap_text=True)
+
+                # Data rows starting at row 9
+                for row_idx, row_data in enumerate(rows, 9):
+                    for col_idx, val in enumerate(row_data, 1):
+                        ws.cell(row=row_idx, column=col_idx, value=val)
+
+                # Auto-adjust column widths
+                for col_idx in range(1, len(headers) + 1):
+                    max_len = len(str(headers[col_idx - 1]))
+                    for row_data in rows:
+                        if col_idx - 1 < len(row_data):
+                            max_len = max(max_len, len(str(row_data[col_idx - 1])))
+                    ws.column_dimensions[openpyxl.utils.get_column_letter(col_idx)].width = min(max_len + 4, 40)
+
+            establishment_info = [HOTEL_NAME, HOTEL_ADDRESS, HOTEL_PHONE]
+
+            if form_type in ("dd10", "all"):
+                ws_dd10 = wb.create_sheet(title="ĐD10 - Khách Việt Nam")
+                dd10_rows = build_dd10_rows(vietnamese_bookings)
+                write_sheet(
+                    ws_dd10,
+                    "SỔ QUẢN LÝ LƯU TRÚ (Mẫu ĐD10)",
+                    DD10_HEADERS,
+                    dd10_rows,
+                    establishment_info,
+                )
+
+            if form_type in ("na17", "all"):
+                ws_na17 = wb.create_sheet(title="NA17 - Khách nước ngoài")
+                na17_rows = build_na17_rows(foreign_bookings)
+                na17_header_info = [
+                    HOTEL_NAME,
+                    HOTEL_ADDRESS,
+                    HOTEL_PHONE,
+                ]
+                write_sheet(
+                    ws_na17,
+                    "PHIẾU KHAI BÁO TẠM TRÚ CHO NGƯỜI NƯỚC NGOÀI (Mẫu NA17)",
+                    NA17_HEADERS,
+                    na17_rows,
+                    na17_header_info,
+                )
+
+            # If no sheets created (shouldn't happen but just in case)
+            if not wb.sheetnames:
+                wb.create_sheet(title="Trống")
+
+            buffer = io.BytesIO()
+            wb.save(buffer)
+            buffer.seek(0)
 
             response = HttpResponse(
                 buffer.getvalue(),
-                content_type="text/csv; charset=utf-8-sig",  # utf-8-sig for Excel compatibility
+                content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            )
+            filename = f"khai_bao_luu_tru_{date_from}_{date_to}.xlsx"
+            response["Content-Disposition"] = f'attachment; filename="{filename}"'
+            return response
+
+        # ═══════════════════════════════════════════════════════════
+        # CSV EXPORT (single file, sections separated by blank lines)
+        # ═══════════════════════════════════════════════════════════
+        else:
+            buffer = io.StringIO()
+            writer = csv.writer(buffer)
+
+            def write_csv_section(writer, title, headers, rows, establishment_info):
+                writer.writerow([establishment_info[0]])
+                writer.writerow([f"Địa chỉ: {establishment_info[1]}"])
+                writer.writerow([f"Điện thoại: {establishment_info[2]}"])
+                writer.writerow([])
+                writer.writerow([title])
+                writer.writerow([f"Từ ngày {fmt_date(date_from)} đến ngày {fmt_date(date_to)}"])
+                writer.writerow([])
+                writer.writerow(headers)
+                for row in rows:
+                    writer.writerow(row)
+
+            establishment_info = [HOTEL_NAME, HOTEL_ADDRESS, HOTEL_PHONE]
+
+            if form_type in ("dd10", "all"):
+                dd10_rows = build_dd10_rows(vietnamese_bookings)
+                write_csv_section(
+                    writer,
+                    "SỔ QUẢN LÝ LƯU TRÚ (Mẫu ĐD10)",
+                    DD10_HEADERS,
+                    dd10_rows,
+                    establishment_info,
+                )
+
+            if form_type == "all":
+                writer.writerow([])
+                writer.writerow(["=" * 80])
+                writer.writerow([])
+
+            if form_type in ("na17", "all"):
+                na17_rows = build_na17_rows(foreign_bookings)
+                write_csv_section(
+                    writer,
+                    "PHIẾU KHAI BÁO TẠM TRÚ CHO NGƯỜI NƯỚC NGOÀI (Mẫu NA17)",
+                    NA17_HEADERS,
+                    na17_rows,
+                    establishment_info,
+                )
+
+            response = HttpResponse(
+                buffer.getvalue(),
+                content_type="text/csv; charset=utf-8-sig",
             )
             filename = f"khai_bao_luu_tru_{date_from}_{date_to}.csv"
             response["Content-Disposition"] = f'attachment; filename="{filename}"'

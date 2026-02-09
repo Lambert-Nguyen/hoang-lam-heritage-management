@@ -33,7 +33,8 @@ class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
   Future<void> export({
     required DateTime dateFrom,
     required DateTime dateTo,
-    ExportFormat format = ExportFormat.csv,
+    ExportFormat format = ExportFormat.excel,
+    DeclarationFormType formType = DeclarationFormType.all,
   }) async {
     state = const DeclarationExportState.loading();
 
@@ -42,6 +43,7 @@ class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
         dateFrom: dateFrom,
         dateTo: dateTo,
         format: format,
+        formType: formType,
       );
       state = DeclarationExportState.success(filePath: filePath);
     } catch (e) {
