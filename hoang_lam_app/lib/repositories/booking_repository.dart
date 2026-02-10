@@ -100,9 +100,15 @@ class BookingRepository {
 
   /// Create a new booking
   Future<Booking> createBooking(BookingCreate booking) async {
+    final data = booking.toJson();
+    // Backend expects YYYY-MM-DD for DateField, not ISO 8601 with time
+    data['check_in_date'] = booking.checkInDate.toIso8601String().split('T')[0];
+    data['check_out_date'] = booking.checkOutDate.toIso8601String().split('T')[0];
+    // Backend requires total_amount
+    data['total_amount'] = booking.totalAmount;
     final response = await _apiClient.post<Map<String, dynamic>>(
       AppConstants.bookingsEndpoint,
-      data: booking.toJson(),
+      data: data,
     );
     if (response.data == null) {
       throw Exception('Failed to create booking');
@@ -112,9 +118,22 @@ class BookingRepository {
 
   /// Update an existing booking
   Future<Booking> updateBooking(int id, BookingUpdate booking) async {
+    final data = booking.toJson();
+    // Backend expects YYYY-MM-DD for DateField, not ISO 8601 with time
+    if (booking.checkInDate != null) {
+      data['check_in_date'] = booking.checkInDate!.toIso8601String().split('T')[0];
+    }
+    if (booking.checkOutDate != null) {
+      data['check_out_date'] = booking.checkOutDate!.toIso8601String().split('T')[0];
+    }
+    // Recalculate total_amount if nightly_rate and dates are present
+    if (booking.nightlyRate != null && booking.checkInDate != null && booking.checkOutDate != null) {
+      final nights = booking.checkOutDate!.difference(booking.checkInDate!).inDays;
+      data['total_amount'] = booking.nightlyRate! * nights;
+    }
     final response = await _apiClient.put<Map<String, dynamic>>(
       '${AppConstants.bookingsEndpoint}$id/',
-      data: booking.toJson(),
+      data: data,
     );
     if (response.data == null) {
       throw Exception('Failed to update booking');

@@ -40,8 +40,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   // Form fields
   int? _selectedRoomId;
   int? _selectedGuestId;
-  DateTime _checkInDate = DateTime.now();
-  DateTime _checkOutDate = DateTime.now().add(const Duration(days: 1));
+  late DateTime _checkInDate;
+  late DateTime _checkOutDate;
   double _ratePerNight = 0;
   int _numberOfGuests = 1;
   BookingSource _source = BookingSource.walkIn;
@@ -54,6 +54,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    _checkInDate = DateTime(now.year, now.month, now.day);
+    _checkOutDate = DateTime(now.year, now.month, now.day + 1);
     if (widget.booking != null) {
       _initializeFromBooking(widget.booking!);
     }
@@ -225,6 +228,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _buildDateSection() {
+    final theme = Theme.of(context);
+    final nights = _checkOutDate.difference(_checkInDate).inDays;
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -233,38 +239,120 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           children: [
             Text(
               context.l10n.bookingDates,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             const SizedBox(height: 16),
             
-            // Check-in date
-            ListTile(
-              leading: const Icon(Icons.login),
-              title: Text(context.l10n.checkIn),
-              subtitle: Text(DateFormat('dd/MM/yyyy HH:mm', 'vi').format(_checkInDate)),
-              onTap: () => _selectDateTime(context, true),
+            // Check-in / Check-out date row
+            Row(
+              children: [
+                // Check-in
+                Expanded(
+                  child: _buildDateCard(
+                    icon: Icons.login,
+                    label: context.l10n.checkIn,
+                    date: _checkInDate,
+                    onTap: () => _selectDate(context, true),
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                
+                // Arrow and nights badge
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    children: [
+                      Icon(Icons.arrow_forward, 
+                        color: theme.colorScheme.onSurfaceVariant,
+                        size: 20,
+                      ),
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '$nights ${context.l10n.nights}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onPrimaryContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                
+                // Check-out
+                Expanded(
+                  child: _buildDateCard(
+                    icon: Icons.logout,
+                    label: context.l10n.checkOut,
+                    date: _checkOutDate,
+                    onTap: () => _selectDate(context, false),
+                    color: theme.colorScheme.secondary,
+                  ),
+                ),
+              ],
             ),
-            
-            // Check-out date
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: Text(context.l10n.checkOut),
-              subtitle: Text(DateFormat('dd/MM/yyyy HH:mm', 'vi').format(_checkOutDate)),
-              onTap: () => _selectDateTime(context, false),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateCard({
+    required IconData icon,
+    required String label,
+    required DateTime date,
+    required VoidCallback onTap,
+    required Color color,
+  }) {
+    final theme = Theme.of(context);
+    
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: color.withAlpha(80)),
+          borderRadius: BorderRadius.circular(12),
+          color: color.withAlpha(15),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            
-            // Nights calculation
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.nights_stay),
-              title: Text(context.l10n.numberOfNights),
-              trailing: Text(
-                '${_checkOutDate.difference(_checkInDate).inDays} ${context.l10n.nights}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+            const SizedBox(height: 4),
+            Text(
+              DateFormat('dd', 'vi').format(date),
+              style: theme.textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            Text(
+              DateFormat('MMM yyyy', 'vi').format(date),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            Text(
+              DateFormat('EEEE', 'vi').format(date),
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -273,13 +361,11 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     );
   }
 
-  Future<void> _selectDateTime(BuildContext context, bool isCheckIn) async {
+  Future<void> _selectDate(BuildContext context, bool isCheckIn) async {
     final initialDate = isCheckIn ? _checkInDate : _checkOutDate;
-    // For check-out, the earliest selectable date is the day after check-in
     final firstDate = isCheckIn
         ? DateTime.now().subtract(const Duration(days: 30))
         : _checkInDate.add(const Duration(days: 1));
-    // Ensure initialDate is not before firstDate
     final adjustedInitialDate = initialDate.isBefore(firstDate) ? firstDate : initialDate;
 
     final date = await showDatePicker(
@@ -287,35 +373,21 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       initialDate: adjustedInitialDate,
       firstDate: firstDate,
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      helpText: isCheckIn ? context.l10n.checkIn : context.l10n.checkOut,
     );
     
-    if (date != null && context.mounted) {
-      final time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(initialDate),
-      );
-      
-      if (time != null) {
-        setState(() {
-          final newDateTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            time.hour,
-            time.minute,
-          );
-          
-          if (isCheckIn) {
-            _checkInDate = newDateTime;
-            // Ensure check-out is after check-in
-            if (_checkOutDate.isBefore(_checkInDate)) {
-              _checkOutDate = _checkInDate.add(const Duration(days: 1));
-            }
-          } else {
-            _checkOutDate = newDateTime;
+    if (date != null) {
+      setState(() {
+        if (isCheckIn) {
+          _checkInDate = date;
+          // Ensure check-out is after check-in
+          if (!_checkOutDate.isAfter(_checkInDate)) {
+            _checkOutDate = _checkInDate.add(const Duration(days: 1));
           }
-        });
-      }
+        } else {
+          _checkOutDate = date;
+        }
+      });
     }
   }
 
