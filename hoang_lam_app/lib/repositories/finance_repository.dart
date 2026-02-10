@@ -76,6 +76,78 @@ class FinanceRepository {
     return FinancialCategory.fromJson(response.data!);
   }
 
+  /// Create a new financial category
+  Future<FinancialCategory> createCategory({
+    required String name,
+    required EntryType categoryType,
+    String? nameEn,
+    String icon = 'category',
+    String color = '#808080',
+    bool isDefault = false,
+    bool isActive = true,
+    int sortOrder = 0,
+  }) async {
+    final data = {
+      'name': name,
+      'category_type': categoryType.toApiValue,
+      'icon': icon,
+      'color': color,
+      'is_default': isDefault,
+      'is_active': isActive,
+      'sort_order': sortOrder,
+      if (nameEn != null) 'name_en': nameEn,
+    };
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      AppConstants.categoriesEndpoint,
+      data: data,
+    );
+    if (response.data == null) {
+      throw Exception('Failed to create category');
+    }
+    return FinancialCategory.fromJson(response.data!);
+  }
+
+  /// Update a financial category
+  Future<FinancialCategory> updateCategory(
+    int id, {
+    String? name,
+    String? nameEn,
+    String? icon,
+    String? color,
+    bool? isDefault,
+    bool? isActive,
+    int? sortOrder,
+  }) async {
+    final data = <String, dynamic>{};
+    if (name != null) data['name'] = name;
+    if (nameEn != null) data['name_en'] = nameEn;
+    if (icon != null) data['icon'] = icon;
+    if (color != null) data['color'] = color;
+    if (isDefault != null) data['is_default'] = isDefault;
+    if (isActive != null) data['is_active'] = isActive;
+    if (sortOrder != null) data['sort_order'] = sortOrder;
+
+    final response = await _apiClient.patch<Map<String, dynamic>>(
+      '${AppConstants.categoriesEndpoint}$id/',
+      data: data,
+    );
+    if (response.data == null) {
+      throw Exception('Failed to update category');
+    }
+    return FinancialCategory.fromJson(response.data!);
+  }
+
+  /// Toggle category active status
+  Future<FinancialCategory> toggleCategoryActive(int id, {required bool isActive}) async {
+    return updateCategory(id, isActive: isActive);
+  }
+
+  /// Delete a financial category
+  Future<void> deleteCategory(int id) async {
+    await _apiClient.delete('${AppConstants.categoriesEndpoint}$id/');
+  }
+
   // ==================== Financial Entries ====================
 
   /// Get all financial entries with optional filters

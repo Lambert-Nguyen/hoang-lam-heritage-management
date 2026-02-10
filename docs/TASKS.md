@@ -30,10 +30,10 @@
 > - **✅ Phase 1.12**: 6/7 complete (Night Audit Frontend - model, repository, provider, screen)
 > - **✅ Phase 1.13**: 4/4 complete (Temp Residence Declaration Backend - CSV/Excel export, **13 tests**)
 > - **✅ Phase 1.14**: 4/5 complete (Temp Residence Declaration Frontend - export screen, date/format selectors)
-> - **✅ Phase 1.16**: 9/9 complete (Settings - language, theme, text size, notifications, about)
+> - **✅ Phase 1.16**: 10/10 complete (Settings - language, theme, text size, notifications, about, staff management)
 > - **✅ Phase 2.1**: 8/8 complete (Financial Models Backend - Payment, FolioItem, categories, seed command)
 > - **✅ Phase 2.2**: 9/9 complete (Financial CRUD Backend - payments, folio items, deposits, 27 tests)
-> - **✅ Phase 2.3**: 13/13 complete (Financial Frontend - models, repository, provider, screens, widgets)
+> - **✅ Phase 2.3**: 14/14 complete (Financial Frontend - models, repository, provider, screens, widgets, category CRUD)
 > - **✅ Phase 2.4**: 5/5 complete (Deposit Management Backend - record deposit, outstanding deposits, 27 tests)
 > - **✅ Phase 2.5**: 4/4 complete (Deposit Management Frontend - DepositStatusIndicator, OutstandingDepositsList, RecordDepositDialog)
 > - **✅ Phase 2.6**: 5/5 complete (Multi-Currency Backend - ExchangeRate CRUD, convert, latest rates)
@@ -51,7 +51,7 @@
 > - **✅ Dashboard**: Added /api/v1/dashboard/ endpoint for aggregated hotel metrics (4 tests)
 > - **✅ Pricing Management**: Rate Plans & Date Rate Overrides - Backend models + API + Flutter screens. See [PRICING_MANAGEMENT.md](./PRICING_MANAGEMENT.md)
 > - **📊 Test Coverage**: **745+ tests passing** (301+ backend + 444+ frontend), **100% pass rate**
-> - **🎯 Overall Progress**: 258/292 tasks (88.4%) - PHASE 1, 2, 3.1-3.2, 4, 5 COMPLETE + Pricing!
+> - **🎯 Overall Progress**: 260/294 tasks (88.4%) - PHASE 1, 2, 3.1-3.2, 4, 5 COMPLETE + Pricing!
 >
 > ### Deferred Tasks (Status Update)
 >
@@ -479,6 +479,7 @@
 - [x] **1.16.7** Create about/version info section ✅ (showAboutDialog with hotel info)
 - [x] **1.16.8** Create logout button with confirmation ✅
 - [x] **1.16.9** Write settings widget tests ✅ (tested with biometric toggle)
+- [x] **1.16.10** Create staff management screen ✅ (Role stats, search/filter, grouped list by role, detail bottom sheet with permission matrix, copy-to-clipboard)
 
 ### 1.17 Navigation Structure (Frontend)
 `[BLOCKED BY: 0.2.6, 0.2.11]`
@@ -540,6 +541,7 @@
 - [x] **2.3.11** Create monthly summary widget ✅
 - [x] **2.3.12** Create category filter ✅
 - [x] **2.3.13** Write finance widget tests ✅ (68 tests in test/widgets/finance/)
+- [x] **2.3.14** Create category CRUD management ✅ (Create/edit dialog with icon+color picker, delete with entry protection, toggle active/inactive, swipe actions)
 
 ### 2.4 Deposit Management (Backend)
 
