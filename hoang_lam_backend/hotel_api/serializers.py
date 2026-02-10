@@ -514,9 +514,11 @@ class BookingSerializer(serializers.ModelSerializer):
             if check_out <= check_in:
                 raise serializers.ValidationError({"check_out_date": "Check-out date must be after check-in date."})
             
-            # Validate check-in is not in the past (for new bookings only)
-            if not self.instance and check_in < date.today():
-                raise serializers.ValidationError({"check_in_date": "Check-in date cannot be in the past."})
+            # Validate check-in is not too far in the past (for new bookings only)
+            # Allow up to 7 days in the past for retroactive booking by staff
+            from datetime import timedelta
+            if not self.instance and check_in < (date.today() - timedelta(days=7)):
+                raise serializers.ValidationError({"check_in_date": "Check-in date cannot be more than 7 days in the past."})
         
         # Validate guest count does not exceed room capacity
         if room and guest_count:
