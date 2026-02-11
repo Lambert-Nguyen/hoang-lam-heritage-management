@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="hotel_app"
+        android:label="HoangLam Heritage"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
