@@ -1442,6 +1442,33 @@ class BookingViewSet(viewsets.ModelViewSet):
             guest.total_stays += 1
             guest.save()
 
+            # Auto-create financial entry for room revenue
+            room_income_category = FinancialCategory.objects.filter(
+                category_type=FinancialCategory.CategoryType.INCOME,
+                is_default=True,
+                is_active=True,
+            ).first()
+            if not room_income_category:
+                # Fallback: find "Tiền phòng" category or any active income category
+                room_income_category = FinancialCategory.objects.filter(
+                    category_type=FinancialCategory.CategoryType.INCOME,
+                    is_active=True,
+                ).first()
+
+            if room_income_category:
+                total_revenue = booking.total_amount + booking.additional_charges + booking.early_check_in_fee + booking.late_check_out_fee
+                FinancialEntry.objects.create(
+                    entry_type=FinancialEntry.EntryType.INCOME,
+                    category=room_income_category,
+                    amount=total_revenue,
+                    currency=booking.currency,
+                    date=timezone.now().date(),
+                    description=f"Tiền phòng {room.number} - {guest.full_name} ({booking.check_in_date} → {booking.check_out_date}, {booking.nights} đêm)",
+                    booking=booking,
+                    payment_method=booking.payment_method,
+                    created_by=request.user,
+                )
+
         # Notify staff about check-out
         from .services import PushNotificationService
 
