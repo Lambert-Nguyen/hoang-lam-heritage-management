@@ -1,4 +1,4 @@
-package com.hoanglam.hotel_app
+package com.hoanglam.heritage
 
 import io.flutter.embedding.android.FlutterActivity
 
