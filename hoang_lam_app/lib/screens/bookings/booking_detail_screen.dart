@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
+import '../../providers/room_provider.dart';
 import '../../widgets/bookings/booking_status_badge.dart';
 import '../../widgets/bookings/early_late_fee_dialog.dart';
 import 'booking_form_screen.dart';
@@ -523,6 +524,8 @@ class BookingDetailScreen extends ConsumerWidget {
       try {
         await ref.read(bookingNotifierProvider.notifier).checkIn(bookingId);
         ref.invalidate(bookingByIdProvider(bookingId));
+        ref.invalidate(roomsProvider);
+        ref.invalidate(allRoomsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('${context.l10n.checkIn} ${context.l10n.success}')),
@@ -561,6 +564,8 @@ class BookingDetailScreen extends ConsumerWidget {
       try {
         await ref.read(bookingNotifierProvider.notifier).checkOut(bookingId);
         ref.invalidate(bookingByIdProvider(bookingId));
+        ref.invalidate(roomsProvider);
+        ref.invalidate(allRoomsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('${context.l10n.checkOut} ${context.l10n.success}')),
@@ -600,6 +605,8 @@ class BookingDetailScreen extends ConsumerWidget {
       try {
         await ref.read(bookingNotifierProvider.notifier).cancelBooking(bookingId);
         ref.invalidate(bookingByIdProvider(bookingId));
+        ref.invalidate(roomsProvider);
+        ref.invalidate(allRoomsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.success)),
@@ -639,6 +646,8 @@ class BookingDetailScreen extends ConsumerWidget {
       try {
         await ref.read(bookingNotifierProvider.notifier).markAsNoShow(bookingId);
         ref.invalidate(bookingByIdProvider(bookingId));
+        ref.invalidate(roomsProvider);
+        ref.invalidate(allRoomsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(context.l10n.success)),

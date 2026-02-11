@@ -1261,10 +1261,36 @@ class BookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="update-status")
     def update_status(self, request, pk=None):
         """Update booking status."""
+        from django.db import transaction
+
         booking = self.get_object()
+        old_status = booking.status
         serializer = BookingStatusUpdateSerializer(booking, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+
+        with transaction.atomic():
+            serializer.save()
+            booking.refresh_from_db()
+
+            # Sync room status based on booking status transition
+            room = booking.room
+            if booking.status == Booking.Status.CHECKED_IN:
+                room.status = Room.Status.OCCUPIED
+                room.save()
+            elif booking.status == Booking.Status.CHECKED_OUT:
+                room.status = Room.Status.CLEANING
+                room.save()
+            elif booking.status in [Booking.Status.CANCELLED, Booking.Status.NO_SHOW]:
+                # Only revert room if it was occupied by this booking
+                if old_status == Booking.Status.CHECKED_IN and room.status == Room.Status.OCCUPIED:
+                    # Check if another active booking occupies this room
+                    other_active = Booking.objects.filter(
+                        room=room,
+                        status=Booking.Status.CHECKED_IN,
+                    ).exclude(pk=booking.pk).exists()
+                    if not other_active:
+                        room.status = Room.Status.AVAILABLE
+                        room.save()
 
         # Send notification for status changes
         from .services import PushNotificationService

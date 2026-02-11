@@ -4,6 +4,26 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'booking.freezed.dart';
 part 'booking.g.dart';
 
+/// Helper to safely parse int from JSON (handles both num and String from Django DecimalField)
+int _safeInt(dynamic value) {
+  if (value is num) return value.toInt();
+  if (value is String) return double.parse(value).toInt();
+  return 0;
+}
+
+int? _safeIntNullable(dynamic value) {
+  if (value == null) return null;
+  if (value is num) return value.toInt();
+  if (value is String) return double.parse(value).toInt();
+  return null;
+}
+
+double _safeDouble(dynamic value) {
+  if (value is num) return value.toDouble();
+  if (value is String) return double.parse(value);
+  return 0;
+}
+
 /// Booking status matching backend Booking.Status choices
 enum BookingStatus {
   @JsonValue('pending')
@@ -513,25 +533,25 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'is_hourly') @Default(false) bool isHourly,
 
     // Hourly booking fields
-    @JsonKey(name: 'hours_booked') int? hoursBooked,
-    @JsonKey(name: 'hourly_rate') int? hourlyRate,
+    @JsonKey(name: 'hours_booked', fromJson: _safeIntNullable) int? hoursBooked,
+    @JsonKey(name: 'hourly_rate', fromJson: _safeIntNullable) int? hourlyRate,
     @JsonKey(name: 'expected_check_out_time') DateTime? expectedCheckOutTime,
 
     // Early/Late check fees
-    @JsonKey(name: 'early_check_in_fee') @Default(0) int earlyCheckInFee,
-    @JsonKey(name: 'late_check_out_fee') @Default(0) int lateCheckOutFee,
-    @JsonKey(name: 'early_check_in_hours') @Default(0) double earlyCheckInHours,
-    @JsonKey(name: 'late_check_out_hours') @Default(0) double lateCheckOutHours,
+    @JsonKey(name: 'early_check_in_fee', fromJson: _safeInt) @Default(0) int earlyCheckInFee,
+    @JsonKey(name: 'late_check_out_fee', fromJson: _safeInt) @Default(0) int lateCheckOutFee,
+    @JsonKey(name: 'early_check_in_hours', fromJson: _safeDouble) @Default(0) double earlyCheckInHours,
+    @JsonKey(name: 'late_check_out_hours', fromJson: _safeDouble) @Default(0) double lateCheckOutHours,
 
     // Pricing
-    @JsonKey(name: 'nightly_rate') required int nightlyRate,
-    @JsonKey(name: 'total_amount') required int totalAmount,
+    @JsonKey(name: 'nightly_rate', fromJson: _safeInt) required int nightlyRate,
+    @JsonKey(name: 'total_amount', fromJson: _safeInt) required int totalAmount,
     @Default('VND') String currency,
 
     // Payment
-    @JsonKey(name: 'deposit_amount') @Default(0) int depositAmount,
+    @JsonKey(name: 'deposit_amount', fromJson: _safeInt) @Default(0) int depositAmount,
     @JsonKey(name: 'deposit_paid') @Default(false) bool depositPaid,
-    @JsonKey(name: 'additional_charges') @Default(0) int additionalCharges,
+    @JsonKey(name: 'additional_charges', fromJson: _safeInt) @Default(0) int additionalCharges,
     @JsonKey(name: 'payment_method') @Default(PaymentMethod.cash) PaymentMethod paymentMethod,
     @JsonKey(name: 'is_paid') @Default(false) bool isPaid,
 
@@ -540,8 +560,8 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'special_requests') @Default('') String specialRequests,
 
     // Computed from backend
-    int? nights,
-    @JsonKey(name: 'balance_due') int? balanceDue,
+    @JsonKey(fromJson: _safeIntNullable) int? nights,
+    @JsonKey(name: 'balance_due', fromJson: _safeIntNullable) int? balanceDue,
 
     // Audit
     @JsonKey(name: 'created_by') int? createdBy,
