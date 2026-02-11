@@ -12,8 +12,13 @@ import 'router/app_router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set environment (can be changed via build flavors)
-  EnvConfig.setEnvironment(Environment.dev);
+  // Set environment via --dart-define=ENV=prod (defaults to dev)
+  const envName = String.fromEnvironment('ENV', defaultValue: 'dev');
+  final env = Environment.values.firstWhere(
+    (e) => e.name == envName,
+    orElse: () => Environment.dev,
+  );
+  EnvConfig.setEnvironment(env);
 
   // Initialize Hive storage
   await HiveStorage.init();

@@ -20,7 +20,9 @@
       "Bash(flutter pub run build_runner build:*)",
       "Bash(tree:*)",
       "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development pytest:*)",
-      "Bash(dart run:*)"
+      "Bash(dart run:*)",
+      "Bash(python3:*)",
+      "Bash(pod install)"
     ]
   }
 }

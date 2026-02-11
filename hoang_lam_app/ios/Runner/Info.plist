@@ -47,6 +47,10 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Sử dụng Face ID để đăng nhập nhanh vào ứng dụng</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Ứng dụng cần truy cập camera để chụp ảnh phòng và vật phẩm thất lạc</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Ứng dụng cần truy cập thư viện ảnh để tải lên hình ảnh phòng và vật phẩm thất lạc</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsLocalNetworking</key>
