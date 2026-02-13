@@ -6,7 +6,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Backend%20Tests-38%20passing-brightgreen" alt="Backend Tests" />
-  <img src="https://img.shields.io/badge/Frontend%20Tests-468%20passing-brightgreen" alt="Frontend Tests" />
+  <img src="https://img.shields.io/badge/Frontend%20Tests-484%20passing-brightgreen" alt="Frontend Tests" />
   <img src="https://img.shields.io/badge/Python-3.11+-blue" alt="Python" />
   <img src="https://img.shields.io/badge/Flutter-3.x-02569B" alt="Flutter" />
   <img src="https://img.shields.io/badge/Django-5.x-092E20" alt="Django" />
@@ -43,7 +43,7 @@ A mobile-first hotel management application designed for small family-run hotels
 | **Languages** | Vietnamese (primary), English (optional) |
 | **Accessibility** | Large touch targets, adjustable text size for older users |
 
-### Current Status (MVP1 Complete - February 2026)
+### Current Status (February 2026)
 
 | Phase | Status | Tests |
 |-------|--------|-------|
@@ -51,6 +51,7 @@ A mobile-first hotel management application designed for small family-run hotels
 | **Phase 2: Financial Tracking** | ✅ Complete | Payments, Deposits, Multi-currency, Receipts |
 | **Phase 3: Operations** | ✅ Complete | Housekeeping, Maintenance, Minibar, Inspections |
 | **Phase 4: Reports** | ✅ Complete | Occupancy, Revenue, KPI, Demographics |
+| **Phase 5: Notifications & Messaging** | ✅ Complete | Push Notifications, Guest Messaging, Rate Plans |
 
 ---
 
@@ -92,6 +93,17 @@ A mobile-first hotel management application designed for small family-run hotels
 - **Guest Demographics**: Nationality breakdown
 - **Comparative Reports**: Period-over-period analysis
 - **Export**: Download to Excel/CSV
+
+### Phase 5: Notifications & Messaging ✅
+
+- **Push Notifications**: Firebase-powered alerts for check-ins, check-outs, tasks
+- **Notification Preferences**: Per-user notification settings
+- **Guest Messaging**: Send messages to guests with templates
+- **Message Templates**: Pre-defined templates for common communications
+- **Rate Plan Management**: Flexible pricing with date-specific overrides
+- **Biometric Authentication**: Fingerprint/Face ID login support
+- **Offline Support**: Queue operations for sync when connectivity returns
+- **App Settings**: Theme, locale, text size preferences
 
 ---
 
@@ -143,6 +155,9 @@ lib/
 │   ├── config/          # App configuration, constants, endpoints
 │   ├── network/         # Dio client, interceptors, error handling
 │   ├── theme/           # AppColors, AppSpacing, AppTheme
+│   ├── storage/         # Hive local persistence
+│   ├── services/        # Biometric, connectivity, sync manager
+│   ├── errors/          # Error handling
 │   └── utils/           # Helpers, formatters, validators
 │
 ├── models/              # Data Layer - Immutable Freezed models
@@ -150,12 +165,12 @@ lib/
 │   ├── booking.dart     # Booking, BookingCreate, BookingUpdate
 │   ├── guest.dart       # Guest, GuestCreate, GuestHistory
 │   ├── room.dart        # Room, RoomType, RoomStatus
-│   └── ...              # 15 model files total
+│   └── ...              # 17 model files total
 │
 ├── repositories/        # Data Access Layer - API communication
 │   ├── auth_repository.dart
 │   ├── booking_repository.dart
-│   └── ...              # 14 repository files
+│   └── ...              # 18 repository files
 │
 ├── providers/           # State Management Layer - Riverpod
 │   ├── auth_provider.dart      # AuthNotifier + auth state
@@ -168,7 +183,7 @@ lib/
 │   ├── bookings/        # List, detail, form, calendar
 │   ├── rooms/           # Room list, detail, status dialog
 │   ├── guests/          # Guest list, detail, form, history
-│   └── ...              # 16 screen folders
+│   └── ...              # 19 screen folders
 │
 ├── widgets/             # Reusable UI Components
 │   ├── common/          # AppButton, AppCard, LoadingIndicator
@@ -178,6 +193,9 @@ lib/
 ├── router/              # Navigation
 │   └── app_router.dart  # GoRouter with all routes
 │
+├── l10n/                # Internationalization
+│   └── app_localizations.dart  # Vietnamese-first localizations
+│
 └── main.dart            # App entry point with ProviderScope
 ```
 
@@ -185,7 +203,7 @@ lib/
 
 ```
 hotel_api/
-├── models.py            # 15+ Django models with relationships
+├── models.py            # 20+ Django models with relationships
 │   ├── RoomType, Room
 │   ├── Guest, Booking
 │   ├── FinancialEntry, FinancialCategory, Payment, FolioItem
@@ -193,24 +211,36 @@ hotel_api/
 │   ├── MinibarItem, MinibarSale
 │   ├── NightAudit, ExchangeRate
 │   ├── LostAndFound, GroupBooking
-│   └── RoomInspection, InspectionTemplate
+│   ├── RoomInspection, InspectionTemplate
+│   ├── RatePlan, DateRateOverride
+│   ├── Notification, DeviceToken
+│   └── GuestMessage, MessageTemplate
 │
 ├── serializers.py       # DRF serializers for each model
 ├── views.py             # ViewSets with custom actions
 ├── urls.py              # Router registration + custom paths
 ├── permissions.py       # IsOwner, IsManager, IsStaff
+├── services.py          # Business logic layer
+├── messaging_service.py # Guest messaging service
 │
 ├── tests/               # Comprehensive test suite
 │   ├── test_auth.py
 │   ├── test_bookings.py
 │   ├── test_guests.py
-│   └── ...              # 14 test files
+│   └── ...              # 18 test files
 │
 ├── fixtures/            # Seed data JSON files
 └── management/commands/ # Custom Django commands
+    ├── create_admin_users.py
     ├── seed_room_types.py
-    ├── seed_categories.py
-    └── create_admin_users.py
+    ├── seed_rooms.py
+    ├── seed_financial_categories.py
+    ├── seed_bookings.py
+    ├── seed_guests.py
+    ├── seed_nationalities.py
+    ├── seed_message_templates.py
+    ├── send_checkin_reminders.py
+    └── send_checkout_reminders.py
 ```
 
 ---
@@ -360,6 +390,8 @@ class BookingViewSet(viewsets.ModelViewSet):
 | **Secure Storage** | flutter_secure_storage | Token storage |
 | **Charts** | fl_chart | Financial visualizations |
 | **Calendar** | table_calendar | Booking calendar view |
+| **Biometric** | local_auth | Fingerprint/Face ID login |
+| **Offline** | hive + connectivity_plus | Offline queue & sync |
 | **Internationalization** | flutter_localizations | Vietnamese/English |
 
 ### Backend (Django)
@@ -372,6 +404,8 @@ class BookingViewSet(viewsets.ModelViewSet):
 | **PDF Generation** | ReportLab | Receipt/report PDFs |
 | **API Documentation** | drf-spectacular | OpenAPI/Swagger |
 | **Testing** | pytest-django | Test framework |
+| **Push Notifications** | firebase-admin | FCM push notifications |
+| **Excel Export** | openpyxl | Report export to Excel |
 | **Code Quality** | black, isort, flake8 | Linting/formatting |
 
 ---
@@ -383,43 +417,51 @@ hoang-lam-heritage-management/
 │
 ├── hoang_lam_app/              # 📱 Flutter Mobile Application
 │   ├── lib/
-│   │   ├── core/               # Configuration, network, theme
-│   │   ├── models/             # 15 Freezed model files
-│   │   ├── repositories/       # 14 repository files
-│   │   ├── providers/          # Riverpod state management
-│   │   ├── screens/            # 16 screen folders
+│   │   ├── core/               # Configuration, network, theme, services
+│   │   ├── models/             # 17 Freezed model files
+│   │   ├── repositories/       # 18 repository files
+│   │   ├── providers/          # 21 Riverpod provider files
+│   │   ├── screens/            # 19 screen folders
 │   │   ├── widgets/            # Reusable UI components
 │   │   ├── router/             # GoRouter navigation
+│   │   ├── l10n/               # Internationalization (Vietnamese/English)
 │   │   └── main.dart
-│   ├── test/                   # 468 tests
+│   ├── test/                   # 484 tests
 │   ├── android/                # Android config
 │   ├── ios/                    # iOS config
 │   └── pubspec.yaml
 │
 ├── hoang_lam_backend/          # 🐍 Django REST API
 │   ├── backend/
-│   │   ├── settings/           # base, development, production
+│   │   ├── settings/           # base, development, staging, production
 │   │   ├── urls.py
 │   │   └── wsgi.py
 │   ├── hotel_api/
-│   │   ├── models.py           # 15+ database models
+│   │   ├── models.py           # 20+ database models
 │   │   ├── serializers.py      # DRF serializers
 │   │   ├── views.py            # ViewSets + API views
 │   │   ├── urls.py             # URL routing
 │   │   ├── permissions.py
-│   │   ├── tests/              # 38 tests
-│   │   └── fixtures/
+│   │   ├── services.py         # Business logic
+│   │   ├── messaging_service.py # Guest messaging
+│   │   ├── tests/              # 38 tests (18 test files)
+│   │   ├── fixtures/
+│   │   └── management/commands/ # 10 seed/utility commands
 │   ├── manage.py
 │   └── requirements.txt
 │
-├── docs/                       # 📚 Documentation
-│   ├── HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md
-│   ├── TASKS.md
-│   ├── USER_MANUAL.md
-│   └── API_REFERENCE.md
+├── docs/                       # 📚 Documentation (9 files)
 │
-├── docker-compose.yml          # Local dev stack
-├── Makefile                    # Common commands
+├── .github/workflows/          # 🔄 CI/CD
+│   ├── backend-ci.yml          # Django lint + test + check
+│   ├── flutter-ci.yml          # Analyze + test + build (Android/iOS)
+│   └── security.yml            # Security scanning
+│
+├── docker-compose.yml          # Local dev stack (Django + PostgreSQL + Redis)
+├── Makefile                    # Common commands (backend, flutter, docker)
+├── SECURITY.md                 # Security policies
+├── codecov.yml                 # Code coverage config
+├── .pre-commit-config.yaml     # Pre-commit hooks
 └── README.md
 ```
 
@@ -454,7 +496,10 @@ python manage.py migrate
 
 # Seed initial data
 python manage.py seed_room_types
-python manage.py seed_categories
+python manage.py seed_rooms
+python manage.py seed_financial_categories
+python manage.py seed_nationalities
+python manage.py seed_message_templates
 python manage.py create_admin_users
 
 # Run server
@@ -521,7 +566,22 @@ Reports:
   GET /api/v1/reports/occupancy/
   GET /api/v1/reports/revenue/
   GET /api/v1/reports/kpi/
+  GET /api/v1/reports/expenses/
+  GET /api/v1/reports/channels/
+  GET /api/v1/reports/demographics/
+  GET /api/v1/reports/comparative/
   GET /api/v1/reports/export/
+
+Notifications & Messaging:
+  GET  /api/v1/notifications/              # List notifications
+  POST /api/v1/devices/token/              # Register device token
+  GET  /api/v1/notifications/preferences/  # Notification settings
+  GET  /api/v1/message-templates/          # Message templates
+  POST /api/v1/guest-messages/             # Send guest message
+
+Rate Plans:
+  GET  /api/v1/rate-plans/                 # List pricing plans
+  POST /api/v1/date-rate-overrides/        # Date-specific rates
 ```
 
 See [API_REFERENCE.md](docs/API_REFERENCE.md) for complete documentation.
@@ -539,7 +599,7 @@ DJANGO_SETTINGS_MODULE=backend.settings.development \
   python manage.py test hotel_api
 ```
 
-### Frontend (468 tests)
+### Frontend (484 tests)
 
 ```bash
 cd hoang_lam_app
@@ -564,9 +624,14 @@ flutter test
 | Document | Description |
 |----------|-------------|
 | [Design Plan](docs/HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md) | Full project specification |
-| [Tasks](docs/TASKS.md) | Development task breakdown |
-| [User Manual](docs/USER_MANUAL.md) | End-user guide |
 | [API Reference](docs/API_REFERENCE.md) | Complete API docs |
+| [User Manual](docs/USER_MANUAL.md) | End-user guide |
+| [Tasks](docs/TASKS.md) | Development task breakdown |
+| [Design Gaps Analysis](docs/DESIGN_GAPS_ANALYSIS.md) | Implementation gaps analysis |
+| [i18n Implementation](docs/I18N_IMPLEMENTATION.md) | Localization details |
+| [Pricing Management](docs/PRICING_MANAGEMENT.md) | Rate plan system |
+| [Router Race Condition Fix](docs/ROUTER_RACE_CONDITION_FIX.md) | Navigation issues & solutions |
+| [UI Issues Report](docs/UI_ISSUES_REPORT.md) | UI problem tracking |
 
 ---
 
