@@ -16,6 +16,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from rest_framework.throttling import ScopedRateThrottle
+
 from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, FolioItem, GroupBooking, Guest, GuestMessage, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MessageTemplate, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
@@ -152,6 +154,8 @@ class LoginView(APIView):
 
     permission_classes = []
     authentication_classes = []
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "login"
 
     def post(self, request):
         """Login with username and password."""
@@ -283,6 +287,8 @@ class PasswordChangeView(APIView):
     """Password change endpoint."""
 
     permission_classes = [IsAuthenticated]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "password_change"
 
     def post(self, request):
         """Change user's password."""
@@ -2693,6 +2699,8 @@ class PaymentViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["post"], url_path="record-deposit")
     def record_deposit(self, request):
         """Record a deposit payment for a booking."""
+        from django.db import transaction
+
         from .models import Payment
         from .serializers import DepositRecordSerializer, PaymentSerializer
 
@@ -2701,29 +2709,30 @@ class PaymentViewSet(viewsets.ModelViewSet):
 
         booking = Booking.objects.get(id=serializer.validated_data["booking_id"])
 
-        payment = Payment.objects.create(
-            booking=booking,
-            payment_type=Payment.PaymentType.DEPOSIT,
-            amount=serializer.validated_data["amount"],
-            payment_method=serializer.validated_data["payment_method"],
-            transaction_id=serializer.validated_data.get("transaction_id", ""),
-            notes=serializer.validated_data.get("notes", ""),
-            status=Payment.Status.COMPLETED,
-            created_by=request.user,
-        )
+        with transaction.atomic():
+            payment = Payment.objects.create(
+                booking=booking,
+                payment_type=Payment.PaymentType.DEPOSIT,
+                amount=serializer.validated_data["amount"],
+                payment_method=serializer.validated_data["payment_method"],
+                transaction_id=serializer.validated_data.get("transaction_id", ""),
+                notes=serializer.validated_data.get("notes", ""),
+                status=Payment.Status.COMPLETED,
+                created_by=request.user,
+            )
 
-        # Update booking deposit amount
-        from django.db.models import Sum
+            # Update booking deposit amount
+            from django.db.models import Sum
 
-        total_deposits = Payment.objects.filter(
-            booking=booking,
-            payment_type=Payment.PaymentType.DEPOSIT,
-            status=Payment.Status.COMPLETED,
-        ).aggregate(total=Sum("amount"))["total"] or 0
+            total_deposits = Payment.objects.filter(
+                booking=booking,
+                payment_type=Payment.PaymentType.DEPOSIT,
+                status=Payment.Status.COMPLETED,
+            ).aggregate(total=Sum("amount"))["total"] or 0
 
-        booking.deposit_amount = total_deposits
-        booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")
-        booking.save(update_fields=["deposit_amount", "deposit_paid"])
+            booking.deposit_amount = total_deposits
+            booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")
+            booking.save(update_fields=["deposit_amount", "deposit_paid"])
 
         return Response(PaymentSerializer(payment).data, status=status.HTTP_201_CREATED)
 
@@ -5804,6 +5813,7 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="check-in")
     def check_in(self, request, pk=None):
         """Check in the group."""
+        from django.db import transaction
         from django.utils import timezone
 
         group = self.get_object()
@@ -5814,9 +5824,13 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        group.status = GroupBooking.Status.CHECKED_IN
-        group.actual_check_in = timezone.now()
-        group.save()
+        with transaction.atomic():
+            group.status = GroupBooking.Status.CHECKED_IN
+            group.actual_check_in = timezone.now()
+            group.save()
+
+            # Update all assigned rooms to OCCUPIED
+            group.rooms.update(status=Room.Status.OCCUPIED)
 
         return Response(GroupBookingSerializer(group).data)
 
@@ -5830,6 +5844,7 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"], url_path="check-out")
     def check_out(self, request, pk=None):
         """Check out the group."""
+        from django.db import transaction
         from django.utils import timezone
 
         group = self.get_object()
@@ -5840,12 +5855,13 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        group.status = GroupBooking.Status.CHECKED_OUT
-        group.actual_check_out = timezone.now()
-        group.save()
+        with transaction.atomic():
+            group.status = GroupBooking.Status.CHECKED_OUT
+            group.actual_check_out = timezone.now()
+            group.save()
 
-        # Free up all assigned rooms
-        group.rooms.update(status=Room.Status.CLEANING)
+            # Free up all assigned rooms
+            group.rooms.update(status=Room.Status.CLEANING)
 
         return Response(GroupBookingSerializer(group).data)
 

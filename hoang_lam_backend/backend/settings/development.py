@@ -75,5 +75,13 @@ if "debug_toolbar" in INSTALLED_APPS:
 # Email backend for development (console)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+# Relaxed rate limiting for development/testing
+REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"] = {
+    "anon": "1000/minute",
+    "user": "1000/minute",
+    "login": "100/minute",
+    "password_change": "100/minute",
+}
+
 # FCM disabled in development
 FCM_ENABLED = False

@@ -18,8 +18,23 @@ Models:
 from decimal import Decimal
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+
+
+def validate_image_file(value):
+    """Validate uploaded image files: max 5MB, image types only."""
+    max_size = 5 * 1024 * 1024  # 5 MB
+    allowed_types = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
+
+    if value.size > max_size:
+        raise ValidationError(f"File quá lớn. Kích thước tối đa: 5MB (hiện tại: {value.size / 1024 / 1024:.1f}MB).")
+
+    import os
+    ext = os.path.splitext(value.name)[1].lower()
+    if ext not in allowed_types:
+        raise ValidationError(f"Loại file không hợp lệ ({ext}). Chỉ chấp nhận: {', '.join(allowed_types)}.")
 
 
 class RoomType(models.Model):
@@ -133,7 +148,8 @@ class Guest(models.Model):
     id_issue_date = models.DateField(null=True, blank=True, verbose_name="Ngày cấp")
     id_issue_place = models.CharField(max_length=100, blank=True, verbose_name="Nơi cấp")
     id_image = models.ImageField(
-        upload_to="guest_ids/", null=True, blank=True, verbose_name="Ảnh CCCD/Passport"
+        upload_to="guest_ids/", null=True, blank=True, verbose_name="Ảnh CCCD/Passport",
+        validators=[validate_image_file],
     )
 
     # Demographics
@@ -588,7 +604,8 @@ class FinancialEntry(models.Model):
     )
     receipt_number = models.CharField(max_length=50, blank=True, verbose_name="Số hóa đơn")
     attachment = models.ImageField(
-        upload_to="receipts/", null=True, blank=True, verbose_name="Ảnh hóa đơn"
+        upload_to="receipts/", null=True, blank=True, verbose_name="Ảnh hóa đơn",
+        validators=[validate_image_file],
     )
 
     # Audit
@@ -1468,6 +1485,7 @@ class LostAndFound(models.Model):
         null=True,
         blank=True,
         verbose_name="Ảnh vật phẩm",
+        validators=[validate_image_file],
     )
 
     # Notes

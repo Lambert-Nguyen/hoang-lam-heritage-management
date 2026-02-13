@@ -22,7 +22,11 @@
       "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development pytest:*)",
       "Bash(dart run:*)",
       "Bash(python3:*)",
-      "Bash(pod install)"
+      "Bash(pod install)",
+      "Bash(wc:*)",
+      "Bash(ls:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development python manage.py test:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development python -m pytest:*)"
     ]
   }
 }

@@ -1117,20 +1117,24 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        validated_data["created_by"] = self.context["request"].user
-        payment = super().create(validated_data)
+        from django.db import transaction
 
-        # Update booking deposit status if deposit payment
-        if payment.booking and payment.payment_type == Payment.PaymentType.DEPOSIT:
-            booking = payment.booking
-            total_deposits = Payment.objects.filter(
-                booking=booking,
-                payment_type=Payment.PaymentType.DEPOSIT,
-                status=Payment.Status.COMPLETED,
-            ).aggregate(total=models.Sum("amount"))["total"] or 0
-            booking.deposit_amount = total_deposits
-            booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")  # 30% threshold
-            booking.save(update_fields=["deposit_amount", "deposit_paid"])
+        validated_data["created_by"] = self.context["request"].user
+
+        with transaction.atomic():
+            payment = super().create(validated_data)
+
+            # Update booking deposit status if deposit payment
+            if payment.booking and payment.payment_type == Payment.PaymentType.DEPOSIT:
+                booking = payment.booking
+                total_deposits = Payment.objects.filter(
+                    booking=booking,
+                    payment_type=Payment.PaymentType.DEPOSIT,
+                    status=Payment.Status.COMPLETED,
+                ).aggregate(total=models.Sum("amount"))["total"] or 0
+                booking.deposit_amount = total_deposits
+                booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")  # 30% threshold
+                booking.save(update_fields=["deposit_amount", "deposit_paid"])
 
         return payment
 
