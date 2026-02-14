@@ -210,3 +210,105 @@ class PushNotificationService:
             notifications.append(notification)
 
         return notifications
+
+
+class RatePricingService:
+    """
+    Service for calculating booking rates using RatePlan and DateRateOverride models.
+
+    Priority order:
+    1. DateRateOverride for specific dates (highest priority)
+    2. RatePlan base_rate (if a matching active plan exists)
+    3. RoomType base_rate (fallback)
+    """
+
+    @staticmethod
+    def calculate_nightly_rates(room_type, check_in_date, check_out_date, rate_plan=None):
+        """
+        Calculate the nightly rate for each night of a stay.
+
+        Args:
+            room_type: RoomType instance
+            check_in_date: date - first night
+            check_out_date: date - departure date (not charged)
+            rate_plan: Optional RatePlan instance to use
+
+        Returns:
+            dict with:
+                - nightly_breakdown: list of {date, rate, source} for each night
+                - nightly_rate: average nightly rate
+                - total_amount: sum of all nightly rates
+                - nights: number of nights
+        """
+        from datetime import timedelta
+        from decimal import Decimal
+
+        from .models import DateRateOverride, RatePlan as RatePlanModel
+
+        nights = (check_out_date - check_in_date).days
+        if nights <= 0:
+            return {
+                "nightly_breakdown": [],
+                "nightly_rate": Decimal("0"),
+                "total_amount": Decimal("0"),
+                "nights": 0,
+            }
+
+        # Fetch all date overrides for this room type in the date range
+        overrides = {
+            override.date: override.rate
+            for override in DateRateOverride.objects.filter(
+                room_type=room_type,
+                date__gte=check_in_date,
+                date__lt=check_out_date,
+            )
+        }
+
+        # Determine the base rate to use
+        if rate_plan and rate_plan.is_active:
+            base_rate = rate_plan.base_rate
+        else:
+            # Try to find an active rate plan for this room type
+            active_plan = RatePlanModel.objects.filter(
+                room_type=room_type,
+                is_active=True,
+            ).order_by("-created_at").first()
+
+            if active_plan:
+                today = timezone.now().date()
+                valid = True
+                if active_plan.valid_from and today < active_plan.valid_from:
+                    valid = False
+                if active_plan.valid_to and today > active_plan.valid_to:
+                    valid = False
+                base_rate = active_plan.base_rate if valid else room_type.base_rate
+            else:
+                base_rate = room_type.base_rate
+
+        # Calculate each night's rate
+        breakdown = []
+        total = Decimal("0")
+        current_date = check_in_date
+        for _ in range(nights):
+            if current_date in overrides:
+                rate = overrides[current_date]
+                source = "date_override"
+            else:
+                rate = base_rate
+                source = "rate_plan" if rate_plan else "room_type"
+            breakdown.append({
+                "date": current_date.isoformat(),
+                "rate": rate,
+                "source": source,
+            })
+            total += rate
+            current_date += timedelta(days=1)
+
+        avg_nightly = total / nights if nights > 0 else Decimal("0")
+
+        return {
+            "nightly_breakdown": breakdown,
+            "nightly_rate": avg_nightly,
+            "total_amount": total,
+            "nights": nights,
+        }

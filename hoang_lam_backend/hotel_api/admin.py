@@ -50,8 +50,8 @@ class BookingAdmin(admin.ModelAdmin):
     raw_id_fields = ["room", "guest", "created_by"]
 
     def get_guest_name(self, obj):
-        """Display guest full name from Guest FK or deprecated field."""
-        return obj.guest.full_name if obj.guest else obj.guest_name
+        """Display guest full name from Guest FK."""
+        return obj.guest.full_name if obj.guest else "N/A"
     get_guest_name.short_description = "Guest"
     get_guest_name.admin_order_field = "guest__full_name"
 

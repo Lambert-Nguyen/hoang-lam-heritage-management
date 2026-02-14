@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
+import '../../router/app_router.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/rooms/room_status_dialog.dart';
+import '../bookings/booking_form_screen.dart';
 import 'room_form_screen.dart';
 
 /// Screen showing detailed information about a single room
@@ -300,6 +303,8 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       setState(() {
         _room = _room.copyWith(status: newStatus);
       });
+      ref.invalidate(roomsProvider);
+      ref.invalidate(roomByIdProvider(_room.id));
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -401,7 +406,8 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             ),
             TextButton(
               onPressed: () {
-                // TODO: Navigate to full history
+                Navigator.of(context).pop();
+                context.go(AppRoutes.bookings);
               },
               child: Text(context.l10n.viewAll),
             ),
@@ -444,7 +450,11 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                 icon: Icons.book_online,
                 onPressed: _room.status == RoomStatus.available
                     ? () {
-                        // TODO: Navigate to create booking
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const BookingFormScreen(),
+                          ),
+                        );
                       }
                     : null,
               ),

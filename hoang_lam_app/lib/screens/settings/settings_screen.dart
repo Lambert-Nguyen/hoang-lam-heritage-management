@@ -234,7 +234,9 @@ class SettingsScreen extends ConsumerWidget {
             title: l10n.syncData,
             subtitle: l10n.lastUpdateJustNow,
             onTap: () {
-              // TODO: Manual sync
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.syncData), duration: const Duration(seconds: 2)),
+              );
             },
           ),
           _buildSettingsTile(
@@ -242,7 +244,9 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.backup,
             title: l10n.backup,
             onTap: () {
-              // TODO: Show backup options
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Tính năng sao lưu đang phát triển'), duration: Duration(seconds: 2)),
+              );
             },
           ),
 
@@ -255,7 +259,7 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.help_outline,
             title: l10n.userGuide,
             onTap: () {
-              // TODO: Show help
+              _showHelpDialog(context, l10n);
             },
           ),
           _buildSettingsTile(
@@ -360,7 +364,7 @@ class SettingsScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.edit_outlined),
             onPressed: () {
-              // TODO: Edit profile
+              context.push(AppRoutes.passwordChange);
             },
           ),
         ],
@@ -741,6 +745,43 @@ class SettingsScreen extends ConsumerWidget {
               backgroundColor: AppColors.error,
             ),
             child: Text(l10n.logout),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showHelpDialog(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.userGuide),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('📋 Quản lý phòng', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Xem trạng thái phòng, thay đổi trạng thái, tạo đặt phòng mới.'),
+              const SizedBox(height: 12),
+              Text('📅 Đặt phòng', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Quản lý check-in, check-out, và lịch đặt phòng.'),
+              const SizedBox(height: 12),
+              Text('🧹 Housekeeping', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Phân công dọn phòng, theo dõi bảo trì.'),
+              const SizedBox(height: 12),
+              Text('💰 Tài chính', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Báo cáo thu chi, quản lý folio khách.'),
+              const SizedBox(height: 12),
+              Text('🌙 Night Audit', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Kiểm toán cuối ngày, đối soát doanh thu.'),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.close),
           ),
         ],
       ),

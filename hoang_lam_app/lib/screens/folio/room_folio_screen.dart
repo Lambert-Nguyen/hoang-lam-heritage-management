@@ -336,6 +336,6 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
           ),
         ],
       ),
-    );
+    ).then((_) => reasonController.dispose());
   }
 }

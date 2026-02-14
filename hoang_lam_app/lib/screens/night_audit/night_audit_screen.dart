@@ -49,10 +49,26 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
         onRefresh: _refreshData,
         child: todayAuditAsync.when(
           data: (audit) => _buildAuditContent(context, audit),
-          loading: () => const LoadingIndicator(),
-          error: (error, stack) => ErrorDisplay(
-            message: '${l10n.auditLoadError}: $error',
-            onRetry: _refreshData,
+          loading: () => LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: const LoadingIndicator(),
+              ),
+            ),
+          ),
+          error: (error, stack) => LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: constraints.maxHeight,
+                child: ErrorDisplay(
+                  message: '${l10n.auditLoadError}: $error',
+                  onRetry: _refreshData,
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -101,6 +117,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
 
   Widget _buildAuditContent(BuildContext context, NightAudit audit) {
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: AppSpacing.paddingAll,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -657,7 +674,7 @@ class _AuditHistorySheet extends ConsumerWidget {
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       onTap: () {
-        // TODO: Navigate to audit detail
+        _showAuditDetailDialog(context, audit);
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -725,6 +742,52 @@ class _AuditHistorySheet extends ConsumerWidget {
               fontSize: 13,
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  void _showAuditDetailDialog(BuildContext context, NightAuditListItem audit) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Audit ${DateFormat('dd/MM/yyyy').format(audit.auditDate)}'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDetailRow('Trạng thái', audit.status.displayName),
+              _buildDetailRow('Phòng', '${audit.roomsOccupied}/${audit.totalRooms}'),
+              _buildDetailRow('Tỷ lệ lấp đầy', '${audit.occupancyRate.toStringAsFixed(1)}%'),
+              _buildDetailRow('Tổng thu', CurrencyFormatter.format(audit.totalIncome)),
+              _buildDetailRow('Tổng chi', CurrencyFormatter.format(audit.totalExpense)),
+              _buildDetailRow('Lợi nhuận ròng', CurrencyFormatter.format(audit.netRevenue)),
+              if (audit.performedByName != null)
+                _buildDetailRow('Người thực hiện', audit.performedByName!),
+              if (audit.performedAt != null)
+                _buildDetailRow('Thời gian', DateFormat('dd/MM/yyyy HH:mm').format(audit.performedAt!)),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Đóng'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: AppColors.textSecondary)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),
     );

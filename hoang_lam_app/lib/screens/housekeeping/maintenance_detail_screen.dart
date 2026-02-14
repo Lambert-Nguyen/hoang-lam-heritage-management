@@ -582,6 +582,8 @@ class _MaintenanceDetailScreenState
         setState(() {
           _request = result;
         });
+        ref.invalidate(maintenanceRequestsProvider);
+        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.taskAssigned)),
         );
@@ -606,6 +608,8 @@ class _MaintenanceDetailScreenState
         setState(() {
           _request = updatedRequest;
         });
+        ref.invalidate(maintenanceRequestsProvider);
+        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.maintenanceRequestCompleted)),
         );
@@ -630,6 +634,8 @@ class _MaintenanceDetailScreenState
         setState(() {
           _request = updatedRequest;
         });
+        ref.invalidate(maintenanceRequestsProvider);
+        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.requestOnHold)),
         );
@@ -665,6 +671,8 @@ class _MaintenanceDetailScreenState
         setState(() {
           _request = updatedRequest;
         });
+        ref.invalidate(maintenanceRequestsProvider);
+        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.requestContinued)),
         );
@@ -703,6 +711,8 @@ class _MaintenanceDetailScreenState
         setState(() {
           _request = updatedRequest;
         });
+        ref.invalidate(maintenanceRequestsProvider);
+        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.requestCancelled)),
         );

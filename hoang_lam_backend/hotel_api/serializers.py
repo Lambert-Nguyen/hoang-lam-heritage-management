@@ -554,8 +554,29 @@ class BookingSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        """Create booking with user tracking."""
+        """Create booking with user tracking and auto-pricing if not provided."""
         validated_data["created_by"] = self.context["request"].user
+
+        # Auto-calculate pricing from RatePlan/DateRateOverride if not explicitly provided
+        room = validated_data.get("room")
+        check_in = validated_data.get("check_in_date")
+        check_out = validated_data.get("check_out_date")
+
+        if room and check_in and check_out:
+            from .services import RatePricingService
+
+            pricing = RatePricingService.calculate_nightly_rates(
+                room_type=room.room_type,
+                check_in_date=check_in,
+                check_out_date=check_out,
+            )
+
+            # Only auto-fill if not explicitly provided by the client
+            if not validated_data.get("nightly_rate"):
+                validated_data["nightly_rate"] = pricing["nightly_rate"]
+            if not validated_data.get("total_amount"):
+                validated_data["total_amount"] = pricing["total_amount"]
+
         return super().create(validated_data)
 
 
@@ -1683,7 +1704,7 @@ class MinibarSaleSerializer(serializers.ModelSerializer):
 
     item_name = serializers.CharField(source="item.name", read_only=True)
     item_category = serializers.CharField(source="item.category", read_only=True)
-    booking_guest_name = serializers.CharField(source="booking.guest_name", read_only=True)
+    booking_guest_name = serializers.CharField(source="booking.guest.full_name", read_only=True)
     booking_room_number = serializers.CharField(source="booking.room.number", read_only=True)
     created_by_name = serializers.CharField(source="created_by.get_full_name", read_only=True)
 

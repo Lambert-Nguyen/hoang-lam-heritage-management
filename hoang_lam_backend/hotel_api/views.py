@@ -1443,6 +1443,17 @@ class BookingViewSet(viewsets.ModelViewSet):
             room.status = Room.Status.CLEANING
             room.save()
 
+            # Auto-create housekeeping task for checkout cleaning
+            HousekeepingTask.objects.create(
+                room=room,
+                task_type=HousekeepingTask.TaskType.CHECKOUT_CLEAN,
+                status=HousekeepingTask.Status.PENDING,
+                scheduled_date=timezone.now().date(),
+                booking=booking,
+                created_by=request.user,
+                notes=f"Auto-created: Checkout cleaning for room {room.number}",
+            )
+
             # Increment guest's total stays
             guest = booking.guest
             guest.total_stays += 1

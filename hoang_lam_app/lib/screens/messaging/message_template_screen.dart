@@ -257,7 +257,10 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
           ),
         ],
       ),
-    );
+    ).then((_) {
+      subjectController.dispose();
+      bodyController.dispose();
+    });
   }
 
   Future<void> _sendMessage({

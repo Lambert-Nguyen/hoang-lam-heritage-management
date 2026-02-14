@@ -451,6 +451,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         setState(() {
           _task = updatedTask;
         });
+        ref.invalidate(housekeepingTasksProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.taskAssigned)),
         );
@@ -473,6 +474,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         setState(() {
           _task = updatedTask;
         });
+        ref.invalidate(housekeepingTasksProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.taskCompleted)),
         );
@@ -507,6 +509,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         setState(() {
           _task = updatedTask;
         });
+        ref.invalidate(housekeepingTasksProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.taskVerified)),
         );
@@ -541,6 +544,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
       final success = await notifier.deleteTask(_task.id);
       if (success && mounted) {
+        ref.invalidate(housekeepingTasksProvider);
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.taskDeleted)),

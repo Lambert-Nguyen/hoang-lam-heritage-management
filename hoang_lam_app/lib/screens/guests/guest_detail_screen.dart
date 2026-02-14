@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -477,11 +478,22 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
     );
   }
 
-  void _launchPhone(String phone) {
-    // TODO: Implement phone launch using url_launcher
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${context.l10n.call}: $phone')),
-    );
+  Future<void> _launchPhone(String phone) async {
+    final uri = Uri(scheme: 'tel', path: phone);
+    try {
+      final launched = await launchUrl(uri);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.l10n.call}: $phone')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.l10n.call}: $phone')),
+        );
+      }
+    }
   }
 
   Future<void> _navigateToEdit() async {
@@ -494,6 +506,8 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       setState(() {
         _guest = result;
       });
+      ref.invalidate(guestsProvider);
+      ref.invalidate(guestByIdProvider(_guest.id));
     }
   }
 
@@ -504,6 +518,8 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       setState(() {
         _guest = result;
       });
+      ref.invalidate(guestsProvider);
+      ref.invalidate(guestByIdProvider(_guest.id));
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -589,6 +605,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                   .read(guestStateProvider.notifier)
                   .deleteGuest(_guest.id);
               if (success && mounted) {
+                ref.invalidate(guestsProvider);
                 Navigator.of(this.context).pop();
                 ScaffoldMessenger.of(this.context).showSnackBar(
                   SnackBar(

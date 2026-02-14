@@ -326,19 +326,14 @@ class Booking(models.Model):
     # Additional guest details for this booking
     guest_count = models.PositiveIntegerField(default=1, verbose_name="Số khách")
 
-    # DEPRECATED FIELDS - kept for backward compatibility during migration
-    # TODO: Remove these fields after migrating all existing bookings to use Guest FK
-    # These will be removed in a future migration (target: Phase 2.0)
-    guest_name = models.CharField(max_length=100, blank=True, verbose_name="Tên khách (deprecated)")
-    guest_phone = models.CharField(
-        max_length=20, blank=True, verbose_name="Số điện thoại (deprecated)"
-    )
-    guest_email = models.EmailField(blank=True, verbose_name="Email (deprecated)")
-    guest_id_number = models.CharField(
-        max_length=20, blank=True, verbose_name="Số CCCD/Passport (deprecated)"
-    )
-    guest_nationality = models.CharField(
-        max_length=50, blank=True, default="Vietnam", verbose_name="Quốc tịch (deprecated)"
+    # Rate plan reference (optional - for pricing audit trail)
+    rate_plan = models.ForeignKey(
+        "RatePlan",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="bookings",
+        verbose_name="Gói giá",
     )
 
     # Status and source

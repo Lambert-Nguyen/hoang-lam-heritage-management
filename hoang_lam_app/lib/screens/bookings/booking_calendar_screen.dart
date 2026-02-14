@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
+import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_card.dart';
 import 'booking_detail_screen.dart';
 import 'booking_form_screen.dart';
@@ -55,7 +57,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              // TODO: Navigate to booking search
+              context.go(AppRoutes.bookings);
             },
           ),
           IconButton(
@@ -467,19 +469,39 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
   }
 
   void _showFilterDialog() {
-    // TODO: Implement advanced filter dialog
+    final l10n = context.l10n;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.filter),
-        content: Text(context.l10n.loading),
+        title: Text(l10n.filter),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildFilterOption(ctx, l10n.all, 'all'),
+            _buildFilterOption(ctx, 'Check-in', 'check_in'),
+            _buildFilterOption(ctx, 'Check-out', 'check_out'),
+            _buildFilterOption(ctx, l10n.staying, 'staying'),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(context.l10n.close),
+            child: Text(l10n.close),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFilterOption(BuildContext ctx, String label, String value) {
+    return RadioListTile<String>(
+      title: Text(label),
+      value: value,
+      groupValue: _filterType,
+      onChanged: (v) {
+        setState(() => _filterType = v!);
+        Navigator.of(ctx).pop();
+      },
     );
   }
 }

@@ -236,7 +236,10 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
           ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Lưu')),
         ],
       ),
-    );
+    ).then((result) {
+      controller.dispose();
+      return result;
+    });
   }
 
   Future<bool?> _showConfirmDialog(String title, String content) {

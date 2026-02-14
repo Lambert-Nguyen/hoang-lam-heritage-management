@@ -256,6 +256,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
         ],
       ),
     );
+    controller.dispose();
     if (result == null || result.isEmpty) return;
     final roomIds = result.split(',').map((e) => int.tryParse(e.trim())).whereType<int>().toList();
     if (roomIds.isEmpty) {
@@ -294,7 +295,10 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
         TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
         ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), style: ElevatedButton.styleFrom(backgroundColor: Colors.red), child: const Text('Xác nhận')),
       ],
-    ));
+    )).then((result) {
+      controller.dispose();
+      return result;
+    });
   }
 
   String _formatDate(String d) {

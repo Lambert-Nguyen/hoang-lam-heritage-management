@@ -13,10 +13,10 @@ class HiveStorage {
     final appDir = await getApplicationDocumentsDirectory();
     await Hive.initFlutter(appDir.path);
 
-    // Register adapters here when models are created
-    // Hive.registerAdapter(BookingAdapter());
-    // Hive.registerAdapter(RoomAdapter());
-    // etc.
+    // Note: Models use Freezed (not Hive codegen), so no TypeAdapters needed.
+    // Boxes are opened as dynamic and store JSON maps directly.
+    // If offline-first support is added later, generate Hive adapters with
+    // @HiveType/@HiveField annotations and register them here.
 
     _initialized = true;
   }
