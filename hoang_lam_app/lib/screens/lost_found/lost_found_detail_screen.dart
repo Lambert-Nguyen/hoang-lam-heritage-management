@@ -39,11 +39,11 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
               itemBuilder: (context) => [
                 PopupMenuItem(value: 'edit', child: ListTile(leading: const Icon(Icons.edit), title: Text(l10n.edit), contentPadding: EdgeInsets.zero)),
                 if (item.status == LostFoundStatus.found)
-                  const PopupMenuItem(value: 'store', child: ListTile(leading: Icon(Icons.archive), title: Text('Lưu kho'), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'store', child: ListTile(leading: const Icon(Icons.archive), title: Text(context.l10n.storeInStorage), contentPadding: EdgeInsets.zero)),
                 if (item.status == LostFoundStatus.found || item.status == LostFoundStatus.stored)
-                  const PopupMenuItem(value: 'claim', child: ListTile(leading: Icon(Icons.check_circle), title: Text('Đã nhận'), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'claim', child: ListTile(leading: const Icon(Icons.check_circle), title: Text(context.l10n.itemClaimed), contentPadding: EdgeInsets.zero)),
                 if (item.status == LostFoundStatus.stored)
-                  const PopupMenuItem(value: 'dispose', child: ListTile(leading: Icon(Icons.delete_forever), title: Text('Xử lý'), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'dispose', child: ListTile(leading: const Icon(Icons.delete_forever), title: Text(context.l10n.disposeItem), contentPadding: EdgeInsets.zero)),
               ],
             ),
           ) ?? const SizedBox.shrink(),
@@ -186,7 +186,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
     try {
       final result = await ref.read(lostFoundNotifierProvider.notifier).storeItem(item.id, storageLocation: location);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã lưu vào kho')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.storedSuccess)));
         ref.invalidate(lostFoundItemByIdProvider(widget.itemId));
       }
     } finally {
@@ -201,7 +201,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
     try {
       final result = await ref.read(lostFoundNotifierProvider.notifier).claimItem(item.id);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã đánh dấu là đã nhận')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.claimedSuccess)));
         ref.invalidate(lostFoundItemByIdProvider(widget.itemId));
       }
     } finally {
@@ -216,7 +216,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
     try {
       final result = await ref.read(lostFoundNotifierProvider.notifier).disposeItem(item.id, reason: reason);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã xử lý đồ vật')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.disposedSuccess)));
         ref.invalidate(lostFoundItemByIdProvider(widget.itemId));
       }
     } finally {

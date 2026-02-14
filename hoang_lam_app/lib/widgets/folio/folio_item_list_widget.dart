@@ -31,14 +31,14 @@ class FolioItemListWidget extends StatelessWidget {
               Icon(
                 Icons.receipt_long_outlined,
                 size: 64,
-                color: Colors.grey[400],
+                color: AppColors.textSecondary,
               ),
               const SizedBox(height: 16),
               Text(
                 'Chưa có phí nào',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],
@@ -101,7 +101,7 @@ class FolioItemListWidget extends StatelessWidget {
                       '${typeItems.length} mục',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -143,7 +143,7 @@ class FolioItemListWidget extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: isVoided
-              ? Colors.grey[300]
+              ? AppColors.surfaceVariant
               : item.itemType.color.withValues(alpha: 0.2),
           child: Icon(
             item.itemType.icon,
@@ -192,7 +192,7 @@ class FolioItemListWidget extends StatelessWidget {
                   '${item.quantity} x ${currencyFormat.format(item.unitPrice)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const Spacer(),
@@ -200,7 +200,7 @@ class FolioItemListWidget extends StatelessWidget {
                   dateFormat.format(item.date),
                   style: TextStyle(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],
@@ -224,7 +224,7 @@ class FolioItemListWidget extends StatelessWidget {
                   'Bởi: ${item.createdByName}',
                   style: TextStyle(
                     fontSize: 11,
-                    color: Colors.grey[500],
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ),

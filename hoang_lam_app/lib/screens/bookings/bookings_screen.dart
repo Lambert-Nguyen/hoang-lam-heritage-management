@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../widgets/bookings/booking_card.dart';
@@ -277,20 +278,20 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
           Icon(
             Icons.event_busy,
             size: 64,
-            color: Colors.grey[400],
+            color: AppColors.textSecondary,
           ),
           const SizedBox(height: 16),
           Text(
             context.l10n.noBookings,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.grey[600],
+                  color: AppColors.textSecondary,
                 ),
           ),
           const SizedBox(height: 8),
           Text(
             context.l10n.noBookingsForFilter,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[500],
+                  color: AppColors.textSecondary,
                 ),
           ),
         ],

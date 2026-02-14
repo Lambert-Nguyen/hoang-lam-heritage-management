@@ -223,9 +223,9 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _minStayController,
-                    decoration: const InputDecoration(
-                      labelText: 'Số đêm tối thiểu',
-                      prefixIcon: Icon(Icons.nights_stay),
+                    decoration: InputDecoration(
+                      labelText: l10n.minNights,
+                      prefixIcon: const Icon(Icons.nights_stay),
                     ),
                     keyboardType: TextInputType.number,
                   ),
@@ -234,9 +234,9 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _maxStayController,
-                    decoration: const InputDecoration(
-                      labelText: 'Số đêm tối đa',
-                      hintText: 'Không giới hạn',
+                    decoration: InputDecoration(
+                      labelText: l10n.maxNights,
+                      hintText: l10n.noLimit,
                     ),
                     keyboardType: TextInputType.number,
                   ),
@@ -249,10 +249,10 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             // Advance Booking Days
             TextFormField(
               controller: _advanceBookingController,
-              decoration: const InputDecoration(
-                labelText: 'Số ngày đặt trước (tùy chọn)',
-                hintText: 'VD: 7 (đặt trước 7 ngày)',
-                prefixIcon: Icon(Icons.schedule),
+              decoration: InputDecoration(
+                labelText: l10n.advanceBookingOptional,
+                hintText: l10n.advanceBookingHint,
+                prefixIcon: const Icon(Icons.schedule),
               ),
               keyboardType: TextInputType.number,
             ),
@@ -260,7 +260,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             AppSpacing.gapVerticalLg,
 
             // Cancellation Policy Section
-            _buildSectionHeader('Chính sách hủy'),
+            _buildSectionHeader(l10n.cancellationPolicy),
 
             DropdownButtonFormField<CancellationPolicy>(
               value: _cancellationPolicy,
@@ -283,13 +283,13 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             AppSpacing.gapVerticalLg,
 
             // Valid Date Range Section
-            _buildSectionHeader('Thời gian hiệu lực'),
+            _buildSectionHeader(l10n.validityPeriod),
 
             Row(
               children: [
                 Expanded(
                   child: _DatePickerField(
-                    label: 'Từ ngày',
+                    label: l10n.fromDate,
                     value: _validFrom,
                     onChanged: (date) => setState(() => _validFrom = date),
                   ),
@@ -297,7 +297,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: _DatePickerField(
-                    label: 'Đến ngày',
+                    label: l10n.toDate,
                     value: _validTo,
                     onChanged: (date) => setState(() => _validTo = date),
                     firstDate: _validFrom,
@@ -309,19 +309,19 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             AppSpacing.gapVerticalLg,
 
             // Options Section
-            _buildSectionHeader('Tùy chọn'),
+            _buildSectionHeader(l10n.optionsSection),
 
             SwitchListTile(
-              title: const Text('Bao gồm bữa sáng'),
-              subtitle: const Text('Gói giá này bao gồm bữa sáng miễn phí'),
+              title: Text(l10n.includesBreakfast),
+              subtitle: Text(l10n.ratePlanIncludesFreeBreakfast),
               value: _includesBreakfast,
               onChanged: (value) => setState(() => _includesBreakfast = value),
               secondary: const Icon(Icons.free_breakfast),
             ),
 
             SwitchListTile(
-              title: const Text('Đang hoạt động'),
-              subtitle: const Text('Hiển thị và áp dụng gói giá này'),
+              title: Text(l10n.isActive),
+              subtitle: Text(l10n.showApplyRatePlan),
               value: _isActive,
               onChanged: (value) => setState(() => _isActive = value),
               secondary: const Icon(Icons.toggle_on),
@@ -332,10 +332,10 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             // Description
             TextFormField(
               controller: _descriptionController,
-              decoration: const InputDecoration(
-                labelText: 'Mô tả (tùy chọn)',
-                hintText: 'Ghi chú thêm về gói giá...',
-                prefixIcon: Icon(Icons.description),
+              decoration: InputDecoration(
+                labelText: l10n.descriptionOptional,
+                hintText: l10n.ratePlanNotes,
+                prefixIcon: const Icon(Icons.description),
               ),
               maxLines: 3,
             ),
@@ -402,6 +402,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
         });
 
         if (mounted) {
+          ref.invalidate(ratePlansProvider);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Đã cập nhật gói giá "${_nameController.text}"'),
@@ -430,6 +431,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
         await notifier.createRatePlan(request);
 
         if (mounted) {
+          ref.invalidate(ratePlansProvider);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Đã tạo gói giá "${_nameController.text}"'),
@@ -487,6 +489,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
       await notifier.deleteRatePlan(widget.ratePlanId!);
 
       if (mounted) {
+        ref.invalidate(ratePlansProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Đã xóa gói giá "${_nameController.text}"'),

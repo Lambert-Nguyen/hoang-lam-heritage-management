@@ -731,6 +731,11 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             );
       }
 
+      // Invalidate booking providers so lists/calendars refresh
+      ref.invalidate(bookingsProvider);
+      ref.invalidate(activeBookingsProvider);
+      ref.invalidate(calendarBookingsProvider);
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(

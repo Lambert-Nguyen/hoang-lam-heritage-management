@@ -437,3 +437,165 @@ class TestFinancialEntryViewSet:
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert not FinancialEntry.objects.filter(id=entry.id).exists()
+
+
+@pytest.mark.django_db
+class TestFinancialEntryErrorCases:
+    """Error case tests for financial entry management."""
+
+    def test_create_entry_missing_required_fields(self, api_client, staff_user):
+        """Test creating entry without required fields."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post("/api/v1/finance/entries/", {}, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_entry_negative_amount(self, api_client, staff_user, income_category):
+        """Test creating entry with negative amount."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post(
+            "/api/v1/finance/entries/",
+            {
+                "entry_type": "income",
+                "category": income_category.id,
+                "amount": "-50000",
+                "date": date.today().isoformat(),
+                "description": "Invalid negative",
+                "payment_method": "cash",
+            },
+            format="json",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_entry_zero_amount(self, api_client, staff_user, income_category):
+        """Test creating entry with zero amount."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post(
+            "/api/v1/finance/entries/",
+            {
+                "entry_type": "income",
+                "category": income_category.id,
+                "amount": "0",
+                "date": date.today().isoformat(),
+                "description": "Zero amount",
+                "payment_method": "cash",
+            },
+            format="json",
+        )
+        # Backend allows zero amounts (no MinValueValidator excluding zero)
+        assert response.status_code == status.HTTP_201_CREATED
+
+    def test_create_entry_nonexistent_category(self, api_client, staff_user):
+        """Test creating entry with non-existent category."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post(
+            "/api/v1/finance/entries/",
+            {
+                "entry_type": "income",
+                "category": 99999,
+                "amount": "100000",
+                "date": date.today().isoformat(),
+                "description": "Bad category",
+                "payment_method": "cash",
+            },
+            format="json",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_entry_invalid_entry_type(self, api_client, staff_user, income_category):
+        """Test creating entry with invalid entry type."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post(
+            "/api/v1/finance/entries/",
+            {
+                "entry_type": "invalid_type",
+                "category": income_category.id,
+                "amount": "100000",
+                "date": date.today().isoformat(),
+                "description": "Bad type",
+                "payment_method": "cash",
+            },
+            format="json",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_entry_invalid_payment_method(self, api_client, staff_user, income_category):
+        """Test creating entry with invalid payment method."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post(
+            "/api/v1/finance/entries/",
+            {
+                "entry_type": "income",
+                "category": income_category.id,
+                "amount": "100000",
+                "date": date.today().isoformat(),
+                "description": "Bad payment",
+                "payment_method": "bitcoin",
+            },
+            format="json",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_retrieve_nonexistent_entry(self, api_client, staff_user):
+        """Test retrieving an entry that does not exist."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.get("/api/v1/finance/entries/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_entry_as_staff_fails(self, api_client, staff_user, financial_entries):
+        """Test staff cannot delete entries."""
+        api_client.force_authenticate(user=staff_user)
+        entry = financial_entries[0]
+        response = api_client.delete(f"/api/v1/finance/entries/{entry.id}/")
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    def test_delete_nonexistent_entry(self, api_client, manager_user):
+        """Test deleting an entry that does not exist."""
+        api_client.force_authenticate(user=manager_user)
+        response = api_client.delete("/api/v1/finance/entries/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_monthly_summary_missing_params(self, api_client, staff_user):
+        """Test monthly summary without year/month params."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.get("/api/v1/finance/entries/monthly-summary/")
+        # Should either use defaults or return error
+        assert response.status_code in [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST]
+
+    def test_monthly_summary_invalid_year(self, api_client, staff_user):
+        """Test monthly summary with invalid year."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.get(
+            "/api/v1/finance/entries/monthly-summary/?year=abc&month=1"
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestFinancialCategoryErrorCases:
+    """Error case tests for financial category management."""
+
+    def test_create_category_missing_name(self, api_client, manager_user):
+        """Test creating category without name."""
+        api_client.force_authenticate(user=manager_user)
+        response = api_client.post(
+            "/api/v1/finance/categories/",
+            {"category_type": "income"},
+            format="json",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_category_invalid_type(self, api_client, manager_user):
+        """Test creating category with invalid type."""
+        api_client.force_authenticate(user=manager_user)
+        response = api_client.post(
+            "/api/v1/finance/categories/",
+            {"name": "Test", "category_type": "invalid"},
+            format="json",
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_retrieve_nonexistent_category(self, api_client, staff_user):
+        """Test retrieving a category that does not exist."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.get("/api/v1/finance/categories/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND

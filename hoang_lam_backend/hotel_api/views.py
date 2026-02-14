@@ -2269,8 +2269,14 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
         month = request.query_params.get("month")
 
         today = date.today()
-        year = int(year) if year else today.year
-        month = int(month) if month else today.month
+        try:
+            year = int(year) if year else today.year
+            month = int(month) if month else today.month
+        except (ValueError, TypeError):
+            return Response(
+                {"detail": "Năm và tháng phải là số nguyên hợp lệ."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if not (1 <= month <= 12):
             return Response(

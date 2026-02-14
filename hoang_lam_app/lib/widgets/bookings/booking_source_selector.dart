@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../models/booking.dart';
 
 /// Booking Source Selector Widget - Dropdown for selecting booking source
@@ -158,7 +159,7 @@ class BookingSourceGrid extends StatelessWidget {
                       ? source.color.withValues(alpha: 0.15)
                       : Colors.transparent,
                   border: Border.all(
-                    color: isSelected ? source.color : Colors.grey[300]!,
+                    color: isSelected ? source.color : AppColors.border,
                     width: isSelected ? 2 : 1,
                   ),
                   borderRadius: BorderRadius.circular(8),
@@ -173,7 +174,7 @@ class BookingSourceGrid extends StatelessWidget {
                     Icon(
                       source.icon,
                       size: 18,
-                      color: isSelected ? source.color : Colors.grey[600],
+                      color: isSelected ? source.color : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 6),
                     Flexible(
@@ -183,7 +184,7 @@ class BookingSourceGrid extends StatelessWidget {
                           fontSize: 12,
                           fontWeight:
                               isSelected ? FontWeight.w600 : FontWeight.normal,
-                          color: isSelected ? source.color : Colors.grey[700],
+                          color: isSelected ? source.color : AppColors.textSecondary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

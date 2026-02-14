@@ -339,3 +339,105 @@ class TestHousekeepingTaskModel:
             created_by=manager_user,
         )
         assert task.status == HousekeepingTask.Status.PENDING
+
+
+@pytest.mark.django_db
+class TestHousekeepingErrorCases:
+    """Error case tests for housekeeping task management."""
+
+    def test_create_task_missing_room(self, api_client, manager_user):
+        """Test creating task without room."""
+        api_client.force_authenticate(user=manager_user)
+        data = {
+            "task_type": "stay_clean",
+            "scheduled_date": timezone.now().date().isoformat(),
+        }
+        response = api_client.post("/api/v1/housekeeping-tasks/", data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_task_nonexistent_room(self, api_client, manager_user):
+        """Test creating task with non-existent room ID."""
+        api_client.force_authenticate(user=manager_user)
+        data = {
+            "room": 99999,
+            "task_type": "stay_clean",
+            "scheduled_date": timezone.now().date().isoformat(),
+        }
+        response = api_client.post("/api/v1/housekeeping-tasks/", data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_task_invalid_task_type(self, api_client, manager_user, room):
+        """Test creating task with invalid task type."""
+        api_client.force_authenticate(user=manager_user)
+        data = {
+            "room": room.id,
+            "task_type": "nonexistent_type",
+            "scheduled_date": timezone.now().date().isoformat(),
+        }
+        response = api_client.post("/api/v1/housekeeping-tasks/", data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_task_missing_scheduled_date(self, api_client, manager_user, room):
+        """Test creating task without scheduled date."""
+        api_client.force_authenticate(user=manager_user)
+        data = {"room": room.id, "task_type": "stay_clean"}
+        response = api_client.post("/api/v1/housekeeping-tasks/", data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_task_invalid_date_format(self, api_client, manager_user, room):
+        """Test creating task with invalid date format."""
+        api_client.force_authenticate(user=manager_user)
+        data = {
+            "room": room.id,
+            "task_type": "stay_clean",
+            "scheduled_date": "not-a-date",
+        }
+        response = api_client.post("/api/v1/housekeeping-tasks/", data)
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_retrieve_nonexistent_task(self, api_client, staff_user):
+        """Test retrieving a task that does not exist."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.get("/api/v1/housekeeping-tasks/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_nonexistent_task(self, api_client, manager_user):
+        """Test deleting a task that does not exist."""
+        api_client.force_authenticate(user=manager_user)
+        response = api_client.delete("/api/v1/housekeeping-tasks/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_complete_pending_task(self, api_client, staff_user, housekeeping_task):
+        """Test completing a task that is still pending (not in_progress).
+        Backend allows completing directly from pending status."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post(
+            f"/api/v1/housekeeping-tasks/{housekeeping_task.id}/complete/", {}
+        )
+        # Backend allows completing tasks from any non-terminal status
+        assert response.status_code == status.HTTP_200_OK
+
+    def test_verify_non_completed_task(self, api_client, manager_user, housekeeping_task):
+        """Test verifying a task that is not yet completed."""
+        api_client.force_authenticate(user=manager_user)
+        response = api_client.post(
+            f"/api/v1/housekeeping-tasks/{housekeeping_task.id}/verify/", {}
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_assign_nonexistent_task(self, api_client, manager_user, staff_user):
+        """Test assigning a non-existent task."""
+        api_client.force_authenticate(user=manager_user)
+        data = {"assigned_to": staff_user.id}
+        response = api_client.post(
+            "/api/v1/housekeeping-tasks/99999/assign/", data
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_complete_nonexistent_task(self, api_client, staff_user):
+        """Test completing a non-existent task."""
+        api_client.force_authenticate(user=staff_user)
+        response = api_client.post(
+            "/api/v1/housekeeping-tasks/99999/complete/", {}
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND

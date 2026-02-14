@@ -356,6 +356,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
   }
 
   Widget _buildChecklistItemCard(int index) {
+    final l10n = AppLocalizations.of(context)!;
     final checklistItem = _checklistItems[index];
     final isPassed = checklistItem.passed;
 
@@ -427,9 +428,9 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
               const SizedBox(height: 12),
               TextFormField(
                 initialValue: checklistItem.notes,
-                decoration: const InputDecoration(
-                  labelText: 'Ghi chú vấn đề',
-                  hintText: 'Mô tả vấn đề...',
+                decoration: InputDecoration(
+                  labelText: l10n.issueNotes,
+                  hintText: l10n.describeIssueHint,
                   border: OutlineInputBorder(),
                   contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 ),

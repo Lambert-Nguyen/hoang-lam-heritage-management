@@ -400,3 +400,122 @@ class TestRoomPermissions:
             f"/api/v1/rooms/{room_101.id}/update-status/", data, format="json"
         )
         assert response.status_code == status.HTTP_200_OK
+
+
+# ==================== Error Case Tests ====================
+
+
+@pytest.mark.django_db
+class TestRoomErrorCases:
+    """Error case tests for room management."""
+
+    def test_create_room_missing_room_type(self, manager_client):
+        """Test creating room without room_type."""
+        data = {"number": "301", "floor": 3}
+        response = manager_client.post("/api/v1/rooms/", data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_room_nonexistent_room_type(self, manager_client):
+        """Test creating room with non-existent room type ID."""
+        data = {"number": "301", "room_type": 99999, "floor": 3}
+        response = manager_client.post("/api/v1/rooms/", data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_room_missing_number(self, manager_client, room_type_single):
+        """Test creating room without number."""
+        data = {"room_type": room_type_single.id, "floor": 2}
+        response = manager_client.post("/api/v1/rooms/", data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_retrieve_nonexistent_room(self, authenticated_client):
+        """Test retrieving a room that does not exist."""
+        response = authenticated_client.get("/api/v1/rooms/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_update_nonexistent_room(self, manager_client):
+        """Test updating a room that does not exist."""
+        data = {"name": "Updated"}
+        response = manager_client.patch("/api/v1/rooms/99999/", data, format="json")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_nonexistent_room(self, manager_client):
+        """Test deleting a room that does not exist."""
+        response = manager_client.delete("/api/v1/rooms/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_update_status_nonexistent_room(self, authenticated_client):
+        """Test updating status of non-existent room."""
+        data = {"status": "cleaning"}
+        response = authenticated_client.post(
+            "/api/v1/rooms/99999/update-status/", data, format="json"
+        )
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_update_status_invalid_value(self, authenticated_client, room_101):
+        """Test updating room status with invalid status value."""
+        data = {"status": "nonexistent_status"}
+        response = authenticated_client.post(
+            f"/api/v1/rooms/{room_101.id}/update-status/", data, format="json"
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_update_status_missing_status(self, authenticated_client, room_101):
+        """Test updating room status without providing status field."""
+        response = authenticated_client.post(
+            f"/api/v1/rooms/{room_101.id}/update-status/", {}, format="json"
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_check_availability_missing_dates(self, authenticated_client):
+        """Test checking availability without required dates."""
+        response = authenticated_client.post(
+            "/api/v1/rooms/check-availability/", {}, format="json"
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_check_availability_invalid_date_format(self, authenticated_client):
+        """Test checking availability with invalid date format."""
+        data = {"check_in": "not-a-date", "check_out": "also-not-a-date"}
+        response = authenticated_client.post(
+            "/api/v1/rooms/check-availability/", data, format="json"
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestRoomTypeErrorCases:
+    """Error case tests for room type management."""
+
+    def test_create_room_type_missing_name(self, manager_client):
+        """Test creating room type without name."""
+        data = {"base_rate": "500000", "max_guests": 2}
+        response = manager_client.post("/api/v1/room-types/", data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_room_type_zero_rate(self, manager_client):
+        """Test creating room type with zero base rate."""
+        data = {"name": "Test", "base_rate": "0", "max_guests": 2}
+        response = manager_client.post("/api/v1/room-types/", data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_room_type_zero_guests(self, manager_client):
+        """Test creating room type with zero max guests."""
+        data = {"name": "Test", "base_rate": "500000", "max_guests": 0}
+        response = manager_client.post("/api/v1/room-types/", data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_create_room_type_negative_guests(self, manager_client):
+        """Test creating room type with negative max guests."""
+        data = {"name": "Test", "base_rate": "500000", "max_guests": -1}
+        response = manager_client.post("/api/v1/room-types/", data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_retrieve_nonexistent_room_type(self, authenticated_client):
+        """Test retrieving a room type that does not exist."""
+        response = authenticated_client.get("/api/v1/room-types/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_delete_nonexistent_room_type(self, manager_client):
+        """Test deleting a room type that does not exist."""
+        response = manager_client.delete("/api/v1/room-types/99999/")
+        assert response.status_code == status.HTTP_404_NOT_FOUND

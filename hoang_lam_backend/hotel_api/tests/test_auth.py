@@ -310,3 +310,120 @@ class TestPermissions:
         assert response.status_code == status.HTTP_200_OK
         assert response.data["role"] == "housekeeping"
         assert "Buồng phòng" in response.data["role_display"]
+
+
+@pytest.mark.django_db
+class TestLoginErrorCases:
+    """Error case tests for login endpoint."""
+
+    def test_login_empty_body(self, api_client):
+        """Test login with empty request body."""
+        url = reverse("login")
+        response = api_client.post(url, {}, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_login_nonexistent_user(self, api_client):
+        """Test login with a user that does not exist."""
+        url = reverse("login")
+        data = {"username": "nonexistent", "password": "somepass123"}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_login_missing_username(self, api_client):
+        """Test login with missing username field."""
+        url = reverse("login")
+        data = {"password": "testpass123"}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_login_empty_password(self, api_client, staff_user):
+        """Test login with empty password string."""
+        url = reverse("login")
+        data = {"username": "staff", "password": ""}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+
+@pytest.mark.django_db
+class TestTokenRefreshErrorCases:
+    """Error case tests for token refresh."""
+
+    def test_refresh_with_empty_body(self, api_client):
+        """Test token refresh with empty body."""
+        url = reverse("token_refresh")
+        response = api_client.post(url, {}, format="json")
+        assert response.status_code in [
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_401_UNAUTHORIZED,
+        ]
+
+    def test_refresh_with_expired_blacklisted_token(self, api_client, staff_user):
+        """Test refresh with a blacklisted token."""
+        refresh = RefreshToken.for_user(staff_user)
+        refresh.blacklist()
+        url = reverse("token_refresh")
+        data = {"refresh": str(refresh)}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.django_db
+class TestPasswordChangeErrorCases:
+    """Error case tests for password change."""
+
+    def test_password_change_missing_all_fields(self, authenticated_client):
+        """Test password change with empty body."""
+        url = reverse("password_change")
+        response = authenticated_client.post(url, {}, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_password_change_missing_confirm(self, authenticated_client):
+        """Test password change without confirm_password."""
+        url = reverse("password_change")
+        data = {
+            "old_password": "testpass123",
+            "new_password": "newpass123!@#",
+        }
+        response = authenticated_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_password_change_same_as_old(self, authenticated_client):
+        """Test password change with new password same as old."""
+        url = reverse("password_change")
+        data = {
+            "old_password": "testpass123",
+            "new_password": "testpass123",
+            "confirm_password": "testpass123",
+        }
+        response = authenticated_client.post(url, data, format="json")
+        # Should either succeed or reject (depends on implementation)
+        # At minimum it should not crash
+        assert response.status_code in [
+            status.HTTP_200_OK,
+            status.HTTP_400_BAD_REQUEST,
+        ]
+
+
+@pytest.mark.django_db
+class TestLogoutErrorCases:
+    """Error case tests for logout."""
+
+    def test_logout_with_invalid_token(self, authenticated_client):
+        """Test logout with invalid refresh token."""
+        url = reverse("logout")
+        data = {"refresh": "invalid-token-string"}
+        response = authenticated_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_logout_with_already_blacklisted_token(self, authenticated_client, staff_user):
+        """Test logout with already blacklisted token."""
+        refresh = RefreshToken.for_user(staff_user)
+        refresh.blacklist()
+        url = reverse("logout")
+        data = {"refresh": str(refresh)}
+        response = authenticated_client.post(url, data, format="json")
+        # Should handle gracefully - either 200 or 400
+        assert response.status_code in [
+            status.HTTP_200_OK,
+            status.HTTP_400_BAD_REQUEST,
+        ]

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../providers/finance_provider.dart';
 
@@ -200,10 +201,10 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
               // Notes field
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Ghi chú (tùy chọn)',
-                  border: OutlineInputBorder(),
-                  hintText: 'Ghi chú thêm...',
+                decoration: InputDecoration(
+                  labelText: context.l10n.notesOptional,
+                  border: const OutlineInputBorder(),
+                  hintText: context.l10n.additionalNotesHint,
                 ),
                 maxLines: 2,
               ),
@@ -214,7 +215,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Hủy'),
+          child: Text(context.l10n.cancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _submitDeposit,
@@ -224,7 +225,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Ghi nhận'),
+              : Text(context.l10n.recordLabel),
         ),
       ],
     );

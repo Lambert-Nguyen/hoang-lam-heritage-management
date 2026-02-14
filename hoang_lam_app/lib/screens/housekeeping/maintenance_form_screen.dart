@@ -421,6 +421,9 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       }
 
       if (result != null && mounted) {
+        // Invalidate maintenance providers so lists refresh
+        ref.invalidate(maintenanceRequestsProvider);
+
         Navigator.pop(context, result);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

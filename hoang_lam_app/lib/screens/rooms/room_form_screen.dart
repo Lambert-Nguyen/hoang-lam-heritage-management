@@ -335,10 +335,14 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       }
 
       if (result != null && mounted) {
+        // Invalidate room providers so lists refresh
+        ref.invalidate(roomsProvider);
+        ref.invalidate(allRoomsProvider);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing 
-              ? '${context.l10n.roomUpdated} ${result.number}' 
+            content: Text(_isEditing
+              ? '${context.l10n.roomUpdated} ${result.number}'
               : '${context.l10n.roomAdded} ${result.number}'),
             backgroundColor: AppColors.success,
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../core/theme/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
@@ -223,7 +224,7 @@ class BookingDetailScreen extends ConsumerWidget {
                     context.l10n.balanceDue,
                     currencyFormat.format(booking.calculatedBalanceDue),
                     bold: true,
-                    valueColor: Colors.orange,
+                    valueColor: AppColors.warning,
                   ),
                 ],
                 // Fee action buttons
@@ -296,7 +297,7 @@ class BookingDetailScreen extends ConsumerWidget {
                 _buildInfoRow(
                   context.l10n.internalNotes,
                   booking.notes,
-                  valueColor: Colors.grey[600],
+                  valueColor: AppColors.textSecondary,
                 ),
             ],
           ),
@@ -320,7 +321,7 @@ class BookingDetailScreen extends ConsumerWidget {
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -371,8 +372,8 @@ class BookingDetailScreen extends ConsumerWidget {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(
-                color: Colors.grey[600],
+              style: const TextStyle(
+                color: AppColors.textSecondary,
                 fontSize: 14,
               ),
             ),
@@ -384,7 +385,7 @@ class BookingDetailScreen extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-                color: valueColor ?? (highlight ? Colors.blue : Colors.black87),
+                color: valueColor ?? (highlight ? AppColors.info : Colors.black87),
               ),
               textAlign: TextAlign.right,
             ),
@@ -406,7 +407,7 @@ class BookingDetailScreen extends ConsumerWidget {
             label: Text(context.l10n.checkIn),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColors.onPrimary,
               padding: const EdgeInsets.all(16),
             ),
           ),
@@ -419,8 +420,8 @@ class BookingDetailScreen extends ConsumerWidget {
             icon: const Icon(Icons.logout),
             label: Text(context.l10n.checkOut),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColors.info,
+              foregroundColor: AppColors.onPrimary,
               padding: const EdgeInsets.all(16),
             ),
           ),

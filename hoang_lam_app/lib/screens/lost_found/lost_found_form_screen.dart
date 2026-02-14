@@ -104,6 +104,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
   }
 
   Widget _buildForm() {
+    final l10n = context.l10n;
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -111,7 +112,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _SectionTitle(title: 'Thông tin cơ bản'),
+            _SectionTitle(title: l10n.basicInfo),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
@@ -120,16 +121,16 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                   children: [
                     AppTextField(
                       controller: _itemNameController,
-                      label: 'Tên đồ vật *',
-                      hint: 'VD: Ví da, Điện thoại...',
-                      validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập tên' : null,
+                      label: l10n.itemNameLabel,
+                      hint: l10n.itemNameHint,
+                      validator: (v) => v == null || v.isEmpty ? l10n.pleaseEnterName : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    AppTextField(controller: _descriptionController, label: 'Mô tả', hint: 'Mô tả chi tiết...', maxLines: 3),
+                    AppTextField(controller: _descriptionController, label: l10n.description, hint: l10n.describeIssueHint, maxLines: 3),
                     const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<LostFoundCategory>(
                       value: _selectedCategory,
-                      decoration: const InputDecoration(labelText: 'Danh mục', border: OutlineInputBorder()),
+                      decoration: InputDecoration(labelText: l10n.category, border: const OutlineInputBorder()),
                       items: LostFoundCategory.values.map((c) => DropdownMenuItem(value: c, child: Row(children: [Icon(c.icon, size: 20, color: c.color), const SizedBox(width: 8), Text(c.displayName)]))).toList(),
                       onChanged: (v) { if (v != null) setState(() => _selectedCategory = v); },
                     ),
@@ -137,7 +138,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                     InkWell(
                       onTap: _selectDate,
                       child: InputDecorator(
-                        decoration: const InputDecoration(labelText: 'Ngày tìm thấy', border: OutlineInputBorder(), suffixIcon: Icon(Icons.calendar_today)),
+                        decoration: InputDecoration(labelText: l10n.foundDateLabel, border: const OutlineInputBorder(), suffixIcon: const Icon(Icons.calendar_today)),
                         child: Text('${_foundDate.day}/${_foundDate.month}/${_foundDate.year}'),
                       ),
                     ),
@@ -146,7 +147,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionTitle(title: 'Vị trí'),
+            _SectionTitle(title: l10n.locationSection),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
@@ -155,41 +156,41 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                   children: [
                     AppTextField(
                       controller: _foundLocationController,
-                      label: 'Nơi tìm thấy *',
-                      hint: 'VD: Phòng 101, Sảnh chờ...',
-                      validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null,
+                      label: l10n.foundLocationLabel,
+                      hint: l10n.foundLocationHint,
+                      validator: (v) => v == null || v.isEmpty ? l10n.pleaseEnterValue : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    AppTextField(controller: _storageLocationController, label: 'Nơi lưu trữ', hint: 'VD: Tủ đồ thất lạc...'),
+                    AppTextField(controller: _storageLocationController, label: l10n.storageLocationLabel, hint: l10n.storageLocationHint),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionTitle(title: 'Liên hệ'),
+            _SectionTitle(title: l10n.contactSection),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(
                   children: [
-                    SwitchListTile(title: const Text('Đã liên hệ khách'), value: _guestContacted, onChanged: (v) => setState(() => _guestContacted = v), contentPadding: EdgeInsets.zero),
-                    if (_guestContacted) AppTextField(controller: _contactNotesController, label: 'Ghi chú liên hệ', maxLines: 2),
+                    SwitchListTile(title: Text(l10n.guestContacted), value: _guestContacted, onChanged: (v) => setState(() => _guestContacted = v), contentPadding: EdgeInsets.zero),
+                    if (_guestContacted) AppTextField(controller: _contactNotesController, label: l10n.contactNotes, maxLines: 2),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionTitle(title: 'Thông tin bổ sung'),
+            _SectionTitle(title: l10n.additionalInfo),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(
                   children: [
-                    AppTextField(controller: _estimatedValueController, label: 'Giá trị ước tính (VNĐ)', keyboardType: TextInputType.number),
+                    AppTextField(controller: _estimatedValueController, label: l10n.estimatedValueVnd, keyboardType: TextInputType.number),
                     const SizedBox(height: AppSpacing.md),
-                    AppTextField(controller: _notesController, label: 'Ghi chú', maxLines: 3),
+                    AppTextField(controller: _notesController, label: l10n.notes, maxLines: 3),
                   ],
                 ),
               ),
@@ -198,7 +199,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                label: widget.isEditing ? 'Cập nhật' : 'Thêm mới',
+                label: widget.isEditing ? l10n.update : l10n.addNew,
                 onPressed: _isLoading ? null : _handleSubmit,
                 isLoading: _isLoading,
                 icon: widget.isEditing ? Icons.save : Icons.add,
@@ -238,7 +239,9 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
         );
         final result = await notifier.updateItem(widget.itemId!, update);
         if (result != null && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã cập nhật')));
+          final l10n = context.l10n;
+          ref.invalidate(lostFoundItemsProvider);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.itemUpdated)));
           context.pop();
         }
       } else {
@@ -256,12 +259,14 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
         );
         final result = await notifier.createItem(create);
         if (result != null && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã thêm mới')));
+          final l10n = context.l10n;
+          ref.invalidate(lostFoundItemsProvider);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.itemCreated)));
           context.pop();
         }
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

@@ -531,6 +531,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         result = await ref.read(guestStateProvider.notifier).createGuest(guest);
       }
 
+      // Invalidate guest providers so lists refresh
+      ref.invalidate(guestsProvider);
+
       if (!context.mounted) return;
 
       if (result != null) {

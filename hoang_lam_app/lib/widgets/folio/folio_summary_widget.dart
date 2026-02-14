@@ -52,16 +52,16 @@ class FolioSummaryWidget extends StatelessWidget {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.meeting_room,
                             size: 14,
-                            color: Colors.grey[600],
+                            color: AppColors.textSecondary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${context.l10n.room} ${summary.roomNumber}',
-                            style: TextStyle(
-                              color: Colors.grey[600],
+                            style: const TextStyle(
+                              color: AppColors.textSecondary,
                               fontSize: 13,
                             ),
                           ),
@@ -102,7 +102,7 @@ class FolioSummaryWidget extends StatelessWidget {
               icon: Icons.hotel,
               label: 'Tiền phòng',
               amount: summary.roomCharges,
-              color: Colors.blue,
+              color: AppColors.info,
             ),
 
             const SizedBox(height: 8),
@@ -111,7 +111,7 @@ class FolioSummaryWidget extends StatelessWidget {
               icon: Icons.add_circle_outline,
               label: 'Phí bổ sung',
               amount: summary.additionalCharges,
-              color: Colors.orange,
+              color: AppColors.warning,
             ),
 
             const SizedBox(height: 8),

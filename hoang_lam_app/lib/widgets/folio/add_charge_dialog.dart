@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../providers/providers.dart';
 
@@ -54,7 +55,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Thêm phí'),
+      title: Text(context.l10n.addCharge),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -63,9 +64,9 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Type selector
-              const Text(
-                'Loại phí',
-                style: TextStyle(fontWeight: FontWeight.w500),
+              Text(
+                context.l10n.chargeType,
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               _buildTypeSelector(),
@@ -75,14 +76,14 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
               // Description
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Mô tả *',
-                  hintText: 'Nhập mô tả chi phí',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: context.l10n.descriptionRequired,
+                  hintText: context.l10n.enterChargeDescription,
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Vui lòng nhập mô tả';
+                    return context.l10n.pleaseEnterDescription;
                   }
                   return null;
                 },
@@ -99,9 +100,9 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                     flex: 2,
                     child: TextFormField(
                       controller: _quantityController,
-                      decoration: const InputDecoration(
-                        labelText: 'Số lượng *',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.quantityRequired,
+                        border: const OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
                       inputFormatters: [
@@ -111,7 +112,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                       validator: (value) {
                         final qty = int.tryParse(value ?? '');
                         if (qty == null || qty < 1) {
-                          return 'Số lượng >= 1';
+                          return context.l10n.quantityMinOne;
                         }
                         return null;
                       },
@@ -125,9 +126,9 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                     flex: 3,
                     child: TextFormField(
                       controller: _unitPriceController,
-                      decoration: const InputDecoration(
-                        labelText: 'Đơn giá *',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: context.l10n.unitPriceRequired,
+                        border: const OutlineInputBorder(),
                         suffixText: '₫',
                       ),
                       keyboardType: TextInputType.number,
@@ -140,7 +141,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                           value?.replaceAll(RegExp(r'[^\d]'), '') ?? '',
                         );
                         if (price == null || price <= 0) {
-                          return 'Đơn giá > 0';
+                          return context.l10n.unitPricePositive;
                         }
                         return null;
                       },
@@ -155,9 +156,9 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
               InkWell(
                 onTap: _selectDate,
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Ngày',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: context.l10n.dateLabel,
+                    border: const OutlineInputBorder(),
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
                   child: Text(
@@ -178,9 +179,9 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Tổng cộng:',
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                    Text(
+                      context.l10n.totalSum,
+                      style: const TextStyle(fontWeight: FontWeight.w500),
                     ),
                     Text(
                       currencyFormat.format(_totalPrice),
@@ -200,7 +201,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Hủy'),
+          child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _submitCharge,
@@ -210,7 +211,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Thêm phí'),
+              : Text(context.l10n.addCharge),
         ),
       ],
     );
@@ -302,19 +303,20 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
 
       if (mounted) {
         if (success) {
+          ref.invalidate(bookingFolioProvider);
           Navigator.of(context).pop();
           widget.onChargeAdded?.call();
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Đã thêm phí thành công'),
+            SnackBar(
+              content: Text(context.l10n.chargeAddedSuccess),
               backgroundColor: Colors.green,
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Không thể thêm phí'),
+            SnackBar(
+              content: Text(context.l10n.cannotAddCharge),
               backgroundColor: Colors.red,
             ),
           );

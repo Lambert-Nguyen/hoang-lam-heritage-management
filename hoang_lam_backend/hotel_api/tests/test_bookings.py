@@ -340,3 +340,107 @@ class BookingAPITestCase(TestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_booking_missing_required_fields(self):
+        """Test creating booking without required fields."""
+        self.client.force_authenticate(user=self.staff_user)
+        data = {"source": Booking.Source.WALK_IN}
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_booking_nonexistent_guest(self):
+        """Test creating booking with non-existent guest ID."""
+        self.client.force_authenticate(user=self.staff_user)
+        today = date.today()
+        data = {
+            "guest": 99999,
+            "room": self.room1.id,
+            "check_in_date": str(today + timedelta(days=20)),
+            "check_out_date": str(today + timedelta(days=22)),
+            "nightly_rate": 1000000,
+            "total_amount": 2000000,
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_booking_nonexistent_room(self):
+        """Test creating booking with non-existent room ID."""
+        self.client.force_authenticate(user=self.staff_user)
+        today = date.today()
+        data = {
+            "guest": self.guest1.id,
+            "room": 99999,
+            "check_in_date": str(today + timedelta(days=20)),
+            "check_out_date": str(today + timedelta(days=22)),
+            "nightly_rate": 1000000,
+            "total_amount": 2000000,
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_booking_checkin_equals_checkout(self):
+        """Test creating booking where check-in equals check-out date."""
+        self.client.force_authenticate(user=self.staff_user)
+        today = date.today()
+        same_date = today + timedelta(days=20)
+        data = {
+            "guest": self.guest1.id,
+            "room": self.room2.id,
+            "check_in_date": str(same_date),
+            "check_out_date": str(same_date),
+            "nightly_rate": 1000000,
+            "total_amount": 1000000,
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_nonexistent_booking(self):
+        """Test retrieving a booking that does not exist."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.get("/api/v1/bookings/99999/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_nonexistent_booking(self):
+        """Test updating a booking that does not exist."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.patch(
+            "/api/v1/bookings/99999/", {"notes": "test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_nonexistent_booking(self):
+        """Test deleting a booking that does not exist."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.delete("/api/v1/bookings/99999/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_check_in_cancelled_booking(self):
+        """Test checking in a cancelled booking."""
+        self.client.force_authenticate(user=self.staff_user)
+        self.booking1.status = Booking.Status.CANCELLED
+        self.booking1.save()
+        response = self.client.post(f"/api/v1/bookings/{self.booking1.id}/check-in/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_check_out_cancelled_booking(self):
+        """Test checking out a cancelled booking."""
+        self.client.force_authenticate(user=self.staff_user)
+        self.booking1.status = Booking.Status.CANCELLED
+        self.booking1.save()
+        response = self.client.post(f"/api/v1/bookings/{self.booking1.id}/check-out/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_status_invalid_value(self):
+        """Test updating booking status with an invalid status value."""
+        self.client.force_authenticate(user=self.staff_user)
+        data = {"status": "nonexistent_status"}
+        response = self.client.post(
+            f"/api/v1/bookings/{self.booking1.id}/update-status/", data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

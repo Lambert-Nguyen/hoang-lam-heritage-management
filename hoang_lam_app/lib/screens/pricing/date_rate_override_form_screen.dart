@@ -227,13 +227,13 @@ class _DateRateOverrideFormScreenState
             AppSpacing.gapVerticalLg,
 
             // Reason
-            _buildSectionHeader('Lý do'),
+            _buildSectionHeader(l10n.reasonLabel),
             TextFormField(
               controller: _reasonController,
-              decoration: const InputDecoration(
-                labelText: 'Lý do điều chỉnh giá',
-                hintText: 'VD: Tết, Lễ hội, Cuối tuần...',
-                prefixIcon: Icon(Icons.info_outline),
+              decoration: InputDecoration(
+                labelText: l10n.rateAdjustmentReason,
+                hintText: l10n.rateReasonHint,
+                prefixIcon: const Icon(Icons.info_outline),
               ),
             ),
 
@@ -258,11 +258,11 @@ class _DateRateOverrideFormScreenState
             AppSpacing.gapVerticalLg,
 
             // Restrictions Section
-            _buildSectionHeader('Hạn chế (tùy chọn)'),
+            _buildSectionHeader(l10n.restrictionsOptional),
 
             SwitchListTile(
-              title: const Text('Đóng nhận khách'),
-              subtitle: const Text('Không cho phép check-in ngày này'),
+              title: Text(l10n.closeForArrival),
+              subtitle: Text(l10n.noCheckinAllowed),
               value: _closedToArrival,
               onChanged: (value) => setState(() => _closedToArrival = value),
               secondary: Icon(
@@ -272,8 +272,8 @@ class _DateRateOverrideFormScreenState
             ),
 
             SwitchListTile(
-              title: const Text('Đóng trả phòng'),
-              subtitle: const Text('Không cho phép check-out ngày này'),
+              title: Text(l10n.closeForDeparture),
+              subtitle: Text(l10n.noCheckoutAllowed),
               value: _closedToDeparture,
               onChanged: (value) => setState(() => _closedToDeparture = value),
               secondary: Icon(
@@ -287,10 +287,10 @@ class _DateRateOverrideFormScreenState
             // Min Stay
             TextFormField(
               controller: _minStayController,
-              decoration: const InputDecoration(
-                labelText: 'Số đêm tối thiểu (tùy chọn)',
-                hintText: 'Yêu cầu ở tối thiểu X đêm',
-                prefixIcon: Icon(Icons.nights_stay),
+              decoration: InputDecoration(
+                labelText: l10n.minNightsOptional,
+                hintText: l10n.minNightsRequired,
+                prefixIcon: const Icon(Icons.nights_stay),
               ),
               keyboardType: TextInputType.number,
             ),
@@ -368,6 +368,7 @@ class _DateRateOverrideFormScreenState
         });
 
         if (mounted) {
+          ref.invalidate(dateRateOverridesProvider);
           _showSuccess('Đã cập nhật giá theo ngày');
           Navigator.of(context).pop(true);
         }
@@ -389,6 +390,7 @@ class _DateRateOverrideFormScreenState
         await notifier.bulkCreateOverrides(request);
 
         if (mounted) {
+          ref.invalidate(dateRateOverridesProvider);
           final days = _endDate!.difference(_selectedDate!).inDays + 1;
           _showSuccess('Đã tạo giá cho $days ngày');
           Navigator.of(context).pop(true);
@@ -410,6 +412,7 @@ class _DateRateOverrideFormScreenState
         await notifier.createOverride(request);
 
         if (mounted) {
+          ref.invalidate(dateRateOverridesProvider);
           _showSuccess('Đã tạo giá theo ngày');
           Navigator.of(context).pop(true);
         }
@@ -457,6 +460,7 @@ class _DateRateOverrideFormScreenState
       await notifier.deleteOverride(widget.overrideId!);
 
       if (mounted) {
+        ref.invalidate(dateRateOverridesProvider);
         _showSuccess('Đã xóa giá theo ngày');
         Navigator.of(context).pop(true);
       }

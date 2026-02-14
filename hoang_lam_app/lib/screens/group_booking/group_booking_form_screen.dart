@@ -266,6 +266,7 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
         );
         final result = await notifier.updateBooking(widget.bookingId!, update);
         if (result != null && mounted) {
+          ref.invalidate(groupBookingsProvider);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã cập nhật')));
           context.pop();
         }
@@ -288,6 +289,7 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
         );
         final result = await notifier.createBooking(create);
         if (result != null && mounted) {
+          ref.invalidate(groupBookingsProvider);
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã tạo đặt phòng')));
           context.pop();
         }

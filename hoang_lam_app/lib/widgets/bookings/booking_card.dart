@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../core/theme/app_colors.dart';
 import '../../models/booking.dart';
 import 'booking_status_badge.dart';
 
@@ -88,21 +89,21 @@ class BookingCard extends StatelessWidget {
                   Icon(
                     Icons.calendar_today,
                     size: 16,
-                    color: Colors.grey[600],
+                    color: AppColors.textSecondary,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${dateFormat.format(booking.checkInDate)} → ${dateFormat.format(booking.checkOutDate)}',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[700],
+                      color: AppColors.textSecondary,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.grey[200],
+                      color: AppColors.surfaceVariant,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -126,7 +127,7 @@ class BookingCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       '•',
-                      style: TextStyle(color: Colors.grey[400]),
+                      style: TextStyle(color: AppColors.textSecondary),
                     ),
                     const SizedBox(width: 8),
                     Text(
@@ -146,7 +147,7 @@ class BookingCard extends StatelessWidget {
                     'Đặt cọc: ${currencyFormat.format(booking.depositAmount)}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ],
@@ -157,7 +158,7 @@ class BookingCard extends StatelessWidget {
                     'Check-in: ${DateFormat('HH:mm dd/MM', 'vi').format(booking.actualCheckIn!)}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: AppColors.textSecondary,
                     ),
                   ),
                 ],
@@ -169,7 +170,7 @@ class BookingCard extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: Icon(
                     Icons.chevron_right,
-                    color: Colors.grey[400],
+                    color: AppColors.textSecondary,
                   ),
                 ),
             ],

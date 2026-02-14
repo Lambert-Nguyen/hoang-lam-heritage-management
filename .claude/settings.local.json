@@ -26,7 +26,8 @@
       "Bash(wc:*)",
       "Bash(ls:*)",
       "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development python manage.py test:*)",
-      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development python -m pytest:*)"
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development python -m pytest:*)",
+      "Bash(grep:*)"
     ]
   }
 }

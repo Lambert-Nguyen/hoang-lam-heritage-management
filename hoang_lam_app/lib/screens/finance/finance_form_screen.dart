@@ -87,7 +87,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
             ? (isIncome ? '${l10n.edit} ${l10n.income}' : '${l10n.edit} ${l10n.expense}')
             : (isIncome ? '${l10n.add} ${l10n.income}' : '${l10n.add} ${l10n.expense}')),
         backgroundColor: isIncome ? AppColors.income : AppColors.expense,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.onPrimary,
       ),
       body: categoriesAsync.when(
         data: (categories) => _buildForm(context, categories),
@@ -434,7 +434,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
         onPressed: _isSubmitting ? null : _handleSubmit,
         style: ElevatedButton.styleFrom(
           backgroundColor: isIncome ? AppColors.income : AppColors.expense,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.onPrimary,
           padding: const EdgeInsets.all(AppSpacing.md),
         ),
         child: _isSubmitting
@@ -443,7 +443,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
                 width: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: Colors.white,
+                  color: AppColors.onPrimary,
                 ),
               )
             : Text(
@@ -506,6 +506,11 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       } else {
         await notifier.createEntry(request);
       }
+
+      // Invalidate finance providers so lists/summaries refresh
+      ref.invalidate(financialEntriesProvider);
+      ref.invalidate(todayFinancialSummaryProvider);
+      ref.invalidate(recentEntriesProvider);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

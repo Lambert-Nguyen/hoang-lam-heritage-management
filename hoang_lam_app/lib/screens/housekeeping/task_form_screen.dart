@@ -339,6 +339,10 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       }
 
       if (result != null && mounted) {
+        // Invalidate housekeeping providers so lists refresh
+        ref.invalidate(housekeepingTasksProvider);
+        ref.invalidate(todayTasksProvider);
+
         final l10n = AppLocalizations.of(context)!;
         Navigator.pop(context, result);
         ScaffoldMessenger.of(context).showSnackBar(

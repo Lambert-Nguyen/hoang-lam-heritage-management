@@ -243,3 +243,81 @@ class GuestAPITestCase(TestCase):
         self.assertIn("total_bookings", response.data)
         self.assertIn("total_stays", response.data)
         self.assertEqual(response.data["total_stays"], 5)
+
+    def test_create_guest_missing_required_fields(self):
+        """Test creating guest without required fields."""
+        self.client.force_authenticate(user=self.manager_user)
+        data = {"email": "test@test.com"}  # Missing full_name, phone, etc.
+        response = self.client.post("/api/v1/guests/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_guest_empty_full_name(self):
+        """Test creating guest with empty full_name."""
+        self.client.force_authenticate(user=self.manager_user)
+        data = {
+            "full_name": "",
+            "phone": "0999888777",
+            "id_type": Guest.IDType.CCCD,
+            "id_number": "009988776655",
+            "nationality": "Vietnam",
+        }
+        response = self.client.post("/api/v1/guests/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_nonexistent_guest(self):
+        """Test retrieving a guest that does not exist."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.get("/api/v1/guests/99999/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_nonexistent_guest(self):
+        """Test updating a guest that does not exist."""
+        self.client.force_authenticate(user=self.manager_user)
+        response = self.client.patch(
+            "/api/v1/guests/99999/", {"full_name": "Test"}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_nonexistent_guest(self):
+        """Test deleting a guest that does not exist."""
+        self.client.force_authenticate(user=self.manager_user)
+        response = self.client.delete("/api/v1/guests/99999/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_guest_duplicate_email(self):
+        """Test creating guest with duplicate email."""
+        self.client.force_authenticate(user=self.manager_user)
+        data = {
+            "full_name": "New Guest",
+            "phone": "0999111222",
+            "email": "nva@test.com",  # Same as guest1
+            "id_type": Guest.IDType.CCCD,
+            "id_number": "009988776655",
+            "nationality": "Vietnam",
+        }
+        response = self.client.post("/api/v1/guests/", data, format="json")
+        # Email uniqueness - should be 400 if enforced, 201 if not unique
+        self.assertIn(response.status_code, [
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_201_CREATED,
+        ])
+
+    def test_guest_search_empty_query(self):
+        """Test search action with empty query."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.post(
+            "/api/v1/guests/search/", {"query": ""}, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_guest_search_missing_query(self):
+        """Test search action without query field."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.post("/api/v1/guests/search/", {}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_guest_history_nonexistent(self):
+        """Test history for non-existent guest."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.get("/api/v1/guests/99999/history/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

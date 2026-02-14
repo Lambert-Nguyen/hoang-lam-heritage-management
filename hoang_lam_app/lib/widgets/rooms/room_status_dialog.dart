@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
@@ -81,8 +82,8 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          const Expanded(
-            child: Text('Cập nhật trạng thái'),
+          Expanded(
+            child: Text(context.l10n.updateStatus),
           ),
         ],
       ),
@@ -93,7 +94,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
           children: [
             // Current status
             Text(
-              'Trạng thái hiện tại: ${widget.room.status.displayName}',
+              '${context.l10n.currentStatusLabel}: ${widget.room.status.displayName}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: widget.room.status.color,
                     fontWeight: FontWeight.w500,
@@ -103,7 +104,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
 
             // Status options
             Text(
-              'Chọn trạng thái mới:',
+              context.l10n.selectNewStatus,
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -155,7 +156,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
                                 ),
                                 if (isCurrentStatus)
                                   Text(
-                                    '(hiện tại)',
+                                    context.l10n.currentLabel,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodySmall
@@ -184,10 +185,10 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
             // Notes field
             TextField(
               controller: _notesController,
-              decoration: const InputDecoration(
-                labelText: 'Ghi chú (tùy chọn)',
-                hintText: 'Nhập ghi chú...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: context.l10n.notesOptional,
+                hintText: context.l10n.enterNotes,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 2,
               enabled: !_isLoading,
@@ -198,7 +199,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.pop(context, null),
-          child: const Text('Hủy'),
+          child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _isLoading || _selectedStatus == widget.room.status
@@ -210,7 +211,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Cập nhật'),
+              : Text(context.l10n.update),
         ),
       ],
     );
@@ -235,14 +236,17 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
     });
 
     if (success) {
+      // Invalidate room providers so lists refresh
+      ref.invalidate(roomsProvider);
+      ref.invalidate(allRoomsProvider);
       // Return the new status to the calling screen; let it show the SnackBar
       Navigator.pop(context, _selectedStatus);
     } else {
       // Stay in the dialog and show error
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Không thể cập nhật trạng thái phòng'),
+          SnackBar(
+            content: Text(context.l10n.cannotUpdateRoomStatus),
             backgroundColor: Colors.red,
           ),
         );
@@ -296,13 +300,13 @@ class QuickStatusBottomSheet extends ConsumerWidget {
 
             // Title
             Text(
-              'Phòng ${room.number}',
+              '${context.l10n.room} ${room.number}',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
             Text(
-              'Hiện tại: ${room.status.displayName}',
+              '${context.l10n.currentStatusLabel}: ${room.status.displayName}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: room.status.color,
                   ),
