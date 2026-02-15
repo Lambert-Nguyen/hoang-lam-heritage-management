@@ -124,7 +124,7 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
         children: [
           Icon(Icons.groups_outlined, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.5)),
           const SizedBox(height: AppSpacing.md),
-          Text('Chưa có đặt phòng đoàn', style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary)),
+          Text(context.l10n.noGroupBookings, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary)),
         ],
       ),
     );
@@ -179,14 +179,14 @@ class _GroupBookingCard extends StatelessWidget {
                 children: [
                   _InfoChip(icon: Icons.calendar_today, label: _formatDateRange(booking.checkInDate, booking.checkOutDate)),
                   const SizedBox(width: 8),
-                  _InfoChip(icon: Icons.meeting_room, label: '${booking.roomCount} phòng'),
+                  _InfoChip(icon: Icons.meeting_room, label: '${booking.roomCount} ${context.l10n.roomsSuffix}'),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${booking.guestCount} khách', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                  Text('${booking.guestCount} ${context.l10n.guestsSuffix}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
                   Text('${_formatCurrency(booking.totalAmount)}₫', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
                 ],
               ),

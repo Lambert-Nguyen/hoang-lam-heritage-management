@@ -487,7 +487,7 @@ class SettingsScreen extends ConsumerWidget {
               },
             ),
             RadioListTile<String>(
-              title: const Text('English'),
+              title: Text(l10n.english),
               value: 'en',
               groupValue: current,
               onChanged: (value) {
@@ -610,13 +610,13 @@ class SettingsScreen extends ConsumerWidget {
                           }
                         },
                       ),
-                      loading: () => const ListTile(
-                        leading: SizedBox(
+                      loading: () => ListTile(
+                        leading: const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         ),
-                        title: Text('Push notifications'),
+                        title: Text(l10n.pushNotificationsLabel),
                       ),
                       error: (_, __) => SwitchListTile(
                         title: Text(l10n.pushNotifications),

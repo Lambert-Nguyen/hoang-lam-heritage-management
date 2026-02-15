@@ -122,7 +122,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
             loading: () => const LoadingIndicator(),
             error: (error, _) => EmptyState(
               icon: Icons.error_outline,
-              title: 'Lỗi',
+              title: context.l10n.error,
               subtitle: error.toString(),
             ),
           ),
@@ -179,17 +179,17 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     }
 
     if (filteredItems.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.local_bar,
-        title: 'Không có sản phẩm',
-        subtitle: 'Chưa có sản phẩm nào trong danh mục này',
+        title: context.l10n.noProducts,
+        subtitle: context.l10n.noProductsInCategory,
       );
     }
 
     // Group by category
     final groupedItems = <String, List<MinibarItem>>{};
     for (final item in filteredItems) {
-      final category = item.category.isNotEmpty ? item.category : 'Khác';
+      final category = item.category.isNotEmpty ? item.category : context.l10n.otherCategory;
       groupedItems.putIfAbsent(category, () => []).add(item);
     }
 
@@ -252,10 +252,10 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     return salesAsync.when(
       data: (sales) {
         if (sales.isEmpty) {
-          return const EmptyState(
+          return EmptyState(
             icon: Icons.receipt_long,
-            title: 'Chưa có bán hàng',
-            subtitle: 'Lịch sử bán hàng sẽ hiển thị ở đây',
+            title: context.l10n.noSalesYet,
+            subtitle: context.l10n.salesHistoryHint,
           );
         }
 
@@ -328,7 +328,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
       loading: () => const LoadingIndicator(),
       error: (error, _) => EmptyState(
         icon: Icons.error_outline,
-        title: 'Lỗi',
+        title: context.l10n.error,
         subtitle: error.toString(),
       ),
     );
@@ -352,7 +352,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
           color: sale.isCharged ? AppColors.success : AppColors.warning,
         ),
       ),
-      title: Text(sale.itemName ?? 'Sản phẩm'),
+      title: Text(sale.itemName ?? context.l10n.product),
       subtitle: Text(
         'P.${sale.bookingRoomNumber ?? sale.booking} • ${timeFormat.format(sale.date)} • x${sale.quantity}',
       ),
@@ -365,8 +365,8 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           if (sale.isCharged)
-            const Text(
-              'Đã charge',
+            Text(
+              context.l10n.charged,
               style: TextStyle(
                 fontSize: 12,
                 color: AppColors.success,
@@ -403,7 +403,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: ${e.toString()}')),
+          SnackBar(content: Text('${context.l10n.error}: ${e.toString()}')),
         );
       }
     }
@@ -413,16 +413,16 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(sale.itemName ?? 'Chi tiết bán hàng'),
+        title: Text(sale.itemName ?? context.l10n.saleDetails),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildDetailRow('Phòng', sale.bookingRoomNumber ?? '-'),
-            _buildDetailRow('Khách', sale.bookingGuestName ?? '-'),
-            _buildDetailRow('Số lượng', '${sale.quantity}'),
+            _buildDetailRow(context.l10n.roomLabel, sale.bookingRoomNumber ?? '-'),
+            _buildDetailRow(context.l10n.guestLabel, sale.bookingGuestName ?? '-'),
+            _buildDetailRow(context.l10n.quantity, '${sale.quantity}'),
             _buildDetailRow(
-              'Đơn giá',
+              context.l10n.unitPrice,
               NumberFormat.currency(
                 locale: 'vi_VN',
                 symbol: '₫',
@@ -430,7 +430,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
               ).format(sale.unitPrice),
             ),
             _buildDetailRow(
-              'Thành tiền',
+              context.l10n.totalPrice,
               NumberFormat.currency(
                 locale: 'vi_VN',
                 symbol: '₫',
@@ -438,11 +438,11 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
               ).format(sale.total),
             ),
             _buildDetailRow(
-              'Trạng thái',
-              sale.isCharged ? 'Đã charge' : 'Chưa charge',
+              context.l10n.statusLabel,
+              sale.isCharged ? context.l10n.charged : context.l10n.notCharged,
             ),
             _buildDetailRow(
-              'Thời gian',
+              context.l10n.timeLabel,
               DateFormat('HH:mm dd/MM/yyyy').format(sale.date),
             ),
           ],
@@ -454,11 +454,11 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
                 Navigator.pop(context);
                 await _markSaleCharged(sale);
               },
-              child: const Text('Đánh dấu đã charge'),
+              child: Text(context.l10n.markAsCharged),
             ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+            child: Text(context.l10n.closeButton),
           ),
         ],
       ),
@@ -487,13 +487,13 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
       ref.invalidate(minibarSalesProvider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã đánh dấu charge thành công')),
+          SnackBar(content: Text(context.l10n.chargeMarkedSuccess)),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: ${e.toString()}')),
+          SnackBar(content: Text('${context.l10n.error}: ${e.toString()}')),
         );
       }
     }

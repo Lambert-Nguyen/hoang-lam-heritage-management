@@ -61,6 +61,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
   }
 
   Widget _buildContent(GroupBooking booking) {
+    final l10n = context.l10n;
     return SingleChildScrollView(
       padding: AppSpacing.paddingAll,
       child: Column(
@@ -79,40 +80,40 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
           Text(booking.name, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: AppSpacing.lg),
           _SectionCard(
-            title: 'Liên hệ',
+            title: l10n.contactLabel,
             icon: Icons.person,
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _InfoRow(label: 'Người liên hệ', value: booking.contactName),
-              if (booking.contactPhone.isNotEmpty) _InfoRow(label: 'Điện thoại', value: booking.contactPhone),
+              _InfoRow(label: l10n.contactPerson, value: booking.contactName),
+              if (booking.contactPhone.isNotEmpty) _InfoRow(label: l10n.phoneLabel, value: booking.contactPhone),
               if (booking.contactEmail.isNotEmpty) _InfoRow(label: 'Email', value: booking.contactEmail),
             ]),
           ),
           const SizedBox(height: AppSpacing.md),
           _SectionCard(
-            title: 'Chi tiết đặt phòng',
+            title: l10n.bookingDetails,
             icon: Icons.hotel,
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _InfoRow(label: 'Ngày nhận phòng', value: _formatDate(booking.checkInDate)),
-              _InfoRow(label: 'Ngày trả phòng', value: _formatDate(booking.checkOutDate)),
-              _InfoRow(label: 'Số phòng', value: '${booking.roomCount} phòng'),
-              _InfoRow(label: 'Số khách', value: '${booking.guestCount} khách'),
+              _InfoRow(label: l10n.checkInDate, value: _formatDate(booking.checkInDate)),
+              _InfoRow(label: l10n.checkOutDate, value: _formatDate(booking.checkOutDate)),
+              _InfoRow(label: l10n.roomCountLabel, value: '${booking.roomCount} ${l10n.roomsSuffix}'),
+              _InfoRow(label: l10n.guestCountLabel, value: '${booking.guestCount} ${l10n.guestsSuffix}'),
             ]),
           ),
           const SizedBox(height: AppSpacing.md),
           _SectionCard(
-            title: 'Thanh toán',
+            title: l10n.paymentLabel,
             icon: Icons.payment,
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _InfoRow(label: 'Tổng tiền', value: '${_formatCurrency(booking.totalAmount)}₫', valueStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
-              _InfoRow(label: 'Đặt cọc', value: '${_formatCurrency(booking.depositAmount)}₫'),
-              if (booking.discountPercent > 0) _InfoRow(label: 'Giảm giá', value: '${booking.discountPercent}%'),
-              _InfoRow(label: 'Đã thanh toán', value: booking.depositPaid ? 'Có' : 'Chưa', valueStyle: TextStyle(color: booking.depositPaid ? Colors.green : Colors.orange, fontWeight: FontWeight.w600)),
+              _InfoRow(label: l10n.totalAmount, value: '${_formatCurrency(booking.totalAmount)}₫', valueStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
+              _InfoRow(label: l10n.depositLabel, value: '${_formatCurrency(booking.depositAmount)}₫'),
+              if (booking.discountPercent > 0) _InfoRow(label: l10n.discountLabel, value: '${booking.discountPercent}%'),
+              _InfoRow(label: l10n.paidStatus, value: booking.depositPaid ? l10n.yesLabel : l10n.notYetLabel, valueStyle: TextStyle(color: booking.depositPaid ? Colors.green : Colors.orange, fontWeight: FontWeight.w600)),
             ]),
           ),
           if (booking.roomNumbers.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              title: 'Phòng đã phân',
+              title: l10n.assignedRooms,
               icon: Icons.meeting_room,
               child: Wrap(
                 spacing: AppSpacing.sm,
@@ -120,18 +121,18 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
                 children: booking.roomNumbers.map((r) => Container(
                   padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
                   decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSpacing.radiusSm), border: Border.all(color: AppColors.primary.withValues(alpha: 0.3))),
-                  child: Text('Phòng $r', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
+                  child: Text('${l10n.roomLabel} $r', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600)),
                 )).toList(),
               ),
             ),
           ],
           if (booking.specialRequests.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
-            _SectionCard(title: 'Yêu cầu đặc biệt', icon: Icons.star, child: Text(booking.specialRequests)),
+            _SectionCard(title: l10n.specialRequests, icon: Icons.star, child: Text(booking.specialRequests)),
           ],
           if (booking.notes.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
-            _SectionCard(title: 'Ghi chú', icon: Icons.note, child: Text(booking.notes)),
+            _SectionCard(title: l10n.notesLabel, icon: Icons.note, child: Text(booking.notes)),
           ],
           const SizedBox(height: AppSpacing.xl),
         ],
@@ -143,17 +144,18 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
     if (booking.status == GroupBookingStatus.checkedOut || booking.status == GroupBookingStatus.cancelled) {
       return const SizedBox.shrink();
     }
+    final l10n = context.l10n;
     return SafeArea(
       child: Padding(
         padding: AppSpacing.paddingAll,
         child: Row(
           children: [
             if (booking.status == GroupBookingStatus.tentative) ...[
-              Expanded(child: AppButton(label: 'Hủy', onPressed: _isLoading ? null : () => _cancelBooking(booking), isOutlined: true)),
+              Expanded(child: AppButton(label: l10n.cancel, onPressed: _isLoading ? null : () => _cancelBooking(booking), isOutlined: true)),
               const SizedBox(width: AppSpacing.md),
-              Expanded(child: AppButton(label: 'Xác nhận', onPressed: _isLoading ? null : () => _confirmBooking(booking), icon: Icons.check_circle, isLoading: _isLoading)),
+              Expanded(child: AppButton(label: l10n.confirm, onPressed: _isLoading ? null : () => _confirmBooking(booking), icon: Icons.check_circle, isLoading: _isLoading)),
             ] else if (booking.status == GroupBookingStatus.confirmed) ...[
-              Expanded(child: AppButton(label: 'Phân phòng', onPressed: _isLoading ? null : () => _showRoomAssignmentDialog(booking), isOutlined: true, icon: Icons.meeting_room)),
+              Expanded(child: AppButton(label: l10n.assignRoomsLabel, onPressed: _isLoading ? null : () => _showRoomAssignmentDialog(booking), isOutlined: true, icon: Icons.meeting_room)),
               const SizedBox(width: AppSpacing.md),
               Expanded(child: AppButton(label: 'Check-in', onPressed: _isLoading ? null : () => _checkIn(booking), icon: Icons.login, isLoading: _isLoading)),
             ] else if (booking.status == GroupBookingStatus.checkedIn) ...[
@@ -176,13 +178,13 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
   }
 
   Future<void> _confirmBooking(GroupBooking booking) async {
-    final confirmed = await _showConfirmDialog('Xác nhận', 'Xác nhận đặt phòng đoàn?');
+    final confirmed = await _showConfirmDialog(context.l10n.confirm, context.l10n.confirmGroupBooking);
     if (confirmed != true) return;
     setState(() => _isLoading = true);
     try {
       final result = await ref.read(groupBookingNotifierProvider.notifier).confirmBooking(booking.id);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã xác nhận')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.confirmedMsg)));
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
     } finally {
@@ -192,16 +194,16 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
 
   Future<void> _checkIn(GroupBooking booking) async {
     if (booking.roomNumbers.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Vui lòng phân phòng trước'), backgroundColor: Colors.orange));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.assignRoomsFirstMsg), backgroundColor: Colors.orange));
       return;
     }
-    final confirmed = await _showConfirmDialog('Check-in', 'Xác nhận check-in cho đoàn ${booking.name}?');
+    final confirmed = await _showConfirmDialog('Check-in', '${context.l10n.confirmGroupCheckIn} ${booking.name}?');
     if (confirmed != true) return;
     setState(() => _isLoading = true);
     try {
       final result = await ref.read(groupBookingNotifierProvider.notifier).checkInBooking(booking.id);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã check-in')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.checkedInMsg)));
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
     } finally {
@@ -210,13 +212,13 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
   }
 
   Future<void> _checkOut(GroupBooking booking) async {
-    final confirmed = await _showConfirmDialog('Check-out', 'Xác nhận check-out cho đoàn ${booking.name}?');
+    final confirmed = await _showConfirmDialog('Check-out', '${context.l10n.confirmGroupCheckOut} ${booking.name}?');
     if (confirmed != true) return;
     setState(() => _isLoading = true);
     try {
       final result = await ref.read(groupBookingNotifierProvider.notifier).checkOutBooking(booking.id);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã check-out')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.checkedOutMsg)));
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
     } finally {
@@ -225,13 +227,13 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
   }
 
   Future<void> _cancelBooking(GroupBooking booking) async {
-    final reason = await _showInputDialog('Lý do hủy', 'Nhập lý do hủy đặt phòng');
+    final reason = await _showInputDialog(context.l10n.cancelReason, context.l10n.enterCancelReason);
     if (reason == null) return;
     setState(() => _isLoading = true);
     try {
       final result = await ref.read(groupBookingNotifierProvider.notifier).cancelBooking(booking.id, reason: reason);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã hủy')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.cancelledStatus)));
         context.pop();
       }
     } finally {
@@ -244,15 +246,15 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Phân phòng'),
+        title: Text(context.l10n.assignRoomsLabel),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Số phòng cần: ${booking.roomCount}'),
+          Text('${context.l10n.roomsNeeded}: ${booking.roomCount}'),
           const SizedBox(height: AppSpacing.md),
-          TextField(controller: controller, decoration: const InputDecoration(labelText: 'Danh sách ID phòng', hintText: 'VD: 1, 2, 3 (ID phòng, cách nhau bằng dấu phẩy)')),
+          TextField(controller: controller, decoration: InputDecoration(labelText: context.l10n.roomIdListLabel, hintText: context.l10n.roomIdListHint)),
         ]),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Lưu')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
+          ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: Text(context.l10n.save)),
         ],
       ),
     );
@@ -261,7 +263,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
     final roomIds = result.split(',').map((e) => int.tryParse(e.trim())).whereType<int>().toList();
     if (roomIds.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Danh sách phòng không hợp lệ'), backgroundColor: Colors.orange));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.invalidRoomList), backgroundColor: Colors.orange));
       }
       return;
     }
@@ -269,7 +271,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
     try {
       final success = await ref.read(groupBookingNotifierProvider.notifier).assignRooms(booking.id, roomIds);
       if (success != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã phân phòng')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.roomsAssignedSuccess)));
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
     } finally {
@@ -281,8 +283,8 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
     return showDialog<bool>(context: context, builder: (context) => AlertDialog(
       title: Text(title), content: Text(content),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
-        ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Xác nhận')),
+        TextButton(onPressed: () => Navigator.pop(context, false), child: Text(context.l10n.cancel)),
+        ElevatedButton(onPressed: () => Navigator.pop(context, true), child: Text(context.l10n.confirm)),
       ],
     ));
   }
@@ -292,8 +294,8 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
     return showDialog<String>(context: context, builder: (context) => AlertDialog(
       title: Text(title), content: TextField(controller: controller, decoration: InputDecoration(hintText: hint)),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-        ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), style: ElevatedButton.styleFrom(backgroundColor: Colors.red), child: const Text('Xác nhận')),
+        TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
+        ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), style: ElevatedButton.styleFrom(backgroundColor: Colors.red), child: Text(context.l10n.confirm)),
       ],
     )).then((result) {
       controller.dispose();

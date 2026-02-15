@@ -263,30 +263,31 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
 
   void _showVoidDialog(BuildContext context, FolioItem item) {
     final reasonController = TextEditingController();
+    final l10n = context.l10n;
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hủy phí'),
+        title: Text(l10n.voidCharge),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Bạn có chắc muốn hủy phí "${item.description}"?',
+              '${l10n.confirmVoidCharge} "${item.description}"?',
             ),
             const SizedBox(height: 16),
             Text(
-              'Số tiền: ${currencyFormat.format(item.totalPrice)}',
+              '${l10n.chargeAmount}: ${currencyFormat.format(item.totalPrice)}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: reasonController,
-              decoration: const InputDecoration(
-                labelText: 'Lý do hủy *',
-                hintText: 'Nhập lý do hủy phí',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: '${l10n.enterVoidReason} *',
+                hintText: l10n.pleaseEnterVoidReason,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 2,
             ),
@@ -295,7 +296,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -305,8 +306,8 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
             onPressed: () async {
               if (reasonController.text.trim().isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Vui lòng nhập lý do hủy'),
+                  SnackBar(
+                    content: Text(l10n.voidReasonRequired),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -324,15 +325,15 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                   SnackBar(
                     content: Text(
                       success
-                          ? 'Đã hủy phí thành công'
-                          : 'Không thể hủy phí',
+                          ? l10n.chargeVoidedSuccess
+                          : l10n.cannotVoidCharge,
                     ),
                     backgroundColor: success ? Colors.green : Colors.red,
                   ),
                 );
               }
             },
-            child: const Text('Xác nhận hủy'),
+            child: Text(l10n.confirmVoid),
           ),
         ],
       ),

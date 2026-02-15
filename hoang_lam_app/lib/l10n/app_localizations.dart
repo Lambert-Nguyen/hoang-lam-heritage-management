@@ -1113,11 +1113,9 @@ class AppLocalizations {
   String get totalIncome => translate('total_income');
   String get netProfit => translate('net_profit');
   String get otherRevenue => translate('other_revenue');
-  String get financialOverview => translate('financial_overview');
   String get roomsOccupied => translate('rooms_occupied');
   String get roomsCleaning => translate('rooms_cleaning');
   String get roomsMaintenance => translate('rooms_maintenance');
-  String get newBookings => translate('new_bookings');
   String get noShows => translate('no_shows');
   String get cancellationsLabel => translate('cancellations_label');
   String get pendingPayments => translate('pending_payments');
@@ -1165,13 +1163,10 @@ class AppLocalizations {
   String get permUpdateCleaning => translate('perm_update_cleaning');
   String get permReportMaintenance => translate('perm_report_maintenance');
   String get copyTooltip => translate('copy_tooltip');
+  String get staying => translate('staying');
 
   // Declaration Export
   String get dateRangeLabel => translate('date_range_label');
-  String get fromDate => translate('from_date');
-  String get toDate => translate('to_date');
-  String get exporting => translate('exporting');
-  String get exportList => translate('export_list');
   String get fileExportedSuccess => translate('file_exported_success');
   String get bookingsMarkedAsDeclared => translate('bookings_marked_as_declared');
   String get openFileBtn => translate('open_file_btn');
@@ -1196,7 +1191,6 @@ class AppLocalizations {
   String get confirmGroupCheckIn => translate('confirm_group_check_in');
   String get confirmGroupCheckOut => translate('confirm_group_check_out');
   String get checkedOutSuccess => translate('checked_out_success');
-  String get enterCancelReason => translate('enter_cancel_reason');
   String get cancelledMsg => translate('cancelled_msg');
   String get roomIdListHint => translate('room_id_list_hint');
 
@@ -1207,14 +1201,12 @@ class AppLocalizations {
   String get charged => translate('charged');
   String get notCharged => translate('not_charged');
   String get saleDetails => translate('sale_details');
-  String get noMatchingProducts => translate('no_matching_products');
   String get emptyCart => translate('empty_cart');
   String get checkoutBtn => translate('checkout_btn');
   String get clearAll => translate('clear_all');
   String get discontinued => translate('discontinued');
   String get cartTitle => translate('cart_title');
   String get productAddedSuccess => translate('product_added_success');
-  String get addProduct => translate('add_product');
   String get invalid => translate('invalid');
   String get activeStatusLabel => translate('active_status_label');
   String get costAmount => translate('cost_amount');
@@ -1284,13 +1276,87 @@ class AppLocalizations {
   String get totalRoomNightsAvailable => translate('total_room_nights_available');
   String get totalRoomNightsSold => translate('total_room_nights_sold');
   String get noExpensesInDateRange => translate('no_expenses_in_date_range');
-  String get copiedValueMsg => translate('copied_value_msg');
   String get roleHousekeepingLabel => translate('role_housekeeping_label');
   String get roomsSuffix => translate('rooms_suffix');
   String get nightsSuffix => translate('nights_suffix');
   String get guestsSuffix => translate('guests_suffix');
   String get transactionsSuffix => translate('transactions_suffix');
   String get avgShort => translate('avg_short');
+
+  // Phase C6 - Remaining screen l10n keys
+  // Declaration Export
+  String get excelFormatDesc => translate('excel_format_desc');
+  String get csvFormatDesc => translate('csv_format_desc');
+
+  // Minibar Inventory
+  String get salesHistoryHint => translate('sales_history_hint');
+  String get guestLabel => translate('guest_label');
+  String get totalPrice => translate('total_price');
+
+  // Minibar POS
+  String get searchProductHint => translate('search_product_hint');
+  String get selectBookingFirst => translate('select_booking_first');
+  String get clearCartTitle => translate('clear_cart_title');
+  String get clearCartConfirm => translate('clear_cart_confirm');
+  String get confirmCheckout => translate('confirm_checkout');
+  String get guestNameLabel => translate('guest_name_label');
+  String get totalLabel => translate('total_label');
+  String get checkoutSuccess => translate('checkout_success');
+
+  // Minibar Item Form
+  String get sellingPrice => translate('selling_price');
+  String get requiredField => translate('required_field');
+  String get activeLabel => translate('active_label');
+  String get activeSelling => translate('active_selling');
+  String get inactiveSelling => translate('inactive_selling');
+  String get updateLabel => translate('update_label');
+  String get productAddedMsg => translate('product_added_msg');
+  String get confirmDeleteProductMsg => translate('confirm_delete_product_msg');
+  String get productDeletedSuccess => translate('product_deleted_success');
+
+  // Group Booking Detail
+  String get roomCountLabel => translate('room_count_label');
+  String get guestCountLabel => translate('guest_count_label');
+  String get depositLabel => translate('deposit_label');
+  String get paidStatus => translate('paid_status');
+  String get assignRoomsLabel => translate('assign_rooms_label');
+  String get roomIdListLabel => translate('room_id_list_label');
+  String get roomsAssignedSuccess => translate('rooms_assigned_success');
+  String get assignRoomsFirstMsg => translate('assign_rooms_first_msg');
+  String get checkedInMsg => translate('checked_in_msg');
+  String get checkedOutMsg => translate('checked_out_msg');
+  String get cancelledStatus => translate('cancelled_status');
+
+  // Room Inspection Detail
+  String get scheduledDateLabel => translate('scheduled_date_label');
+  String get inspectorLabel => translate('inspector_label');
+  String get inspectionResults => translate('inspection_results');
+  String get passLabel => translate('pass_label');
+  String get issuesLabel => translate('issues_label');
+  String get criticalIssuesLabel => translate('critical_issues_label');
+  String get checklistLabel => translate('checklist_label');
+
+  // Inspection Template
+  String get editLabel => translate('edit_label');
+  String get duplicateLabel => translate('duplicate_label');
+  String get templateCreatedSuccess => translate('template_created_success');
+  String get editFeatureInProgress => translate('edit_feature_in_progress');
+  String get templateDeletedSuccess => translate('template_deleted_success');
+  String get createNewTemplateTitle => translate('create_new_template_title');
+  String get templateNameLabel => translate('template_name_label');
+  String get inspectionTypeLabel => translate('inspection_type_label');
+  String get defaultTemplateLabel => translate('default_template_label');
+  String get defaultTemplateHint => translate('default_template_hint');
+  String get checklistCount => translate('checklist_count');
+  String get addLabel => translate('add_label');
+  String get createTemplateBtn => translate('create_template_btn');
+  String get addChecklistItemTitle => translate('add_checklist_item_title');
+  String get categoryLabel => translate('category_label');
+  String get bedroomCategory => translate('bedroom_category');
+  String get bathroomCategory => translate('bathroom_category');
+  String get safetyCategory => translate('safety_category');
+  String get pleaseAddAtLeastOne => translate('please_add_at_least_one');
+  String get itemsSuffix => translate('items_suffix');
 }
 
 // Vietnamese translations
@@ -2304,11 +2370,9 @@ const Map<String, String> _viTranslations = {
   'total_income': 'Tổng thu',
   'net_profit': 'Lợi nhuận ròng',
   'other_revenue': 'Doanh thu khác',
-  'financial_overview': 'Tổng quan tài chính',
   'rooms_occupied': 'Có khách',
   'rooms_cleaning': 'Đang dọn',
   'rooms_maintenance': 'Bảo trì',
-  'new_bookings': 'Đặt mới',
   'no_shows': 'Không đến',
   'cancellations_label': 'Hủy',
   'pending_payments': 'Thanh toán chờ',
@@ -2356,13 +2420,10 @@ const Map<String, String> _viTranslations = {
   'perm_update_cleaning': 'Cập nhật dọn phòng',
   'perm_report_maintenance': 'Báo cáo bảo trì',
   'copy_tooltip': 'Sao chép',
+  'staying': 'Đang lưu trú',
 
   // Declaration
   'date_range_label': 'Khoảng thời gian',
-  'from_date': 'Từ ngày',
-  'to_date': 'Đến ngày',
-  'exporting': 'Đang xuất...',
-  'export_list': 'Xuất danh sách',
   'file_exported_success': 'File đã được xuất thành công',
   'bookings_marked_as_declared': 'Các đặt phòng đã được đánh dấu "Đã khai báo"',
   'open_file_btn': 'Mở',
@@ -2387,7 +2448,6 @@ const Map<String, String> _viTranslations = {
   'confirm_group_check_in': 'Xác nhận check-in cho đoàn',
   'confirm_group_check_out': 'Xác nhận check-out cho đoàn',
   'checked_out_success': 'Đã check-out',
-  'enter_cancel_reason': 'Nhập lý do hủy đặt phòng',
   'cancelled_msg': 'Đã hủy',
   'room_id_list_hint': 'VD: 1, 2, 3 (ID phòng, cách nhau bằng dấu phẩy)',
 
@@ -2398,14 +2458,12 @@ const Map<String, String> _viTranslations = {
   'charged': 'Đã charge',
   'not_charged': 'Chưa charge',
   'sale_details': 'Chi tiết bán hàng',
-  'no_matching_products': 'Không tìm thấy sản phẩm phù hợp',
   'empty_cart': 'Giỏ hàng trống',
   'checkout_btn': 'Thanh toán',
   'clear_all': 'Xóa tất cả',
   'discontinued': 'Ngừng bán',
   'cart_title': 'Giỏ hàng',
   'product_added_success': 'Thêm sản phẩm thành công',
-  'add_product': 'Thêm sản phẩm',
   'invalid': 'Không hợp lệ',
   'active_status_label': 'Hoạt động',
   'cost_amount': 'Vốn',
@@ -2475,13 +2533,74 @@ const Map<String, String> _viTranslations = {
   'total_room_nights_available': 'Tổng đêm phòng khả dụng',
   'total_room_nights_sold': 'Tổng đêm phòng bán',
   'no_expenses_in_date_range': 'Không có chi phí trong khoảng thời gian này',
-  'copied_value_msg': 'Đã sao chép',
   'role_housekeeping_label': 'Phòng buồng',
   'rooms_suffix': 'phòng',
   'nights_suffix': 'đêm',
   'guests_suffix': 'khách',
   'transactions_suffix': 'giao dịch',
   'avg_short': 'TB',
+
+  // Phase C6
+  'excel_format_desc': 'Có format, nhiều sheet',
+  'csv_format_desc': 'Dạng text, phổ biến',
+  'sales_history_hint': 'Lịch sử bán hàng sẽ hiển thị ở đây',
+  'guest_label': 'Khách',
+  'total_price': 'Thành tiền',
+  'search_product_hint': 'Tìm kiếm sản phẩm...',
+  'select_booking_first': 'Vui lòng chọn đặt phòng trước',
+  'clear_cart_title': 'Xóa giỏ hàng',
+  'clear_cart_confirm': 'Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?',
+  'confirm_checkout': 'Xác nhận thanh toán',
+  'guest_name_label': 'Khách',
+  'total_label': 'Tổng',
+  'checkout_success': 'Thanh toán thành công',
+  'selling_price': 'Giá bán',
+  'required_field': 'Bắt buộc',
+  'active_label': 'Hoạt động',
+  'active_selling': 'Đang bán',
+  'inactive_selling': 'Ngừng bán',
+  'update_label': 'Cập nhật',
+  'product_added_msg': 'Thêm sản phẩm thành công',
+  'confirm_delete_product_msg': 'Bạn có chắc chắn muốn xóa',
+  'product_deleted_success': 'Đã xóa sản phẩm',
+  'room_count_label': 'Số phòng',
+  'guest_count_label': 'Số khách',
+  'deposit_label': 'Đặt cọc',
+  'paid_status': 'Đã thanh toán',
+  'assign_rooms_label': 'Phân phòng',
+  'room_id_list_label': 'Danh sách ID phòng',
+  'rooms_assigned_success': 'Đã phân phòng',
+  'assign_rooms_first_msg': 'Vui lòng phân phòng trước',
+  'checked_in_msg': 'Đã check-in',
+  'checked_out_msg': 'Đã check-out',
+  'cancelled_status': 'Đã hủy',
+  'scheduled_date_label': 'Ngày dự kiến',
+  'inspector_label': 'Người kiểm tra',
+  'inspection_results': 'Kết quả kiểm tra',
+  'pass_label': 'Đạt',
+  'issues_label': 'vấn đề',
+  'critical_issues_label': 'nghiêm trọng',
+  'checklist_label': 'Danh sách kiểm tra',
+  'edit_label': 'Chỉnh sửa',
+  'duplicate_label': 'Sao chép',
+  'template_created_success': 'Đã tạo mẫu thành công',
+  'edit_feature_in_progress': 'Chức năng chỉnh sửa đang phát triển',
+  'template_deleted_success': 'Đã xóa mẫu',
+  'create_new_template_title': 'Tạo mẫu kiểm tra mới',
+  'template_name_label': 'Tên mẫu',
+  'inspection_type_label': 'Loại kiểm tra',
+  'default_template_label': 'Mẫu mặc định',
+  'default_template_hint': 'Sử dụng mẫu này khi tạo kiểm tra mới',
+  'checklist_count': 'Danh sách kiểm tra',
+  'add_label': 'Thêm',
+  'create_template_btn': 'Tạo mẫu',
+  'add_checklist_item_title': 'Thêm mục kiểm tra',
+  'category_label': 'Danh mục',
+  'bedroom_category': 'Phòng ngủ',
+  'bathroom_category': 'Phòng tắm',
+  'safety_category': 'An toàn',
+  'please_add_at_least_one': 'Vui lòng thêm ít nhất một mục kiểm tra',
+  'items_suffix': 'mục',
 };
 
 // English translations
@@ -3495,11 +3614,9 @@ const Map<String, String> _enTranslations = {
   'total_income': 'Total income',
   'net_profit': 'Net profit',
   'other_revenue': 'Other revenue',
-  'financial_overview': 'Financial overview',
   'rooms_occupied': 'Occupied',
   'rooms_cleaning': 'Cleaning',
   'rooms_maintenance': 'Maintenance',
-  'new_bookings': 'New bookings',
   'no_shows': 'No shows',
   'cancellations_label': 'Cancellations',
   'pending_payments': 'Pending payments',
@@ -3547,13 +3664,10 @@ const Map<String, String> _enTranslations = {
   'perm_update_cleaning': 'Update cleaning',
   'perm_report_maintenance': 'Report maintenance',
   'copy_tooltip': 'Copy',
+  'staying': 'Staying',
 
   // Declaration
   'date_range_label': 'Date range',
-  'from_date': 'From date',
-  'to_date': 'To date',
-  'exporting': 'Exporting...',
-  'export_list': 'Export list',
   'file_exported_success': 'File exported successfully',
   'bookings_marked_as_declared': 'Bookings have been marked as "Declared"',
   'open_file_btn': 'Open',
@@ -3578,7 +3692,6 @@ const Map<String, String> _enTranslations = {
   'confirm_group_check_in': 'Confirm check-in for group',
   'confirm_group_check_out': 'Confirm check-out for group',
   'checked_out_success': 'Checked out',
-  'enter_cancel_reason': 'Enter cancellation reason',
   'cancelled_msg': 'Cancelled',
   'room_id_list_hint': 'Ex: 1, 2, 3 (Room IDs, separated by commas)',
 
@@ -3589,14 +3702,12 @@ const Map<String, String> _enTranslations = {
   'charged': 'Charged',
   'not_charged': 'Not charged',
   'sale_details': 'Sale details',
-  'no_matching_products': 'No matching products found',
   'empty_cart': 'Cart is empty',
   'checkout_btn': 'Checkout',
   'clear_all': 'Clear all',
   'discontinued': 'Discontinued',
   'cart_title': 'Cart',
   'product_added_success': 'Product added successfully',
-  'add_product': 'Add product',
   'invalid': 'Invalid',
   'active_status_label': 'Active',
   'cost_amount': 'Cost',
@@ -3666,13 +3777,74 @@ const Map<String, String> _enTranslations = {
   'total_room_nights_available': 'Total available room nights',
   'total_room_nights_sold': 'Total sold room nights',
   'no_expenses_in_date_range': 'No expenses in this date range',
-  'copied_value_msg': 'Copied',
   'role_housekeeping_label': 'Housekeeping',
   'rooms_suffix': 'rooms',
   'nights_suffix': 'nights',
   'guests_suffix': 'guests',
   'transactions_suffix': 'transactions',
   'avg_short': 'Avg',
+
+  // Phase C6
+  'excel_format_desc': 'Formatted, multiple sheets',
+  'csv_format_desc': 'Text format, widely used',
+  'sales_history_hint': 'Sales history will appear here',
+  'guest_label': 'Guest',
+  'total_price': 'Total price',
+  'search_product_hint': 'Search products...',
+  'select_booking_first': 'Please select a booking first',
+  'clear_cart_title': 'Clear cart',
+  'clear_cart_confirm': 'Are you sure you want to remove all products from the cart?',
+  'confirm_checkout': 'Confirm payment',
+  'guest_name_label': 'Guest',
+  'total_label': 'Total',
+  'checkout_success': 'Payment successful',
+  'selling_price': 'Selling price',
+  'required_field': 'Required',
+  'active_label': 'Active',
+  'active_selling': 'On sale',
+  'inactive_selling': 'Discontinued',
+  'update_label': 'Update',
+  'product_added_msg': 'Product added successfully',
+  'confirm_delete_product_msg': 'Are you sure you want to delete',
+  'product_deleted_success': 'Product deleted',
+  'room_count_label': 'Rooms',
+  'guest_count_label': 'Guests',
+  'deposit_label': 'Deposit',
+  'paid_status': 'Paid',
+  'assign_rooms_label': 'Assign rooms',
+  'room_id_list_label': 'Room ID list',
+  'rooms_assigned_success': 'Rooms assigned',
+  'assign_rooms_first_msg': 'Please assign rooms first',
+  'checked_in_msg': 'Checked in',
+  'checked_out_msg': 'Checked out',
+  'cancelled_status': 'Cancelled',
+  'scheduled_date_label': 'Scheduled date',
+  'inspector_label': 'Inspector',
+  'inspection_results': 'Inspection results',
+  'pass_label': 'Pass',
+  'issues_label': 'issues',
+  'critical_issues_label': 'critical',
+  'checklist_label': 'Checklist',
+  'edit_label': 'Edit',
+  'duplicate_label': 'Duplicate',
+  'template_created_success': 'Template created successfully',
+  'edit_feature_in_progress': 'Edit feature is under development',
+  'template_deleted_success': 'Template deleted',
+  'create_new_template_title': 'Create new inspection template',
+  'template_name_label': 'Template name',
+  'inspection_type_label': 'Inspection type',
+  'default_template_label': 'Default template',
+  'default_template_hint': 'Use this template when creating new inspections',
+  'checklist_count': 'Checklist',
+  'add_label': 'Add',
+  'create_template_btn': 'Create template',
+  'add_checklist_item_title': 'Add checklist item',
+  'category_label': 'Category',
+  'bedroom_category': 'Bedroom',
+  'bathroom_category': 'Bathroom',
+  'safety_category': 'Safety',
+  'please_add_at_least_one': 'Please add at least one checklist item',
+  'items_suffix': 'items',
 };
 
 // Delegate

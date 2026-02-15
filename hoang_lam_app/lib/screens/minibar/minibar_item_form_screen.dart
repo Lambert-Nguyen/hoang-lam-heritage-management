@@ -173,10 +173,10 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
                       Expanded(
                         child: TextFormField(
                           controller: _costController,
-                          decoration: const InputDecoration(
-                            labelText: 'Giá vốn',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.attach_money),
+                          decoration: InputDecoration(
+                            labelText: l10n.costPrice,
+                            border: const OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.attach_money),
                             suffixText: '₫',
                           ),
                           keyboardType: TextInputType.number,
@@ -189,10 +189,10 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
                       Expanded(
                         child: TextFormField(
                           controller: _priceController,
-                          decoration: const InputDecoration(
-                            labelText: 'Giá bán *',
-                            border: OutlineInputBorder(),
-                            prefixIcon: Icon(Icons.sell),
+                          decoration: InputDecoration(
+                            labelText: '${l10n.sellingPrice} *',
+                            border: const OutlineInputBorder(),
+                            prefixIcon: const Icon(Icons.sell),
                             suffixText: '₫',
                           ),
                           keyboardType: TextInputType.number,
@@ -201,10 +201,10 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
                           ],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Bắt buộc';
+                              return l10n.requiredField;
                             }
                             if (double.tryParse(value) == null) {
-                              return 'Không hợp lệ';
+                              return l10n.invalid;
                             }
                             return null;
                           },
@@ -216,8 +216,8 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
 
                   // Active switch
                   SwitchListTile(
-                    title: const Text('Hoạt động'),
-                    subtitle: Text(_isActive ? 'Đang bán' : 'Ngừng bán'),
+                    title: Text(l10n.activeLabel),
+                    subtitle: Text(_isActive ? l10n.activeSelling : l10n.inactiveSelling),
                     value: _isActive,
                     onChanged: (value) => setState(() => _isActive = value),
                     secondary: Icon(
@@ -239,7 +239,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
                     onPressed: _submitForm,
                     child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.md),
-                      child: Text(_isEditing ? 'Cập nhật' : 'Thêm sản phẩm'),
+                      child: Text(_isEditing ? l10n.updateLabel : l10n.addProduct),
                     ),
                   ),
                 ],
@@ -249,6 +249,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
   }
 
   Widget _buildProfitMarginCard() {
+    final l10n = context.l10n;
     final costPrice = double.tryParse(_costController.text) ?? 0;
     final sellingPrice = double.tryParse(_priceController.text) ?? 0;
     final profit = sellingPrice - costPrice;
@@ -264,7 +265,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildProfitItem(
-              'Lợi nhuận',
+              l10n.profitLabel,
               '${profit >= 0 ? '+' : ''}${profit.toStringAsFixed(0)}₫',
               profit >= 0 ? AppColors.success : AppColors.error,
             ),
@@ -274,7 +275,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
               color: Colors.grey.withValues(alpha: 0.3),
             ),
             _buildProfitItem(
-              'Biên lợi nhuận',
+              l10n.profitMargin,
               '${margin.toStringAsFixed(1)}%',
               profit >= 0 ? AppColors.success : AppColors.error,
             ),
@@ -308,6 +309,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
   }
 
   Future<void> _submitForm() async {
+    final l10n = context.l10n;
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -348,8 +350,8 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(_isEditing
-                ? 'Cập nhật sản phẩm thành công'
-                : 'Thêm sản phẩm thành công'),
+                ? l10n.productUpdatedSuccess
+                : l10n.productAddedMsg),
             backgroundColor: AppColors.success,
           ),
         );
@@ -358,7 +360,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${l10n.error}: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -371,20 +373,21 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
   }
 
   Future<void> _confirmDelete() async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: Text('Bạn có chắc chắn muốn xóa "${widget.item!.name}"?'),
+        title: Text(l10n.confirmDeleteProduct),
+        content: Text('${l10n.confirmDeleteProductMsg} "${widget.item!.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Xóa'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -403,8 +406,8 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Đã xóa sản phẩm'),
+          SnackBar(
+            content: Text(l10n.productDeletedSuccess),
             backgroundColor: AppColors.success,
           ),
         );
@@ -413,7 +416,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${l10n.error}: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );

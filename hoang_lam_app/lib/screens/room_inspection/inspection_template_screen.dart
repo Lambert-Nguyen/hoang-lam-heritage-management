@@ -94,6 +94,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
         minChildSize: 0.4,
         expand: false,
         builder: (context, scrollController) {
+          final l10n = context.l10n;
           return Container(
             padding: AppSpacing.paddingAll,
             child: ListView(
@@ -122,7 +123,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                           color: Colors.green.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text('Mặc định', style: TextStyle(color: Colors.green, fontSize: 12)),
+                        child: Text(l10n.defaultBadge, style: const TextStyle(color: Colors.green, fontSize: 12)),
                       ),
                   ],
                 ),
@@ -150,7 +151,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                 const Divider(),
                 const SizedBox(height: 8),
                 Text(
-                  'Danh sách kiểm tra (${template.items.length} mục)',
+                  '${l10n.checklistCount} (${template.items.length} ${l10n.itemsSuffix})',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 12),
@@ -165,7 +166,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                           _editTemplate(template);
                         },
                         icon: const Icon(Icons.edit),
-                        label: const Text('Chỉnh sửa'),
+                        label: Text(l10n.editLabel),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -176,7 +177,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                           _duplicateTemplate(template);
                         },
                         icon: const Icon(Icons.copy),
-                        label: const Text('Sao chép'),
+                        label: Text(l10n.duplicateBtn),
                       ),
                     ),
                   ],
@@ -190,6 +191,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
   }
 
   Widget _buildTemplateItemTile(TemplateItem templateItem) {
+    final l10n = context.l10n;
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -221,7 +223,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                 color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text('Quan trọng', style: TextStyle(fontSize: 10, color: Colors.red)),
+              child: Text(l10n.critical, style: const TextStyle(fontSize: 10, color: Colors.red)),
             ),
         ],
       ),
@@ -240,13 +242,13 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
         await ref.read(inspectionTemplateNotifierProvider.notifier).createTemplate(result);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã tạo mẫu thành công'), backgroundColor: Colors.green),
+            SnackBar(content: Text(context.l10n.templateCreatedSuccess), backgroundColor: Colors.green),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+            SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
           );
         }
       }
@@ -256,7 +258,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
   void _editTemplate(InspectionTemplate template) {
     // TODO: Implement edit template
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Chức năng chỉnh sửa đang phát triển')),
+      SnackBar(content: Text(context.l10n.editFeatureInProgress)),
     );
   }
 
@@ -272,30 +274,31 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
       await ref.read(inspectionTemplateNotifierProvider.notifier).createTemplate(newTemplate);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã sao chép mẫu thành công'), backgroundColor: Colors.green),
+          SnackBar(content: Text(context.l10n.templateDuplicated), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
         );
       }
     }
   }
 
   Future<void> _deleteTemplate(InspectionTemplate template) async {
+    final l10n = context.l10n;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: Text('Bạn có chắc muốn xóa mẫu "${template.name}"?'),
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteTemplate),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Xóa'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -306,13 +309,13 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
         await ref.read(inspectionTemplateNotifierProvider.notifier).deleteTemplate(template.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Đã xóa mẫu'), backgroundColor: Colors.green),
+            SnackBar(content: Text(l10n.templateDeletedSuccess), backgroundColor: Colors.green),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+            SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: Colors.red),
           );
         }
       }
@@ -333,6 +336,7 @@ class _TemplateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       onTap: onTap,
@@ -368,7 +372,7 @@ class _TemplateCard extends StatelessWidget {
                             color: Colors.green.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text('Mặc định', style: TextStyle(color: Colors.green, fontSize: 10)),
+                          child: Text(l10n.defaultBadge, style: const TextStyle(color: Colors.green, fontSize: 10)),
                         ),
                     ],
                   ),
@@ -385,7 +389,7 @@ class _TemplateCard extends StatelessWidget {
                       Icon(Icons.checklist, size: 14, color: AppColors.textSecondary),
                       const SizedBox(width: 4),
                       Text(
-                        '${template.items.length} mục',
+                        '${template.items.length} ${l10n.itemsSuffix}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
@@ -454,6 +458,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
       minChildSize: 0.5,
       expand: false,
       builder: (context, scrollController) {
+        final l10n = context.l10n;
         return Container(
           padding: AppSpacing.paddingAll,
           child: Form(
@@ -472,22 +477,22 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                     ),
                   ),
                 ),
-                Text('Tạo mẫu kiểm tra mới', style: Theme.of(context).textTheme.titleLarge),
+                Text(l10n.createNewTemplateTitle, style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 24),
 
                 // Name field
                 TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'Tên mẫu *',
-                    hintText: 'VD: Kiểm tra checkout tiêu chuẩn',
+                  decoration: InputDecoration(
+                    labelText: '${l10n.templateNameLabel} *',
+                    hintText: l10n.templateNameHint,
                   ),
-                  validator: (v) => v?.isEmpty ?? true ? 'Vui lòng nhập tên mẫu' : null,
+                  validator: (v) => v?.isEmpty ?? true ? l10n.pleaseEnterTemplateName : null,
                   onChanged: (v) => _name = v,
                 ),
                 const SizedBox(height: 16),
 
                 // Type selection
-                Text('Loại kiểm tra', style: Theme.of(context).textTheme.bodyMedium),
+                Text(l10n.inspectionTypeLabel, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
@@ -509,9 +514,9 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
 
                 // Room type (as numeric ID)
                 TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: 'ID Loại phòng (tùy chọn)',
-                    hintText: 'VD: 1, 2, 3',
+                  decoration: InputDecoration(
+                    labelText: l10n.roomTypeIdOptional,
+                    hintText: l10n.roomTypeIdHint,
                   ),
                   keyboardType: TextInputType.number,
                   onChanged: (v) => _roomType = int.tryParse(v),
@@ -520,8 +525,8 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
 
                 // Is default
                 SwitchListTile(
-                  title: const Text('Mẫu mặc định'),
-                  subtitle: const Text('Sử dụng mẫu này khi tạo kiểm tra mới'),
+                  title: Text(l10n.defaultTemplateLabel),
+                  subtitle: Text(l10n.defaultTemplateHint),
                   value: _isDefault,
                   onChanged: (v) => setState(() => _isDefault = v),
                 ),
@@ -530,12 +535,12 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                 // Items section
                 Row(
                   children: [
-                    Text('Danh sách kiểm tra (${_items.length})', style: Theme.of(context).textTheme.titleMedium),
+                    Text('${l10n.checklistCount} (${_items.length})', style: Theme.of(context).textTheme.titleMedium),
                     const Spacer(),
                     TextButton.icon(
                       onPressed: _showAddItemDialog,
                       icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Thêm'),
+                      label: Text(l10n.addLabel),
                     ),
                   ],
                 ),
@@ -573,7 +578,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                               color: Colors.red.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: const Text('Quan trọng', style: TextStyle(fontSize: 10, color: Colors.red)),
+                            child: Text(l10n.critical, style: const TextStyle(fontSize: 10, color: Colors.red)),
                           ),
                         IconButton(
                           icon: const Icon(Icons.delete_outline, size: 20),
@@ -587,7 +592,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
 
                 FilledButton(
                   onPressed: _submit,
-                  child: const Text('Tạo mẫu'),
+                  child: Text(l10n.createTemplateBtn),
                 ),
               ],
             ),
@@ -598,36 +603,37 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
   }
 
   void _showAddItemDialog() {
+    final l10n = context.l10n;
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            title: const Text('Thêm mục kiểm tra'),
+            title: Text(l10n.addChecklistItemTitle),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 TextField(
                   controller: _itemNameController,
-                  decoration: const InputDecoration(labelText: 'Tên mục *'),
+                  decoration: InputDecoration(labelText: l10n.itemNameLabel),
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<String>(
-                  decoration: const InputDecoration(labelText: 'Danh mục'),
+                  decoration: InputDecoration(labelText: l10n.categoryLabel),
                   value: _itemCategory,
-                  items: const [
-                    DropdownMenuItem(value: 'Phòng ngủ', child: Text('Phòng ngủ')),
-                    DropdownMenuItem(value: 'Phòng tắm', child: Text('Phòng tắm')),
-                    DropdownMenuItem(value: 'Tiện nghi', child: Text('Tiện nghi')),
-                    DropdownMenuItem(value: 'Điện tử', child: Text('Điện tử')),
-                    DropdownMenuItem(value: 'An toàn', child: Text('An toàn')),
-                    DropdownMenuItem(value: 'Khác', child: Text('Khác')),
+                  items: [
+                    DropdownMenuItem(value: 'Phòng ngủ', child: Text(l10n.bedroomCategory)),
+                    DropdownMenuItem(value: 'Phòng tắm', child: Text(l10n.bathroomCategory)),
+                    DropdownMenuItem(value: 'Tiện nghi', child: Text(l10n.amenitiesCategory)),
+                    DropdownMenuItem(value: 'Điện tử', child: Text(l10n.electronicsCategory)),
+                    DropdownMenuItem(value: 'An toàn', child: Text(l10n.safetyCategory)),
+                    DropdownMenuItem(value: 'Khác', child: Text(l10n.otherCategory)),
                   ],
                   onChanged: (v) => setDialogState(() => _itemCategory = v ?? 'Phòng ngủ'),
                 ),
                 const SizedBox(height: 8),
                 CheckboxListTile(
-                  title: const Text('Quan trọng'),
+                  title: Text(l10n.critical),
                   value: _itemCritical,
                   onChanged: (v) => setDialogState(() => _itemCritical = v ?? false),
                   controlAffinity: ListTileControlAffinity.leading,
@@ -636,7 +642,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
               ],
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+              TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
               FilledButton(
                 onPressed: () {
                   if (_itemNameController.text.isNotEmpty) {
@@ -652,7 +658,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Thêm'),
+                child: Text(l10n.addLabel),
               ),
             ],
           );
@@ -667,7 +673,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
     }
     if (_items.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng thêm ít nhất một mục kiểm tra'), backgroundColor: Colors.red),
+        SnackBar(content: Text(context.l10n.pleaseAddAtLeastOne), backgroundColor: Colors.red),
       );
       return;
     }

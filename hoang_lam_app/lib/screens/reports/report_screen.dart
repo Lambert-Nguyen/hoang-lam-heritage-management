@@ -116,6 +116,7 @@ class ReportScreen extends ConsumerWidget {
     BuildContext context,
     ReportScreenNotifier notifier,
   ) {
+    final l10n = context.l10n;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(

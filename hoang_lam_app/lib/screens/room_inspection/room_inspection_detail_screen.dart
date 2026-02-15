@@ -147,13 +147,13 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 8),
-            _buildInfoRow(context, Icons.calendar_today, 'Ngày dự kiến', _formatDate(inspection.scheduledDate)),
+            _buildInfoRow(context, Icons.calendar_today, context.l10n.scheduledDate, _formatDate(inspection.scheduledDate)),
             if (inspection.completedAt != null)
-              _buildInfoRow(context, Icons.check_circle, 'Hoàn thành', _formatDateTime(inspection.completedAt!)),
+              _buildInfoRow(context, Icons.check_circle, context.l10n.completedLabel, _formatDateTime(inspection.completedAt!)),
             if (inspection.inspectorName != null)
-              _buildInfoRow(context, Icons.person, 'Người kiểm tra', inspection.inspectorName!),
+              _buildInfoRow(context, Icons.person, context.l10n.inspector, inspection.inspectorName!),
             if (inspection.booking != null)
-              _buildInfoRow(context, Icons.bookmark, 'Mã đặt phòng', '#${inspection.booking}'),
+              _buildInfoRow(context, Icons.bookmark, context.l10n.bookingCodeLabel, '#${inspection.booking}'),
           ],
         ),
       ),
@@ -187,7 +187,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Kết quả kiểm tra', style: Theme.of(context).textTheme.titleMedium),
+            Text(context.l10n.inspectionResult, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -201,7 +201,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                               fontWeight: FontWeight.bold,
                             ),
                       ),
-                      const Text('Điểm'),
+                      Text(context.l10n.scoreLabel),
                     ],
                   ),
                 ),
@@ -213,7 +213,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                         '${inspection.passedItems}/${inspection.totalItems}',
                         style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      const Text('Đạt'),
+                      Text(context.l10n.passLabel),
                     ],
                   ),
                 ),
@@ -246,7 +246,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                           const Icon(Icons.warning_amber, size: 16, color: Colors.orange),
                           const SizedBox(width: 4),
                           Text(
-                            '${inspection.issuesFound} vấn đề',
+                            '${inspection.issuesFound} ${context.l10n.issuesCount}',
                             style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -267,7 +267,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                           const Icon(Icons.error, size: 16, color: Colors.red),
                           const SizedBox(width: 4),
                           Text(
-                            '${inspection.criticalIssues} nghiêm trọng',
+                            '${inspection.criticalIssues} ${context.l10n.criticalIssuesLabel}',
                             style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -292,7 +292,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
           children: [
             Row(
               children: [
-                Text('Danh sách kiểm tra', style: Theme.of(context).textTheme.titleMedium),
+                Text(context.l10n.checklistLabel, style: Theme.of(context).textTheme.titleMedium),
                 const Spacer(),
                 Text(
                   '${inspection.passedItems}/${inspection.totalItems}',
@@ -302,7 +302,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
             ),
             const SizedBox(height: 12),
             if (inspection.checklistItems.isEmpty)
-              const Text('Chưa có mục kiểm tra nào')
+              Text(context.l10n.noChecklistItems)
             else
               ...inspection.checklistItems.map((checklistItem) => _buildChecklistItem(context, checklistItem)),
           ],
@@ -372,9 +372,9 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                 color: Colors.red.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text(
-                'Quan trọng',
-                style: TextStyle(fontSize: 10, color: Colors.red),
+              child: Text(
+                context.l10n.critical,
+                style: const TextStyle(fontSize: 10, color: Colors.red),
               ),
             ),
         ],
@@ -389,7 +389,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Hình ảnh (${inspection.images.length})', style: Theme.of(context).textTheme.titleMedium),
+            Text('${context.l10n.imagesLabel} (${inspection.images.length})', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             SizedBox(
               height: 100,
@@ -439,7 +439,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
               children: [
                 const Icon(Icons.notes, size: 20),
                 const SizedBox(width: 8),
-                Text('Ghi chú', style: Theme.of(context).textTheme.titleMedium),
+                Text(context.l10n.notesSection, style: Theme.of(context).textTheme.titleMedium),
               ],
             ),
             const SizedBox(height: 12),
@@ -466,7 +466,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                 Icon(Icons.warning_amber, size: 20, color: Colors.orange[700]),
                 const SizedBox(width: 8),
                 Text(
-                  'Hành động cần thực hiện',
+                  context.l10n.actionRequiredSection,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.orange[700]),
                 ),
               ],
@@ -508,7 +508,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
           mainAxisSize: MainAxisSize.min,
           children: [
             AppBar(
-              title: const Text('Xem ảnh'),
+              title: Text(context.l10n.viewPhoto),
               automaticallyImplyLeading: false,
               actions: [
                 IconButton(
@@ -541,7 +541,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {

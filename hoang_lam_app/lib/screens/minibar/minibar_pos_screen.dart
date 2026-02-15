@@ -84,7 +84,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
                     loading: () => const LoadingIndicator(),
                     error: (error, _) => EmptyState(
                       icon: Icons.error_outline,
-                      title: 'Lỗi',
+                      title: l10n.error,
                       subtitle: error.toString(),
                     ),
                   ),
@@ -199,12 +199,13 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
   }
 
   Widget _buildSearchBar() {
+    final l10n = context.l10n;
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.md),
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: 'Tìm kiếm sản phẩm...',
+          hintText: l10n.searchProductHint,
           prefixIcon: const Icon(Icons.search),
           border: const OutlineInputBorder(),
           suffixIcon: _searchController.text.isNotEmpty
@@ -223,6 +224,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
   }
 
   Widget _buildItemGrid(List<MinibarItem> items) {
+    final l10n = context.l10n;
     // Filter by category
     var filteredItems = items;
     if (_selectedCategory != null) {
@@ -241,10 +243,10 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
     }
 
     if (filteredItems.isEmpty) {
-      return const EmptyState(
+      return EmptyState(
         icon: Icons.local_bar,
-        title: 'Không có sản phẩm',
-        subtitle: 'Không tìm thấy sản phẩm phù hợp',
+        title: l10n.noProducts,
+        subtitle: l10n.noMatchingProducts,
       );
     }
 
@@ -255,10 +257,11 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
   }
 
   void _handleAddToCart(MinibarItem item) {
+    final l10n = context.l10n;
     if (_selectedBooking == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Vui lòng chọn đặt phòng trước'),
+        SnackBar(
+          content: Text(l10n.selectBookingFirst),
           backgroundColor: Colors.orange,
         ),
       );
@@ -276,20 +279,21 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
   }
 
   Future<void> _handleClearCart() async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xóa giỏ hàng'),
-        content: const Text('Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?'),
+        title: Text(l10n.clearCartTitle),
+        content: Text(l10n.clearCartConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Xóa'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -301,6 +305,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
   }
 
   Future<void> _handleCheckout() async {
+    final l10n = context.l10n;
     final cartState = ref.read(minibarCartProvider);
     if (cartState.items.isEmpty || _selectedBooking == null) {
       return;
@@ -310,16 +315,16 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận thanh toán'),
+        title: Text(l10n.confirmCheckout),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Phòng: ${_selectedBooking!.roomNumber}'),
-            Text('Khách: ${_selectedBooking!.guestName}'),
+            Text('${l10n.roomLabel}: ${_selectedBooking!.roomNumber}'),
+            Text('${l10n.guestNameLabel}: ${_selectedBooking!.guestName}'),
             const SizedBox(height: 8),
             Text(
-              'Tổng: ${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(cartState.totalAmount)}',
+              '${l10n.totalLabel}: ${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(cartState.totalAmount)}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
@@ -327,11 +332,11 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Xác nhận'),
+            child: Text(l10n.confirm),
           ),
         ],
       ),
@@ -347,8 +352,8 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
         if (success) {
           setState(() => _selectedBooking = null);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Thanh toán thành công'),
+            SnackBar(
+              content: Text(l10n.checkoutSuccess),
               backgroundColor: Colors.green,
             ),
           );
@@ -356,7 +361,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           final errorMessage = ref.read(minibarCartProvider).errorMessage;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Lỗi: ${errorMessage ?? 'Không xác định'}'),
+              content: Text('${l10n.error}: ${errorMessage ?? l10n.unknownError}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -366,7 +371,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${l10n.error}: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );

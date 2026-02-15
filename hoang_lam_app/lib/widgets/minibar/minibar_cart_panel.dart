@@ -96,19 +96,19 @@ class MinibarCartPanel extends StatelessWidget {
         // Cart items
         Expanded(
           child: cartState.items.isEmpty
-              ? const Center(
+              ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.shopping_cart_outlined,
                         size: 48,
                         color: AppColors.textSecondary,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         context.l10n.emptyCart,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: AppColors.textSecondary,
                         ),
                       ),

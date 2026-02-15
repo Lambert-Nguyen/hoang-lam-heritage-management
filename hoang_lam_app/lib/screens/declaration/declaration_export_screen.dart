@@ -101,8 +101,7 @@ class _DeclarationExportScreenState
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '• ĐD10: Sổ quản lý lưu trú (khách Việt Nam)\n'
-                      '• NA17: Phiếu khai báo tạm trú (khách nước ngoài)',
+                      l10n.declarationFormDescriptions,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -149,7 +148,7 @@ class _DeclarationExportScreenState
 
             // Date range section
             Text(
-              'Khoảng thời gian',
+              l10n.dateRangeLabel,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -157,7 +156,7 @@ class _DeclarationExportScreenState
               children: [
                 Expanded(
                   child: _DatePickerField(
-                    label: 'Từ ngày',
+                    label: l10n.fromDate,
                     date: _dateFrom,
                     dateFormat: _dateFormat,
                     onDateSelected: (date) {
@@ -173,7 +172,7 @@ class _DeclarationExportScreenState
                 const SizedBox(width: 16),
                 Expanded(
                   child: _DatePickerField(
-                    label: 'Đến ngày',
+                    label: l10n.toDate,
                     date: _dateTo,
                     dateFormat: _dateFormat,
                     firstDate: _dateFrom,
@@ -193,7 +192,7 @@ class _DeclarationExportScreenState
               spacing: 8,
               children: [
                 ActionChip(
-                  label: const Text('Hôm nay'),
+                  label: Text(l10n.today),
                   onPressed: () {
                     setState(() {
                       _dateFrom = DateTime.now();
@@ -202,7 +201,7 @@ class _DeclarationExportScreenState
                   },
                 ),
                 ActionChip(
-                  label: const Text('Hôm qua'),
+                  label: Text(l10n.yesterday),
                   onPressed: () {
                     final yesterday =
                         DateTime.now().subtract(const Duration(days: 1));
@@ -213,7 +212,7 @@ class _DeclarationExportScreenState
                   },
                 ),
                 ActionChip(
-                  label: const Text('7 ngày qua'),
+                  label: Text(l10n.last7DaysLabel),
                   onPressed: () {
                     setState(() {
                       _dateTo = DateTime.now();
@@ -223,7 +222,7 @@ class _DeclarationExportScreenState
                   },
                 ),
                 ActionChip(
-                  label: const Text('30 ngày qua'),
+                  label: Text(l10n.last30DaysLabel),
                   onPressed: () {
                     setState(() {
                       _dateTo = DateTime.now();
@@ -238,7 +237,7 @@ class _DeclarationExportScreenState
 
             // Format section
             Text(
-              'Định dạng file',
+              l10n.fileFormatLabel,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
@@ -249,7 +248,7 @@ class _DeclarationExportScreenState
                     format: ExportFormat.excel,
                     isSelected: _format == ExportFormat.excel,
                     onTap: () => setState(() => _format = ExportFormat.excel),
-                    subtitle: 'Có format, nhiều sheet',
+                    subtitle: l10n.excelFormatDesc,
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -258,7 +257,7 @@ class _DeclarationExportScreenState
                     format: ExportFormat.csv,
                     isSelected: _format == ExportFormat.csv,
                     onTap: () => setState(() => _format = ExportFormat.csv),
-                    subtitle: 'Dạng text, phổ biến',
+                    subtitle: l10n.csvFormatDesc,
                   ),
                 ),
               ],
@@ -284,8 +283,8 @@ class _DeclarationExportScreenState
                     : const Icon(Icons.download),
                 label: Text(
                   exportState is DeclarationExportLoading
-                      ? 'Đang xuất...'
-                      : 'Xuất danh sách',
+                      ? l10n.exporting
+                      : l10n.exportList,
                 ),
               ),
             ),
@@ -314,13 +313,14 @@ class _DeclarationExportScreenState
   }
 
   Future<void> _openFile(String filePath) async {
+    final l10n = context.l10n;
     try {
       await OpenFile.open(filePath);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Không thể mở file: $e'),
+            content: Text('${l10n.cannotOpenFile}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -329,6 +329,7 @@ class _DeclarationExportScreenState
   }
 
   Future<void> _shareFile(String filePath) async {
+    final l10n = context.l10n;
     try {
       await SharePlus.instance.share(
         ShareParams(files: [XFile(filePath)]),
@@ -337,7 +338,7 @@ class _DeclarationExportScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Không thể chia sẻ file: $e'),
+            content: Text('${l10n.cannotShareFile}: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -466,6 +467,7 @@ class _ExportedFileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final filename = filePath.split('/').last;
 
     return Card(
@@ -484,7 +486,7 @@ class _ExportedFileCard extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'File đã được xuất thành công',
+                    l10n.fileExportedSuccess,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -499,7 +501,7 @@ class _ExportedFileCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Các đặt phòng đã được đánh dấu "Đã khai báo"',
+              l10n.bookingsMarkedAsDeclared,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -511,7 +513,7 @@ class _ExportedFileCard extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: onOpen,
                     icon: const Icon(Icons.open_in_new, size: 18),
-                    label: const Text('Mở'),
+                    label: Text(l10n.openFileBtn),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -519,7 +521,7 @@ class _ExportedFileCard extends StatelessWidget {
                   child: OutlinedButton.icon(
                     onPressed: onShare,
                     icon: const Icon(Icons.share, size: 18),
-                    label: const Text('Chia sẻ'),
+                    label: Text(l10n.shareFileBtn),
                   ),
                 ),
               ],
