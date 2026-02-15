@@ -127,34 +127,34 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _SectionTitle(title: 'Thông tin đoàn'),
+            _SectionTitle(title: context.l10n.groupInfo),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(children: [
-                  AppTextField(controller: _nameController, label: 'Tên đoàn *', hint: 'VD: Đoàn du lịch ABC', validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
+                  AppTextField(controller: _nameController, label: '${context.l10n.groupNameRequired} *', hint: context.l10n.exampleGroupName, validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
                   const SizedBox(height: AppSpacing.md),
                   Row(children: [
-                    Expanded(child: AppTextField(controller: _roomCountController, label: 'Số phòng *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? 'Không hợp lệ' : null)),
+                    Expanded(child: AppTextField(controller: _roomCountController, label: '${context.l10n.numberOfRooms} *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? 'Không hợp lệ' : null)),
                     const SizedBox(width: AppSpacing.md),
-                    Expanded(child: AppTextField(controller: _guestCountController, label: 'Số khách *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? 'Không hợp lệ' : null)),
+                    Expanded(child: AppTextField(controller: _guestCountController, label: '${context.l10n.numberOfGuests} *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? 'Không hợp lệ' : null)),
                   ]),
                 ]),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionTitle(title: 'Thông tin liên hệ'),
+            _SectionTitle(title: context.l10n.contactInfo),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(children: [
-                  AppTextField(controller: _contactNameController, label: 'Người liên hệ *', validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
+                  AppTextField(controller: _contactNameController, label: '${context.l10n.contactPersonRequired} *', validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
                   const SizedBox(height: AppSpacing.md),
-                  AppTextField(controller: _contactPhoneController, label: 'Điện thoại *', keyboardType: TextInputType.phone, validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
+                  AppTextField(controller: _contactPhoneController, label: '${context.l10n.phoneRequired} *', keyboardType: TextInputType.phone, validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
                   const SizedBox(height: AppSpacing.md),
-                  AppTextField(controller: _contactEmailController, label: 'Email', keyboardType: TextInputType.emailAddress),
+                  AppTextField(controller: _contactEmailController, label: context.l10n.emailLabel, keyboardType: TextInputType.emailAddress),
                 ]),
               ),
             ),

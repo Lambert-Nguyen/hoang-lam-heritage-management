@@ -38,7 +38,7 @@ class ReportScreen extends ConsumerWidget {
           ),
           PopupMenuButton<ExportFormat>(
             icon: const Icon(Icons.download),
-            tooltip: 'Xuất báo cáo',
+            tooltip: l10n.exportReport,
             onSelected: (format) => _exportReport(context, ref, format),
             itemBuilder: (context) => [
               const PopupMenuItem(
@@ -125,7 +125,7 @@ class ReportScreen extends ConsumerWidget {
       child: Row(
         children: [
           _QuickDateButton(
-            label: '7 ngày',
+            label: l10n.last7Days,
             onPressed: () {
               final now = DateTime.now();
               notifier.setDateRange(
@@ -135,23 +135,23 @@ class ReportScreen extends ConsumerWidget {
             },
           ),
           _QuickDateButton(
-            label: '30 ngày',
+            label: l10n.last30Days,
             onPressed: notifier.setLast30Days,
           ),
           _QuickDateButton(
-            label: 'Tháng này',
+            label: l10n.thisMonth,
             onPressed: notifier.setThisMonth,
           ),
           _QuickDateButton(
-            label: 'Tháng trước',
+            label: l10n.lastMonth,
             onPressed: notifier.setLastMonth,
           ),
           _QuickDateButton(
-            label: '90 ngày',
+            label: l10n.last90Days,
             onPressed: notifier.setLast90Days,
           ),
           _QuickDateButton(
-            label: 'Năm nay',
+            label: l10n.thisYear,
             onPressed: notifier.setThisYear,
           ),
         ],
@@ -274,7 +274,7 @@ class ReportScreen extends ConsumerWidget {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Lỗi lưu file: $e'),
+                content: Text('${context.l10n.saveFileError}: $e'),
                 backgroundColor: AppColors.error,
               ),
             );
@@ -330,7 +330,7 @@ class _OccupancyReportContent extends ConsumerWidget {
       data: (reports) => _buildOccupancyList(context, reports),
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: 'Lỗi tải báo cáo: $error',
+        message: '${context.l10n.reportLoadError}: $error',
         onRetry: () => ref.invalidate(currentOccupancyReportProvider),
       ),
     );
@@ -338,8 +338,8 @@ class _OccupancyReportContent extends ConsumerWidget {
 
   Widget _buildOccupancyList(BuildContext context, List<OccupancyReport> reports) {
     if (reports.isEmpty) {
-      return const Center(
-        child: Text('Không có dữ liệu trong khoảng thời gian này'),
+      return Center(
+        child: Text(context.l10n.noDataInPeriod),
       );
     }
 
@@ -357,14 +357,14 @@ class _OccupancyReportContent extends ConsumerWidget {
               child: Column(
                 children: [
                   _SummaryRow(
-                    label: 'Công suất trung bình',
+                    label: context.l10n.averageOccupancy,
                     value: '${avgOccupancy.toStringAsFixed(1)}%',
                     icon: Icons.hotel,
                     color: avgOccupancy >= 70 ? AppColors.success : AppColors.warning,
                   ),
                   const Divider(),
                   _SummaryRow(
-                    label: 'Tổng doanh thu',
+                    label: context.l10n.totalRevenue,
                     value: CurrencyFormatter.formatVND(totalRevenue),
                     icon: Icons.attach_money,
                     color: AppColors.income,
@@ -413,7 +413,7 @@ class _OccupancyReportTile extends StatelessWidget {
       ),
       title: Text(report.date ?? report.period ?? 'N/A'),
       subtitle: Text(
-        '${report.occupiedRooms}/${report.totalRooms} phòng • ${CurrencyFormatter.formatVND(report.revenue)}',
+        '${report.occupiedRooms}/${report.totalRooms} ${context.l10n.roomsSuffix} • ${CurrencyFormatter.formatVND(report.revenue)}',
       ),
       trailing: const Icon(Icons.chevron_right),
     );
@@ -431,7 +431,7 @@ class _RevenueReportContent extends ConsumerWidget {
       data: (reports) => _buildRevenueList(context, reports),
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: 'Lỗi tải báo cáo: $error',
+        message: '${context.l10n.reportLoadError}: $error',
         onRetry: () => ref.invalidate(currentRevenueReportProvider),
       ),
     );
@@ -439,8 +439,8 @@ class _RevenueReportContent extends ConsumerWidget {
 
   Widget _buildRevenueList(BuildContext context, List<RevenueReport> reports) {
     if (reports.isEmpty) {
-      return const Center(
-        child: Text('Không có dữ liệu trong khoảng thời gian này'),
+      return Center(
+        child: Text(context.l10n.noDataInPeriod),
       );
     }
 
@@ -461,7 +461,7 @@ class _RevenueReportContent extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _MetricCard(
-                        label: 'Doanh thu',
+                        label: context.l10n.revenueLabel,
                         value: CurrencyFormatter.formatVND(totalRevenue),
                         icon: Icons.arrow_downward,
                         color: AppColors.income,
@@ -470,7 +470,7 @@ class _RevenueReportContent extends ConsumerWidget {
                     AppSpacing.gapHorizontalMd,
                     Expanded(
                       child: _MetricCard(
-                        label: 'Chi phí',
+                        label: context.l10n.expensesLabel,
                         value: CurrencyFormatter.formatVND(totalExpenses),
                         icon: Icons.arrow_upward,
                         color: AppColors.expense,
@@ -480,7 +480,7 @@ class _RevenueReportContent extends ConsumerWidget {
                 ),
                 AppSpacing.gapVerticalMd,
                 _MetricCard(
-                  label: 'Lợi nhuận',
+                  label: context.l10n.netProfit,
                   value: CurrencyFormatter.formatVND(netProfit),
                   icon: netProfit >= 0 ? Icons.trending_up : Icons.trending_down,
                   color: netProfit >= 0 ? AppColors.success : AppColors.error,
@@ -524,7 +524,7 @@ class _RevenueReportTile extends StatelessWidget {
       ),
       title: Text(report.date ?? report.period ?? 'N/A'),
       subtitle: Text(
-        'DT: ${CurrencyFormatter.formatCompact(report.totalRevenue)} • LN: ${CurrencyFormatter.formatCompact(report.netProfit)}',
+        '${context.l10n.revenueShort}: ${CurrencyFormatter.formatCompact(report.totalRevenue)} • ${context.l10n.profitShort}: ${CurrencyFormatter.formatCompact(report.netProfit)}',
       ),
       trailing: Text(
         '${report.profitMargin.toStringAsFixed(1)}%',
@@ -548,7 +548,7 @@ class _KPIReportContent extends ConsumerWidget {
       data: (report) => _buildKPIContent(context, report),
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: 'Lỗi tải báo cáo: $error',
+        message: '${context.l10n.reportLoadError}: $error',
         onRetry: () => ref.invalidate(currentKPIReportProvider),
       ),
     );
@@ -562,7 +562,7 @@ class _KPIReportContent extends ConsumerWidget {
         children: [
           // Main KPIs
           Text(
-            'Chỉ số chính',
+            context.l10n.mainKPIs,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -594,7 +594,7 @@ class _KPIReportContent extends ConsumerWidget {
             children: [
               Expanded(
                 child: _KPICard(
-                  label: 'Công suất',
+                  label: context.l10n.occupancyRate,
                   value: '${report.occupancyRate.toStringAsFixed(1)}%',
                   change: report.occupancyChange,
                   tooltip: 'Occupancy Rate',
@@ -603,7 +603,7 @@ class _KPIReportContent extends ConsumerWidget {
               AppSpacing.gapHorizontalMd,
               Expanded(
                 child: _KPICard(
-                  label: 'Lợi nhuận',
+                  label: context.l10n.netProfit,
                   value: CurrencyFormatter.formatCompact(report.netProfit),
                   change: report.revenueChange,
                   tooltip: 'Net Profit',
@@ -616,7 +616,7 @@ class _KPIReportContent extends ConsumerWidget {
 
           // Detailed stats
           Text(
-            'Chi tiết',
+            context.l10n.detailsLabel,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -626,27 +626,27 @@ class _KPIReportContent extends ConsumerWidget {
             child: Column(
               children: [
                 _DetailRow(
-                  label: 'Tổng đêm phòng khả dụng',
+                  label: context.l10n.totalRoomNightsAvailable,
                   value: '${report.totalRoomNightsAvailable}',
                 ),
                 const Divider(),
                 _DetailRow(
-                  label: 'Tổng đêm phòng bán',
+                  label: context.l10n.totalRoomNightsSold,
                   value: '${report.totalRoomNightsSold}',
                 ),
                 const Divider(),
                 _DetailRow(
-                  label: 'Doanh thu phòng',
+                  label: context.l10n.roomRevenue,
                   value: CurrencyFormatter.formatVND(report.totalRoomRevenue),
                 ),
                 const Divider(),
                 _DetailRow(
-                  label: 'Tổng doanh thu',
+                  label: context.l10n.totalRevenue,
                   value: CurrencyFormatter.formatVND(report.totalRevenue),
                 ),
                 const Divider(),
                 _DetailRow(
-                  label: 'Tổng chi phí',
+                  label: context.l10n.totalExpenses,
                   value: CurrencyFormatter.formatVND(report.totalExpenses),
                 ),
               ],
@@ -730,7 +730,7 @@ class _ExpenseReportContent extends ConsumerWidget {
       data: (reports) => _buildExpenseList(context, reports),
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: 'Lỗi tải báo cáo: $error',
+        message: '${context.l10n.reportLoadError}: $error',
         onRetry: () => ref.invalidate(currentExpenseReportProvider),
       ),
     );
@@ -738,8 +738,8 @@ class _ExpenseReportContent extends ConsumerWidget {
 
   Widget _buildExpenseList(BuildContext context, List<ExpenseReport> reports) {
     if (reports.isEmpty) {
-      return const Center(
-        child: Text('Không có chi phí trong khoảng thời gian này'),
+      return Center(
+        child: Text(context.l10n.noExpensesInDateRange),
       );
     }
 
@@ -751,7 +751,7 @@ class _ExpenseReportContent extends ConsumerWidget {
           child: Padding(
             padding: AppSpacing.paddingAll,
             child: _MetricCard(
-              label: 'Tổng chi phí',
+              label: context.l10n.totalExpenses,
               value: CurrencyFormatter.formatVND(total),
               icon: Icons.money_off,
               color: AppColors.expense,
@@ -785,7 +785,7 @@ class _ExpenseReportTile extends StatelessWidget {
         child: Icon(report.iconData, color: report.colorValue),
       ),
       title: Text(report.categoryName),
-      subtitle: Text('${report.transactionCount} giao dịch'),
+      subtitle: Text('${report.transactionCount} ${context.l10n.transactionsSuffix}'),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -817,7 +817,7 @@ class _ChannelReportContent extends ConsumerWidget {
       data: (channels) => _buildChannelList(context, channels),
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: 'Lỗi tải báo cáo: $error',
+        message: '${context.l10n.reportLoadError}: $error',
         onRetry: () => ref.invalidate(currentChannelPerformanceProvider),
       ),
     );
@@ -825,8 +825,8 @@ class _ChannelReportContent extends ConsumerWidget {
 
   Widget _buildChannelList(BuildContext context, List<ChannelPerformance> channels) {
     if (channels.isEmpty) {
-      return const Center(
-        child: Text('Không có dữ liệu trong khoảng thời gian này'),
+      return Center(
+        child: Text(context.l10n.noDataInPeriod),
       );
     }
 
@@ -842,7 +842,7 @@ class _ChannelReportContent extends ConsumerWidget {
               children: [
                 Expanded(
                   child: _MetricCard(
-                    label: 'Tổng doanh thu',
+                    label: context.l10n.totalRevenue,
                     value: CurrencyFormatter.formatVND(totalRevenue),
                     icon: Icons.attach_money,
                     color: AppColors.income,
@@ -851,7 +851,7 @@ class _ChannelReportContent extends ConsumerWidget {
                 AppSpacing.gapHorizontalMd,
                 Expanded(
                   child: _MetricCard(
-                    label: 'Tổng đặt phòng',
+                    label: context.l10n.totalBookings,
                     value: '$totalBookings',
                     icon: Icons.book_online,
                     color: AppColors.primary,
@@ -894,7 +894,7 @@ class _ChannelPerformanceTile extends StatelessWidget {
       ),
       title: Text(channel.sourceDisplay),
       subtitle: Text(
-        '${channel.bookingCount} đặt phòng • ${channel.totalNights} đêm',
+        '${channel.bookingCount} ${context.l10n.bookings} • ${channel.totalNights} ${context.l10n.nightsSuffix}',
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -928,7 +928,7 @@ class _DemographicsReportContent extends ConsumerWidget {
       data: (demographics) => _buildDemographicsList(context, demographics),
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: 'Lỗi tải báo cáo: $error',
+        message: '${context.l10n.reportLoadError}: $error',
         onRetry: () => ref.invalidate(currentGuestDemographicsProvider),
       ),
     );
@@ -936,8 +936,8 @@ class _DemographicsReportContent extends ConsumerWidget {
 
   Widget _buildDemographicsList(BuildContext context, List<GuestDemographics> demographics) {
     if (demographics.isEmpty) {
-      return const Center(
-        child: Text('Không có dữ liệu trong khoảng thời gian này'),
+      return Center(
+        child: Text(context.l10n.noDataInPeriod),
       );
     }
 
@@ -953,7 +953,7 @@ class _DemographicsReportContent extends ConsumerWidget {
               children: [
                 Expanded(
                   child: _MetricCard(
-                    label: 'Tổng khách',
+                    label: context.l10n.totalGuests,
                     value: '$totalGuests',
                     icon: Icons.people,
                     color: AppColors.primary,
@@ -962,7 +962,7 @@ class _DemographicsReportContent extends ConsumerWidget {
                 AppSpacing.gapHorizontalMd,
                 Expanded(
                   child: _MetricCard(
-                    label: 'Tổng doanh thu',
+                    label: context.l10n.totalRevenue,
                     value: CurrencyFormatter.formatVND(totalRevenue),
                     icon: Icons.attach_money,
                     color: AppColors.income,
@@ -1002,7 +1002,7 @@ class _DemographicsTile extends StatelessWidget {
       ),
       title: Text(demographics.nationality),
       subtitle: Text(
-        '${demographics.guestCount} khách • ${demographics.bookingCount} đặt phòng • TB ${demographics.averageStay.toStringAsFixed(1)} đêm',
+        '${demographics.guestCount} ${context.l10n.guestsSuffix} • ${demographics.bookingCount} ${context.l10n.bookings} • ${context.l10n.avgShort} ${demographics.averageStay.toStringAsFixed(1)} ${context.l10n.nightsSuffix}',
       ),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,

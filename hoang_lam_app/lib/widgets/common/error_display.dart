@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 
 /// A reusable error display widget
@@ -42,7 +43,7 @@ class ErrorDisplay extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Thử lại'),
+                label: Text(context.l10n.retry),
               ),
             ],
           ],

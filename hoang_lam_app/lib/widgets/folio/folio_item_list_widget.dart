@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 
 /// Widget to display a list of folio items grouped by type
@@ -35,7 +36,7 @@ class FolioItemListWidget extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Chưa có phí nào',
+                context.l10n.noCharges,
                 style: TextStyle(
                   fontSize: 16,
                   color: AppColors.textSecondary,
@@ -98,7 +99,7 @@ class FolioItemListWidget extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${typeItems.length} mục',
+                      '${typeItems.length} ${context.l10n.itemsCount}',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
@@ -173,7 +174,7 @@ class FolioItemListWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  'Đã hủy',
+                  context.l10n.voided,
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.red[700],
@@ -209,7 +210,7 @@ class FolioItemListWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Lý do: ${item.voidReason}',
+                  '${context.l10n.reason}: ${item.voidReason}',
                   style: TextStyle(
                     fontSize: 11,
                     fontStyle: FontStyle.italic,
@@ -221,7 +222,7 @@ class FolioItemListWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(top: 2),
                 child: Text(
-                  'Bởi: ${item.createdByName}',
+                  '${context.l10n.byLabel}: ${item.createdByName}',
                   style: TextStyle(
                     fontSize: 11,
                     color: AppColors.textSecondary,

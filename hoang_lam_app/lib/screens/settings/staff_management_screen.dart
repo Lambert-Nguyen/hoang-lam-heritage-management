@@ -141,8 +141,8 @@ class _StaffManagementScreenState
                     color: AppColors.textSecondary.withValues(alpha: 0.5),
                   ),
                   AppSpacing.gapVerticalSm,
-                  const Text(
-                    'Không tìm thấy kết quả',
+                  Text(
+                    context.l10n.noSearchResults,
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 ],
@@ -153,7 +153,7 @@ class _StaffManagementScreenState
           if (owners.isNotEmpty)
             _buildRoleSection(
               context,
-              title: 'Chủ khách sạn',
+              title: context.l10n.hotelOwner,
               icon: Icons.admin_panel_settings,
               color: AppColors.primary,
               users: owners,
@@ -161,7 +161,7 @@ class _StaffManagementScreenState
           if (managers.isNotEmpty)
             _buildRoleSection(
               context,
-              title: 'Quản lý',
+              title: context.l10n.managerRole,
               icon: Icons.manage_accounts,
               color: AppColors.secondary,
               users: managers,
@@ -169,7 +169,7 @@ class _StaffManagementScreenState
           if (staff.isNotEmpty)
             _buildRoleSection(
               context,
-              title: 'Nhân viên',
+              title: context.l10n.staffRole,
               icon: Icons.person,
               color: AppColors.info,
               users: staff,
@@ -177,7 +177,7 @@ class _StaffManagementScreenState
           if (housekeeping.isNotEmpty)
             _buildRoleSection(
               context,
-              title: 'Phòng buồng',
+              title: context.l10n.roleHousekeepingLabel,
               icon: Icons.cleaning_services,
               color: AppColors.cleaning,
               users: housekeeping,
@@ -207,7 +207,7 @@ class _StaffManagementScreenState
           Expanded(
             child: _StatCard(
               icon: Icons.groups,
-              label: 'Tổng',
+              label: context.l10n.total,
               count: staffList.length,
               color: AppColors.primary,
             ),
@@ -216,7 +216,7 @@ class _StaffManagementScreenState
           Expanded(
             child: _StatCard(
               icon: Icons.admin_panel_settings,
-              label: 'Chủ/QL',
+              label: context.l10n.ownerManagerFilter,
               count: (roleCount[UserRole.owner] ?? 0) +
                   (roleCount[UserRole.manager] ?? 0),
               color: AppColors.secondary,
@@ -226,7 +226,7 @@ class _StaffManagementScreenState
           Expanded(
             child: _StatCard(
               icon: Icons.person,
-              label: 'Nhân viên',
+              label: context.l10n.staffRole,
               count: roleCount[UserRole.staff] ?? 0,
               color: AppColors.info,
             ),
@@ -235,7 +235,7 @@ class _StaffManagementScreenState
           Expanded(
             child: _StatCard(
               icon: Icons.cleaning_services,
-              label: 'Buồng',
+              label: context.l10n.housekeepingShort,
               count: roleCount[UserRole.housekeeping] ?? 0,
               color: AppColors.cleaning,
             ),
@@ -255,7 +255,7 @@ class _StaffManagementScreenState
       ),
       child: TextField(
         decoration: InputDecoration(
-          hintText: 'Tìm kiếm theo tên, username, SĐT...',
+          hintText: context.l10n.searchStaffHint,
           prefixIcon: const Icon(Icons.search, size: 20),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
@@ -289,7 +289,7 @@ class _StaffManagementScreenState
         spacing: 8,
         children: [
           ChoiceChip(
-            label: const Text('Tất cả'),
+            label: Text(context.l10n.all),
             selected: _roleFilter == null,
             onSelected: (_) => setState(() => _roleFilter = null),
           ),
@@ -552,7 +552,7 @@ class _StaffDetailSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      user.roleDisplay ?? user.role?.displayName ?? 'Nhân viên',
+                      user.roleDisplay ?? user.role?.displayName ?? context.l10n.staffRole,
                       style: TextStyle(
                         color: roleColor,
                         fontWeight: FontWeight.w600,
@@ -569,7 +569,7 @@ class _StaffDetailSheet extends StatelessWidget {
             _buildDetailRow(
               context,
               icon: Icons.person_outline,
-              label: 'Tên đăng nhập',
+              label: context.l10n.usernameLabel,
               value: user.username,
               canCopy: true,
             ),
@@ -585,7 +585,7 @@ class _StaffDetailSheet extends StatelessWidget {
               _buildDetailRow(
                 context,
                 icon: Icons.phone_outlined,
-                label: 'Số điện thoại',
+                label: context.l10n.phoneNumber,
                 value: user.phone!,
                 canCopy: true,
               ),
@@ -612,7 +612,7 @@ class _StaffDetailSheet extends StatelessWidget {
                               size: 16, color: AppColors.info),
                           const SizedBox(width: 6),
                           Text(
-                            'Quyền hạn',
+                            context.l10n.permissionsLabel,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: AppColors.info,
@@ -622,7 +622,7 @@ class _StaffDetailSheet extends StatelessWidget {
                         ],
                       ),
                       AppSpacing.gapVerticalSm,
-                      ..._buildPermissionList(user.role),
+                      ..._buildPermissionList(context, user.role),
                     ],
                   ),
                 ),
@@ -663,12 +663,12 @@ class _StaffDetailSheet extends StatelessWidget {
       trailing: canCopy
           ? IconButton(
               icon: const Icon(Icons.copy, size: 18),
-              tooltip: 'Sao chép',
+              tooltip: context.l10n.copyTooltip,
               onPressed: () {
                 Clipboard.setData(ClipboardData(text: value));
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Đã sao chép: $value'),
+                    content: Text('${context.l10n.copiedValueMsg}: $value'),
                     duration: const Duration(seconds: 1),
                   ),
                 );
@@ -678,49 +678,49 @@ class _StaffDetailSheet extends StatelessWidget {
     );
   }
 
-  List<Widget> _buildPermissionList(UserRole? role) {
+  List<Widget> _buildPermissionList(BuildContext context, UserRole? role) {
     final permissions = <_PermissionItem>[];
 
     switch (role) {
       case UserRole.owner:
         permissions.addAll([
-          _PermissionItem('Xem tất cả dữ liệu', true),
-          _PermissionItem('Quản lý tài chính', true),
-          _PermissionItem('Quản lý đặt phòng', true),
-          _PermissionItem('Quản lý nhân viên', true),
-          _PermissionItem('Chỉnh giá phòng', true),
-          _PermissionItem('Kiểm toán đêm', true),
-          _PermissionItem('Báo cáo & thống kê', true),
+          _PermissionItem(context.l10n.permViewAllData, true),
+          _PermissionItem(context.l10n.permManageFinance, true),
+          _PermissionItem(context.l10n.permManageBookings, true),
+          _PermissionItem(context.l10n.permManageStaff, true),
+          _PermissionItem(context.l10n.permEditRoomPrices, true),
+          _PermissionItem(context.l10n.permNightAudit, true),
+          _PermissionItem(context.l10n.permReportsStats, true),
         ]);
       case UserRole.manager:
         permissions.addAll([
-          _PermissionItem('Xem tất cả dữ liệu', true),
-          _PermissionItem('Quản lý tài chính', true),
-          _PermissionItem('Quản lý đặt phòng', true),
-          _PermissionItem('Quản lý nhân viên', false),
-          _PermissionItem('Chỉnh giá phòng', false),
-          _PermissionItem('Kiểm toán đêm', true),
-          _PermissionItem('Báo cáo & thống kê', true),
+          _PermissionItem(context.l10n.permViewAllData, true),
+          _PermissionItem(context.l10n.permManageFinance, true),
+          _PermissionItem(context.l10n.permManageBookings, true),
+          _PermissionItem(context.l10n.permManageStaff, false),
+          _PermissionItem(context.l10n.permEditRoomPrices, false),
+          _PermissionItem(context.l10n.permNightAudit, true),
+          _PermissionItem(context.l10n.permReportsStats, true),
         ]);
       case UserRole.staff:
         permissions.addAll([
-          _PermissionItem('Xem đặt phòng', true),
-          _PermissionItem('Quản lý đặt phòng', true),
-          _PermissionItem('Quản lý tài chính', false),
-          _PermissionItem('Cập nhật trạng thái phòng', true),
-          _PermissionItem('Kiểm toán đêm', false),
-          _PermissionItem('Báo cáo & thống kê', false),
+          _PermissionItem(context.l10n.permViewBookings, true),
+          _PermissionItem(context.l10n.permManageBookings, true),
+          _PermissionItem(context.l10n.permManageFinance, false),
+          _PermissionItem(context.l10n.permUpdateRoomStatus, true),
+          _PermissionItem(context.l10n.permNightAudit, false),
+          _PermissionItem(context.l10n.permReportsStats, false),
         ]);
       case UserRole.housekeeping:
         permissions.addAll([
-          _PermissionItem('Xem danh sách phòng', true),
-          _PermissionItem('Cập nhật dọn phòng', true),
-          _PermissionItem('Báo cáo bảo trì', true),
-          _PermissionItem('Quản lý đặt phòng', false),
-          _PermissionItem('Quản lý tài chính', false),
+          _PermissionItem(context.l10n.permViewRoomList, true),
+          _PermissionItem(context.l10n.permUpdateCleaning, true),
+          _PermissionItem(context.l10n.permReportMaintenance, true),
+          _PermissionItem(context.l10n.permManageBookings, false),
+          _PermissionItem(context.l10n.permManageFinance, false),
         ]);
       case null:
-        permissions.add(_PermissionItem('Chưa phân quyền', false));
+        permissions.add(_PermissionItem(context.l10n.noPermissionsAssigned, false));
     }
 
     return permissions.map((p) {

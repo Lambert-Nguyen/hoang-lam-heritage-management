@@ -30,8 +30,8 @@ class DepositStatusIndicator extends StatelessWidget {
 
   String _getStatusText(BuildContext context) {
     if (isFullyPaid) return context.l10n.depositPaid;
-    if (paidDeposit > 0) return 'Thiếu cọc';
-    return 'Chưa cọc';
+    if (paidDeposit > 0) return context.l10n.depositShort;
+    return context.l10n.noDeposit;
   }
 
   @override
@@ -94,11 +94,11 @@ class DepositStatusIndicator extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Đã cọc: ${_formatAmount(paidDeposit)}',
+                  '${context.l10n.depositPaidStatus}: ${_formatAmount(paidDeposit)}',
                   style: theme.textTheme.bodySmall,
                 ),
                 Text(
-                  'Yêu cầu: ${_formatAmount(requiredDeposit)}',
+                  '${context.l10n.requiredAmount}: ${_formatAmount(requiredDeposit)}',
                   style: theme.textTheme.bodySmall,
                 ),
               ],
@@ -199,7 +199,7 @@ class OutstandingDepositCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        'Còn thiếu: ${_formatAmount(deposit.outstanding)}',
+                        '${context.l10n.amountShort}: ${_formatAmount(deposit.outstanding)}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
@@ -209,7 +209,7 @@ class OutstandingDepositCard extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: onRecordDeposit,
                       icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Ghi cọc'),
+                      label: Text(context.l10n.recordDepositBtn),
                       style: FilledButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       ),
@@ -271,7 +271,7 @@ class OutstandingDepositsList extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              emptyMessage ?? 'Không có khoản cọc nào còn thiếu',
+              emptyMessage ?? context.l10n.noPendingDeposits,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

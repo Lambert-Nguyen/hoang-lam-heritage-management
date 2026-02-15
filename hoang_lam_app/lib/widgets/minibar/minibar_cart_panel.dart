@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 import '../../models/booking.dart';
 import '../../providers/minibar_provider.dart';
@@ -48,7 +49,7 @@ class MinibarCartPanel extends StatelessWidget {
               AppSpacing.gapHorizontalSm,
               Expanded(
                 child: Text(
-                  'Giỏ hàng (${cartState.totalItemCount})',
+                  '${context.l10n.cartTitle} (${cartState.totalItemCount})',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -60,7 +61,7 @@ class MinibarCartPanel extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.delete_sweep, color: Colors.white),
                   onPressed: onClear,
-                  tooltip: 'Xóa tất cả',
+                  tooltip: context.l10n.clearAll,
                   iconSize: 20,
                   constraints: const BoxConstraints(),
                   padding: EdgeInsets.zero,
@@ -106,7 +107,7 @@ class MinibarCartPanel extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Giỏ hàng trống',
+                        context.l10n.emptyCart,
                         style: TextStyle(
                           color: AppColors.textSecondary,
                         ),
@@ -144,8 +145,8 @@ class MinibarCartPanel extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Tổng cộng:',
+                  Text(
+                    '${context.l10n.total}:',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -171,9 +172,9 @@ class MinibarCartPanel extends StatelessWidget {
                       ? onCheckout
                       : null,
                   icon: const Icon(Icons.point_of_sale),
-                  label: const Padding(
-                    padding: EdgeInsets.all(AppSpacing.sm),
-                    child: Text('Thanh toán'),
+                  label: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    child: Text(context.l10n.checkoutBtn),
                   ),
                 ),
               ),

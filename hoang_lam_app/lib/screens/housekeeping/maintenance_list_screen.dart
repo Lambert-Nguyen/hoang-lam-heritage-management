@@ -421,7 +421,7 @@ class _MaintenanceAssignDialogState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Phân công sửa chữa',
+              context.l10n.assignRepair,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -444,7 +444,7 @@ class _MaintenanceAssignDialogState
                     ? AppColors.primary.withValues(alpha: 0.1)
                     : null,
                 leading: const CircleAvatar(child: Icon(Icons.person)),
-                title: const Text('Tự nhận việc'),
+                title: Text(context.l10n.selfAssign),
                 subtitle: Text(currentUser.displayName),
                 trailing: _selectedUserId == currentUser.id
                     ? Icon(Icons.check_circle, color: AppColors.primary)
@@ -452,7 +452,7 @@ class _MaintenanceAssignDialogState
               ),
             const Divider(),
             Text(
-              'Chọn nhân viên',
+              context.l10n.selectStaff,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textSecondary,
@@ -492,8 +492,8 @@ class _MaintenanceAssignDialogState
                 ),
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
-                error: (_, __) => const Center(
-                    child: Text('Lỗi tải danh sách nhân viên')),
+                error: (_, __) => Center(
+                    child: Text(context.l10n.staffLoadError)),
               ),
             ),
             AppSpacing.gapVerticalLg,
@@ -501,7 +501,7 @@ class _MaintenanceAssignDialogState
               children: [
                 Expanded(
                   child: AppButton(
-                    label: 'Hủy',
+                    label: context.l10n.cancel,
                     onPressed: () => Navigator.pop(context),
                     isOutlined: true,
                   ),
@@ -509,7 +509,7 @@ class _MaintenanceAssignDialogState
                 AppSpacing.gapHorizontalMd,
                 Expanded(
                   child: AppButton(
-                    label: 'Xác nhận',
+                    label: context.l10n.confirm,
                     onPressed: _selectedUserId != null
                         ? () => Navigator.pop(context, _selectedUserId)
                         : null,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
 import '../../screens/guests/guest_form_screen.dart';
@@ -139,9 +140,9 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 250),
               child: _searchResults.isEmpty
-                  ? const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Text('Không tìm thấy khách hàng'),
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(context.l10n.guestNotFound),
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -225,8 +226,8 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
             controller: _searchController,
             focusNode: _focusNode,
             decoration: InputDecoration(
-              labelText: 'Tìm khách hàng',
-              hintText: 'Nhập ít nhất 2 ký tự',
+              labelText: context.l10n.findGuest,
+              hintText: context.l10n.min2Characters,
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.person_search),
               suffixIcon: _isSearching
@@ -268,7 +269,7 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
               }
             },
             icon: const Icon(Icons.person_add),
-            label: const Text('Tạo khách hàng mới'),
+            label: Text(context.l10n.createNewGuest),
           ),
         ],
       ),

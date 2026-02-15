@@ -88,11 +88,11 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Ghi nhận đặt cọc'),
+          Text(context.l10n.recordDeposit),
           if (widget.roomNumber != null || widget.guestName != null)
             Text(
               [
-                if (widget.roomNumber != null) 'Phòng ${widget.roomNumber}',
+                if (widget.roomNumber != null) '${context.l10n.room} ${widget.roomNumber}',
                 if (widget.guestName != null) widget.guestName,
               ].join(' - '),
               style: theme.textTheme.bodySmall?.copyWith(
@@ -141,7 +141,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
               TextFormField(
                 controller: _amountController,
                 decoration: InputDecoration(
-                  labelText: 'Số tiền cọc',
+                  labelText: context.l10n.depositAmount,
                   prefixText: '₫ ',
                   border: const OutlineInputBorder(),
                   hintText: 'Nhập số tiền',
@@ -166,7 +166,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
 
               // Payment method
               Text(
-                'Phương thức thanh toán',
+                context.l10n.paymentMethod,
                 style: theme.textTheme.labelMedium,
               ),
               const SizedBox(height: 8),
@@ -253,9 +253,9 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
   String _getMethodName(PaymentMethod method) {
     switch (method) {
       case PaymentMethod.cash:
-        return 'Tiền mặt';
+        return context.l10n.cash;
       case PaymentMethod.bankTransfer:
-        return 'Chuyển khoản';
+        return context.l10n.bankTransfer;
       case PaymentMethod.momo:
         return 'MoMo';
       case PaymentMethod.vnpay:

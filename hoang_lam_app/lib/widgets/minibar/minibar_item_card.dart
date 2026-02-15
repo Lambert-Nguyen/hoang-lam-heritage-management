@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 
 /// A card widget displaying a minibar item for POS selection
@@ -118,9 +119,9 @@ class MinibarItemCard extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
-                      'Ngừng bán',
+                      context.l10n.discontinued,
                       style: TextStyle(
                         color: AppColors.error,
                         fontWeight: FontWeight.bold,

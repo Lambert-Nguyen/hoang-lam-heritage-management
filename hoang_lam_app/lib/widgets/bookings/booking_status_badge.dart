@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 
 /// Booking Status Badge Widget - Displays booking status with color coding
@@ -22,8 +23,8 @@ class BookingStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusInfo = _getStatusInfo(status);
-    
+    final statusInfo = _getStatusInfo(context, status);
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: compact ? 6 : 8,
@@ -57,41 +58,41 @@ class BookingStatusBadge extends StatelessWidget {
     );
   }
 
-  ({String label, IconData icon, Color color}) _getStatusInfo(BookingStatus status) {
+  ({String label, IconData icon, Color color}) _getStatusInfo(BuildContext context, BookingStatus status) {
     switch (status) {
       case BookingStatus.pending:
         return (
-          label: 'Chờ xác nhận',
+          label: context.l10n.statusPending,
           icon: Icons.schedule,
           color: Colors.orange,
         );
       case BookingStatus.confirmed:
         return (
-          label: 'Đã xác nhận',
+          label: context.l10n.statusConfirmed,
           icon: Icons.check_circle,
           color: Colors.blue,
         );
       case BookingStatus.checkedIn:
         return (
-          label: 'Đang ở',
+          label: context.l10n.statusCheckedIn,
           icon: Icons.hotel,
           color: Colors.green,
         );
       case BookingStatus.checkedOut:
         return (
-          label: 'Đã trả phòng',
+          label: context.l10n.statusCheckedOut,
           icon: Icons.done_all,
           color: Colors.grey,
         );
       case BookingStatus.cancelled:
         return (
-          label: 'Đã hủy',
+          label: context.l10n.statusCancelled,
           icon: Icons.cancel,
           color: Colors.red,
         );
       case BookingStatus.noShow:
         return (
-          label: 'Không đến',
+          label: context.l10n.statusNoShow,
           icon: Icons.person_off,
           color: Colors.red[900]!,
         );
@@ -110,8 +111,8 @@ class BookingStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusInfo = _getStatusInfo(status);
-    
+    final statusInfo = _getStatusInfo(context, status);
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -128,7 +129,7 @@ class BookingStatusChip extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            statusInfo.label,
+            statusInfo.label.toUpperCase(),
             style: const TextStyle(
               fontSize: 16,
               color: Colors.white,
@@ -140,41 +141,41 @@ class BookingStatusChip extends StatelessWidget {
     );
   }
 
-  ({String label, IconData icon, Color color}) _getStatusInfo(BookingStatus status) {
+  ({String label, IconData icon, Color color}) _getStatusInfo(BuildContext context, BookingStatus status) {
     switch (status) {
       case BookingStatus.pending:
         return (
-          label: 'CHỜ XÁC NHẬN',
+          label: context.l10n.statusPending,
           icon: Icons.schedule,
           color: Colors.orange,
         );
       case BookingStatus.confirmed:
         return (
-          label: 'ĐÃ XÁC NHẬN',
+          label: context.l10n.statusConfirmed,
           icon: Icons.check_circle,
           color: Colors.blue,
         );
       case BookingStatus.checkedIn:
         return (
-          label: 'ĐANG Ở',
+          label: context.l10n.statusCheckedIn,
           icon: Icons.hotel,
           color: Colors.green,
         );
       case BookingStatus.checkedOut:
         return (
-          label: 'ĐÃ TRẢ PHÒNG',
+          label: context.l10n.statusCheckedOut,
           icon: Icons.done_all,
           color: Colors.grey,
         );
       case BookingStatus.cancelled:
         return (
-          label: 'ĐÃ HỦY',
+          label: context.l10n.statusCancelled,
           icon: Icons.cancel,
           color: Colors.red,
         );
       case BookingStatus.noShow:
         return (
-          label: 'KHÔNG ĐẾN',
+          label: context.l10n.statusNoShow,
           icon: Icons.person_off,
           color: Colors.red[900]!,
         );

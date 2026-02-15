@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 
 /// A card widget displaying a maintenance request summary
@@ -156,7 +157,7 @@ class MaintenanceCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Chưa phân công',
+                        context.l10n.unassigned,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppColors.warning,
                               fontSize: 10,
@@ -196,7 +197,7 @@ class MaintenanceCard extends StatelessWidget {
                       TextButton.icon(
                         onPressed: onAssign,
                         icon: const Icon(Icons.person_add, size: 16),
-                        label: const Text('Phân công'),
+                        label: Text(context.l10n.assign),
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.sm,
@@ -207,7 +208,7 @@ class MaintenanceCard extends StatelessWidget {
                       TextButton.icon(
                         onPressed: onComplete,
                         icon: const Icon(Icons.check, size: 16),
-                        label: const Text('Hoàn thành'),
+                        label: Text(context.l10n.completeBtn),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.success,
                           padding: const EdgeInsets.symmetric(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import 'booking_status_badge.dart';
 
@@ -181,7 +182,7 @@ class BookingCard extends StatelessWidget {
   }
 
   Widget _buildSourceChip(BuildContext context, BookingSource source) {
-    final sourceInfo = _getSourceInfo(source);
+    final sourceInfo = _getSourceInfo(context, source);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -214,12 +215,12 @@ class BookingCard extends StatelessWidget {
     );
   }
 
-  ({String label, IconData icon, Color color}) _getSourceInfo(BookingSource source) {
+  ({String label, IconData icon, Color color}) _getSourceInfo(BuildContext context, BookingSource source) {
     switch (source) {
       case BookingSource.walkIn:
-        return (label: 'Walk-in', icon: Icons.directions_walk, color: Colors.blue);
+        return (label: context.l10n.walkIn, icon: Icons.directions_walk, color: Colors.blue);
       case BookingSource.phone:
-        return (label: 'Điện thoại', icon: Icons.phone, color: Colors.green);
+        return (label: context.l10n.phoneSource, icon: Icons.phone, color: Colors.green);
       case BookingSource.bookingCom:
         return (label: 'Booking.com', icon: Icons.public, color: const Color(0xFF003580));
       case BookingSource.agoda:

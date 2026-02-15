@@ -102,7 +102,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Thông tin kiểm tra', style: Theme.of(context).textTheme.titleMedium),
+              Text(context.l10n.inspectionInfo, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: AppSpacing.md),
               AppCard(
                 child: Padding(
@@ -112,10 +112,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                     children: [
                       // Room selection
                       TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'ID Phòng *',
+                        decoration: InputDecoration(
+                          labelText: context.l10n.roomIdRequired,
                           hintText: 'Nhập ID phòng',
-                          prefixIcon: Icon(Icons.meeting_room),
+                          prefixIcon: const Icon(Icons.meeting_room),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (v) => v?.isEmpty ?? true ? 'Vui lòng nhập ID phòng' : null,
@@ -124,7 +124,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                       const SizedBox(height: AppSpacing.md),
 
                       // Inspection type
-                      Text('Loại kiểm tra', style: Theme.of(context).textTheme.bodyMedium),
+                      Text(context.l10n.inspectionType, style: Theme.of(context).textTheme.bodyMedium),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
@@ -155,7 +155,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                       ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(Icons.calendar_today),
-                        title: const Text('Ngày kiểm tra'),
+                        title: Text(context.l10n.inspectionDateLabel),
                         subtitle: Text(
                           '${_scheduledDate.day}/${_scheduledDate.month}/${_scheduledDate.year}',
                           style: const TextStyle(fontWeight: FontWeight.w500),

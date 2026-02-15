@@ -44,6 +44,7 @@ import '../screens/messaging/message_template_screen.dart';
 import '../screens/messaging/message_history_screen.dart';
 import '../screens/finance/financial_category_screen.dart';
 import '../screens/settings/staff_management_screen.dart';
+import '../l10n/app_localizations.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -150,9 +151,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (room == null || room is! Room) {
             // Handle invalid deep link or missing extra
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy thông tin phòng'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.roomInfoNotFound),
               ),
             );
           }
@@ -190,13 +191,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           
           if (bookingId == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy thông tin đặt phòng'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.bookingInfoNotFound),
               ),
             );
           }
-          
+
           return ReceiptPreviewScreen(
             bookingId: bookingId,
             guestName: extra?['guestName'] as String?,
@@ -214,13 +215,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           
           if (bookingId == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy thông tin đặt phòng'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.bookingInfoNotFound),
               ),
             );
           }
-          
+
           return RoomFolioScreen(bookingId: bookingId);
         },
       ),
@@ -235,9 +236,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           
           if (task == null || task is! HousekeepingTask) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy thông tin công việc'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.taskInfoNotFound),
               ),
             );
           }
@@ -266,9 +267,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           
           if (request == null || request is! MaintenanceRequest) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy yêu cầu bảo trì'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.maintenanceNotFound),
               ),
             );
           }
@@ -300,9 +301,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy đồ thất lạc'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.lostItemNotFound),
               ),
             );
           }
@@ -316,9 +317,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy đồ thất lạc'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.lostItemNotFound),
               ),
             );
           }
@@ -339,9 +340,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy đặt phòng đoàn'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.bookingInfoNotFound),
               ),
             );
           }
@@ -355,9 +356,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy đặt phòng đoàn'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.bookingInfoNotFound),
               ),
             );
           }
@@ -378,9 +379,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy kiểm tra'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.roomInfoNotFound),
               ),
             );
           }
@@ -394,9 +395,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy kiểm tra'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.roomInfoNotFound),
               ),
             );
           }
@@ -422,8 +423,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final extra = state.extra as Map<String, dynamic>?;
           if (extra == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(child: Text('Thiếu thông tin khách')),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(child: Text(context.l10n.guestNotFound)),
             );
           }
           return MessageTemplateScreen(
@@ -441,7 +442,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return MessageHistoryScreen(
             guestId: extra?['guestId'] as int?,
             bookingId: extra?['bookingId'] as int?,
-            title: extra?['title'] as String? ?? 'Lịch sử tin nhắn',
+            title: extra?['title'] as String? ?? context.l10n.messageHistory,
           );
         },
       ),
@@ -464,9 +465,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy gói giá'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.ratePlanNotFound),
               ),
             );
           }
@@ -485,9 +486,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('Lỗi')),
-              body: const Center(
-                child: Text('Không tìm thấy giá theo ngày'),
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(
+                child: Text(context.l10n.dateRateNotFound),
               ),
             );
           }
@@ -664,7 +665,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
     // Error page
     errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: const Text('Lỗi')),
+      appBar: AppBar(title: Text(context.l10n.error)),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -672,15 +673,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
-              'Không tìm thấy trang',
+              context.l10n.pageNotFound,
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             const SizedBox(height: 8),
-            Text(state.error?.message ?? 'Đã xảy ra lỗi'),
+            Text(state.error?.message ?? context.l10n.errorOccurred),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => context.go(AppRoutes.home),
-              child: const Text('Về trang chủ'),
+              child: Text(context.l10n.goHome),
             ),
           ],
         ),

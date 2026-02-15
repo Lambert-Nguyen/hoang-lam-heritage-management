@@ -232,7 +232,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
                 child: Text(
-                  '${audit.occupancyRate.toStringAsFixed(0)}% lấp đầy',
+                  '${audit.occupancyRate.toStringAsFixed(0)}% ${context.l10n.occupancyFilled}',
                   style: const TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.bold,
@@ -244,16 +244,16 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
           AppSpacing.gapVerticalMd,
           Row(
             children: [
-              _buildStatItem('Tổng phòng', audit.totalRooms.toString(), Icons.king_bed),
-              _buildStatItem('Có khách', audit.roomsOccupied.toString(), Icons.person, color: AppColors.roomOccupied),
-              _buildStatItem('Trống', audit.roomsAvailable.toString(), Icons.check_circle, color: AppColors.roomAvailable),
+              _buildStatItem(context.l10n.totalRooms, audit.totalRooms.toString(), Icons.king_bed),
+              _buildStatItem(context.l10n.occupied, audit.roomsOccupied.toString(), Icons.person, color: AppColors.roomOccupied),
+              _buildStatItem(context.l10n.available, audit.roomsAvailable.toString(), Icons.check_circle, color: AppColors.roomAvailable),
             ],
           ),
           AppSpacing.gapVerticalSm,
           Row(
             children: [
-              _buildStatItem('Đang dọn', audit.roomsCleaning.toString(), Icons.cleaning_services, color: AppColors.roomCleaning),
-              _buildStatItem('Bảo trì', audit.roomsMaintenance.toString(), Icons.build, color: AppColors.roomMaintenance),
+              _buildStatItem(context.l10n.cleaning, audit.roomsCleaning.toString(), Icons.cleaning_services, color: AppColors.roomCleaning),
+              _buildStatItem(context.l10n.maintenance, audit.roomsMaintenance.toString(), Icons.build, color: AppColors.roomMaintenance),
               const Expanded(child: SizedBox()),
             ],
           ),
@@ -271,8 +271,8 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             children: [
               const Icon(Icons.calendar_month, color: AppColors.primary),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Thống kê đặt phòng',
+              Text(
+                context.l10n.bookingStatistics,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -285,14 +285,14 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             children: [
               _buildStatItem('Check-in', audit.checkInsToday.toString(), Icons.login, color: AppColors.success),
               _buildStatItem('Check-out', audit.checkOutsToday.toString(), Icons.logout, color: AppColors.info),
-              _buildStatItem('Đặt mới', audit.newBookings.toString(), Icons.add_circle, color: AppColors.primary),
+              _buildStatItem(context.l10n.newBookings, audit.newBookings.toString(), Icons.add_circle, color: AppColors.primary),
             ],
           ),
           AppSpacing.gapVerticalSm,
           Row(
             children: [
-              _buildStatItem('Không đến', audit.noShows.toString(), Icons.person_off, color: AppColors.warning),
-              _buildStatItem('Hủy', audit.cancellations.toString(), Icons.cancel, color: AppColors.error),
+              _buildStatItem(context.l10n.noShows, audit.noShows.toString(), Icons.person_off, color: AppColors.warning),
+              _buildStatItem(context.l10n.cancellationsLabel, audit.cancellations.toString(), Icons.cancel, color: AppColors.error),
               const Expanded(child: SizedBox()),
             ],
           ),
@@ -310,8 +310,8 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             children: [
               const Icon(Icons.account_balance_wallet, color: AppColors.primary),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Tổng quan tài chính',
+              Text(
+                context.l10n.financialOverview,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -321,29 +321,29 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
           ),
           AppSpacing.gapVerticalMd,
           _buildFinancialRow(
-            'Tổng thu',
+            context.l10n.totalIncome,
             audit.totalIncome,
             isIncome: true,
           ),
           _buildFinancialRow(
-            '  - Doanh thu phòng',
+            '  - ${context.l10n.roomRevenue}',
             audit.roomRevenue,
             isSubItem: true,
           ),
           _buildFinancialRow(
-            '  - Doanh thu khác',
+            '  - ${context.l10n.otherRevenue}',
             audit.otherRevenue,
             isSubItem: true,
           ),
           const Divider(height: AppSpacing.md),
           _buildFinancialRow(
-            'Tổng chi',
+            context.l10n.totalExpense,
             audit.totalExpense,
             isExpense: true,
           ),
           const Divider(height: AppSpacing.md),
           _buildFinancialRow(
-            'Lợi nhuận ròng',
+            context.l10n.netProfit,
             audit.netRevenue,
             isProfit: true,
             isBold: true,
@@ -351,7 +351,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
           if (audit.pendingPayments > 0) ...[
             const Divider(height: AppSpacing.md),
             _buildFinancialRow(
-              'Thanh toán chờ (${audit.unpaidBookingsCount} đặt phòng)',
+              '${context.l10n.pendingPayments} (${audit.unpaidBookingsCount} ${context.l10n.bookings})',
               audit.pendingPayments,
               color: AppColors.warning,
             ),
@@ -370,8 +370,8 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             children: [
               const Icon(Icons.payments, color: AppColors.primary),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Chi tiết thanh toán',
+              Text(
+                context.l10n.paymentDetails,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -380,10 +380,10 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             ],
           ),
           AppSpacing.gapVerticalMd,
-          _buildPaymentRow('Tiền mặt', audit.cashCollected, Icons.money),
-          _buildPaymentRow('Chuyển khoản', audit.bankTransferCollected, Icons.account_balance),
+          _buildPaymentRow(context.l10n.cash, audit.cashCollected, Icons.money),
+          _buildPaymentRow(context.l10n.bankTransfer, audit.bankTransferCollected, Icons.account_balance),
           _buildPaymentRow('MoMo', audit.momoCollected, Icons.phone_android),
-          _buildPaymentRow('Khác', audit.otherPayments, Icons.more_horiz),
+          _buildPaymentRow(context.l10n.otherPayment, audit.otherPayments, Icons.more_horiz),
         ],
       ),
     );
@@ -398,8 +398,8 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             children: [
               const Icon(Icons.note, color: AppColors.primary),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Ghi chú',
+              Text(
+                context.l10n.notes,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -520,7 +520,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             child: OutlinedButton.icon(
               onPressed: state.isLoading ? null : _recalculateAudit,
               icon: const Icon(Icons.refresh),
-              label: const Text('Tính lại'),
+              label: Text(context.l10n.recalculate),
             ),
           ),
           AppSpacing.gapHorizontalMd,
@@ -535,7 +535,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.lock),
-              label: Text(state.isClosing ? 'Đang đóng...' : 'Đóng kiểm toán'),
+              label: Text(state.isClosing ? context.l10n.closingAudit : context.l10n.closeAuditBtn),
             ),
           ),
         ],
@@ -553,13 +553,13 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     if (result != null) {
       ref.invalidate(todayAuditProvider);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Đã tính lại thống kê')),
+        SnackBar(content: Text(context.l10n.statsRecalculated)),
       );
     } else {
       final error = ref.read(nightAuditNotifierProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Lỗi tính lại: ${error ?? 'Không xác định'}'),
+          content: Text('${context.l10n.recalculateError}: ${error ?? context.l10n.unknownError}'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -570,18 +570,18 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Đóng kiểm toán'),
-        content: const Text(
-          'Sau khi đóng, bạn sẽ không thể chỉnh sửa kiểm toán này.\n\nBạn có chắc chắn muốn đóng?',
+        title: Text(context.l10n.closeAuditBtn),
+        content: Text(
+          context.l10n.closeAuditConfirmation,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Hủy'),
+            child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Đóng kiểm toán'),
+            child: Text(context.l10n.closeAuditBtn),
           ),
         ],
       ),
@@ -594,13 +594,13 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
       if (result != null) {
         ref.invalidate(todayAuditProvider);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã đóng kiểm toán')),
+          SnackBar(content: Text(context.l10n.auditClosed)),
         );
       } else {
         final error = ref.read(nightAuditNotifierProvider).error;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi đóng kiểm toán: ${error ?? 'Không xác định'}'),
+            content: Text('${context.l10n.closeAuditError}: ${error ?? context.l10n.unknownError}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -625,8 +625,8 @@ class _AuditHistorySheet extends ConsumerWidget {
           padding: AppSpacing.paddingAll,
           child: Row(
             children: [
-              const Text(
-                'Lịch sử kiểm toán',
+              Text(
+                context.l10n.auditHistory,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -645,8 +645,8 @@ class _AuditHistorySheet extends ConsumerWidget {
           child: auditsAsync.when(
             data: (audits) {
               if (audits.isEmpty) {
-                return const Center(
-                  child: Text('Chưa có kiểm toán nào'),
+                return Center(
+                  child: Text(context.l10n.noAuditsYet),
                 );
               }
               return ListView.builder(
@@ -661,7 +661,7 @@ class _AuditHistorySheet extends ConsumerWidget {
             },
             loading: () => const LoadingIndicator(),
             error: (e, _) => ErrorDisplay(
-              message: 'Lỗi tải lịch sử: $e',
+              message: '${context.l10n.loadHistoryError}: $e',
               onRetry: () => ref.invalidate(nightAuditsProvider),
             ),
           ),
@@ -712,10 +712,10 @@ class _AuditHistorySheet extends ConsumerWidget {
           AppSpacing.gapVerticalSm,
           Row(
             children: [
-              _buildMiniStat('Phòng', '${audit.roomsOccupied}/${audit.totalRooms}'),
-              _buildMiniStat('Lấp đầy', '${audit.occupancyRate.toStringAsFixed(0)}%'),
-              _buildMiniStat('Thu', CurrencyFormatter.formatCompact(audit.totalIncome)),
-              _buildMiniStat('Lãi', CurrencyFormatter.formatCompact(audit.netRevenue)),
+              _buildMiniStat(context.l10n.room, '${audit.roomsOccupied}/${audit.totalRooms}'),
+              _buildMiniStat(context.l10n.occupancy, '${audit.occupancyRate.toStringAsFixed(0)}%'),
+              _buildMiniStat(context.l10n.revenueShort, CurrencyFormatter.formatCompact(audit.totalIncome)),
+              _buildMiniStat(context.l10n.profitShort, CurrencyFormatter.formatCompact(audit.netRevenue)),
             ],
           ),
         ],
@@ -757,23 +757,23 @@ class _AuditHistorySheet extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDetailRow('Trạng thái', audit.status.displayName),
-              _buildDetailRow('Phòng', '${audit.roomsOccupied}/${audit.totalRooms}'),
-              _buildDetailRow('Tỷ lệ lấp đầy', '${audit.occupancyRate.toStringAsFixed(1)}%'),
-              _buildDetailRow('Tổng thu', CurrencyFormatter.format(audit.totalIncome)),
-              _buildDetailRow('Tổng chi', CurrencyFormatter.format(audit.totalExpense)),
-              _buildDetailRow('Lợi nhuận ròng', CurrencyFormatter.format(audit.netRevenue)),
+              _buildDetailRow(context.l10n.statusLabel, audit.status.displayName),
+              _buildDetailRow(context.l10n.room, '${audit.roomsOccupied}/${audit.totalRooms}'),
+              _buildDetailRow(context.l10n.occupancyRate, '${audit.occupancyRate.toStringAsFixed(1)}%'),
+              _buildDetailRow(context.l10n.totalIncome, CurrencyFormatter.format(audit.totalIncome)),
+              _buildDetailRow(context.l10n.totalExpense, CurrencyFormatter.format(audit.totalExpense)),
+              _buildDetailRow(context.l10n.netProfit, CurrencyFormatter.format(audit.netRevenue)),
               if (audit.performedByName != null)
-                _buildDetailRow('Người thực hiện', audit.performedByName!),
+                _buildDetailRow(context.l10n.performedBy, audit.performedByName!),
               if (audit.performedAt != null)
-                _buildDetailRow('Thời gian', DateFormat('dd/MM/yyyy HH:mm').format(audit.performedAt!)),
+                _buildDetailRow(context.l10n.timeLabel, DateFormat('dd/MM/yyyy HH:mm').format(audit.performedAt!)),
             ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Đóng'),
+            child: Text(context.l10n.closeButton),
           ),
         ],
       ),

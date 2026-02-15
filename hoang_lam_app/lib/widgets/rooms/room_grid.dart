@@ -169,7 +169,7 @@ class _ErrorWidget extends StatelessWidget {
             TextButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Thử lại'),
+              label: Text(context.l10n.retry),
             ),
           ],
         ],

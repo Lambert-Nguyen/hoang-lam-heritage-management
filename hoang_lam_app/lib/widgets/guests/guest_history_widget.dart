@@ -61,7 +61,7 @@ class GuestHistoryWidget extends ConsumerWidget {
         const Icon(Icons.history, color: AppColors.textSecondary),
         AppSpacing.gapHorizontalSm,
         Text(
-          'Lịch sử đặt phòng',
+          context.l10n.bookingHistory,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -74,7 +74,7 @@ class GuestHistoryWidget extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Text(
-            '${history.totalBookings} lần',
+            '${history.totalBookings} ${context.l10n.timesCount}',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
@@ -171,7 +171,7 @@ class _BookingHistoryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'Phòng ${booking.roomNumber}',
+                    '${context.l10n.room} ${booking.roomNumber}',
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -212,7 +212,7 @@ class _BookingHistoryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    '$nights đêm',
+                    '$nights ${context.l10n.nights}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.textSecondary,
                           fontSize: 11,
@@ -247,7 +247,7 @@ class _BookingHistoryCard extends StatelessWidget {
                             size: 14, color: AppColors.success),
                         AppSpacing.gapHorizontalXs,
                         Text(
-                          'Đã thanh toán',
+                          context.l10n.paid,
                           style:
                               Theme.of(context).textTheme.labelSmall?.copyWith(
                                     color: AppColors.success,
@@ -271,7 +271,7 @@ class _BookingHistoryCard extends StatelessWidget {
                             size: 14, color: AppColors.warning),
                         AppSpacing.gapHorizontalXs,
                         Text(
-                          'Chưa thanh toán',
+                          context.l10n.unpaid,
                           style:
                               Theme.of(context).textTheme.labelSmall?.copyWith(
                                     color: AppColors.warning,
@@ -289,7 +289,7 @@ class _BookingHistoryCard extends StatelessWidget {
   }
 
   Widget _buildStatusBadge(BuildContext context) {
-    final statusInfo = _getStatusInfo(booking.status);
+    final statusInfo = _getStatusInfo(context, booking.status);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -306,20 +306,20 @@ class _BookingHistoryCard extends StatelessWidget {
     );
   }
 
-  ({Color color, String label}) _getStatusInfo(String status) {
+  ({Color color, String label}) _getStatusInfo(BuildContext context, String status) {
     switch (status) {
       case 'pending':
-        return (color: AppColors.warning, label: 'Chờ xác nhận');
+        return (color: AppColors.warning, label: context.l10n.statusPending);
       case 'confirmed':
-        return (color: AppColors.info, label: 'Đã xác nhận');
+        return (color: AppColors.info, label: context.l10n.statusConfirmed);
       case 'checked_in':
-        return (color: AppColors.success, label: 'Đang ở');
+        return (color: AppColors.success, label: context.l10n.statusCheckedIn);
       case 'checked_out':
-        return (color: AppColors.textSecondary, label: 'Đã trả phòng');
+        return (color: AppColors.textSecondary, label: context.l10n.statusCheckedOut);
       case 'cancelled':
-        return (color: AppColors.error, label: 'Đã hủy');
+        return (color: AppColors.error, label: context.l10n.statusCancelled);
       case 'no_show':
-        return (color: AppColors.error, label: 'Không đến');
+        return (color: AppColors.error, label: context.l10n.statusNoShow);
       default:
         return (color: AppColors.textSecondary, label: status);
     }
@@ -382,21 +382,21 @@ class GuestStatsSummary extends StatelessWidget {
               context,
               icon: Icons.hotel_outlined,
               value: totalStays.toString(),
-              label: 'Lượt ở',
+              label: context.l10n.staysLabel,
             ),
             _buildDivider(),
             _buildStat(
               context,
               icon: Icons.book_outlined,
               value: totalBookings.toString(),
-              label: 'Đặt phòng',
+              label: context.l10n.bookings,
             ),
             _buildDivider(),
             _buildStat(
               context,
               icon: Icons.payments_outlined,
               value: _formatCurrency(totalSpent),
-              label: 'Tổng chi',
+              label: context.l10n.totalSpending,
             ),
             if (isVip) ...[
               _buildDivider(),

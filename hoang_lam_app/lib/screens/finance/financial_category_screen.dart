@@ -85,7 +85,7 @@ class _FinancialCategoryScreenState
               _CategoryList(
                 categories: incomeCategories,
                 entryType: EntryType.income,
-                emptyMessage: 'Chưa có danh mục thu',
+                emptyMessage: l10n.noIncomeCategories,
                 onRefresh: _refreshCategories,
                 onEdit: (cat) => _showCategoryDialog(context, category: cat),
                 onToggleActive: (cat) => _toggleActive(cat),
@@ -94,7 +94,7 @@ class _FinancialCategoryScreenState
               _CategoryList(
                 categories: expenseCategories,
                 entryType: EntryType.expense,
-                emptyMessage: 'Chưa có danh mục chi',
+                emptyMessage: l10n.noExpenseCategories,
                 onRefresh: _refreshCategories,
                 onEdit: (cat) => _showCategoryDialog(context, category: cat),
                 onToggleActive: (cat) => _toggleActive(cat),
@@ -153,8 +153,8 @@ class _FinancialCategoryScreenState
           SnackBar(
             content: Text(
               category.isActive
-                  ? 'Đã ẩn danh mục "${category.name}"'
-                  : 'Đã hiện danh mục "${category.name}"',
+                  ? '${context.l10n.categoryHidden} "${category.name}"'
+                  : '${context.l10n.categoryShown} "${category.name}"',
             ),
             action: SnackBarAction(
               label: 'Hoàn tác',

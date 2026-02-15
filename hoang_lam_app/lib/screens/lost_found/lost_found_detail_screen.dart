@@ -91,43 +91,43 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
           Text(item.itemName, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: AppSpacing.md),
           if (item.description.isNotEmpty) ...[
-            _SectionCard(title: 'Mô tả', icon: Icons.description, child: Text(item.description)),
+            _SectionCard(title: context.l10n.description, icon: Icons.description, child: Text(item.description)),
             const SizedBox(height: AppSpacing.md),
           ],
           _SectionCard(
-            title: 'Vị trí',
+            title: context.l10n.locationSection,
             icon: Icons.location_on,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (item.roomNumber != null) _InfoRow(label: 'Phòng', value: item.roomNumber!),
-                if (item.foundLocation.isNotEmpty) _InfoRow(label: 'Nơi tìm thấy', value: item.foundLocation),
-                if (item.storageLocation.isNotEmpty) _InfoRow(label: 'Nơi lưu trữ', value: item.storageLocation),
+                if (item.roomNumber != null) _InfoRow(label: context.l10n.room, value: item.roomNumber!),
+                if (item.foundLocation.isNotEmpty) _InfoRow(label: context.l10n.foundLocationLabel, value: item.foundLocation),
+                if (item.storageLocation.isNotEmpty) _InfoRow(label: context.l10n.storageLocationLabel, value: item.storageLocation),
               ],
             ),
           ),
           const SizedBox(height: AppSpacing.md),
           _SectionCard(
-            title: 'Thời gian',
+            title: context.l10n.timeLabel,
             icon: Icons.calendar_today,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _InfoRow(label: 'Ngày tìm thấy', value: _formatDate(item.foundDate)),
-                if (item.claimedDate != null) _InfoRow(label: 'Ngày nhận', value: _formatDate(item.claimedDate!)),
+                _InfoRow(label: context.l10n.foundDateLabel, value: _formatDate(item.foundDate)),
+                if (item.claimedDate != null) _InfoRow(label: context.l10n.claimedDate, value: _formatDate(item.claimedDate!)),
               ],
             ),
           ),
           if (item.guestName != null) ...[
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              title: 'Khách hàng',
+              title: context.l10n.guest,
               icon: Icons.person,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _InfoRow(label: 'Tên', value: item.guestName!),
-                  _InfoRow(label: 'Đã liên hệ', value: item.guestContacted ? 'Có' : 'Chưa'),
+                  _InfoRow(label: context.l10n.name, value: item.guestName!),
+                  _InfoRow(label: context.l10n.guestContacted, value: item.guestContacted ? 'Có' : 'Chưa'),
                 ],
               ),
             ),
@@ -135,7 +135,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
           if (item.estimatedValue != null) ...[
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              title: 'Giá trị ước tính',
+              title: context.l10n.estimatedValueVnd,
               icon: Icons.attach_money,
               child: Text('${item.estimatedValue!.toStringAsFixed(0)}₫', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
             ),
@@ -156,10 +156,10 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         child: Row(
           children: [
             if (item.status == LostFoundStatus.found) ...[
-              Expanded(child: AppButton(label: 'Lưu kho', onPressed: _isLoading ? null : () => _storeItem(item), isOutlined: true, icon: Icons.archive)),
+              Expanded(child: AppButton(label: context.l10n.storeInStorage, onPressed: _isLoading ? null : () => _storeItem(item), isOutlined: true, icon: Icons.archive)),
               const SizedBox(width: AppSpacing.md),
             ],
-            Expanded(child: AppButton(label: 'Đã nhận', onPressed: _isLoading ? null : () => _claimItem(item), icon: Icons.check_circle, isLoading: _isLoading)),
+            Expanded(child: AppButton(label: context.l10n.itemClaimed, onPressed: _isLoading ? null : () => _claimItem(item), icon: Icons.check_circle, isLoading: _isLoading)),
           ],
         ),
       ),
@@ -180,7 +180,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Future<void> _storeItem(LostFoundItem item) async {
-    final location = await _showInputDialog('Nơi lưu trữ', 'VD: Tủ đồ thất lạc');
+    final location = await _showInputDialog(context.l10n.storageLocationLabel, context.l10n.storageLocationHint);
     if (location == null) return;
     setState(() => _isLoading = true);
     try {

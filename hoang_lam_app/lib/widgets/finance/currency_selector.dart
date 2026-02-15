@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Common currencies for the hotel
 const List<CurrencyOption> supportedCurrencies = [
@@ -59,7 +60,7 @@ class CurrencySelector extends StatelessWidget {
     return DropdownButtonFormField<String>(
       value: selectedCurrency,
       decoration: InputDecoration(
-        labelText: labelText ?? 'Loại tiền',
+        labelText: labelText ?? context.l10n.currencyType,
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
@@ -233,7 +234,7 @@ class ExchangeRateDisplay extends StatelessWidget {
                 ),
                 if (date != null)
                   Text(
-                    'Cập nhật: ${_formatDate(date!)}',
+                    '${context.l10n.updatedAt}: ${_formatDate(date!)}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -339,7 +340,7 @@ class ConvertedAmountDisplay extends StatelessWidget {
           if (rate != null) ...[
             const SizedBox(height: 4),
             Text(
-              'Tỷ giá: ${_formatRate(rate!)}',
+              '${context.l10n.exchangeRate}: ${_formatRate(rate!)}',
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

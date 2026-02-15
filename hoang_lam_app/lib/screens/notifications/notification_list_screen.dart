@@ -37,7 +37,7 @@ class NotificationListScreen extends ConsumerWidget {
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Đã đánh dấu $count thông báo đã đọc'),
+                    content: Text('${context.l10n.markedNotificationsRead} ($count)'),
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -241,7 +241,7 @@ class _NotificationTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        _formatTime(notification.createdAt),
+                        _formatTime(notification.createdAt, context),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.outline,
                         ),
@@ -309,15 +309,15 @@ class _NotificationTile extends StatelessWidget {
     }
   }
 
-  String _formatTime(DateTime? dateTime) {
+  String _formatTime(DateTime? dateTime, BuildContext context) {
     if (dateTime == null) return '';
     final now = DateTime.now();
     final diff = now.difference(dateTime);
 
-    if (diff.inMinutes < 1) return 'Vừa xong';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} phút trước';
-    if (diff.inHours < 24) return '${diff.inHours} giờ trước';
-    if (diff.inDays < 7) return '${diff.inDays} ngày trước';
+    if (diff.inMinutes < 1) return context.l10n.justNow;
+    if (diff.inMinutes < 60) return '${diff.inMinutes} ${context.l10n.minutesAgo}';
+    if (diff.inHours < 24) return '${diff.inHours} ${context.l10n.hoursAgo}';
+    if (diff.inDays < 7) return '${diff.inDays} ${context.l10n.daysAgo}';
 
     return DateFormat('dd/MM/yyyy HH:mm').format(dateTime);
   }

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 
 /// List tile widget for minibar item in inventory management
@@ -63,7 +64,7 @@ class MinibarItemListTile extends StatelessWidget {
                     ),
               ),
               Text(
-                'Vốn: ${currencyFormat.format(item.cost)}',
+                '${context.l10n.costAmount}: ${currencyFormat.format(item.cost)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -78,7 +79,7 @@ class MinibarItemListTile extends StatelessWidget {
               size: 32,
             ),
             onPressed: onToggleActive,
-            tooltip: item.isActive ? 'Ngừng bán' : 'Mở bán',
+            tooltip: item.isActive ? context.l10n.discontinued : context.l10n.activateLabel,
           ),
         ],
       ),

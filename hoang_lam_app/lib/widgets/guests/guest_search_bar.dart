@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
@@ -53,7 +54,7 @@ class _GuestSearchBarState extends ConsumerState<GuestSearchBar> {
     return TextField(
       controller: _searchController,
       decoration: InputDecoration(
-        hintText: widget.hintText ?? 'Tìm khách theo tên, SĐT, CCCD...',
+        hintText: widget.hintText ?? context.l10n.searchGuestHint,
         hintStyle: const TextStyle(color: AppColors.textHint),
         prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
         suffixIcon: _searchController.text.isNotEmpty
@@ -102,25 +103,25 @@ class _GuestSearchBarState extends ConsumerState<GuestSearchBar> {
       child: Row(
         children: [
           _buildFilterChip(
-            label: 'Tất cả',
+            label: context.l10n.all,
             value: 'all',
             icon: Icons.search,
           ),
           AppSpacing.gapHorizontalSm,
           _buildFilterChip(
-            label: 'Tên',
+            label: context.l10n.name,
             value: 'name',
             icon: Icons.person_outline,
           ),
           AppSpacing.gapHorizontalSm,
           _buildFilterChip(
-            label: 'SĐT',
+            label: context.l10n.phoneLabel,
             value: 'phone',
             icon: Icons.phone_outlined,
           ),
           AppSpacing.gapHorizontalSm,
           _buildFilterChip(
-            label: 'CCCD',
+            label: context.l10n.idNumber,
             value: 'id_number',
             icon: Icons.badge_outlined,
           ),

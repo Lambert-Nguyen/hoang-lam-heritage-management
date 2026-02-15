@@ -798,7 +798,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
     final currentUser = ref.watch(currentUserProvider);
 
     return AlertDialog(
-      title: const Text('Phân công sửa chữa'),
+      title: Text(AppLocalizations.of(context)!.assignRepair),
       content: SizedBox(
         width: double.maxFinite,
         child: Column(
@@ -809,7 +809,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                 onTap: () => setState(() => _selectedUserId = currentUser.id),
                 selected: _selectedUserId == currentUser.id,
                 leading: const CircleAvatar(child: Icon(Icons.person)),
-                title: const Text('Tự nhận việc'),
+                title: Text(AppLocalizations.of(context)!.selfAssign),
                 subtitle: Text(currentUser.displayName),
                 trailing: _selectedUserId == currentUser.id
                     ? Icon(Icons.check_circle,
@@ -846,8 +846,8 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                 ),
                 loading: () =>
                     const Center(child: CircularProgressIndicator()),
-                error: (_, __) => const Center(
-                    child: Text('Lỗi tải danh sách nhân viên')),
+                error: (_, __) => Center(
+                    child: Text(AppLocalizations.of(context)!.staffLoadError)),
               ),
             ),
           ],

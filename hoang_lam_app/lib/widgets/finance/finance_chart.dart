@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 
 /// Weekly income/expense bar chart for finance dashboard
@@ -45,8 +46,8 @@ class FinanceChart extends ConsumerWidget {
                 size: AppSpacing.iconMd,
               ),
               AppSpacing.gapHorizontalSm,
-              const Text(
-                'Biểu đồ thu chi',
+              Text(
+                context.l10n.incomeExpenseChart,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -75,7 +76,7 @@ class FinanceChart extends ConsumerWidget {
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final isIncome = rodIndex == 0;
                       return BarTooltipItem(
-                        '${isIncome ? "Thu" : "Chi"}: ${_formatCurrency(rod.toY)}',
+                        '${isIncome ? context.l10n.incomeLabel : context.l10n.expenseShort}: ${_formatCurrency(rod.toY)}',
                         TextStyle(
                           color: isIncome ? AppColors.income : AppColors.expense,
                           fontWeight: FontWeight.bold,
@@ -148,9 +149,9 @@ class FinanceChart extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildLegendItem('Thu', AppColors.income),
+              _buildLegendItem(context.l10n.incomeLabel, AppColors.income),
               AppSpacing.gapHorizontalLg,
-              _buildLegendItem('Chi', AppColors.expense),
+              _buildLegendItem(context.l10n.expenseShort, AppColors.expense),
             ],
           ),
         ),

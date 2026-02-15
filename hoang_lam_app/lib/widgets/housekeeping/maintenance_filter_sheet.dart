@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
@@ -65,14 +66,14 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Lọc yêu cầu bảo trì',
+                  context.l10n.filterMaintenanceRequests,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 TextButton(
                   onPressed: _clearFilters,
-                  child: const Text('Xóa bộ lọc'),
+                  child: Text(context.l10n.clearFilters),
                 ),
               ],
             ),
@@ -88,7 +89,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                 children: [
                   // Status filter
                   Text(
-                    'Trạng thái',
+                    context.l10n.status,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
@@ -100,7 +101,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                     runSpacing: AppSpacing.sm,
                     children: [
                       _buildFilterChip(
-                        label: 'Tất cả',
+                        label: context.l10n.all,
                         isSelected: _selectedStatus == null,
                         onTap: () => setState(() => _selectedStatus = null),
                       ),
@@ -119,7 +120,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
 
                   // Priority filter
                   Text(
-                    'Mức ưu tiên',
+                    context.l10n.priorityLevel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
@@ -131,7 +132,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                     runSpacing: AppSpacing.sm,
                     children: [
                       _buildFilterChip(
-                        label: 'Tất cả',
+                        label: context.l10n.all,
                         isSelected: _selectedPriority == null,
                         onTap: () => setState(() => _selectedPriority = null),
                       ),
@@ -151,7 +152,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
 
                   // Category filter
                   Text(
-                    'Danh mục',
+                    context.l10n.category,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
@@ -163,7 +164,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                     runSpacing: AppSpacing.sm,
                     children: [
                       _buildFilterChip(
-                        label: 'Tất cả',
+                        label: context.l10n.all,
                         isSelected: _selectedCategory == null,
                         onTap: () => setState(() => _selectedCategory = null),
                       ),
@@ -191,7 +192,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
               child: SizedBox(
                 width: double.infinity,
                 child: AppButton(
-                  label: 'Áp dụng',
+                  label: context.l10n.applyBtn,
                   onPressed: _applyFilters,
                 ),
               ),

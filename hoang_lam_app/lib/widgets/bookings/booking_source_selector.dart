@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 
 /// Booking Source Selector Widget - Dropdown for selecting booking source
@@ -33,8 +34,8 @@ class BookingSourceSelector extends StatelessWidget {
     return DropdownButtonFormField<BookingSource>(
       value: value,
       decoration: InputDecoration(
-        labelText: showLabel ? 'Nguồn đặt phòng' : null,
-        hintText: hintText ?? 'Chọn nguồn đặt phòng',
+        labelText: showLabel ? context.l10n.bookingSource : null,
+        hintText: hintText ?? context.l10n.selectBookingSourceHint,
         prefixIcon: value != null
             ? Icon(
                 value!.icon,
@@ -128,8 +129,8 @@ class BookingSourceGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Nguồn đặt phòng',
+        Text(
+          context.l10n.bookingSource,
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,

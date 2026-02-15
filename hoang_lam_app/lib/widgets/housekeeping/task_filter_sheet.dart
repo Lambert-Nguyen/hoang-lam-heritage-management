@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
@@ -68,14 +69,14 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Lọc công việc',
+                  context.l10n.filterTasks,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                 ),
                 TextButton(
                   onPressed: _clearFilters,
-                  child: const Text('Xóa bộ lọc'),
+                  child: Text(context.l10n.clearFilters),
                 ),
               ],
             ),
@@ -91,7 +92,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                 children: [
                   // Status filter
                   Text(
-                    'Trạng thái',
+                    context.l10n.status,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
@@ -103,7 +104,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                     runSpacing: AppSpacing.sm,
                     children: [
                       _buildFilterChip(
-                        label: 'Tất cả',
+                        label: context.l10n.all,
                         isSelected: _selectedStatus == null,
                         onTap: () => setState(() => _selectedStatus = null),
                       ),
@@ -122,7 +123,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
 
                   // Task type filter
                   Text(
-                    'Loại công việc',
+                    context.l10n.taskTypeLabel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
@@ -134,7 +135,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                     runSpacing: AppSpacing.sm,
                     children: [
                       _buildFilterChip(
-                        label: 'Tất cả',
+                        label: context.l10n.all,
                         isSelected: _selectedType == null,
                         onTap: () => setState(() => _selectedType = null),
                       ),
@@ -153,7 +154,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
 
                   // Date filter
                   Text(
-                    'Ngày dự kiến',
+                    context.l10n.scheduledDate,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.textSecondary,
@@ -189,7 +190,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                           Text(
                             _selectedDate != null
                                 ? dateFormat.format(_selectedDate!)
-                                : 'Chọn ngày',
+                                : context.l10n.selectDate,
                             style: TextStyle(
                               color: _selectedDate != null
                                   ? AppColors.primary
@@ -218,15 +219,15 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                     runSpacing: AppSpacing.sm,
                     children: [
                       _buildQuickDateChip(
-                        'Hôm nay',
+                        context.l10n.today,
                         DateTime.now(),
                       ),
                       _buildQuickDateChip(
-                        'Ngày mai',
+                        context.l10n.tomorrow,
                         DateTime.now().add(const Duration(days: 1)),
                       ),
                       _buildQuickDateChip(
-                        'Hôm qua',
+                        context.l10n.yesterday,
                         DateTime.now().subtract(const Duration(days: 1)),
                       ),
                     ],
@@ -243,7 +244,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
               child: SizedBox(
                 width: double.infinity,
                 child: AppButton(
-                  label: 'Áp dụng',
+                  label: context.l10n.applyBtn,
                   onPressed: _applyFilters,
                 ),
               ),

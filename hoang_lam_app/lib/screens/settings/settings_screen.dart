@@ -209,7 +209,7 @@ class SettingsScreen extends ConsumerWidget {
               context,
               icon: Icons.category_outlined,
               title: l10n.financialCategories,
-              subtitle: 'Xem danh mục thu, chi',
+              subtitle: l10n.viewFinancialCategories,
               onTap: () {
                 context.push(AppRoutes.financialCategories);
               },
@@ -218,7 +218,7 @@ class SettingsScreen extends ConsumerWidget {
               context,
               icon: Icons.people_outline,
               title: l10n.accountManagement,
-              subtitle: 'Xem danh sách nhân sự',
+              subtitle: l10n.viewStaffList,
               onTap: () {
                 context.push(AppRoutes.staffManagement);
               },
@@ -245,7 +245,7 @@ class SettingsScreen extends ConsumerWidget {
             title: l10n.backup,
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tính năng sao lưu đang phát triển'), duration: Duration(seconds: 2)),
+                SnackBar(content: Text(l10n.backupInDevelopment), duration: const Duration(seconds: 2)),
               );
             },
           ),

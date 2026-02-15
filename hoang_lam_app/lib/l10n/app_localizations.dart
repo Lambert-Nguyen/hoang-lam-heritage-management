@@ -803,6 +803,494 @@ class AppLocalizations {
   // Router errors
   String get roomInfoNotFound => translate('room_info_not_found');
   String get bookingInfoNotFound => translate('booking_info_not_found');
+  String get taskInfoNotFound => translate('task_info_not_found');
+  String get maintenanceNotFound => translate('maintenance_not_found');
+  String get lostItemNotFound => translate('lost_item_not_found');
+  String get ratePlanNotFound => translate('rate_plan_not_found');
+  String get dateRateNotFound => translate('date_rate_not_found');
+  String get pageNotFound => translate('page_not_found');
+  String get goHome => translate('go_home');
+
+  // ===== PHASE C2: ADDITIONAL EXTRACTED STRINGS =====
+  // Common / Shared
+  String get contactLabel => translate('contact_label');
+  String get contactPerson => translate('contact_person');
+  String get assignedRooms => translate('assigned_rooms');
+  String get paid => translate('paid');
+  String get unpaid => translate('unpaid');
+  String get amount => translate('amount');
+  String get selectStaff => translate('select_staff');
+
+  // Time
+  String get justNow => translate('just_now');
+  String get minutesAgo => translate('minutes_ago');
+  String get hoursAgo => translate('hours_ago');
+  String get daysAgo => translate('days_ago');
+  String get lastMonth => translate('last_month');
+  String get thisYear => translate('this_year');
+  String get sevenDays => translate('seven_days');
+  String get thirtyDays => translate('thirty_days');
+  String get ninetyDays => translate('ninety_days');
+  String get last7Days => translate('last_7_days');
+  String get last30Days => translate('last_30_days');
+  String get claimedDate => translate('claimed_date');
+
+  // Finance / Payment
+  String get depositAmount => translate('deposit_amount');
+  String get cash => translate('cash');
+  String get bankTransfer => translate('bank_transfer');
+  String get recordDeposit => translate('record_deposit');
+  String get costPrice => translate('cost_price');
+  String get sellingPriceRequired => translate('selling_price_required');
+  String get profitMargin => translate('profit_margin');
+  String get roomCharges => translate('room_charges');
+  String get additionalCharges => translate('additional_charges');
+  String get totalCharges => translate('total_charges');
+  String get remainingBalance => translate('remaining_balance');
+  String get guestOwes => translate('guest_owes');
+  String get outstandingBalance => translate('outstanding_balance');
+  String get noDeposit => translate('no_deposit');
+  String get depositShort => translate('deposit_short');
+  String get depositPaidStatus => translate('deposit_paid_status');
+  String get requiredAmount => translate('required_amount');
+  String get amountShort => translate('amount_short');
+  String get recordDepositBtn => translate('record_deposit_btn');
+  String get noPendingDeposits => translate('no_pending_deposits');
+  String get currencyType => translate('currency_type');
+  String get exchangeRate => translate('exchange_rate');
+  String get confirmPayment => translate('confirm_payment');
+  String get vndPerNight => translate('vnd_per_night');
+  String get referenceCode => translate('reference_code');
+  String get methodLabel => translate('method_label');
+
+  // Financial Category
+  String get noIncomeCategories => translate('no_income_categories');
+  String get noExpenseCategories => translate('no_expense_categories');
+  String get categoryHidden => translate('category_hidden');
+  String get categoryShown => translate('category_shown');
+  String get viewFinancialCategories => translate('view_financial_categories');
+
+  // Group Booking
+  String get groupInfo => translate('group_info');
+  String get groupNameRequired => translate('group_name_required');
+  String get numberOfRooms => translate('number_of_rooms');
+  String get numberOfGuests => translate('number_of_guests');
+
+  // Minibar
+  String get noProducts => translate('no_products');
+  String get clearCart => translate('clear_cart');
+  String get confirmClearCart => translate('confirm_clear_cart');
+  String get productUpdatedSuccess => translate('product_updated_success');
+  String get confirmDeleteProduct => translate('confirm_delete_product');
+
+  // Night Audit
+  String get occupancyPercent => translate('occupancy_percent');
+
+  // Reports
+  String get exportReport => translate('export_report');
+  String get averageOccupancy => translate('average_occupancy');
+  String get totalSpending => translate('total_spending');
+
+  // Staff
+  String get hotelOwner => translate('hotel_owner');
+  String get managerRole => translate('manager_role');
+  String get housekeepingRole => translate('housekeeping_role');
+  String get viewStaffList => translate('view_staff_list');
+
+  // Guest
+  String get bookingHistory => translate('booking_history');
+  String get timesCount => translate('times_count');
+  String get createNewGuest => translate('create_new_guest');
+  String get findGuest => translate('find_guest');
+  String get min2Characters => translate('min_2_characters');
+
+  // Booking
+  String get selectBookingSource => translate('select_booking_source');
+
+  // Folio
+  String get noCharges => translate('no_charges');
+  String get itemsCount => translate('items_count');
+  String get voided => translate('voided');
+  String get byLabel => translate('by_label');
+  String get paidShort => translate('paid_short');
+
+  // Notification
+  String get markedNotificationsRead => translate('marked_notifications_read');
+
+  // Settings
+  String get appDescription => translate('app_description');
+  String get developedBy => translate('developed_by');
+  String get copyrightNotice => translate('copyright_notice');
+
+  // Declaration
+  String get dd10FormDescription => translate('dd10_form_description');
+  String get na17FormDescription => translate('na17_form_description');
+  String get formType => translate('form_type');
+
+  // Room Inspection Detail
+  String get inspectionInfo => translate('inspection_info');
+  String get roomIdRequired => translate('room_id_required');
+  String get inspectionDateLabel => translate('inspection_date_label');
+  String get inspectionTemplateOptional => translate('inspection_template_optional');
+  String get noDefaultTemplate => translate('no_default_template');
+  String get confirmDeleteTemplate => translate('confirm_delete_template');
+  String get templateDeleted => translate('template_deleted');
+  String get importantLabel => translate('important_label');
+  String get inspectionChecklist => translate('inspection_checklist');
+  String get copyTemplate => translate('copy_template');
+  String get inspectionResult => translate('inspection_result');
+  String get scoreLabel => translate('score_label');
+  String get passedLabel => translate('passed_label');
+  String get issuesCount => translate('issues_count');
+  String get criticalCount => translate('critical_count');
+  String get noChecklistItems => translate('no_checklist_items');
+  String get imagesLabel => translate('images_label');
+  String get actionsRequired => translate('actions_required');
+  String get viewImage => translate('view_image');
+  String get expectedDate => translate('expected_date');
+  String get inspector => translate('inspector');
+
+  // ===== PHASE C3: REMAINING HARDCODED STRINGS =====
+
+  // Common/Actions
+  String get undo => translate('undo');
+  String get shareBtn => translate('share_btn');
+  String get completeAction => translate('complete_action');
+  String get resendBtn => translate('resend_btn');
+  String get emailLabel => translate('email_label');
+  String get phoneLabel => translate('phone_label');
+  String get unknownError => translate('unknown_error');
+  String get confirmDeleteTitle => translate('confirm_delete_title');
+  String get confirmCancelLabel => translate('confirm_cancel_label');
+  String get errorWithDetails => translate('error_with_details');
+
+  // Booking Statuses (for badges)
+  String get statusPending => translate('status_pending');
+  String get statusConfirmed => translate('status_confirmed');
+  String get statusCheckedIn => translate('status_checked_in');
+  String get statusCheckedOut => translate('status_checked_out');
+  String get statusCancelled => translate('status_cancelled');
+  String get statusNoShow => translate('status_no_show');
+
+  // Financial
+  String get deleteCategory => translate('delete_category');
+  String get categoryDeletedMsg => translate('category_deleted_msg');
+  String get expenseLabel => translate('expense_label');
+  String get profitLabel => translate('profit_label');
+  String get discountLabel => translate('discount_label');
+  String get transactionsLabel => translate('transactions_label');
+  String get totalAmountVnd => translate('total_amount_vnd');
+
+  // Group Booking
+  String get stayPeriod => translate('stay_period');
+  String get additionalInfoSection => translate('additional_info_section');
+  String get exampleGroupName => translate('example_group_name');
+  String get noGroupBookings => translate('no_group_bookings');
+  String get roomsCountSuffix => translate('rooms_count_suffix');
+  String get guestsCountSuffix => translate('guests_count_suffix');
+  String get roomsNeeded => translate('rooms_needed');
+  String get checkInDateLabel => translate('check_in_date_label');
+  String get checkOutDateLabel => translate('check_out_date_label');
+  String get groupUpdated => translate('group_updated');
+  String get groupCreated => translate('group_created');
+  String get contactPersonRequired => translate('contact_person_required');
+  String get phoneRequired => translate('phone_required');
+  String get assignRooms => translate('assign_rooms');
+  String get cancelGroup => translate('cancel_group');
+  String get confirmGroup => translate('confirm_group');
+  String get checkInGroup => translate('check_in_group');
+  String get checkOutGroup => translate('check_out_group');
+
+  // Night Audit
+  String get recalculate => translate('recalculate');
+  String get recalculateError => translate('recalculate_error');
+  String get closeAuditBtn => translate('close_audit_btn');
+  String get noAuditsYet => translate('no_audits_yet');
+
+  // Minibar
+  String get minibarPos => translate('minibar_pos');
+  String get noProductsInCategory => translate('no_products_in_category');
+  String get noSalesYet => translate('no_sales_yet');
+  String get salesHistoryHere => translate('sales_history_here');
+  String get markAsCharged => translate('mark_as_charged');
+  String get paymentSuccessful => translate('payment_successful');
+  String get confirmPaymentTitle => translate('confirm_payment_title');
+  String get productDeletedMsg => translate('product_deleted_msg');
+
+  // Reports
+  String get occupancyLabel => translate('occupancy_label');
+  String get noExpensesLabel => translate('no_expenses_label');
+
+  // Room Inspection Stats
+  String get inspectionStatistics => translate('inspection_statistics');
+  String get totalInspections => translate('total_inspections');
+  String get completedInspections => translate('completed_inspections');
+  String get needsAttention => translate('needs_attention');
+  String get averageScore => translate('average_score');
+  String get issuesDetected => translate('issues_detected');
+  String get criticalLabel => translate('critical_label');
+  String get failedLabel => translate('failed_label');
+  String get inspectionCompleted => translate('inspection_completed');
+  String get uncheckedCriticalItems => translate('unchecked_critical_items');
+
+  // Lost & Found
+  String get filterByCategoryLabel => translate('filter_by_category_label');
+  String get statisticsLabel => translate('statistics_label');
+  String get totalCountLabel => translate('total_count_label');
+  String get unclaimedValue => translate('unclaimed_value');
+  String get byStatusLabel => translate('by_status_label');
+
+  // Settings Help
+  String get helpRoomManagement => translate('help_room_management');
+  String get helpRoomManagementDesc => translate('help_room_management_desc');
+  String get helpBookings => translate('help_bookings');
+  String get helpBookingsDesc => translate('help_bookings_desc');
+  String get helpHousekeeping => translate('help_housekeeping');
+  String get helpHousekeepingDesc => translate('help_housekeeping_desc');
+  String get helpFinance => translate('help_finance');
+  String get helpFinanceDesc => translate('help_finance_desc');
+  String get helpNightAudit => translate('help_night_audit');
+  String get helpNightAuditDesc => translate('help_night_audit_desc');
+  String get english => translate('english');
+  String get pushNotificationsLabel => translate('push_notifications_label');
+
+  // Pricing
+  String get minNightsStayLabel => translate('min_nights_stay_label');
+  String get includesBreakfastLabel => translate('includes_breakfast_label');
+  String get noArrivalsLabel => translate('no_arrivals_label');
+  String get noDeparturesLabel => translate('no_departures_label');
+  String get scheduleConflictWarning => translate('schedule_conflict_warning');
+  String get fromDateRequired => translate('from_date_required');
+  String get toDateRequired => translate('to_date_required');
+  String get selectDateRequired => translate('select_date_required');
+
+  // Staff
+  String get ownerManagerFilter => translate('owner_manager_filter');
+  String get staffMember => translate('staff_member');
+  String get usernameField => translate('username_field');
+  String get phoneField => translate('phone_field');
+  String get copiedValueMsg => translate('copied_value_msg');
+
+  // Declaration
+  String get hasFormatMultiSheet => translate('has_format_multi_sheet');
+  String get textFormatPopular => translate('text_format_popular');
+
+  // Folio
+  String get folio => translate('folio');
+  String get cancelChargeTitle => translate('cancel_charge_title');
+
+  // Booking Source
+  String get walkIn => translate('walk_in');
+  String get phoneSource => translate('phone_source');
+  String get rankLabel => translate('rank_label');
+
+  // Housekeeping Checklist Items
+  String get changeBedSheets => translate('change_bed_sheets');
+  String get vacuum => translate('vacuum');
+  String get mopFloor => translate('mop_floor');
+  String get restockSupplies => translate('restock_supplies');
+  String get checkMinibar => translate('check_minibar');
+  String get changeTowels => translate('change_towels');
+  String get emptyTrash => translate('empty_trash');
+  String get restockWater => translate('restock_water');
+  String get deepCleanBathroom => translate('deep_clean_bathroom');
+  String get washCurtains => translate('wash_curtains');
+  String get cleanAC => translate('clean_ac');
+  String get cleanFridge => translate('clean_fridge');
+  String get checkFurniture => translate('check_furniture');
+  String get checkCleanliness => translate('check_cleanliness');
+  String get checkEquipment => translate('check_equipment');
+  String get checkSupplies => translate('check_supplies');
+  String get checkSafety => translate('check_safety');
+  String get checkForIssues => translate('check_for_issues');
+  String get performRepair => translate('perform_repair');
+  String get reinspect => translate('reinspect');
+  String get enterTaskNotes => translate('enter_task_notes');
+
+  // ===== PHASE C4: COMPREHENSIVE L10N COVERAGE =====
+
+  // Night Audit Details
+  String get totalIncome => translate('total_income');
+  String get netProfit => translate('net_profit');
+  String get otherRevenue => translate('other_revenue');
+  String get financialOverview => translate('financial_overview');
+  String get roomsOccupied => translate('rooms_occupied');
+  String get roomsCleaning => translate('rooms_cleaning');
+  String get roomsMaintenance => translate('rooms_maintenance');
+  String get newBookings => translate('new_bookings');
+  String get noShows => translate('no_shows');
+  String get cancellationsLabel => translate('cancellations_label');
+  String get pendingPayments => translate('pending_payments');
+  String get paymentDetails => translate('payment_details');
+  String get otherPayment => translate('other_payment');
+  String get notesLabel => translate('notes_label');
+  String get closingAudit => translate('closing_audit');
+  String get auditHistory => translate('audit_history');
+  String get loadHistoryError => translate('load_history_error');
+  String get closeAuditError => translate('close_audit_error');
+  String get revenueShort => translate('revenue_short');
+  String get profitShort => translate('profit_short');
+  String get statusLabel => translate('status_label');
+  String get roomLabel => translate('room_label');
+  String get occupancyFilled => translate('occupancy_filled');
+  String get closeButton => translate('close_button');
+
+  // Report Screen
+  String get reportLoadError => translate('report_load_error');
+  String get noDataInPeriod => translate('no_data_in_period');
+  String get last90Days => translate('last_90_days');
+  String get revenueLabel => translate('revenue_label');
+  String get expensesLabel => translate('expenses_label');
+  String get mainKPIs => translate('main_kpis');
+  String get detailsLabel => translate('details_label');
+  String get totalExpenses => translate('total_expenses');
+  String get noExpensesInPeriod => translate('no_expenses_in_period');
+
+  // Staff Management
+  String get noSearchResults => translate('no_search_results');
+  String get staffRole => translate('staff_role');
+  String get housekeepingShort => translate('housekeeping_short');
+  String get permissionsLabel => translate('permissions_label');
+  String get noPermissionsAssigned => translate('no_permissions_assigned');
+  String get permViewAllData => translate('perm_view_all_data');
+  String get permManageFinance => translate('perm_manage_finance');
+  String get permManageBookings => translate('perm_manage_bookings');
+  String get permManageStaff => translate('perm_manage_staff');
+  String get permEditRoomPrices => translate('perm_edit_room_prices');
+  String get permNightAudit => translate('perm_night_audit');
+  String get permReportsStats => translate('perm_reports_stats');
+  String get permViewBookings => translate('perm_view_bookings');
+  String get permUpdateRoomStatus => translate('perm_update_room_status');
+  String get permViewRoomList => translate('perm_view_room_list');
+  String get permUpdateCleaning => translate('perm_update_cleaning');
+  String get permReportMaintenance => translate('perm_report_maintenance');
+  String get copyTooltip => translate('copy_tooltip');
+
+  // Declaration Export
+  String get dateRangeLabel => translate('date_range_label');
+  String get fromDate => translate('from_date');
+  String get toDate => translate('to_date');
+  String get exporting => translate('exporting');
+  String get exportList => translate('export_list');
+  String get fileExportedSuccess => translate('file_exported_success');
+  String get bookingsMarkedAsDeclared => translate('bookings_marked_as_declared');
+  String get openFileBtn => translate('open_file_btn');
+  String get shareFileBtn => translate('share_file_btn');
+  String get fileFormatLabel => translate('file_format_label');
+  String get last7DaysLabel => translate('last_7_days_label');
+  String get last30DaysLabel => translate('last_30_days_label');
+  String get declarationFormDescriptions => translate('declaration_form_descriptions');
+
+  // Group Booking Detail
+  String get phone => translate('phone');
+  String get email => translate('email');
+  String get checkInDate => translate('check_in_date');
+  String get checkOutDate => translate('check_out_date');
+  String get paymentLabel => translate('payment_label');
+  String get discountAmount => translate('discount_amount');
+  String get yesLabel => translate('yes_label');
+  String get notYetLabel => translate('not_yet_label');
+  String get notesSection => translate('notes_section');
+  String get confirmGroupBooking => translate('confirm_group_booking');
+  String get confirmedMsg => translate('confirmed_msg');
+  String get confirmGroupCheckIn => translate('confirm_group_check_in');
+  String get confirmGroupCheckOut => translate('confirm_group_check_out');
+  String get checkedOutSuccess => translate('checked_out_success');
+  String get enterCancelReason => translate('enter_cancel_reason');
+  String get cancelledMsg => translate('cancelled_msg');
+  String get roomIdListHint => translate('room_id_list_hint');
+
+  // Minibar Common
+  String get product => translate('product');
+  String get quantity => translate('quantity');
+  String get unitPrice => translate('unit_price');
+  String get charged => translate('charged');
+  String get notCharged => translate('not_charged');
+  String get saleDetails => translate('sale_details');
+  String get noMatchingProducts => translate('no_matching_products');
+  String get emptyCart => translate('empty_cart');
+  String get checkoutBtn => translate('checkout_btn');
+  String get clearAll => translate('clear_all');
+  String get discontinued => translate('discontinued');
+  String get cartTitle => translate('cart_title');
+  String get productAddedSuccess => translate('product_added_success');
+  String get addProduct => translate('add_product');
+  String get invalid => translate('invalid');
+  String get activeStatusLabel => translate('active_status_label');
+  String get costAmount => translate('cost_amount');
+  String get activateLabel => translate('activate_label');
+
+  // Housekeeping Widgets
+  String get unassigned => translate('unassigned');
+  String get completeBtn => translate('complete_btn');
+  String get filterMaintenanceRequests => translate('filter_maintenance_requests');
+  String get clearFilters => translate('clear_filters');
+  String get applyBtn => translate('apply_btn');
+  String get filterTasks => translate('filter_tasks');
+  String get taskTypeLabel => translate('task_type_label');
+  String get tomorrow => translate('tomorrow');
+
+  // Guest Widgets
+  String get searchGuestHint => translate('search_guest_hint');
+  String get idNumber => translate('id_number');
+
+  // Common Widgets
+  String get offlineSyncMessage => translate('offline_sync_message');
+  String get incomeExpenseChart => translate('income_expense_chart');
+  String get incomeLabel => translate('income_label');
+  String get expenseShort => translate('expense_short');
+
+  // Room Folio
+  String get voidCharge => translate('void_charge');
+  String get confirmVoidCharge => translate('confirm_void_charge');
+  String get chargeAmount => translate('charge_amount');
+  String get voidReasonRequired => translate('void_reason_required');
+  String get enterVoidReason => translate('enter_void_reason');
+  String get pleaseEnterVoidReason => translate('please_enter_void_reason');
+  String get chargeVoidedSuccess => translate('charge_voided_success');
+  String get cannotVoidCharge => translate('cannot_void_charge');
+  String get confirmVoid => translate('confirm_void');
+
+  // Inspection Template Details
+  String get defaultBadge => translate('default_badge');
+  String get duplicateBtn => translate('duplicate_btn');
+  String get critical => translate('critical');
+  String get templateDuplicated => translate('template_duplicated');
+  String get roomTypeIdOptional => translate('room_type_id_optional');
+  String get roomTypeIdHint => translate('room_type_id_hint');
+  String get amenitiesCategory => translate('amenities_category');
+  String get electronicsCategory => translate('electronics_category');
+  String get bedClean => translate('bed_clean');
+  String get bedSheetReplaced => translate('bed_sheet_replaced');
+  String get pillowsBlanketClean => translate('pillows_blanket_clean');
+  String get toiletClean => translate('toilet_clean');
+  String get towelsComplete => translate('towels_complete');
+  String get toiletriesComplete => translate('toiletries_complete');
+  String get acWorking => translate('ac_working');
+  String get tvWorking => translate('tv_working');
+  String get fridgeWorking => translate('fridge_working');
+  String get createNewInspectionTemplate => translate('create_new_inspection_template');
+
+  // Room Inspection Detail
+  String get bookingCodeLabel => translate('booking_code_label');
+  String get actionRequiredSection => translate('action_required_section');
+  String get viewPhoto => translate('view_photo');
+  String get completedLabel => translate('completed_label');
+
+  // Booking Source Selector
+  String get selectBookingSourceHint => translate('select_booking_source_hint');
+
+  // ===== PHASE C5: ADDITIONAL L10N KEYS =====
+  String get totalRoomNightsAvailable => translate('total_room_nights_available');
+  String get totalRoomNightsSold => translate('total_room_nights_sold');
+  String get noExpensesInDateRange => translate('no_expenses_in_date_range');
+  String get copiedValueMsg => translate('copied_value_msg');
+  String get roleHousekeepingLabel => translate('role_housekeeping_label');
+  String get roomsSuffix => translate('rooms_suffix');
+  String get nightsSuffix => translate('nights_suffix');
+  String get guestsSuffix => translate('guests_suffix');
+  String get transactionsSuffix => translate('transactions_suffix');
+  String get avgShort => translate('avg_short');
 }
 
 // Vietnamese translations
@@ -1538,6 +2026,462 @@ const Map<String, String> _viTranslations = {
   'stays_label': 'Lượt ở',
   'room_info_not_found': 'Không tìm thấy thông tin phòng',
   'booking_info_not_found': 'Không tìm thấy thông tin đặt phòng',
+  'task_info_not_found': 'Không tìm thấy thông tin công việc',
+  'maintenance_not_found': 'Không tìm thấy yêu cầu bảo trì',
+  'lost_item_not_found': 'Không tìm thấy đồ thất lạc',
+  'rate_plan_not_found': 'Không tìm thấy gói giá',
+  'date_rate_not_found': 'Không tìm thấy giá theo ngày',
+  'page_not_found': 'Không tìm thấy trang',
+  'go_home': 'Về trang chủ',
+
+  // ===== PHASE C2: ADDITIONAL EXTRACTED STRINGS =====
+  'contact_label': 'Liên hệ',
+  'contact_person': 'Người liên hệ',
+  'assigned_rooms': 'Phòng đã phân',
+  'paid': 'Đã thanh toán',
+  'unpaid': 'Chưa thanh toán',
+  'amount': 'Số tiền',
+  'select_staff': 'Chọn nhân viên',
+  'just_now': 'Vừa xong',
+  'minutes_ago': 'phút trước',
+  'hours_ago': 'giờ trước',
+  'days_ago': 'ngày trước',
+  'last_month': 'Tháng trước',
+  'this_year': 'Năm nay',
+  'seven_days': '7 ngày',
+  'thirty_days': '30 ngày',
+  'ninety_days': '90 ngày',
+  'last_7_days': '7 ngày qua',
+  'last_30_days': '30 ngày qua',
+  'claimed_date': 'Ngày nhận',
+  'deposit_amount': 'Số tiền cọc',
+  'cash': 'Tiền mặt',
+  'bank_transfer': 'Chuyển khoản',
+  'record_deposit': 'Ghi nhận đặt cọc',
+  'cost_price': 'Giá vốn',
+  'selling_price_required': 'Giá bán *',
+  'profit_margin': 'Biên lợi nhuận',
+  'room_charges': 'Tiền phòng',
+  'additional_charges': 'Phí bổ sung',
+  'total_charges': 'Tổng chi phí',
+  'remaining_balance': 'Còn lại',
+  'guest_owes': 'Khách còn nợ',
+  'outstanding_balance': 'Còn nợ',
+  'no_deposit': 'Chưa cọc',
+  'deposit_short': 'Thiếu cọc',
+  'deposit_paid_status': 'Đã cọc',
+  'required_amount': 'Yêu cầu',
+  'amount_short': 'Còn thiếu',
+  'record_deposit_btn': 'Ghi cọc',
+  'no_pending_deposits': 'Không có khoản cọc nào còn thiếu',
+  'currency_type': 'Loại tiền',
+  'exchange_rate': 'Tỷ giá',
+  'confirm_payment': 'Xác nhận thanh toán',
+  'vnd_per_night': 'VNĐ/đêm',
+  'reference_code': 'Mã tham chiếu',
+  'method_label': 'Phương thức',
+  'no_income_categories': 'Chưa có danh mục thu',
+  'no_expense_categories': 'Chưa có danh mục chi',
+  'category_hidden': 'Đã ẩn danh mục',
+  'category_shown': 'Đã hiện danh mục',
+  'view_financial_categories': 'Xem danh mục thu, chi',
+  'group_info': 'Thông tin đoàn',
+  'group_name_required': 'Tên đoàn *',
+  'number_of_rooms': 'Số phòng *',
+  'number_of_guests': 'Số khách *',
+  'no_products': 'Không có sản phẩm',
+  'clear_cart': 'Xóa giỏ hàng',
+  'confirm_clear_cart': 'Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?',
+  'product_updated_success': 'Cập nhật sản phẩm thành công',
+  'confirm_delete_product': 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+  'occupancy_percent': '% lấp đầy',
+  'export_report': 'Xuất báo cáo',
+  'average_occupancy': 'Công suất trung bình',
+  'total_spending': 'Tổng chi',
+  'hotel_owner': 'Chủ khách sạn',
+  'manager_role': 'Quản lý',
+  'housekeeping_role': 'Phòng buồng',
+  'view_staff_list': 'Xem danh sách nhân sự',
+  'booking_history': 'Lịch sử đặt phòng',
+  'times_count': 'lần',
+  'create_new_guest': 'Tạo khách hàng mới',
+  'find_guest': 'Tìm khách hàng',
+  'min_2_characters': 'Nhập ít nhất 2 ký tự',
+  'select_booking_source': 'Chọn nguồn đặt phòng',
+  'no_charges': 'Chưa có phí nào',
+  'items_count': 'mục',
+  'voided': 'Đã hủy',
+  'by_label': 'Bởi',
+  'paid_short': 'Đã TT',
+  'marked_notifications_read': 'Đã đánh dấu thông báo đã đọc',
+  'app_description': 'Ứng dụng quản lý căn hộ dịch vụ Hoàng Lâm Heritage Suites',
+  'developed_by': 'Phát triển bởi: Duy Lâm',
+  'copyright_notice': '© 2024 Hoàng Lâm Heritage Suites.\nĐã đăng ký bản quyền.',
+  'dd10_form_description': 'Mẫu ĐD10 (Nghị định 144/2021): Sổ quản lý lưu trú',
+  'na17_form_description': 'Mẫu NA17 (Thông tư 04/2015): Phiếu khai báo tạm trú người nước ngoài',
+  'form_type': 'Loại biểu mẫu',
+  'inspection_info': 'Thông tin kiểm tra',
+  'room_id_required': 'ID Phòng *',
+  'inspection_date_label': 'Ngày kiểm tra',
+  'inspection_template_optional': 'Mẫu kiểm tra (tùy chọn)',
+  'no_default_template': 'Không có mẫu mặc định',
+  'confirm_delete_template': 'Bạn có chắc muốn xóa mẫu này?',
+  'template_deleted': 'Đã xóa mẫu',
+  'important_label': 'Quan trọng',
+  'inspection_checklist': 'Danh sách kiểm tra',
+  'copy_template': 'Sao chép',
+  'inspection_result': 'Kết quả kiểm tra',
+  'score_label': 'Điểm',
+  'passed_label': 'Đạt',
+  'issues_count': 'vấn đề',
+  'critical_count': 'nghiêm trọng',
+  'no_checklist_items': 'Chưa có mục kiểm tra nào',
+  'images_label': 'Hình ảnh',
+  'actions_required': 'Hành động cần thực hiện',
+  'view_image': 'Xem ảnh',
+  'expected_date': 'Ngày dự kiến',
+  'inspector': 'Người kiểm tra',
+
+  // ===== PHASE C3: REMAINING HARDCODED STRINGS =====
+
+  // Common/Actions
+  'undo': 'Hoàn tác',
+  'share_btn': 'Chia sẻ',
+  'complete_action': 'Hoàn thành',
+  'resend_btn': 'Gửi lại',
+  'email_label': 'Email',
+  'phone_label': 'Điện thoại',
+  'unknown_error': 'Không xác định',
+  'confirm_delete_title': 'Xác nhận xóa',
+  'confirm_cancel_label': 'Xác nhận hủy',
+  'error_with_details': 'Lỗi',
+
+  // Booking Statuses
+  'status_pending': 'Chờ xác nhận',
+  'status_confirmed': 'Đã xác nhận',
+  'status_checked_in': 'Đã nhận phòng',
+  'status_checked_out': 'Đã trả phòng',
+  'status_cancelled': 'Đã hủy',
+  'status_no_show': 'Không đến',
+
+  // Financial
+  'delete_category': 'Xoá danh mục',
+  'category_deleted_msg': 'Đã xoá danh mục',
+  'expense_label': 'Chi phí',
+  'profit_label': 'Lợi nhuận',
+  'discount_label': 'Giảm giá',
+  'transactions_label': 'giao dịch',
+  'total_amount_vnd': 'Tổng tiền (VNĐ)',
+
+  // Group Booking
+  'stay_period': 'Thời gian lưu trú',
+  'additional_info_section': 'Thông tin bổ sung',
+  'example_group_name': 'VD: Đoàn du lịch ABC',
+  'no_group_bookings': 'Chưa có đặt phòng đoàn',
+  'rooms_count_suffix': 'phòng',
+  'guests_count_suffix': 'khách',
+  'rooms_needed': 'Số phòng cần',
+  'check_in_date_label': 'Ngày nhận phòng',
+  'check_out_date_label': 'Ngày trả phòng',
+  'group_updated': 'Đã cập nhật',
+  'group_created': 'Đã tạo đặt phòng',
+  'contact_person_required': 'Người liên hệ',
+  'phone_required': 'Điện thoại',
+  'assign_rooms': 'Phân phòng',
+  'cancel_group': 'Hủy',
+  'confirm_group': 'Xác nhận',
+  'check_in_group': 'Check-in',
+  'check_out_group': 'Check-out',
+
+  // Night Audit
+  'recalculate': 'Tính lại',
+  'recalculate_error': 'Lỗi tính lại',
+  'close_audit_btn': 'Đóng kiểm toán',
+  'no_audits_yet': 'Chưa có kiểm toán nào',
+
+  // Minibar
+  'minibar_pos': 'Minibar POS',
+  'no_products_in_category': 'Chưa có sản phẩm nào trong danh mục này',
+  'no_sales_yet': 'Chưa có bán hàng',
+  'sales_history_here': 'Lịch sử bán hàng sẽ hiển thị ở đây',
+  'mark_as_charged': 'Đánh dấu đã charge',
+  'payment_successful': 'Thanh toán thành công',
+  'confirm_payment_title': 'Xác nhận thanh toán',
+  'product_deleted_msg': 'Đã xóa sản phẩm',
+
+  // Reports
+  'occupancy_label': 'Công suất',
+  'no_expenses_label': 'Không có chi phí trong khoảng thời gian này',
+
+  // Room Inspection Stats
+  'inspection_statistics': 'Thống kê kiểm tra',
+  'total_inspections': 'Tổng số kiểm tra',
+  'completed_inspections': 'Đã hoàn thành',
+  'needs_attention': 'Cần xử lý',
+  'average_score': 'Điểm trung bình',
+  'issues_detected': 'Vấn đề phát hiện',
+  'critical_label': 'Nghiêm trọng',
+  'failed_label': 'Không đạt',
+  'inspection_completed': 'Đã hoàn thành kiểm tra',
+  'unchecked_critical_items': 'mục quan trọng chưa kiểm tra',
+
+  // Lost & Found
+  'filter_by_category_label': 'Lọc theo danh mục',
+  'statistics_label': 'Thống kê',
+  'total_count_label': 'Tổng số',
+  'unclaimed_value': 'Giá trị chưa nhận',
+  'by_status_label': 'Theo trạng thái',
+
+  // Settings Help
+  'help_room_management': 'Quản lý phòng',
+  'help_room_management_desc': 'Xem trạng thái phòng, thay đổi trạng thái, tạo đặt phòng mới.',
+  'help_bookings': 'Đặt phòng',
+  'help_bookings_desc': 'Quản lý check-in, check-out, và lịch đặt phòng.',
+  'help_housekeeping': 'Housekeeping',
+  'help_housekeeping_desc': 'Phân công dọn phòng, theo dõi bảo trì.',
+  'help_finance': 'Tài chính',
+  'help_finance_desc': 'Báo cáo thu chi, quản lý folio khách.',
+  'help_night_audit': 'Night Audit',
+  'help_night_audit_desc': 'Kiểm toán cuối ngày, đối soát doanh thu.',
+  'english': 'English',
+  'push_notifications_label': 'Push notifications',
+
+  // Pricing
+  'min_nights_stay_label': 'Tối thiểu',
+  'includes_breakfast_label': 'Bao gồm sáng',
+  'no_arrivals_label': 'Không nhận khách',
+  'no_departures_label': 'Không trả phòng',
+  'schedule_conflict_warning': 'Cảnh báo trùng lịch',
+  'from_date_required': 'Từ ngày',
+  'to_date_required': 'Đến ngày',
+  'select_date_required': 'Chọn ngày',
+
+  // Staff
+  'owner_manager_filter': 'Chủ/QL',
+  'staff_member': 'Nhân viên',
+  'username_field': 'Tên đăng nhập',
+  'phone_field': 'Số điện thoại',
+  'copied_value_msg': 'Đã sao chép',
+
+  // Declaration
+  'has_format_multi_sheet': 'Có format, nhiều sheet',
+  'text_format_popular': 'Dạng text, phổ biến',
+
+  // Folio
+  'folio': 'Folio',
+  'cancel_charge_title': 'Hủy phí',
+
+  // Booking Source
+  'walk_in': 'Walk-in',
+  'phone_source': 'Điện thoại',
+  'rank_label': 'Hạng',
+
+  // Housekeeping Checklist Items
+  'change_bed_sheets': 'Thay ga giường',
+  'vacuum': 'Hút bụi',
+  'mop_floor': 'Lau sàn',
+  'restock_supplies': 'Bổ sung đồ dùng',
+  'check_minibar': 'Kiểm tra minibar',
+  'change_towels': 'Thay khăn',
+  'empty_trash': 'Đổ rác',
+  'restock_water': 'Bổ sung nước',
+  'deep_clean_bathroom': 'Vệ sinh sâu phòng tắm',
+  'wash_curtains': 'Giặt rèm',
+  'clean_ac': 'Vệ sinh điều hòa',
+  'clean_fridge': 'Vệ sinh tủ lạnh',
+  'check_furniture': 'Kiểm tra nội thất',
+  'check_cleanliness': 'Kiểm tra độ sạch',
+  'check_equipment': 'Kiểm tra thiết bị',
+  'check_supplies': 'Kiểm tra đồ dùng',
+  'check_safety': 'Kiểm tra an toàn',
+  'check_for_issues': 'Kiểm tra sự cố',
+  'perform_repair': 'Thực hiện sửa chữa',
+  'reinspect': 'Kiểm tra lại',
+  'enter_task_notes': 'Nhập ghi chú về công việc...',
+
+  // ===== PHASE C4: COMPREHENSIVE L10N COVERAGE =====
+  // Night Audit
+  'total_income': 'Tổng thu',
+  'net_profit': 'Lợi nhuận ròng',
+  'other_revenue': 'Doanh thu khác',
+  'financial_overview': 'Tổng quan tài chính',
+  'rooms_occupied': 'Có khách',
+  'rooms_cleaning': 'Đang dọn',
+  'rooms_maintenance': 'Bảo trì',
+  'new_bookings': 'Đặt mới',
+  'no_shows': 'Không đến',
+  'cancellations_label': 'Hủy',
+  'pending_payments': 'Thanh toán chờ',
+  'payment_details': 'Chi tiết thanh toán',
+  'other_payment': 'Khác',
+  'notes_label': 'Ghi chú',
+  'closing_audit': 'Đang đóng...',
+  'audit_history': 'Lịch sử kiểm toán',
+  'load_history_error': 'Lỗi tải lịch sử',
+  'close_audit_error': 'Lỗi đóng kiểm toán',
+  'revenue_short': 'Thu',
+  'profit_short': 'Lãi',
+  'status_label': 'Trạng thái',
+  'room_label': 'Phòng',
+  'occupancy_filled': 'lấp đầy',
+  'close_button': 'Đóng',
+
+  // Report
+  'report_load_error': 'Lỗi tải báo cáo',
+  'no_data_in_period': 'Không có dữ liệu trong khoảng thời gian này',
+  'last_90_days': '90 ngày',
+  'revenue_label': 'Doanh thu',
+  'expenses_label': 'Chi phí',
+  'main_kpis': 'Chỉ số chính',
+  'details_label': 'Chi tiết',
+  'total_expenses': 'Tổng chi phí',
+  'no_expenses_in_period': 'Không có chi phí trong khoảng thời gian này',
+
+  // Staff
+  'no_search_results': 'Không tìm thấy kết quả',
+  'staff_role': 'Nhân viên',
+  'housekeeping_short': 'Buồng',
+  'permissions_label': 'Quyền hạn',
+  'no_permissions_assigned': 'Chưa phân quyền',
+  'perm_view_all_data': 'Xem tất cả dữ liệu',
+  'perm_manage_finance': 'Quản lý tài chính',
+  'perm_manage_bookings': 'Quản lý đặt phòng',
+  'perm_manage_staff': 'Quản lý nhân viên',
+  'perm_edit_room_prices': 'Chỉnh giá phòng',
+  'perm_night_audit': 'Kiểm toán đêm',
+  'perm_reports_stats': 'Báo cáo & thống kê',
+  'perm_view_bookings': 'Xem đặt phòng',
+  'perm_update_room_status': 'Cập nhật trạng thái phòng',
+  'perm_view_room_list': 'Xem danh sách phòng',
+  'perm_update_cleaning': 'Cập nhật dọn phòng',
+  'perm_report_maintenance': 'Báo cáo bảo trì',
+  'copy_tooltip': 'Sao chép',
+
+  // Declaration
+  'date_range_label': 'Khoảng thời gian',
+  'from_date': 'Từ ngày',
+  'to_date': 'Đến ngày',
+  'exporting': 'Đang xuất...',
+  'export_list': 'Xuất danh sách',
+  'file_exported_success': 'File đã được xuất thành công',
+  'bookings_marked_as_declared': 'Các đặt phòng đã được đánh dấu "Đã khai báo"',
+  'open_file_btn': 'Mở',
+  'share_file_btn': 'Chia sẻ',
+  'file_format_label': 'Định dạng file',
+  'last_7_days_label': '7 ngày qua',
+  'last_30_days_label': '30 ngày qua',
+  'declaration_form_descriptions': '• ĐD10: Sổ quản lý lưu trú (khách Việt Nam)\n• NA17: Phiếu khai báo tạm trú (khách nước ngoài)',
+
+  // Group Booking Detail
+  'phone': 'Điện thoại',
+  'email': 'Email',
+  'check_in_date': 'Ngày nhận phòng',
+  'check_out_date': 'Ngày trả phòng',
+  'payment_label': 'Thanh toán',
+  'discount_amount': 'Giảm giá',
+  'yes_label': 'Có',
+  'not_yet_label': 'Chưa',
+  'notes_section': 'Ghi chú',
+  'confirm_group_booking': 'Xác nhận đặt phòng đoàn?',
+  'confirmed_msg': 'Đã xác nhận',
+  'confirm_group_check_in': 'Xác nhận check-in cho đoàn',
+  'confirm_group_check_out': 'Xác nhận check-out cho đoàn',
+  'checked_out_success': 'Đã check-out',
+  'enter_cancel_reason': 'Nhập lý do hủy đặt phòng',
+  'cancelled_msg': 'Đã hủy',
+  'room_id_list_hint': 'VD: 1, 2, 3 (ID phòng, cách nhau bằng dấu phẩy)',
+
+  // Minibar
+  'product': 'Sản phẩm',
+  'quantity': 'Số lượng',
+  'unit_price': 'Đơn giá',
+  'charged': 'Đã charge',
+  'not_charged': 'Chưa charge',
+  'sale_details': 'Chi tiết bán hàng',
+  'no_matching_products': 'Không tìm thấy sản phẩm phù hợp',
+  'empty_cart': 'Giỏ hàng trống',
+  'checkout_btn': 'Thanh toán',
+  'clear_all': 'Xóa tất cả',
+  'discontinued': 'Ngừng bán',
+  'cart_title': 'Giỏ hàng',
+  'product_added_success': 'Thêm sản phẩm thành công',
+  'add_product': 'Thêm sản phẩm',
+  'invalid': 'Không hợp lệ',
+  'active_status_label': 'Hoạt động',
+  'cost_amount': 'Vốn',
+  'activate_label': 'Mở bán',
+
+  // Housekeeping
+  'unassigned': 'Chưa phân công',
+  'complete_btn': 'Hoàn thành',
+  'filter_maintenance_requests': 'Lọc yêu cầu bảo trì',
+  'clear_filters': 'Xóa bộ lọc',
+  'apply_btn': 'Áp dụng',
+  'filter_tasks': 'Lọc công việc',
+  'task_type_label': 'Loại công việc',
+  'tomorrow': 'Ngày mai',
+
+  // Guest
+  'search_guest_hint': 'Tìm khách theo tên, SĐT, CCCD...',
+  'id_number': 'CCCD',
+
+  // Common Widgets
+  'offline_sync_message': 'Đang offline - Dữ liệu sẽ đồng bộ khi có mạng',
+  'income_expense_chart': 'Biểu đồ thu chi',
+  'income_label': 'Thu',
+  'expense_short': 'Chi',
+
+  // Room Folio
+  'void_charge': 'Hủy phí',
+  'confirm_void_charge': 'Bạn có chắc muốn hủy phí',
+  'charge_amount': 'Số tiền',
+  'void_reason_required': 'Lý do hủy *',
+  'enter_void_reason': 'Nhập lý do hủy phí',
+  'please_enter_void_reason': 'Vui lòng nhập lý do hủy',
+  'charge_voided_success': 'Đã hủy phí thành công',
+  'cannot_void_charge': 'Không thể hủy phí',
+  'confirm_void': 'Xác nhận hủy',
+
+  // Inspection Template
+  'default_badge': 'Mặc định',
+  'duplicate_btn': 'Sao chép',
+  'critical': 'Quan trọng',
+  'template_duplicated': 'Đã sao chép mẫu thành công',
+  'room_type_id_optional': 'ID Loại phòng (tùy chọn)',
+  'room_type_id_hint': 'VD: 1, 2, 3',
+  'amenities_category': 'Tiện nghi',
+  'electronics_category': 'Điện tử',
+  'bed_clean': 'Giường ngủ sạch sẽ',
+  'bed_sheet_replaced': 'Ga trải giường thay mới',
+  'pillows_blanket_clean': 'Gối và chăn sạch',
+  'toilet_clean': 'Nhà vệ sinh sạch',
+  'towels_complete': 'Khăn tắm đầy đủ',
+  'toiletries_complete': 'Đồ dùng vệ sinh đầy đủ',
+  'ac_working': 'Điều hòa hoạt động',
+  'tv_working': 'TV hoạt động',
+  'fridge_working': 'Tủ lạnh hoạt động',
+  'create_new_inspection_template': 'Tạo mẫu kiểm tra mới',
+
+  // Room Inspection Detail
+  'booking_code_label': 'Mã đặt phòng',
+  'action_required_section': 'Hành động cần thực hiện',
+  'view_photo': 'Xem ảnh',
+  'completed_label': 'Hoàn thành',
+
+  // Booking Source
+  'select_booking_source_hint': 'Chọn nguồn đặt phòng',
+
+  // Phase C5
+  'total_room_nights_available': 'Tổng đêm phòng khả dụng',
+  'total_room_nights_sold': 'Tổng đêm phòng bán',
+  'no_expenses_in_date_range': 'Không có chi phí trong khoảng thời gian này',
+  'copied_value_msg': 'Đã sao chép',
+  'role_housekeeping_label': 'Phòng buồng',
+  'rooms_suffix': 'phòng',
+  'nights_suffix': 'đêm',
+  'guests_suffix': 'khách',
+  'transactions_suffix': 'giao dịch',
+  'avg_short': 'TB',
 };
 
 // English translations
@@ -2273,6 +3217,462 @@ const Map<String, String> _enTranslations = {
   'stays_label': 'Stays',
   'room_info_not_found': 'Room information not found',
   'booking_info_not_found': 'Booking information not found',
+  'task_info_not_found': 'Task information not found',
+  'maintenance_not_found': 'Maintenance request not found',
+  'lost_item_not_found': 'Lost item not found',
+  'rate_plan_not_found': 'Rate plan not found',
+  'date_rate_not_found': 'Date rate not found',
+  'page_not_found': 'Page not found',
+  'go_home': 'Go home',
+
+  // ===== PHASE C2: ADDITIONAL EXTRACTED STRINGS =====
+  'contact_label': 'Contact',
+  'contact_person': 'Contact person',
+  'assigned_rooms': 'Assigned rooms',
+  'paid': 'Paid',
+  'unpaid': 'Unpaid',
+  'amount': 'Amount',
+  'select_staff': 'Select staff',
+  'just_now': 'Just now',
+  'minutes_ago': 'minutes ago',
+  'hours_ago': 'hours ago',
+  'days_ago': 'days ago',
+  'last_month': 'Last month',
+  'this_year': 'This year',
+  'seven_days': '7 days',
+  'thirty_days': '30 days',
+  'ninety_days': '90 days',
+  'last_7_days': 'Last 7 days',
+  'last_30_days': 'Last 30 days',
+  'claimed_date': 'Claimed date',
+  'deposit_amount': 'Deposit amount',
+  'cash': 'Cash',
+  'bank_transfer': 'Bank transfer',
+  'record_deposit': 'Record deposit',
+  'cost_price': 'Cost price',
+  'selling_price_required': 'Selling price *',
+  'profit_margin': 'Profit margin',
+  'room_charges': 'Room charges',
+  'additional_charges': 'Additional charges',
+  'total_charges': 'Total charges',
+  'remaining_balance': 'Remaining',
+  'guest_owes': 'Guest owes',
+  'outstanding_balance': 'Outstanding',
+  'no_deposit': 'No deposit',
+  'deposit_short': 'Deposit short',
+  'deposit_paid_status': 'Deposit paid',
+  'required_amount': 'Required',
+  'amount_short': 'Short',
+  'record_deposit_btn': 'Record',
+  'no_pending_deposits': 'No pending deposits',
+  'currency_type': 'Currency type',
+  'exchange_rate': 'Exchange rate',
+  'confirm_payment': 'Confirm payment',
+  'vnd_per_night': 'VND/night',
+  'reference_code': 'Reference code',
+  'method_label': 'Method',
+  'no_income_categories': 'No income categories',
+  'no_expense_categories': 'No expense categories',
+  'category_hidden': 'Category hidden',
+  'category_shown': 'Category shown',
+  'view_financial_categories': 'View financial categories',
+  'group_info': 'Group info',
+  'group_name_required': 'Group name *',
+  'number_of_rooms': 'Number of rooms *',
+  'number_of_guests': 'Number of guests *',
+  'no_products': 'No products',
+  'clear_cart': 'Clear cart',
+  'confirm_clear_cart': 'Are you sure you want to clear all items from the cart?',
+  'product_updated_success': 'Product updated successfully',
+  'confirm_delete_product': 'Are you sure you want to delete this product?',
+  'occupancy_percent': '% occupancy',
+  'export_report': 'Export report',
+  'average_occupancy': 'Average occupancy',
+  'total_spending': 'Total spending',
+  'hotel_owner': 'Hotel owner',
+  'manager_role': 'Manager',
+  'housekeeping_role': 'Housekeeping',
+  'view_staff_list': 'View staff list',
+  'booking_history': 'Booking history',
+  'times_count': 'times',
+  'create_new_guest': 'Create new guest',
+  'find_guest': 'Find guest',
+  'min_2_characters': 'Enter at least 2 characters',
+  'select_booking_source': 'Select booking source',
+  'no_charges': 'No charges',
+  'items_count': 'items',
+  'voided': 'Voided',
+  'by_label': 'By',
+  'paid_short': 'Paid',
+  'marked_notifications_read': 'Marked notifications as read',
+  'app_description': 'Hoang Lam Heritage Suites apartment management application',
+  'developed_by': 'Developed by: Duy Lam',
+  'copyright_notice': '© 2024 Hoang Lam Heritage Suites.\nAll rights reserved.',
+  'dd10_form_description': 'Form DD10 (Decree 144/2021): Residence management register',
+  'na17_form_description': 'Form NA17 (Circular 04/2015): Foreign guest temporary residence declaration',
+  'form_type': 'Form type',
+  'inspection_info': 'Inspection info',
+  'room_id_required': 'Room ID *',
+  'inspection_date_label': 'Inspection date',
+  'inspection_template_optional': 'Inspection template (optional)',
+  'no_default_template': 'No default template',
+  'confirm_delete_template': 'Are you sure you want to delete this template?',
+  'template_deleted': 'Template deleted',
+  'important_label': 'Important',
+  'inspection_checklist': 'Inspection checklist',
+  'copy_template': 'Copy',
+  'inspection_result': 'Inspection result',
+  'score_label': 'Score',
+  'passed_label': 'Passed',
+  'issues_count': 'issues',
+  'critical_count': 'critical',
+  'no_checklist_items': 'No checklist items',
+  'images_label': 'Images',
+  'actions_required': 'Actions required',
+  'view_image': 'View image',
+  'expected_date': 'Expected date',
+  'inspector': 'Inspector',
+
+  // ===== PHASE C3: REMAINING HARDCODED STRINGS =====
+
+  // Common/Actions
+  'undo': 'Undo',
+  'share_btn': 'Share',
+  'complete_action': 'Complete',
+  'resend_btn': 'Resend',
+  'email_label': 'Email',
+  'phone_label': 'Phone',
+  'unknown_error': 'Unknown',
+  'confirm_delete_title': 'Confirm Delete',
+  'confirm_cancel_label': 'Confirm Cancel',
+  'error_with_details': 'Error',
+
+  // Booking Statuses
+  'status_pending': 'Pending Confirmation',
+  'status_confirmed': 'Confirmed',
+  'status_checked_in': 'Checked In',
+  'status_checked_out': 'Checked Out',
+  'status_cancelled': 'Cancelled',
+  'status_no_show': 'No Show',
+
+  // Financial
+  'delete_category': 'Delete Category',
+  'category_deleted_msg': 'Category deleted',
+  'expense_label': 'Expenses',
+  'profit_label': 'Profit',
+  'discount_label': 'Discount',
+  'transactions_label': 'transactions',
+  'total_amount_vnd': 'Total (VND)',
+
+  // Group Booking
+  'stay_period': 'Stay Period',
+  'additional_info_section': 'Additional Information',
+  'example_group_name': 'Ex: Tour Group ABC',
+  'no_group_bookings': 'No group bookings',
+  'rooms_count_suffix': 'rooms',
+  'guests_count_suffix': 'guests',
+  'rooms_needed': 'Rooms needed',
+  'check_in_date_label': 'Check-in date',
+  'check_out_date_label': 'Check-out date',
+  'group_updated': 'Updated',
+  'group_created': 'Booking created',
+  'contact_person_required': 'Contact Person',
+  'phone_required': 'Phone',
+  'assign_rooms': 'Assign Rooms',
+  'cancel_group': 'Cancel',
+  'confirm_group': 'Confirm',
+  'check_in_group': 'Check-in',
+  'check_out_group': 'Check-out',
+
+  // Night Audit
+  'recalculate': 'Recalculate',
+  'recalculate_error': 'Recalculation error',
+  'close_audit_btn': 'Close Audit',
+  'no_audits_yet': 'No audits yet',
+
+  // Minibar
+  'minibar_pos': 'Minibar POS',
+  'no_products_in_category': 'No products in this category',
+  'no_sales_yet': 'No sales yet',
+  'sales_history_here': 'Sales history will appear here',
+  'mark_as_charged': 'Mark as charged',
+  'payment_successful': 'Payment successful',
+  'confirm_payment_title': 'Confirm Payment',
+  'product_deleted_msg': 'Product deleted',
+
+  // Reports
+  'occupancy_label': 'Occupancy',
+  'no_expenses_label': 'No expenses in this period',
+
+  // Room Inspection Stats
+  'inspection_statistics': 'Inspection Statistics',
+  'total_inspections': 'Total Inspections',
+  'completed_inspections': 'Completed',
+  'needs_attention': 'Needs Attention',
+  'average_score': 'Average Score',
+  'issues_detected': 'Issues Detected',
+  'critical_label': 'Critical',
+  'failed_label': 'Failed',
+  'inspection_completed': 'Inspection completed',
+  'unchecked_critical_items': 'unchecked critical items',
+
+  // Lost & Found
+  'filter_by_category_label': 'Filter by Category',
+  'statistics_label': 'Statistics',
+  'total_count_label': 'Total',
+  'unclaimed_value': 'Unclaimed Value',
+  'by_status_label': 'By Status',
+
+  // Settings Help
+  'help_room_management': 'Room Management',
+  'help_room_management_desc': 'View room status, change status, create new bookings.',
+  'help_bookings': 'Bookings',
+  'help_bookings_desc': 'Manage check-in, check-out, and booking calendar.',
+  'help_housekeeping': 'Housekeeping',
+  'help_housekeeping_desc': 'Assign room cleaning, track maintenance.',
+  'help_finance': 'Finance',
+  'help_finance_desc': 'Income/expense reports, manage guest folios.',
+  'help_night_audit': 'Night Audit',
+  'help_night_audit_desc': 'End-of-day audit, revenue reconciliation.',
+  'english': 'English',
+  'push_notifications_label': 'Push notifications',
+
+  // Pricing
+  'min_nights_stay_label': 'Minimum',
+  'includes_breakfast_label': 'Includes breakfast',
+  'no_arrivals_label': 'No arrivals',
+  'no_departures_label': 'No departures',
+  'schedule_conflict_warning': 'Schedule Conflict Warning',
+  'from_date_required': 'From date',
+  'to_date_required': 'To date',
+  'select_date_required': 'Select date',
+
+  // Staff
+  'owner_manager_filter': 'Owner/Mgr',
+  'staff_member': 'Staff',
+  'username_field': 'Username',
+  'phone_field': 'Phone number',
+  'copied_value_msg': 'Copied',
+
+  // Declaration
+  'has_format_multi_sheet': 'Formatted, multiple sheets',
+  'text_format_popular': 'Text format, popular',
+
+  // Folio
+  'folio': 'Folio',
+  'cancel_charge_title': 'Cancel Charge',
+
+  // Booking Source
+  'walk_in': 'Walk-in',
+  'phone_source': 'Phone',
+  'rank_label': 'Rank',
+
+  // Housekeeping Checklist Items
+  'change_bed_sheets': 'Change bed sheets',
+  'vacuum': 'Vacuum',
+  'mop_floor': 'Mop floor',
+  'restock_supplies': 'Restock supplies',
+  'check_minibar': 'Check minibar',
+  'change_towels': 'Change towels',
+  'empty_trash': 'Empty trash',
+  'restock_water': 'Restock water',
+  'deep_clean_bathroom': 'Deep clean bathroom',
+  'wash_curtains': 'Wash curtains',
+  'clean_ac': 'Clean air conditioner',
+  'clean_fridge': 'Clean refrigerator',
+  'check_furniture': 'Check furniture',
+  'check_cleanliness': 'Check cleanliness',
+  'check_equipment': 'Check equipment',
+  'check_supplies': 'Check supplies',
+  'check_safety': 'Check safety',
+  'check_for_issues': 'Check for issues',
+  'perform_repair': 'Perform repair',
+  'reinspect': 'Reinspect',
+  'enter_task_notes': 'Enter task notes...',
+
+  // ===== PHASE C4: COMPREHENSIVE L10N COVERAGE =====
+  // Night Audit
+  'total_income': 'Total income',
+  'net_profit': 'Net profit',
+  'other_revenue': 'Other revenue',
+  'financial_overview': 'Financial overview',
+  'rooms_occupied': 'Occupied',
+  'rooms_cleaning': 'Cleaning',
+  'rooms_maintenance': 'Maintenance',
+  'new_bookings': 'New bookings',
+  'no_shows': 'No shows',
+  'cancellations_label': 'Cancellations',
+  'pending_payments': 'Pending payments',
+  'payment_details': 'Payment details',
+  'other_payment': 'Other',
+  'notes_label': 'Notes',
+  'closing_audit': 'Closing...',
+  'audit_history': 'Audit history',
+  'load_history_error': 'Error loading history',
+  'close_audit_error': 'Error closing audit',
+  'revenue_short': 'Rev',
+  'profit_short': 'Profit',
+  'status_label': 'Status',
+  'room_label': 'Room',
+  'occupancy_filled': 'filled',
+  'close_button': 'Close',
+
+  // Report
+  'report_load_error': 'Error loading report',
+  'no_data_in_period': 'No data in this period',
+  'last_90_days': '90 days',
+  'revenue_label': 'Revenue',
+  'expenses_label': 'Expenses',
+  'main_kpis': 'Key metrics',
+  'details_label': 'Details',
+  'total_expenses': 'Total expenses',
+  'no_expenses_in_period': 'No expenses in this period',
+
+  // Staff
+  'no_search_results': 'No results found',
+  'staff_role': 'Staff',
+  'housekeeping_short': 'HK',
+  'permissions_label': 'Permissions',
+  'no_permissions_assigned': 'No permissions assigned',
+  'perm_view_all_data': 'View all data',
+  'perm_manage_finance': 'Manage finance',
+  'perm_manage_bookings': 'Manage bookings',
+  'perm_manage_staff': 'Manage staff',
+  'perm_edit_room_prices': 'Edit room prices',
+  'perm_night_audit': 'Night audit',
+  'perm_reports_stats': 'Reports & statistics',
+  'perm_view_bookings': 'View bookings',
+  'perm_update_room_status': 'Update room status',
+  'perm_view_room_list': 'View room list',
+  'perm_update_cleaning': 'Update cleaning',
+  'perm_report_maintenance': 'Report maintenance',
+  'copy_tooltip': 'Copy',
+
+  // Declaration
+  'date_range_label': 'Date range',
+  'from_date': 'From date',
+  'to_date': 'To date',
+  'exporting': 'Exporting...',
+  'export_list': 'Export list',
+  'file_exported_success': 'File exported successfully',
+  'bookings_marked_as_declared': 'Bookings have been marked as "Declared"',
+  'open_file_btn': 'Open',
+  'share_file_btn': 'Share',
+  'file_format_label': 'File format',
+  'last_7_days_label': 'Last 7 days',
+  'last_30_days_label': 'Last 30 days',
+  'declaration_form_descriptions': '• ĐD10: Residence management register (Vietnamese guests)\n• NA17: Temporary residence declaration (Foreign guests)',
+
+  // Group Booking Detail
+  'phone': 'Phone',
+  'email': 'Email',
+  'check_in_date': 'Check-in date',
+  'check_out_date': 'Check-out date',
+  'payment_label': 'Payment',
+  'discount_amount': 'Discount',
+  'yes_label': 'Yes',
+  'not_yet_label': 'Not yet',
+  'notes_section': 'Notes',
+  'confirm_group_booking': 'Confirm group booking?',
+  'confirmed_msg': 'Confirmed',
+  'confirm_group_check_in': 'Confirm check-in for group',
+  'confirm_group_check_out': 'Confirm check-out for group',
+  'checked_out_success': 'Checked out',
+  'enter_cancel_reason': 'Enter cancellation reason',
+  'cancelled_msg': 'Cancelled',
+  'room_id_list_hint': 'Ex: 1, 2, 3 (Room IDs, separated by commas)',
+
+  // Minibar
+  'product': 'Product',
+  'quantity': 'Quantity',
+  'unit_price': 'Unit price',
+  'charged': 'Charged',
+  'not_charged': 'Not charged',
+  'sale_details': 'Sale details',
+  'no_matching_products': 'No matching products found',
+  'empty_cart': 'Cart is empty',
+  'checkout_btn': 'Checkout',
+  'clear_all': 'Clear all',
+  'discontinued': 'Discontinued',
+  'cart_title': 'Cart',
+  'product_added_success': 'Product added successfully',
+  'add_product': 'Add product',
+  'invalid': 'Invalid',
+  'active_status_label': 'Active',
+  'cost_amount': 'Cost',
+  'activate_label': 'Activate',
+
+  // Housekeeping
+  'unassigned': 'Unassigned',
+  'complete_btn': 'Complete',
+  'filter_maintenance_requests': 'Filter maintenance requests',
+  'clear_filters': 'Clear filters',
+  'apply_btn': 'Apply',
+  'filter_tasks': 'Filter tasks',
+  'task_type_label': 'Task type',
+  'tomorrow': 'Tomorrow',
+
+  // Guest
+  'search_guest_hint': 'Search guest by name, phone, ID...',
+  'id_number': 'ID Number',
+
+  // Common Widgets
+  'offline_sync_message': 'Offline - Data will sync when connected',
+  'income_expense_chart': 'Income & Expense Chart',
+  'income_label': 'Income',
+  'expense_short': 'Expense',
+
+  // Room Folio
+  'void_charge': 'Void charge',
+  'confirm_void_charge': 'Are you sure you want to void charge',
+  'charge_amount': 'Amount',
+  'void_reason_required': 'Void reason *',
+  'enter_void_reason': 'Enter void reason',
+  'please_enter_void_reason': 'Please enter void reason',
+  'charge_voided_success': 'Charge voided successfully',
+  'cannot_void_charge': 'Cannot void charge',
+  'confirm_void': 'Confirm void',
+
+  // Inspection Template
+  'default_badge': 'Default',
+  'duplicate_btn': 'Duplicate',
+  'critical': 'Critical',
+  'template_duplicated': 'Template duplicated successfully',
+  'room_type_id_optional': 'Room Type ID (optional)',
+  'room_type_id_hint': 'Ex: 1, 2, 3',
+  'amenities_category': 'Amenities',
+  'electronics_category': 'Electronics',
+  'bed_clean': 'Bed is clean',
+  'bed_sheet_replaced': 'Bed sheet replaced',
+  'pillows_blanket_clean': 'Pillows and blankets clean',
+  'toilet_clean': 'Toilet clean',
+  'towels_complete': 'Towels complete',
+  'toiletries_complete': 'Toiletries complete',
+  'ac_working': 'AC working',
+  'tv_working': 'TV working',
+  'fridge_working': 'Fridge working',
+  'create_new_inspection_template': 'Create new inspection template',
+
+  // Room Inspection Detail
+  'booking_code_label': 'Booking code',
+  'action_required_section': 'Action required',
+  'view_photo': 'View photo',
+  'completed_label': 'Completed',
+
+  // Booking Source
+  'select_booking_source_hint': 'Select booking source',
+
+  // Phase C5
+  'total_room_nights_available': 'Total available room nights',
+  'total_room_nights_sold': 'Total sold room nights',
+  'no_expenses_in_date_range': 'No expenses in this date range',
+  'copied_value_msg': 'Copied',
+  'role_housekeeping_label': 'Housekeeping',
+  'rooms_suffix': 'rooms',
+  'nights_suffix': 'nights',
+  'guests_suffix': 'guests',
+  'transactions_suffix': 'transactions',
+  'avg_short': 'Avg',
 };
 
 // Delegate

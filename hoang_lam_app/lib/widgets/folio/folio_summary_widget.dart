@@ -82,7 +82,7 @@ class FolioSummaryWidget extends StatelessWidget {
                     border: Border.all(color: balanceColor.withValues(alpha: 0.5)),
                   ),
                   child: Text(
-                    isSettled ? 'Đã thanh toán' : 'Còn nợ',
+                    isSettled ? context.l10n.paid : context.l10n.outstandingBalance,
                     style: TextStyle(
                       color: balanceColor,
                       fontWeight: FontWeight.w600,
@@ -100,7 +100,7 @@ class FolioSummaryWidget extends StatelessWidget {
             // Charges breakdown
             _buildSummaryRow(
               icon: Icons.hotel,
-              label: 'Tiền phòng',
+              label: context.l10n.roomCharges,
               amount: summary.roomCharges,
               color: AppColors.info,
             ),
@@ -109,7 +109,7 @@ class FolioSummaryWidget extends StatelessWidget {
 
             _buildSummaryRow(
               icon: Icons.add_circle_outline,
-              label: 'Phí bổ sung',
+              label: context.l10n.additionalCharges,
               amount: summary.additionalCharges,
               color: AppColors.warning,
             ),
@@ -121,7 +121,7 @@ class FolioSummaryWidget extends StatelessWidget {
             // Total charges
             _buildSummaryRow(
               icon: Icons.receipt_long,
-              label: 'Tổng chi phí',
+              label: context.l10n.totalCharges,
               amount: summary.totalCharges,
               color: AppColors.primary,
               isBold: true,
@@ -132,7 +132,7 @@ class FolioSummaryWidget extends StatelessWidget {
             // Payments
             _buildSummaryRow(
               icon: Icons.payment,
-              label: 'Đã thanh toán',
+              label: context.l10n.paid,
               amount: summary.totalPayments,
               color: Colors.green,
               prefix: '-',
@@ -154,8 +154,8 @@ class FolioSummaryWidget extends StatelessWidget {
                       size: 24,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'Còn lại',
+                    Text(
+                      context.l10n.remainingBalance,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -193,7 +193,7 @@ class FolioSummaryWidget extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Khách còn nợ ${currencyFormat.format(summary.outstandingAmount)}',
+                        '${context.l10n.guestOwes} ${currencyFormat.format(summary.outstandingAmount)}',
                         style: TextStyle(
                           color: Colors.amber[900],
                           fontWeight: FontWeight.w500,

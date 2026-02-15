@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 
 /// Offline status banner
@@ -33,9 +34,9 @@ class OfflineBanner extends StatelessWidget {
             size: AppSpacing.iconSm,
           ),
           AppSpacing.gapHorizontalSm,
-          const Expanded(
+          Expanded(
             child: Text(
-              'Đang offline - Dữ liệu sẽ đồng bộ khi có mạng',
+              context.l10n.offlineSyncMessage,
               style: TextStyle(
                 color: AppColors.onOffline,
                 fontSize: 14,
@@ -207,7 +208,7 @@ class ErrorState extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh),
-                label: const Text('Thử lại'),
+                label: Text(context.l10n.retry),
               ),
             ],
           ],

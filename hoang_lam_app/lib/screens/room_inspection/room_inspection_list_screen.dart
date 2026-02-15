@@ -233,7 +233,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                           ),
                         ),
                       ),
-                      Text('Thống kê kiểm tra', style: Theme.of(context).textTheme.titleLarge),
+                      Text(context.l10n.inspectionStatistics, style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: AppSpacing.lg),
                       _StatCard(
                         title: 'Tổng số kiểm tra',

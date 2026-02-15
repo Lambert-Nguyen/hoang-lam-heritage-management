@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
 
 /// A card widget displaying guest summary information
@@ -118,7 +119,7 @@ class GuestCard extends StatelessWidget {
               _buildInfoChip(
                 context,
                 icon: Icons.hotel_outlined,
-                label: '${guest.bookingCount} lần',
+                label: '${guest.bookingCount} ${context.l10n.timesCount}',
               ),
             ],
           ],

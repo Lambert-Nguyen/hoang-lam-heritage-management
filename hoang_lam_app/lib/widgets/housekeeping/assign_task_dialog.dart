@@ -65,13 +65,13 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Phân công công việc',
+                        context.l10n.assignRepair,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                       ),
                       Text(
-                        'Phòng ${widget.task.roomNumber ?? widget.task.room}',
+                        '${context.l10n.room} ${widget.task.roomNumber ?? widget.task.room}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -92,7 +92,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
 
             // Staff list
             Text(
-              'Chọn nhân viên',
+              context.l10n.selectStaff,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textSecondary,
@@ -149,7 +149,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
               children: [
                 Expanded(
                   child: AppButton(
-                    label: 'Hủy',
+                    label: context.l10n.cancel,
                     onPressed: () => Navigator.pop(context),
                     isOutlined: true,
                   ),
@@ -157,7 +157,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                 AppSpacing.gapHorizontalMd,
                 Expanded(
                   child: AppButton(
-                    label: 'Xác nhận',
+                    label: context.l10n.confirm,
                     onPressed: _selectedUserId != null
                         ? () => Navigator.pop(context, _selectedUserId)
                         : null,
