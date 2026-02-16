@@ -272,7 +272,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
             Container(
               width: 1,
               height: 40,
-              color: Colors.grey.withValues(alpha: 0.3),
+              color: AppColors.mutedAccent.withValues(alpha: 0.3),
             ),
             _buildProfitItem(
               l10n.profitMargin,

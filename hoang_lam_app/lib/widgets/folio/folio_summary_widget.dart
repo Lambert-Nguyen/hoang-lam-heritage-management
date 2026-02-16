@@ -19,7 +19,7 @@ class FolioSummaryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSettled = summary.isSettled;
-    final balanceColor = isSettled ? Colors.green : Colors.red;
+    final balanceColor = isSettled ? AppColors.success : AppColors.error;
 
     return Card(
       child: Padding(
@@ -134,7 +134,7 @@ class FolioSummaryWidget extends StatelessWidget {
               icon: Icons.payment,
               label: context.l10n.paid,
               amount: summary.totalPayments,
-              color: Colors.green,
+              color: AppColors.success,
               prefix: '-',
             ),
 
@@ -180,22 +180,22 @@ class FolioSummaryWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.amber[50],
+                  color: AppColors.statusAmberLight,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber[200]!),
+                  border: Border.all(color: AppColors.statusAmberBorder),
                 ),
                 child: Row(
                   children: [
                     Icon(
                       Icons.warning_amber_rounded,
-                      color: Colors.amber[700],
+                      color: AppColors.statusAmberIcon,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         '${context.l10n.guestOwes} ${currencyFormat.format(summary.outstandingAmount)}',
                         style: TextStyle(
-                          color: Colors.amber[900],
+                          color: AppColors.statusAmberDark,
                           fontWeight: FontWeight.w500,
                         ),
                       ),

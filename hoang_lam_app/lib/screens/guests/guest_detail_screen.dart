@@ -113,7 +113,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               AppSpacing.gapVerticalXl,
               CircleAvatar(
                 radius: 40,
-                backgroundColor: Colors.white,
+                backgroundColor: AppColors.surface,
                 child: Text(
                   _guest.initials,
                   style: TextStyle(
@@ -142,7 +142,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Row(

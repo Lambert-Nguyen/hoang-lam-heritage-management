@@ -205,7 +205,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                     ],
                   ),
                 ),
-                Container(width: 1, height: 60, color: Colors.grey[300]),
+                Container(width: 1, height: 60, color: AppColors.mutedAccent),
                 Expanded(
                   child: Column(
                     children: [
@@ -222,7 +222,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
             const SizedBox(height: 16),
             LinearProgressIndicator(
               value: inspection.score / 100,
-              backgroundColor: Colors.grey[200],
+              backgroundColor: AppColors.mutedAccent,
               valueColor: AlwaysStoppedAnimation(_getScoreColor(inspection.score)),
               minHeight: 8,
               borderRadius: BorderRadius.circular(4),
@@ -237,17 +237,17 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withValues(alpha: 0.1),
+                        color: AppColors.warning.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.warning_amber, size: 16, color: Colors.orange),
+                          const Icon(Icons.warning_amber, size: 16, color: AppColors.warning),
                           const SizedBox(width: 4),
                           Text(
                             '${inspection.issuesFound} ${context.l10n.issuesCount}',
-                            style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w500),
+                            style: const TextStyle(color: AppColors.warning, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -258,17 +258,17 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha: 0.1),
+                        color: AppColors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.error, size: 16, color: Colors.red),
+                          const Icon(Icons.error, size: 16, color: AppColors.error),
                           const SizedBox(width: 4),
                           Text(
                             '${inspection.criticalIssues} ${context.l10n.criticalIssuesLabel}',
-                            style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w500),
+                            style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -320,13 +320,13 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isChecked
-            ? (isPassed ? Colors.green.withValues(alpha: 0.05) : Colors.red.withValues(alpha: 0.05))
-            : Colors.grey.withValues(alpha: 0.05),
+            ? (isPassed ? AppColors.success.withValues(alpha: 0.05) : AppColors.error.withValues(alpha: 0.05))
+            : AppColors.mutedAccent.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isChecked
-              ? (isPassed ? Colors.green.withValues(alpha: 0.3) : Colors.red.withValues(alpha: 0.3))
-              : Colors.grey.withValues(alpha: 0.3),
+              ? (isPassed ? AppColors.success.withValues(alpha: 0.3) : AppColors.error.withValues(alpha: 0.3))
+              : AppColors.mutedAccent.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -335,7 +335,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
             isChecked
                 ? (isPassed ? Icons.check_circle : Icons.cancel)
                 : Icons.radio_button_unchecked,
-            color: isChecked ? (isPassed ? Colors.green : Colors.red) : Colors.grey,
+            color: isChecked ? (isPassed ? AppColors.success : AppColors.error) : AppColors.mutedAccent,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -357,7 +357,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                     child: Text(
                       checklistItem.notes,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.orange[700],
+                            color: AppColors.warning,
                             fontStyle: FontStyle.italic,
                           ),
                     ),
@@ -369,12 +369,12 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
                 context.l10n.critical,
-                style: const TextStyle(fontSize: 10, color: Colors.red),
+                style: const TextStyle(fontSize: 10, color: AppColors.error),
               ),
             ),
         ],
@@ -405,7 +405,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                       margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!),
+                        border: Border.all(color: AppColors.mutedAccent),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(7),
@@ -413,7 +413,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                           imageUrl,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => const Center(
-                            child: Icon(Icons.image_not_supported, color: Colors.grey),
+                            child: Icon(Icons.image_not_supported, color: AppColors.mutedAccent),
                           ),
                         ),
                       ),
@@ -455,7 +455,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
       child: Container(
         padding: AppSpacing.paddingCard,
         decoration: BoxDecoration(
-          color: Colors.orange.withValues(alpha: 0.05),
+          color: AppColors.warning.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
@@ -463,11 +463,11 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
           children: [
             Row(
               children: [
-                Icon(Icons.warning_amber, size: 20, color: Colors.orange[700]),
+                Icon(Icons.warning_amber, size: 20, color: AppColors.warning),
                 const SizedBox(width: 8),
                 Text(
                   context.l10n.actionRequiredSection,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.orange[700]),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(color: AppColors.warning),
                 ),
               ],
             ),
@@ -541,7 +541,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -571,11 +571,11 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
 
   Color _getScoreColor(double score) {
     if (score >= 90) {
-      return Colors.green;
+      return AppColors.success;
     }
     if (score >= 70) {
-      return Colors.orange;
+      return AppColors.warning;
     }
-    return Colors.red;
+    return AppColors.error;
   }
 }

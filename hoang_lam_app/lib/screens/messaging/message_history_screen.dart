@@ -7,6 +7,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/guest_message.dart';
 import '../../providers/messaging_provider.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Screen showing message history for a guest or booking
 class MessageHistoryScreen extends ConsumerWidget {
@@ -94,7 +95,7 @@ class MessageHistoryScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 16),
               Text(l10n.errorLoadingData),
               const SizedBox(height: 8),
@@ -251,7 +252,7 @@ class _MessageTile extends StatelessWidget {
                   Text(
                     message.sendError,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: Colors.red,
+                      color: AppColors.error,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -293,11 +294,11 @@ class _MessageTile extends StatelessWidget {
   Color _getChannelColor() {
     switch (message.channel) {
       case MessageChannel.sms:
-        return const Color(0xFF4CAF50);
+        return AppColors.success;
       case MessageChannel.email:
-        return const Color(0xFF2196F3);
+        return AppColors.statusBlue;
       case MessageChannel.zalo:
-        return const Color(0xFF0068FF);
+        return AppColors.brandZalo;
     }
   }
 
@@ -334,15 +335,15 @@ class _StatusBadge extends StatelessWidget {
   Color _getColor() {
     switch (status) {
       case MessageStatus.draft:
-        return Colors.grey;
+        return AppColors.mutedAccent;
       case MessageStatus.pending:
-        return Colors.orange;
+        return AppColors.warning;
       case MessageStatus.sent:
-        return Colors.blue;
+        return AppColors.statusBlue;
       case MessageStatus.delivered:
-        return Colors.green;
+        return AppColors.success;
       case MessageStatus.failed:
-        return Colors.red;
+        return AppColors.error;
     }
   }
 }

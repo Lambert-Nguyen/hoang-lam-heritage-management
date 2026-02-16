@@ -303,7 +303,7 @@ class _StatisticsSheet extends ConsumerWidget {
                   children: [
                     Expanded(child: _StatCard(title: context.l10n.total, value: stats.totalItems.toString(), icon: Icons.inventory_2, color: AppColors.primary)),
                     const SizedBox(width: AppSpacing.md),
-                    Expanded(child: _StatCard(title: context.l10n.unclaimedValue, value: '${stats.unclaimedValue.toStringAsFixed(0)}₫', icon: Icons.attach_money, color: Colors.green)),
+                    Expanded(child: _StatCard(title: context.l10n.unclaimedValue, value: '${stats.unclaimedValue.toStringAsFixed(0)}₫', icon: Icons.attach_money, color: AppColors.success)),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),

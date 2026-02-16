@@ -6,6 +6,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/guest_message.dart';
 import '../../providers/messaging_provider.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Screen for selecting and previewing message templates before sending
 class MessageTemplateScreen extends ConsumerStatefulWidget {
@@ -105,7 +106,7 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.article_outlined, size: 64, color: Colors.grey),
+                        const Icon(Icons.article_outlined, size: 64, color: AppColors.mutedAccent),
                         const SizedBox(height: 16),
                         Text(l10n.noMessagingTemplates),
                         const SizedBox(height: 16),
@@ -301,7 +302,7 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
           content: Text(
             isSuccess ? l10n.messageSentSuccess : l10n.messageSentPending,
           ),
-          backgroundColor: isSuccess ? Colors.green : Colors.orange,
+          backgroundColor: isSuccess ? AppColors.success : AppColors.warning,
         ),
       );
       context.pop();
@@ -309,7 +310,7 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.messageSendFailed),
-          backgroundColor: Colors.red,
+          backgroundColor: AppColors.error,
         ),
       );
     }
@@ -357,15 +358,15 @@ class _TemplateTile extends StatelessWidget {
   Color _getTemplateColor() {
     switch (template.templateType) {
       case MessageTemplateType.bookingConfirmation:
-        return const Color(0xFF4CAF50);
+        return AppColors.success;
       case MessageTemplateType.preArrival:
-        return const Color(0xFF2196F3);
+        return AppColors.statusBlue;
       case MessageTemplateType.checkoutReminder:
-        return const Color(0xFFFF9800);
+        return AppColors.warning;
       case MessageTemplateType.reviewRequest:
-        return const Color(0xFF9C27B0);
+        return AppColors.statusPurple;
       case MessageTemplateType.custom:
-        return const Color(0xFF607D8B);
+        return AppColors.statusBlueGrey;
     }
   }
 }

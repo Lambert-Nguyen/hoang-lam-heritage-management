@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../providers/providers.dart';
 import '../../widgets/widgets.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Room folio screen - displays all charges for a booking
 class RoomFolioScreen extends ConsumerStatefulWidget {
@@ -90,13 +91,13 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
             Icon(
               Icons.error_outline,
               size: 64,
-              color: Colors.red[300],
+              color: AppColors.error,
             ),
             const SizedBox(height: 16),
             Text(
               folioState.error!,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.red[700]),
+              style: TextStyle(color: AppColors.error),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -137,18 +138,18 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red[50],
+                  color: AppColors.error,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.red[200]!),
+                  border: Border.all(color: AppColors.error),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, color: Colors.red[700]),
+                    Icon(Icons.error_outline, color: AppColors.error),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         folioState.error!,
-                        style: TextStyle(color: Colors.red[700]),
+                        style: TextStyle(color: AppColors.error),
                       ),
                     ),
                     IconButton(
@@ -300,7 +301,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
             ),
             onPressed: () async {
@@ -308,7 +309,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(l10n.voidReasonRequired),
-                    backgroundColor: Colors.red,
+                    backgroundColor: AppColors.error,
                   ),
                 );
                 return;
@@ -328,7 +329,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                           ? l10n.chargeVoidedSuccess
                           : l10n.cannotVoidCharge,
                     ),
-                    backgroundColor: success ? Colors.green : Colors.red,
+                    backgroundColor: success ? AppColors.success : AppColors.error,
                   ),
                 );
               }

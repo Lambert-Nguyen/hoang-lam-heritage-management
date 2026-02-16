@@ -63,9 +63,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 value: 'delete',
                 child: Row(
                   children: [
-                    const Icon(Icons.delete, color: Colors.red),
+                    const Icon(Icons.delete, color: AppColors.error),
                     const SizedBox(width: 8),
-                    Text(l10n.delete, style: const TextStyle(color: Colors.red)),
+                    Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
                   ],
                 ),
               ),

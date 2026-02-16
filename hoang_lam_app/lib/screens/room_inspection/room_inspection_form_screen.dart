@@ -69,7 +69,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -228,12 +228,12 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                   decoration: BoxDecoration(
-                                    color: Colors.green.withValues(alpha: 0.1),
+                                    color: AppColors.success.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Text(
                                     context.l10n.defaultBadge,
-                                    style: TextStyle(color: Colors.green, fontSize: 12),
+                                    style: TextStyle(color: AppColors.success, fontSize: 12),
                                   ),
                                 ),
                             ],
@@ -309,7 +309,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                         value: _checklistItems.isEmpty
                             ? 0
                             : (passedCount + failedCount) / _checklistItems.length,
-                        backgroundColor: Colors.grey[300],
+                        backgroundColor: AppColors.mutedAccent,
                         minHeight: 6,
                         borderRadius: BorderRadius.circular(3),
                       ),
@@ -320,19 +320,19 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.1),
+                    color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Text('✓ $passedCount', style: const TextStyle(color: Colors.green)),
+                  child: Text('✓ $passedCount', style: const TextStyle(color: AppColors.success)),
                 ),
                 const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
+                    color: AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Text('✗ $failedCount', style: const TextStyle(color: Colors.red)),
+                  child: Text('✗ $failedCount', style: const TextStyle(color: AppColors.error)),
                 ),
               ],
             ),
@@ -390,10 +390,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                     margin: const EdgeInsets.only(right: 8),
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.red.withValues(alpha: 0.1),
+                      color: AppColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(l10n.importantBadge, style: const TextStyle(fontSize: 10, color: Colors.red)),
+                    child: Text(l10n.importantBadge, style: const TextStyle(fontSize: 10, color: AppColors.error)),
                   ),
               ],
             ),
@@ -403,11 +403,11 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _updateItemStatus(index, true),
-                    icon: Icon(Icons.check, color: isPassed == true ? Colors.white : Colors.green),
-                    label: Text(l10n.passBtn, style: TextStyle(color: isPassed == true ? Colors.white : Colors.green)),
+                    icon: Icon(Icons.check, color: isPassed == true ? Colors.white : AppColors.success),
+                    label: Text(l10n.passBtn, style: TextStyle(color: isPassed == true ? Colors.white : AppColors.success)),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: isPassed == true ? Colors.green : null,
-                      side: const BorderSide(color: Colors.green),
+                      backgroundColor: isPassed == true ? AppColors.success : null,
+                      side: const BorderSide(color: AppColors.success),
                     ),
                   ),
                 ),
@@ -415,11 +415,11 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _updateItemStatus(index, false),
-                    icon: Icon(Icons.close, color: isPassed == false ? Colors.white : Colors.red),
-                    label: Text(l10n.failBtn, style: TextStyle(color: isPassed == false ? Colors.white : Colors.red)),
+                    icon: Icon(Icons.close, color: isPassed == false ? Colors.white : AppColors.error),
+                    label: Text(l10n.failBtn, style: TextStyle(color: isPassed == false ? Colors.white : AppColors.error)),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: isPassed == false ? Colors.red : null,
-                      side: const BorderSide(color: Colors.red),
+                      backgroundColor: isPassed == false ? AppColors.error : null,
+                      side: const BorderSide(color: AppColors.error),
                     ),
                   ),
                 ),
@@ -515,7 +515,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     }
     if (_selectedRoomId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.pleaseSelectRoomMsg), backgroundColor: Colors.red),
+        SnackBar(content: Text(context.l10n.pleaseSelectRoomMsg), backgroundColor: AppColors.error),
       );
       return;
     }
@@ -532,13 +532,13 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       if (mounted) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.inspectionCreatedSuccess), backgroundColor: Colors.green),
+          SnackBar(content: Text(context.l10n.inspectionCreatedSuccess), backgroundColor: AppColors.success),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
         );
       }
     } finally {
@@ -555,7 +555,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${context.l10n.uncheckedCriticalItems}: ${uncheckedCritical.length}'),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColors.warning,
         ),
       );
       return;
@@ -576,13 +576,13 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       if (mounted) {
         context.go('/room-inspections');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.inspectionCompleted), backgroundColor: Colors.green),
+          SnackBar(content: Text(context.l10n.inspectionCompleted), backgroundColor: AppColors.success),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
         );
       }
     } finally {

@@ -148,7 +148,7 @@ class FolioItemListWidget extends StatelessWidget {
               : item.itemType.color.withValues(alpha: 0.2),
           child: Icon(
             item.itemType.icon,
-            color: isVoided ? Colors.grey : item.itemType.color,
+            color: isVoided ? AppColors.mutedAccent : item.itemType.color,
             size: 20,
           ),
         ),
@@ -170,14 +170,14 @@ class FolioItemListWidget extends StatelessWidget {
                   vertical: 2,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.red[100],
+                  color: AppColors.error,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   context.l10n.voided,
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.red[700],
+                    color: AppColors.error,
                   ),
                 ),
               ),
@@ -214,7 +214,7 @@ class FolioItemListWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontStyle: FontStyle.italic,
-                    color: Colors.red[400],
+                    color: AppColors.error,
                   ),
                 ),
               ),
@@ -243,7 +243,7 @@ class FolioItemListWidget extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: isVoided ? Colors.grey : AppColors.primary,
+                    color: isVoided ? AppColors.mutedAccent : AppColors.primary,
                     decoration: isVoided ? TextDecoration.lineThrough : null,
                   ),
                 ),
@@ -256,14 +256,14 @@ class FolioItemListWidget extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green[100],
+                        color: AppColors.successBackground,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         context.l10n.paidAbbreviation,
                         style: TextStyle(
                           fontSize: 10,
-                          color: Colors.green[700],
+                          color: AppColors.success,
                         ),
                       ),
                     ),
@@ -272,7 +272,7 @@ class FolioItemListWidget extends StatelessWidget {
             ),
             if (!isVoided && onVoid != null)
               IconButton(
-                icon: Icon(Icons.block, color: Colors.red[400], size: 20),
+                icon: Icon(Icons.block, color: AppColors.error, size: 20),
                 tooltip: context.l10n.cancelCharge,
                 onPressed: () => onVoid!(item),
                 padding: const EdgeInsets.only(left: 8),

@@ -310,14 +310,14 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(context.l10n.chargeAddedSuccess),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
             ),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(context.l10n.cannotAddCharge),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
           );
         }

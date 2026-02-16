@@ -218,23 +218,23 @@ class BookingCard extends StatelessWidget {
   ({String label, IconData icon, Color color}) _getSourceInfo(BuildContext context, BookingSource source) {
     switch (source) {
       case BookingSource.walkIn:
-        return (label: context.l10n.walkIn, icon: Icons.directions_walk, color: Colors.blue);
+        return (label: context.l10n.walkIn, icon: Icons.directions_walk, color: AppColors.statusBlue);
       case BookingSource.phone:
-        return (label: context.l10n.phoneSource, icon: Icons.phone, color: Colors.green);
+        return (label: context.l10n.phoneSource, icon: Icons.phone, color: AppColors.success);
       case BookingSource.bookingCom:
-        return (label: 'Booking.com', icon: Icons.public, color: const Color(0xFF003580));
+        return (label: 'Booking.com', icon: Icons.public, color: AppColors.brandBookingCom);
       case BookingSource.agoda:
-        return (label: 'Agoda', icon: Icons.public, color: const Color(0xFFEC1C24));
+        return (label: 'Agoda', icon: Icons.public, color: AppColors.brandAgoda);
       case BookingSource.airbnb:
-        return (label: 'Airbnb', icon: Icons.public, color: const Color(0xFFFF5A5F));
+        return (label: 'Airbnb', icon: Icons.public, color: AppColors.brandAirbnb);
       case BookingSource.traveloka:
-        return (label: 'Traveloka', icon: Icons.public, color: const Color(0xFF2D90ED));
+        return (label: 'Traveloka', icon: Icons.public, color: AppColors.brandTraveloka);
       case BookingSource.otherOta:
-        return (label: context.l10n.otherOta, icon: Icons.public, color: const Color(0xFF607D8B));
+        return (label: context.l10n.otherOta, icon: Icons.public, color: AppColors.statusBlueGrey);
       case BookingSource.website:
-        return (label: 'Website', icon: Icons.language, color: Colors.purple);
+        return (label: 'Website', icon: Icons.language, color: AppColors.statusPurple);
       case BookingSource.other:
-        return (label: context.l10n.otherLabel, icon: Icons.more_horiz, color: Colors.grey);
+        return (label: context.l10n.otherLabel, icon: Icons.more_horiz, color: AppColors.mutedAccent);
     }
   }
 

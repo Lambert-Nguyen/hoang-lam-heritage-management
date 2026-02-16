@@ -116,7 +116,7 @@ class MinibarItemCard extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.7),
+                    color: AppColors.surface.withValues(alpha: 0.7),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Center(
@@ -180,35 +180,35 @@ class MinibarItemCard extends StatelessWidget {
       case 'nước ngọt':
       case 'nuoc ngot':
       case 'soft drink':
-        return Colors.blue;
+        return AppColors.statusBlue;
       case 'bia':
       case 'beer':
-        return Colors.amber;
+        return AppColors.statusAmber;
       case 'rượu':
       case 'ruou':
       case 'wine':
       case 'alcohol':
-        return Colors.purple;
+        return AppColors.statusPurple;
       case 'snack':
       case 'bánh':
       case 'banh':
-        return Colors.orange;
+        return AppColors.warning;
       case 'chocolate':
       case 'kẹo':
       case 'keo':
-        return Colors.brown;
+        return AppColors.statusBrown;
       case 'nước suối':
       case 'nuoc suoi':
       case 'water':
-        return Colors.cyan;
+        return AppColors.statusCyan;
       case 'cafe':
       case 'coffee':
       case 'cà phê':
-        return Colors.brown;
+        return AppColors.statusBrown;
       case 'trà':
       case 'tra':
       case 'tea':
-        return Colors.green;
+        return AppColors.success;
       default:
         return AppColors.primary;
     }

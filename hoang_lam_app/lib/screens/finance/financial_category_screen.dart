@@ -804,7 +804,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
       final hexColor = hex.replaceAll('#', '');
       return Color(int.parse('FF$hexColor', radix: 16));
     } catch (_) {
-      return Colors.grey;
+      return AppColors.mutedAccent;
     }
   }
 

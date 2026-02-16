@@ -460,7 +460,7 @@ class _NotificationIconButton extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: const BoxDecoration(
-                color: Colors.red,
+                color: AppColors.error,
                 shape: BoxShape.circle,
               ),
               constraints: const BoxConstraints(minWidth: 18, minHeight: 18),

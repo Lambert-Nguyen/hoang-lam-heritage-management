@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 
 import '../../models/declaration.dart';
 import '../../providers/declaration_provider.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Screen for exporting temporary residence declarations.
 ///
@@ -57,7 +58,7 @@ class _DeclarationExportScreenState
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${l10n.error}: $message'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
           );
         },
@@ -321,7 +322,7 @@ class _DeclarationExportScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.cannotOpenFile}: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -339,7 +340,7 @@ class _DeclarationExportScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.cannotShareFile}: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }

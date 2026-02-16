@@ -104,7 +104,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     const Icon(
                       Icons.error_outline,
                       size: 48,
-                      color: Colors.red,
+                      color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -145,7 +145,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: AppColors.deepAccent.withValues(alpha: 0.05),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),

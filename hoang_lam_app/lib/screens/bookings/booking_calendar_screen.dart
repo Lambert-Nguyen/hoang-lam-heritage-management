@@ -10,6 +10,7 @@ import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_card.dart';
 import 'booking_detail_screen.dart';
 import 'booking_form_screen.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Booking Calendar Screen - Phase 1.9.4
 /// 
@@ -267,21 +268,21 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
                 Icon(
                   Icons.event_busy,
                   size: 64,
-                  color: Colors.grey[400],
+                  color: AppColors.mutedAccent,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   context.l10n.noBookings,
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[600],
+                    color: AppColors.mutedAccent,
                   ),
                 ),
                 Text(
                   DateFormat('dd/MM/yyyy', 'vi').format(_selectedDay!),
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[500],
+                    color: AppColors.mutedAccent,
                   ),
                 ),
               ],
@@ -315,7 +316,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 16),
               Text('${context.l10n.error}: $error'),
             ],

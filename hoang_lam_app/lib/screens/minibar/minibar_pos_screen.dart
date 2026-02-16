@@ -262,7 +262,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.selectBookingFirst),
-          backgroundColor: Colors.orange,
+          backgroundColor: AppColors.warning,
         ),
       );
       return;
@@ -292,7 +292,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),
         ],
@@ -354,7 +354,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.checkoutSuccess),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
             ),
           );
         } else {
@@ -362,7 +362,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${l10n.error}: ${errorMessage ?? l10n.unknownError}'),
-              backgroundColor: Colors.red,
+              backgroundColor: AppColors.error,
             ),
           );
         }
@@ -372,7 +372,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('${l10n.error}: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }

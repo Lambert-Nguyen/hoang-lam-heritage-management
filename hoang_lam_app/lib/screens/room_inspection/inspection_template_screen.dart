@@ -106,7 +106,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                     height: 4,
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: AppColors.mutedAccent,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -120,10 +120,10 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
+                          color: AppColors.success.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(l10n.defaultBadge, style: const TextStyle(color: Colors.green, fontSize: 12)),
+                        child: Text(l10n.defaultBadge, style: const TextStyle(color: AppColors.success, fontSize: 12)),
                       ),
                   ],
                 ),
@@ -196,9 +196,9 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.05),
+        color: AppColors.mutedAccent.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+        border: Border.all(color: AppColors.mutedAccent.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -220,10 +220,10 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.1),
+                color: AppColors.error.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: Text(l10n.critical, style: const TextStyle(fontSize: 10, color: Colors.red)),
+              child: Text(l10n.critical, style: const TextStyle(fontSize: 10, color: AppColors.error)),
             ),
         ],
       ),
@@ -242,13 +242,13 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
         await ref.read(inspectionTemplateNotifierProvider.notifier).createTemplate(result);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.templateCreatedSuccess), backgroundColor: Colors.green),
+            SnackBar(content: Text(context.l10n.templateCreatedSuccess), backgroundColor: AppColors.success),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
+            SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
           );
         }
       }
@@ -274,13 +274,13 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
       await ref.read(inspectionTemplateNotifierProvider.notifier).createTemplate(newTemplate);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.templateDuplicated), backgroundColor: Colors.green),
+          SnackBar(content: Text(context.l10n.templateDuplicated), backgroundColor: AppColors.success),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -297,7 +297,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text(l10n.cancel)),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),
         ],
@@ -309,13 +309,13 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
         await ref.read(inspectionTemplateNotifierProvider.notifier).deleteTemplate(template.id);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.templateDeletedSuccess), backgroundColor: Colors.green),
+            SnackBar(content: Text(l10n.templateDeletedSuccess), backgroundColor: AppColors.success),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: Colors.red),
+            SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: AppColors.error),
           );
         }
       }
@@ -369,10 +369,10 @@ class _TemplateCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Colors.green.withValues(alpha: 0.1),
+                            color: AppColors.success.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(l10n.defaultBadge, style: const TextStyle(color: Colors.green, fontSize: 10)),
+                          child: Text(l10n.defaultBadge, style: const TextStyle(color: AppColors.success, fontSize: 10)),
                         ),
                     ],
                   ),
@@ -398,7 +398,7 @@ class _TemplateCard extends StatelessWidget {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.red),
+              icon: const Icon(Icons.delete_outline, color: AppColors.error),
               onPressed: onDelete,
             ),
           ],
@@ -472,7 +472,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                     height: 4,
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: AppColors.mutedAccent,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -552,9 +552,9 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.05),
+                      color: AppColors.mutedAccent.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                      border: Border.all(color: AppColors.mutedAccent.withValues(alpha: 0.2)),
                     ),
                     child: Row(
                       children: [
@@ -575,10 +575,10 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.1),
+                              color: AppColors.error.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text(l10n.critical, style: const TextStyle(fontSize: 10, color: Colors.red)),
+                            child: Text(l10n.critical, style: const TextStyle(fontSize: 10, color: AppColors.error)),
                           ),
                         IconButton(
                           icon: const Icon(Icons.delete_outline, size: 20),
@@ -673,7 +673,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
     }
     if (_items.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.pleaseAddAtLeastOne), backgroundColor: Colors.red),
+        SnackBar(content: Text(context.l10n.pleaseAddAtLeastOne), backgroundColor: AppColors.error),
       );
       return;
     }

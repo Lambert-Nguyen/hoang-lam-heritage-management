@@ -247,7 +247,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(context.l10n.cannotUpdateRoomStatus),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }

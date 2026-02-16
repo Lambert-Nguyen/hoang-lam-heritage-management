@@ -88,9 +88,9 @@ class _MaintenanceDetailScreenState
                   value: 'cancel',
                   child: Row(
                     children: [
-                      const Icon(Icons.cancel, color: Colors.red),
+                      const Icon(Icons.cancel, color: AppColors.error),
                       const SizedBox(width: 8),
-                      Text(l10n.cancel, style: const TextStyle(color: Colors.red)),
+                      Text(l10n.cancel, style: const TextStyle(color: AppColors.error)),
                     ],
                   ),
                 ),

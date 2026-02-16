@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Dialog for recording early check-in or late check-out fees.
 ///
@@ -94,8 +95,8 @@ class _EarlyLateFeeDialogState extends State<EarlyLateFeeDialog> {
         : l10n.lateCheckOut;
     final icon = widget.isEarlyCheckIn ? Icons.login : Icons.logout;
     final color = widget.isEarlyCheckIn
-        ? const Color(0xFF4CAF50)
-        : const Color(0xFFFF9800);
+        ? AppColors.success
+        : AppColors.warning;
 
     return AlertDialog(
       title: Row(
@@ -140,7 +141,7 @@ class _EarlyLateFeeDialogState extends State<EarlyLateFeeDialog> {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey,
+                  color: AppColors.mutedAccent,
                 ),
               ),
               const SizedBox(height: 8),

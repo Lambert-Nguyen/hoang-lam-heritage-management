@@ -68,6 +68,27 @@ class AppColors {
   static const Color info = Color(0xFF254634); // Primary green
   static const Color infoBackground = Color(0xFFD1C9B0); // Sand
 
+  // Status Indicator Colors (for badges, chips, category indicators)
+  static const Color statusBlue = Color(0xFF2196F3);       // Confirmed, info items
+  static const Color statusPurple = Color(0xFF9C27B0);     // Website source, special items
+  static const Color statusBrown = Color(0xFF795548);       // Snack, other categories
+  static const Color statusTeal = Color(0xFF009688);        // Teal category items
+  static const Color statusDeepOrange = Color(0xFFFF5722);  // Urgent notifications
+  static const Color statusAmber = Color(0xFFFFC107);        // Beer, highlight warnings
+  static const Color statusAmberLight = Color(0xFFFFF8E1);  // Amber background (50)
+  static const Color statusAmberBorder = Color(0xFFFFE082); // Amber border (200)
+  static const Color statusAmberDark = Color(0xFFF57F17);   // Amber text (900)
+  static const Color statusAmberIcon = Color(0xFFFFA000);   // Amber icon (700)
+  static const Color statusCyan = Color(0xFF00BCD4);         // Water, coolant items
+  static const Color statusBlueGrey = Color(0xFF607D8B);    // Neutral/inactive items
+
+  // Brand Colors (external platform brand identity - do not change)
+  static const Color brandBookingCom = Color(0xFF003580);
+  static const Color brandAgoda = Color(0xFFEC1C24);
+  static const Color brandAirbnb = Color(0xFFFF5A5F);
+  static const Color brandZalo = Color(0xFF0068FF);
+  static const Color brandTraveloka = Color(0xFF2D90ED);
+
   // Divider & Border
   static const Color divider = Color(0xFFA2A698); // Muted accent
   static const Color border = Color(0xFFD1C9B0); // Sand

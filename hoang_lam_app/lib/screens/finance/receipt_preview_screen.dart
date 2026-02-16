@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../providers/finance_provider.dart';
 import '../../widgets/finance/currency_selector.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Screen to preview and download a receipt for a booking
 class ReceiptPreviewScreen extends ConsumerStatefulWidget {
@@ -272,7 +273,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
+            color: AppColors.deepAccent.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -412,7 +413,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
               value,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: bold ? FontWeight.bold : null,
-                color: highlight ? Colors.red : null,
+                color: highlight ? AppColors.error : null,
               ),
             ),
           ],

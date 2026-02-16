@@ -228,7 +228,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                           height: 4,
                           margin: const EdgeInsets.only(bottom: 16),
                           decoration: BoxDecoration(
-                            color: Colors.grey[300],
+                            color: AppColors.mutedAccent,
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -239,25 +239,25 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                         title: context.l10n.totalInspections,
                         value: stats.totalInspections.toString(),
                         icon: Icons.checklist,
-                        color: Colors.blue,
+                        color: AppColors.statusBlue,
                       ),
                       _StatCard(
                         title: context.l10n.completed,
                         value: stats.completedInspections.toString(),
                         icon: Icons.check_circle,
-                        color: Colors.green,
+                        color: AppColors.success,
                       ),
                       _StatCard(
                         title: context.l10n.pending,
                         value: stats.pendingInspections.toString(),
                         icon: Icons.schedule,
-                        color: Colors.grey,
+                        color: AppColors.mutedAccent,
                       ),
                       _StatCard(
                         title: context.l10n.requiresAction,
                         value: stats.requiresAction.toString(),
                         icon: Icons.warning,
-                        color: Colors.orange,
+                        color: AppColors.warning,
                       ),
                       const SizedBox(height: AppSpacing.md),
                       AppCard(
@@ -281,7 +281,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                                   Expanded(
                                     child: LinearProgressIndicator(
                                       value: stats.averageScore / 100,
-                                      backgroundColor: Colors.grey[200],
+                                      backgroundColor: AppColors.mutedAccent,
                                       valueColor: AlwaysStoppedAnimation(_getScoreColor(stats.averageScore)),
                                     ),
                                   ),
@@ -320,7 +320,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                                           stats.criticalIssues.toString(),
                                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: Colors.red,
+                                                color: AppColors.error,
                                               ),
                                         ),
                                         Text(context.l10n.criticalLabel),
@@ -348,12 +348,12 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
 
   Color _getScoreColor(double score) {
     if (score >= 90) {
-      return Colors.green;
+      return AppColors.success;
     }
     if (score >= 70) {
-      return Colors.orange;
+      return AppColors.warning;
     }
-    return Colors.red;
+    return AppColors.error;
   }
 }
 
@@ -379,15 +379,15 @@ class _InspectionCard extends StatelessWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: inspection.inspectionType.icon == Icons.logout
-                        ? Colors.orange.withValues(alpha: 0.1)
-                        : Colors.blue.withValues(alpha: 0.1),
+                        ? AppColors.warning.withValues(alpha: 0.1)
+                        : AppColors.statusBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     inspection.inspectionType.icon,
                     color: inspection.inspectionType == InspectionType.checkout
-                        ? Colors.orange
-                        : Colors.blue,
+                        ? AppColors.warning
+                        : AppColors.statusBlue,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -443,20 +443,20 @@ class _InspectionCard extends StatelessWidget {
                   ),
                   if (inspection.issuesFound > 0) ...[
                     const SizedBox(width: 16),
-                    Icon(Icons.warning_amber, size: 16, color: Colors.orange),
+                    Icon(Icons.warning_amber, size: 16, color: AppColors.warning),
                     const SizedBox(width: 4),
                     Text(
                       '${inspection.issuesFound} ${AppLocalizations.of(context)!.issuesCount}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.orange),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.warning),
                     ),
                   ],
                   if (inspection.criticalIssues > 0) ...[
                     const SizedBox(width: 8),
-                    Icon(Icons.error, size: 16, color: Colors.red),
+                    Icon(Icons.error, size: 16, color: AppColors.error),
                     const SizedBox(width: 4),
                     Text(
                       '${inspection.criticalIssues} ${AppLocalizations.of(context)!.criticalIssuesLabel}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error),
                     ),
                   ],
                 ],
@@ -503,12 +503,12 @@ class _InspectionCard extends StatelessWidget {
 
   Color _getScoreColor(double score) {
     if (score >= 90) {
-      return Colors.green;
+      return AppColors.success;
     }
     if (score >= 70) {
-      return Colors.orange;
+      return AppColors.warning;
     }
-    return Colors.red;
+    return AppColors.error;
   }
 }
 

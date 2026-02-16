@@ -70,7 +70,7 @@ class BookingDetailScreen extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
                 const SizedBox(height: 16),
                 Text('${context.l10n.error}: $error'),
                 const SizedBox(height: 16),
@@ -186,7 +186,7 @@ class BookingDetailScreen extends ConsumerWidget {
                 _buildInfoRow(
                   context.l10n.depositPaid,
                   currencyFormat.format(booking.depositAmount),
-                  valueColor: Colors.green,
+                  valueColor: AppColors.success,
                 ),
               ],
               _buildInfoRow(
@@ -208,14 +208,14 @@ class BookingDetailScreen extends ConsumerWidget {
                   _buildInfoRow(
                     '${context.l10n.earlyCheckInFee} (${booking.earlyCheckInHours}h)',
                     currencyFormat.format(booking.earlyCheckInFee),
-                    valueColor: const Color(0xFF4CAF50),
+                    valueColor: AppColors.success,
                   ),
                 ],
                 if (booking.lateCheckOutFee > 0) ...[
                   _buildInfoRow(
                     '${context.l10n.lateCheckOutFee} (${booking.lateCheckOutHours}h)',
                     currencyFormat.format(booking.lateCheckOutFee),
-                    valueColor: const Color(0xFFFF9800),
+                    valueColor: AppColors.warning,
                   ),
                 ],
                 if (booking.totalFees > 0) ...[
@@ -244,8 +244,8 @@ class BookingDetailScreen extends ConsumerWidget {
                               style: const TextStyle(fontSize: 12),
                             ),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFF4CAF50),
-                              side: const BorderSide(color: Color(0xFF4CAF50)),
+                              foregroundColor: AppColors.success,
+                              side: const BorderSide(color: AppColors.success),
                               padding: const EdgeInsets.symmetric(vertical: 8),
                             ),
                           ),
@@ -261,8 +261,8 @@ class BookingDetailScreen extends ConsumerWidget {
                               style: const TextStyle(fontSize: 12),
                             ),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: const Color(0xFFFF9800),
-                              side: const BorderSide(color: Color(0xFFFF9800)),
+                              foregroundColor: AppColors.warning,
+                              side: const BorderSide(color: AppColors.warning),
                               padding: const EdgeInsets.symmetric(vertical: 8),
                             ),
                           ),
@@ -325,7 +325,7 @@ class BookingDetailScreen extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
+            color: AppColors.mutedAccent.withValues(alpha: 0.1),
             spreadRadius: 1,
             blurRadius: 4,
             offset: const Offset(0, 2),
@@ -406,7 +406,7 @@ class BookingDetailScreen extends ConsumerWidget {
             icon: const Icon(Icons.login),
             label: Text(context.l10n.checkIn),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
               foregroundColor: AppColors.onPrimary,
               padding: const EdgeInsets.all(16),
             ),
@@ -436,7 +436,7 @@ class BookingDetailScreen extends ConsumerWidget {
             icon: const Icon(Icons.cancel),
             label: Text(context.l10n.cancel),
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.red,
+              foregroundColor: AppColors.error,
               padding: const EdgeInsets.all(16),
             ),
           ),
@@ -451,7 +451,7 @@ class BookingDetailScreen extends ConsumerWidget {
             icon: const Icon(Icons.person_off),
             label: Text(context.l10n.noShow),
             style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.orange,
+              foregroundColor: AppColors.warning,
               padding: const EdgeInsets.all(16),
             ),
           ),
@@ -595,7 +595,7 @@ class BookingDetailScreen extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(context.l10n.confirm),
           ),
         ],
@@ -636,7 +636,7 @@ class BookingDetailScreen extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
             child: Text(context.l10n.confirm),
           ),
         ],
@@ -677,7 +677,7 @@ class BookingDetailScreen extends ConsumerWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(context.l10n.delete),
           ),
         ],

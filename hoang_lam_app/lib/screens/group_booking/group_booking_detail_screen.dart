@@ -39,13 +39,13 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
               itemBuilder: (context) => [
                 PopupMenuItem(value: 'edit', child: ListTile(leading: const Icon(Icons.edit), title: Text(l10n.edit), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.tentative)
-                  PopupMenuItem(value: 'confirm', child: ListTile(leading: const Icon(Icons.check_circle, color: Colors.green), title: Text(l10n.confirm), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'confirm', child: ListTile(leading: const Icon(Icons.check_circle, color: AppColors.success), title: Text(l10n.confirm), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.confirmed)
-                  PopupMenuItem(value: 'check_in', child: ListTile(leading: const Icon(Icons.login, color: Colors.blue), title: Text(l10n.checkIn), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'check_in', child: ListTile(leading: const Icon(Icons.login, color: AppColors.statusBlue), title: Text(l10n.checkIn), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.checkedIn)
-                  PopupMenuItem(value: 'check_out', child: ListTile(leading: const Icon(Icons.logout, color: Colors.purple), title: Text(l10n.checkOut), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'check_out', child: ListTile(leading: const Icon(Icons.logout, color: AppColors.statusPurple), title: Text(l10n.checkOut), contentPadding: EdgeInsets.zero)),
                 if (booking.status == GroupBookingStatus.tentative || booking.status == GroupBookingStatus.confirmed)
-                  PopupMenuItem(value: 'cancel', child: ListTile(leading: const Icon(Icons.cancel, color: Colors.red), title: Text(l10n.cancel), contentPadding: EdgeInsets.zero)),
+                  PopupMenuItem(value: 'cancel', child: ListTile(leading: const Icon(Icons.cancel, color: AppColors.error), title: Text(l10n.cancel), contentPadding: EdgeInsets.zero)),
               ],
             ),
           ) ?? const SizedBox.shrink(),
@@ -107,7 +107,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
               _InfoRow(label: l10n.totalAmount, value: '${_formatCurrency(booking.totalAmount)}₫', valueStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
               _InfoRow(label: l10n.depositLabel, value: '${_formatCurrency(booking.depositAmount)}₫'),
               if (booking.discountPercent > 0) _InfoRow(label: l10n.discountLabel, value: '${booking.discountPercent}%'),
-              _InfoRow(label: l10n.paidStatus, value: booking.depositPaid ? l10n.yesLabel : l10n.notYetLabel, valueStyle: TextStyle(color: booking.depositPaid ? Colors.green : Colors.orange, fontWeight: FontWeight.w600)),
+              _InfoRow(label: l10n.paidStatus, value: booking.depositPaid ? l10n.yesLabel : l10n.notYetLabel, valueStyle: TextStyle(color: booking.depositPaid ? AppColors.success : AppColors.warning, fontWeight: FontWeight.w600)),
             ]),
           ),
           if (booking.roomNumbers.isNotEmpty) ...[
@@ -194,7 +194,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
 
   Future<void> _checkIn(GroupBooking booking) async {
     if (booking.roomNumbers.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.assignRoomsFirstMsg), backgroundColor: Colors.orange));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.assignRoomsFirstMsg), backgroundColor: AppColors.warning));
       return;
     }
     final confirmed = await _showConfirmDialog('Check-in', '${context.l10n.confirmGroupCheckIn} ${booking.name}?');
@@ -263,7 +263,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
     final roomIds = result.split(',').map((e) => int.tryParse(e.trim())).whereType<int>().toList();
     if (roomIds.isEmpty) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.invalidRoomList), backgroundColor: Colors.orange));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.invalidRoomList), backgroundColor: AppColors.warning));
       }
       return;
     }
@@ -295,7 +295,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
       title: Text(title), content: TextField(controller: controller, decoration: InputDecoration(hintText: hint)),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context), child: Text(context.l10n.cancel)),
-        ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), style: ElevatedButton.styleFrom(backgroundColor: Colors.red), child: Text(context.l10n.confirm)),
+        ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), style: ElevatedButton.styleFrom(backgroundColor: AppColors.error), child: Text(context.l10n.confirm)),
       ],
     )).then((result) {
       controller.dispose();

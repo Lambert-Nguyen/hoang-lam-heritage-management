@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Booking Status Badge Widget - Displays booking status with color coding
 /// 
@@ -64,37 +65,37 @@ class BookingStatusBadge extends StatelessWidget {
         return (
           label: context.l10n.statusPending,
           icon: Icons.schedule,
-          color: Colors.orange,
+          color: AppColors.warning,
         );
       case BookingStatus.confirmed:
         return (
           label: context.l10n.statusConfirmed,
           icon: Icons.check_circle,
-          color: Colors.blue,
+          color: AppColors.statusBlue,
         );
       case BookingStatus.checkedIn:
         return (
           label: context.l10n.statusCheckedIn,
           icon: Icons.hotel,
-          color: Colors.green,
+          color: AppColors.success,
         );
       case BookingStatus.checkedOut:
         return (
           label: context.l10n.statusCheckedOut,
           icon: Icons.done_all,
-          color: Colors.grey,
+          color: AppColors.mutedAccent,
         );
       case BookingStatus.cancelled:
         return (
           label: context.l10n.statusCancelled,
           icon: Icons.cancel,
-          color: Colors.red,
+          color: AppColors.error,
         );
       case BookingStatus.noShow:
         return (
           label: context.l10n.statusNoShow,
           icon: Icons.person_off,
-          color: Colors.red[900]!,
+          color: AppColors.error,
         );
     }
   }
@@ -147,37 +148,37 @@ class BookingStatusChip extends StatelessWidget {
         return (
           label: context.l10n.statusPending,
           icon: Icons.schedule,
-          color: Colors.orange,
+          color: AppColors.warning,
         );
       case BookingStatus.confirmed:
         return (
           label: context.l10n.statusConfirmed,
           icon: Icons.check_circle,
-          color: Colors.blue,
+          color: AppColors.statusBlue,
         );
       case BookingStatus.checkedIn:
         return (
           label: context.l10n.statusCheckedIn,
           icon: Icons.hotel,
-          color: Colors.green,
+          color: AppColors.success,
         );
       case BookingStatus.checkedOut:
         return (
           label: context.l10n.statusCheckedOut,
           icon: Icons.done_all,
-          color: Colors.grey,
+          color: AppColors.mutedAccent,
         );
       case BookingStatus.cancelled:
         return (
           label: context.l10n.statusCancelled,
           icon: Icons.cancel,
-          color: Colors.red,
+          color: AppColors.error,
         );
       case BookingStatus.noShow:
         return (
           label: context.l10n.statusNoShow,
           icon: Icons.person_off,
-          color: Colors.red[900]!,
+          color: AppColors.error,
         );
     }
   }

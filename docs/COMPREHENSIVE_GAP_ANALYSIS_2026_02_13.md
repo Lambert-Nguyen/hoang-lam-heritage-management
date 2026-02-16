@@ -331,13 +331,13 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase C: Cross-Cutting Quality (Weeks 5-6)
 
-**STATUS: IN PROGRESS — 4/10 done, 1 partial, 5 not started**
+**STATUS: IN PROGRESS — 7/10 done, 3 not started**
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | 1 | Replace all `withOpacity()` with `withValues(alpha:)` | **DONE** | Zero `withOpacity()` calls remain. All migrated to `withValues(alpha:)`. |
-| 2 | Fix hardcoded colors for dark mode (~10 screens) | **NOT DONE** | Scope much larger than estimated: **281 `Colors.*` + `Color(0x...)` instances** across screens/widgets. Top offenders: room_inspection (50+), folio (18), booking_detail (12), finance (12). Effort re-estimate: **8h**. |
-| 3 | Extract hardcoded Vietnamese strings to l10n | **UI LAYER DONE** | **Screen/widget layer fully localized** — ~100 new l10n keys added across 4 batches, 20+ files migrated. Remaining scope requires architectural changes: **210 model enum `displayName` strings** (need `localizedName(l10n)` extensions), **32 provider error/success messages** (need error code pattern), **~14 date_formatter strings** (need l10n parameter), **~4 biometric_service strings** (need l10n parameter). API interceptor exceptions already have bilingual support (`message`+`messageEn`). Non-display strings (currency ₫, symbols •→✓✗, debug logs, switch case data patterns) correctly kept as-is. Effort remaining for model/provider/core: **~8h**. |
+| 2 | Fix hardcoded colors for dark mode (~10 screens) | **DONE** | All 282 hardcoded `Colors.*` and `Color(0x...)` instances resolved. 241 replaced with `AppColors.*` semantic constants across 34 files. 4 `Colors.white` background usages → `AppColors.surface`. Brand colors (Booking.com, Airbnb, Agoda, Zalo, Traveloka) centralized as `AppColors.brand*`. Status indicator colors added: `statusBlue`, `statusPurple`, `statusBrown`, `statusTeal`, `statusDeepOrange`, `statusBlueGrey`, `statusAmber*`, `statusCyan`. Remaining 53 are intentional: `Colors.white` (text-on-colored-bg), `Colors.transparent`, `Colors.black` (shadows). |
+| 3 | Extract hardcoded Vietnamese strings to l10n | **DONE** | Fully localized across all layers: **UI layer** (~100 keys, 20+ files), **Model layer** (33 enum extensions with `localizedName(l10n)`, 79 `.displayName` call sites updated), **Provider layer** (6 providers using `l10nProvider` for error/success messages), **Core layer** (`date_formatter` methods accept `AppLocalizations`, `biometric_service` localized). API interceptors kept bilingual (`message`+`messageEn`). Total: ~370 l10n keys in `app_localizations.dart`. |
 | 4 | Fix provider invalidation gaps after mutations | **DONE (Phase B)** | Already completed during Phase B. |
 | 5 | Replace `void` async with `Future<void>` (~15 files) | **MOSTLY DONE** | Only 2 remaining: `api_interceptors.dart` `onRequest` and `onError` (Dio interceptor overrides — may need to stay `void`). All screen/widget methods already use `Future<void>`. |
 | 6 | Add integration tests for critical flows | **NOT DONE** | Zero integration test files. No multi-step flow tests (check-in→housekeeping, payment→booking). |
@@ -346,7 +346,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | 9 | Set up Celery + Redis for async tasks | **NOT DONE** | Celery still commented out in `requirements.txt`. No `celery.py`, no task modules, no beat schedule. |
 | 10 | Document deployment guide | **NOT DONE** | No deployment documentation exists. |
 
-**Revised estimated remaining: ~40 hours (tasks 2, 3, 6, 7, 8, 9, 10)**
+**Revised estimated remaining: ~20 hours (tasks 6, 7, 8, 9, 10)**
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
@@ -380,8 +380,8 @@ Features specified in the Design Plan that are missing or incomplete.
 | Critical bugs | 0 (fixed in Phase A) | 0 |
 | High-severity bugs | ~12 remaining (down from 30+) | 0 |
 | Security vulnerabilities | 0 critical, 5 high | 0 critical, 0 high |
-| Hardcoded colors (dark mode blockers) | 281 instances | 0 |
-| Hardcoded Vietnamese strings (i18n blockers) | ~292 remaining (model/provider/core) | 0 |
+| Hardcoded colors (dark mode blockers) | 0 semantic (53 intentional white/transparent/black) | 0 |
+| Hardcoded Vietnamese strings (i18n blockers) | 0 (fully localized) | 0 |
 | Design plan compliance | ~85% (Phases 1-5) | 95% (Phases 1-5) |
 
 ### Total Effort to Production-Ready
@@ -390,7 +390,7 @@ Features specified in the Design Plan that are missing or incomplete.
 |-------|-------|----------|--------|
 | Phase A (Critical) | ~22h | Weeks 1-2 | COMPLETED (2026-02-13) |
 | Phase B (High) | ~30h | Weeks 3-4 | COMPLETED (2026-02-13) |
-| Phase C (Quality) | ~40h | Weeks 5-6 | **IN PROGRESS** (4/10 done, ~35h remaining) |
+| Phase C (Quality) | ~40h | Weeks 5-6 | **IN PROGRESS** (7/10 done, ~20h remaining) |
 | Phase D (Hardening) | ~51h | Weeks 7-8 | Pending |
 | **Total** | **~143h** | **8 weeks** | **Phases A+B done, C reviewed** |
 
@@ -398,4 +398,4 @@ Features specified in the Design Plan that are missing or incomplete.
 
 *This analysis supersedes the previous [DESIGN_GAPS_ANALYSIS.md](./DESIGN_GAPS_ANALYSIS.md) (dated 2026-02-05) which focused only on design plan model/field gaps and is marked as "all fixed". This report covers a broader scope including security, bugs, testing, architecture, and deployment.*
 
-*Last updated: 2026-02-15 (Phase C in progress — Task 3 UI layer complete, 4/10 tasks done)*
+*Last updated: 2026-02-15 (Phase C in progress — Tasks 1-5 complete, 7/10 tasks done)*

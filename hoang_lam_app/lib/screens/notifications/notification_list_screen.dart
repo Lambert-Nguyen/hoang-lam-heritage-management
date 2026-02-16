@@ -76,7 +76,7 @@ class NotificationListScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 16),
               Text(
                 l10n.errorLoadingData,
@@ -291,21 +291,21 @@ class _NotificationTile extends StatelessWidget {
   Color _getIconColor() {
     switch (notification.notificationType) {
       case NotificationType.bookingCreated:
-        return const Color(0xFF2196F3); // Blue
+        return AppColors.statusBlue; // Blue
       case NotificationType.bookingConfirmed:
-        return const Color(0xFF4CAF50); // Green
+        return AppColors.success; // Green
       case NotificationType.bookingCancelled:
-        return const Color(0xFFF44336); // Red
+        return AppColors.error; // Red
       case NotificationType.checkinReminder:
-        return const Color(0xFFFF9800); // Orange
+        return AppColors.warning; // Orange
       case NotificationType.checkoutReminder:
-        return const Color(0xFFFF5722); // Deep Orange
+        return AppColors.statusDeepOrange; // Deep Orange
       case NotificationType.checkinCompleted:
-        return const Color(0xFF009688); // Teal
+        return AppColors.statusTeal; // Teal
       case NotificationType.checkoutCompleted:
-        return const Color(0xFF795548); // Brown
+        return AppColors.statusBrown; // Brown
       case NotificationType.general:
-        return const Color(0xFF607D8B); // Blue Grey
+        return AppColors.statusBlueGrey; // Blue Grey
     }
   }
 

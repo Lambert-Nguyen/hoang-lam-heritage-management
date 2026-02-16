@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Widget to display deposit status for a booking
 class DepositStatusIndicator extends StatelessWidget {
@@ -23,9 +24,9 @@ class DepositStatusIndicator extends StatelessWidget {
   bool get isFullyPaid => paidDeposit >= requiredDeposit;
 
   Color _getStatusColor(ThemeData theme) {
-    if (isFullyPaid) return Colors.green;
-    if (paidDeposit > 0) return Colors.orange;
-    return Colors.red;
+    if (isFullyPaid) return AppColors.success;
+    if (paidDeposit > 0) return AppColors.warning;
+    return AppColors.error;
   }
 
   String _getStatusText(BuildContext context) {
@@ -202,7 +203,7 @@ class OutstandingDepositCard extends StatelessWidget {
                         '${context.l10n.amountShort}: ${_formatAmount(deposit.outstanding)}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.red,
+                          color: AppColors.error,
                         ),
                       ),
                     ),
