@@ -648,7 +648,8 @@ class GuestViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsStaff]
     serializer_class = GuestSerializer
     filterset_fields = ["is_vip", "nationality"]
-    search_fields = ["full_name", "phone", "id_number"]
+    # search_fields removed — custom search logic in get_queryset() handles
+    # encrypted id_number via hash-based exact match
     ordering_fields = ["created_at", "full_name", "total_stays"]
     ordering = ["-created_at"]
 
@@ -668,13 +669,16 @@ class GuestViewSet(viewsets.ModelViewSet):
         if nationality:
             queryset = queryset.filter(nationality=nationality)
 
-        # Search by name, phone, or ID number
+        # Search by name, phone, or ID number (exact match for encrypted ID)
         search = self.request.query_params.get("search")
         if search:
+            from hotel_api.encryption import hash_value
+
+            id_hash = hash_value(search)
             queryset = queryset.filter(
                 Q(full_name__icontains=search)
                 | Q(phone__icontains=search)
-                | Q(id_number__icontains=search)
+                | Q(id_number_hash=id_hash)
             )
 
         return queryset.order_by(*self.ordering)
@@ -693,6 +697,44 @@ class GuestViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated(), IsManager()]
         return [IsAuthenticated(), IsStaff()]
 
+    def retrieve(self, request, *args, **kwargs):
+        response = super().retrieve(request, *args, **kwargs)
+        from hotel_api.audit import log_sensitive_access
+
+        log_sensitive_access(
+            request, "view_guest", resource_id=kwargs.get("pk"),
+        )
+        return response
+
+    def list(self, request, *args, **kwargs):
+        response = super().list(request, *args, **kwargs)
+        from hotel_api.audit import log_sensitive_access
+
+        log_sensitive_access(
+            request, "list_guests",
+            details={"query_params": dict(request.query_params)},
+        )
+        return response
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        from hotel_api.audit import log_sensitive_access
+
+        if response.status_code == 201:
+            log_sensitive_access(
+                request, "create_guest", resource_id=response.data.get("id"),
+            )
+        return response
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        from hotel_api.audit import log_sensitive_access
+
+        log_sensitive_access(
+            request, "update_guest", resource_id=kwargs.get("pk"),
+        )
+        return response
+
     @extend_schema(
         summary="Search guests",
         description="Search for guests by name, phone, or ID number.",
@@ -707,8 +749,17 @@ class GuestViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         query = serializer.validated_data["query"]
+        from hotel_api.encryption import hash_value
+        from hotel_api.audit import log_sensitive_access
+
+        id_hash = hash_value(query)
         guests = Guest.objects.filter(
-            Q(full_name__icontains=query) | Q(phone__icontains=query) | Q(id_number__icontains=query)
+            Q(full_name__icontains=query) | Q(phone__icontains=query) | Q(id_number_hash=id_hash)
+        )
+
+        log_sensitive_access(
+            request, "search_guest",
+            details={"query": query, "results_count": guests.count()},
         )
 
         return Response(
@@ -741,6 +792,12 @@ class GuestViewSet(viewsets.ModelViewSet):
         guest = self.get_object()
         bookings = Booking.objects.filter(guest=guest).select_related("room", "room__room_type").order_by(
             "-check_in_date"
+        )
+
+        from hotel_api.audit import log_sensitive_access
+
+        log_sensitive_access(
+            request, "view_guest_history", resource_id=pk,
         )
 
         return Response(
@@ -810,6 +867,12 @@ class GuestViewSet(viewsets.ModelViewSet):
 
         from django.http import HttpResponse
         from django.utils import timezone as tz
+        from hotel_api.audit import log_sensitive_access
+
+        log_sensitive_access(
+            request, "export_declaration",
+            details={"query_params": dict(request.query_params)},
+        )
 
         # ── Hotel establishment info (used in form headers) ──
         HOTEL_NAME = "Hoàng Lâm Heritage Suites"
@@ -891,6 +954,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         ]
 
         def build_dd10_rows(bkings):
+            from hotel_api.encryption import decrypt
+
             rows = []
             for i, bk in enumerate(bkings, 1):
                 g = bk.guest
@@ -900,7 +965,7 @@ class GuestViewSet(viewsets.ModelViewSet):
                     fmt_date(g.date_of_birth),
                     fmt_gender(g.gender),
                     fmt_nationality(g.nationality),
-                    g.id_number or "",
+                    decrypt(g.id_number) or "",
                     g.address or "",
                     fmt_date(bk.check_in_date),
                     fmt_date(bk.check_out_date),
@@ -924,6 +989,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         ]
 
         def build_na17_rows(bkings):
+            from hotel_api.encryption import decrypt
+
             rows = []
             for i, bk in enumerate(bkings, 1):
                 g = bk.guest
@@ -933,10 +1000,10 @@ class GuestViewSet(viewsets.ModelViewSet):
                     fmt_gender(g.gender),
                     fmt_date(g.date_of_birth),
                     fmt_nationality(g.nationality),
-                    g.id_number or "",
+                    decrypt(g.id_number) or "",
                     g.get_passport_type_display() if g.passport_type else "",
                     g.get_visa_type_display() if g.visa_type else "",
-                    g.visa_number or "",
+                    decrypt(g.visa_number) or "",
                     fmt_date(g.visa_expiry_date),
                     fmt_date(g.visa_issue_date),
                     g.visa_issuing_authority or "",
@@ -3106,6 +3173,7 @@ class ReceiptViewSet(viewsets.ViewSet):
     def _get_receipt_data(self, booking, payment=None, include_folio=True):
         """Generate receipt data for a booking."""
         from django.utils import timezone
+        from hotel_api.encryption import decrypt
         from .models import FolioItem
 
         # Generate receipt number
@@ -3141,7 +3209,7 @@ class ReceiptViewSet(viewsets.ViewSet):
             "hotel_phone": "028 1234 5678",
             "guest_name": booking.guest.full_name,
             "guest_phone": booking.guest.phone,
-            "guest_id_number": booking.guest.id_number or "",
+            "guest_id_number": decrypt(booking.guest.id_number) or "",
             "room_number": booking.room.number,
             "room_type": booking.room.room_type.name,
             "check_in_date": booking.check_in_date.isoformat(),
@@ -3192,6 +3260,14 @@ class ReceiptViewSet(viewsets.ViewSet):
             payment = None
 
         receipt_data = self._get_receipt_data(booking, payment, include_folio)
+
+        from hotel_api.audit import log_sensitive_access
+
+        log_sensitive_access(
+            request, "export_receipt", resource_id=booking.guest.id,
+            details={"booking_id": booking.id},
+        )
+
         return Response(receipt_data)
 
     @extend_schema(

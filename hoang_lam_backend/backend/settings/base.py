@@ -211,6 +211,12 @@ CELERY_BEAT_SCHEDULE = {
 }
 
 
+# Field-Level Encryption (Phase D - Sensitive Data Protection)
+# Generate a Fernet key: python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+# Leave empty to disable encryption (dev/test mode)
+FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY", "")
+
+
 # Firebase Cloud Messaging (Push Notifications - Phase 5)
 FCM_ENABLED = os.getenv("FCM_ENABLED", "False").lower() == "true"
 FCM_CREDENTIALS_FILE = os.getenv("FCM_CREDENTIALS_FILE", "")

@@ -15,6 +15,7 @@ from .models import (
     Notification,
     Room,
     RoomType,
+    SensitiveDataAccessLog,
 )
 
 
@@ -122,3 +123,24 @@ class DeviceTokenAdmin(admin.ModelAdmin):
     list_filter = ["platform", "is_active"]
     search_fields = ["user__username", "device_name"]
     raw_id_fields = ["user"]
+
+
+@admin.register(SensitiveDataAccessLog)
+class SensitiveDataAccessLogAdmin(admin.ModelAdmin):
+    list_display = ["user", "action", "resource_type", "resource_id", "ip_address", "timestamp"]
+    list_filter = ["action", "resource_type", "timestamp"]
+    search_fields = ["user__username", "ip_address"]
+    date_hierarchy = "timestamp"
+    readonly_fields = [
+        "user", "action", "resource_type", "resource_id",
+        "fields_accessed", "ip_address", "user_agent", "details", "timestamp",
+    ]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

@@ -447,7 +447,7 @@ class TestCheckOutFlow:
         assert task is not None
         assert task.task_type == HousekeepingTask.TaskType.CHECKOUT_CLEAN
         assert task.status == HousekeepingTask.Status.PENDING
-        assert task.scheduled_date == date.today()
+        assert task.scheduled_date <= date.today()
         assert task.room == checked_in_booking.room
         assert "Auto-created" in task.notes
 

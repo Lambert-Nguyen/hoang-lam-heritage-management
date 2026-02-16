@@ -374,13 +374,26 @@ class GuestSerializer(serializers.ModelSerializer):
         return cleaned
 
     def validate_id_number(self, value):
-        """Validate ID number if provided."""
+        """Validate ID number if provided. Uses hash-based uniqueness check."""
         if value:
-            # Check if ID number already exists (for other guests)
+            from hotel_api.encryption import hash_value
+
+            id_hash = hash_value(value)
             instance = self.instance
-            if Guest.objects.filter(id_number=value).exclude(pk=instance.pk if instance else None).exists():
+            if Guest.objects.filter(id_number_hash=id_hash).exclude(pk=instance.pk if instance else None).exists():
                 raise serializers.ValidationError("This ID number already exists.")
         return value
+
+    def to_representation(self, instance):
+        """Decrypt sensitive fields before returning to API."""
+        from hotel_api.encryption import decrypt
+
+        data = super().to_representation(instance)
+        if data.get("id_number"):
+            data["id_number"] = decrypt(data["id_number"])
+        if data.get("visa_number"):
+            data["visa_number"] = decrypt(data["visa_number"])
+        return data
 
 
 class GuestListSerializer(serializers.ModelSerializer):
@@ -405,7 +418,14 @@ class GuestListSerializer(serializers.ModelSerializer):
             "created_at",
         ]
 
-    # Remove get_booking_count method as we use annotation
+    def to_representation(self, instance):
+        """Decrypt sensitive fields before returning to API."""
+        from hotel_api.encryption import decrypt
+
+        data = super().to_representation(instance)
+        if data.get("id_number"):
+            data["id_number"] = decrypt(data["id_number"])
+        return data
 
 
 class GuestSearchSerializer(serializers.Serializer):

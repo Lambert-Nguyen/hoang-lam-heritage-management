@@ -68,6 +68,13 @@ LOGGING = {
             "formatter": "verbose",
             "level": "ERROR",
         },
+        "security_audit": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": LOGS_DIR / "security_audit.log",
+            "maxBytes": 1024 * 1024 * 50,  # 50 MB
+            "backupCount": 10,
+            "formatter": "verbose",
+        },
     },
     "root": {
         "handlers": ["console", "file"],
@@ -91,6 +98,11 @@ LOGGING = {
         },
         "hotel_api": {
             "handlers": ["console", "file", "error_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "hotel_api.security": {
+            "handlers": ["security_audit", "file"],
             "level": "INFO",
             "propagate": False,
         },

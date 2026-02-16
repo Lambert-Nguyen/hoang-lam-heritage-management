@@ -143,7 +143,11 @@ class Guest(models.Model):
         max_length=20, choices=IDType.choices, default=IDType.CCCD, verbose_name="Loại giấy tờ"
     )
     id_number = models.CharField(
-        max_length=20, blank=True, null=True, unique=True, db_index=True, verbose_name="Số CCCD/Passport"
+        max_length=200, blank=True, null=True, verbose_name="Số CCCD/Passport"
+    )
+    id_number_hash = models.CharField(
+        max_length=64, blank=True, null=True, unique=True, db_index=True,
+        verbose_name="Hash CCCD/Passport",
     )
     id_issue_date = models.DateField(null=True, blank=True, verbose_name="Ngày cấp")
     id_issue_place = models.CharField(max_length=100, blank=True, verbose_name="Nơi cấp")
@@ -196,7 +200,11 @@ class Guest(models.Model):
         help_text="Thị thực, thẻ tạm trú, giấy miễn thị thực, thẻ ABTC",
     )
     visa_number = models.CharField(
-        max_length=50, blank=True, verbose_name="Số thị thực/thẻ tạm trú",
+        max_length=200, blank=True, verbose_name="Số thị thực/thẻ tạm trú",
+    )
+    visa_number_hash = models.CharField(
+        max_length=64, blank=True, db_index=True,
+        verbose_name="Hash thị thực",
     )
     visa_issue_date = models.DateField(
         null=True, blank=True, verbose_name="Ngày cấp thị thực",
@@ -256,12 +264,44 @@ class Guest(models.Model):
         verbose_name_plural = "Khách hàng"
         ordering = ["-created_at"]
         indexes = [
-            models.Index(fields=["phone", "id_number"]),
+            models.Index(fields=["phone", "id_number_hash"]),
             models.Index(fields=["full_name"]),
         ]
 
     def __str__(self):
         return f"{self.full_name} - {self.phone}"
+
+    def save(self, *args, **kwargs):
+        from hotel_api.encryption import encrypt, hash_value, is_encrypted
+
+        # Compute hashes from plaintext (before encryption)
+        if self.id_number:
+            # If already encrypted, decrypt first to get plaintext for hashing
+            if is_encrypted(self.id_number):
+                from hotel_api.encryption import decrypt
+                plaintext = decrypt(self.id_number)
+            else:
+                plaintext = self.id_number
+            self.id_number_hash = hash_value(plaintext)
+            # Encrypt the field value
+            if not is_encrypted(self.id_number):
+                self.id_number = encrypt(self.id_number)
+        else:
+            self.id_number_hash = None
+
+        if self.visa_number:
+            if is_encrypted(self.visa_number):
+                from hotel_api.encryption import decrypt
+                plaintext = decrypt(self.visa_number)
+            else:
+                plaintext = self.visa_number
+            self.visa_number_hash = hash_value(plaintext)
+            if not is_encrypted(self.visa_number):
+                self.visa_number = encrypt(self.visa_number)
+        else:
+            self.visa_number_hash = ""
+
+        super().save(*args, **kwargs)
 
     @property
     def is_returning_guest(self):
@@ -2249,3 +2289,61 @@ class GuestMessage(models.Model):
 
     def __str__(self):
         return f"{self.guest.full_name} - {self.subject[:50]} ({self.get_status_display()})"
+
+
+class SensitiveDataAccessLog(models.Model):
+    """Audit log for access to sensitive guest data (CCCD, passport, visa)."""
+
+    class Action(models.TextChoices):
+        VIEW_GUEST = "view_guest", "Xem thông tin khách"
+        LIST_GUESTS = "list_guests", "Xem danh sách khách"
+        SEARCH_GUEST = "search_guest", "Tìm kiếm khách"
+        CREATE_GUEST = "create_guest", "Tạo khách mới"
+        UPDATE_GUEST = "update_guest", "Cập nhật thông tin khách"
+        VIEW_HISTORY = "view_guest_history", "Xem lịch sử khách"
+        EXPORT_DECLARATION = "export_declaration", "Xuất khai báo tạm trú"
+        EXPORT_RECEIPT = "export_receipt", "Xuất biên lai"
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="sensitive_data_access_logs",
+        verbose_name="Người truy cập",
+    )
+    action = models.CharField(
+        max_length=30, choices=Action.choices, verbose_name="Hành động"
+    )
+    resource_type = models.CharField(
+        max_length=30, default="guest", verbose_name="Loại dữ liệu"
+    )
+    resource_id = models.IntegerField(
+        null=True, blank=True, verbose_name="ID đối tượng"
+    )
+    fields_accessed = models.JSONField(
+        default=list, verbose_name="Trường dữ liệu đã truy cập"
+    )
+    ip_address = models.GenericIPAddressField(
+        null=True, blank=True, verbose_name="Địa chỉ IP"
+    )
+    user_agent = models.CharField(
+        max_length=500, blank=True, verbose_name="User Agent"
+    )
+    details = models.JSONField(
+        default=dict, blank=True, verbose_name="Chi tiết bổ sung"
+    )
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Thời gian")
+
+    class Meta:
+        verbose_name = "Nhật ký truy cập dữ liệu nhạy cảm"
+        verbose_name_plural = "Nhật ký truy cập dữ liệu nhạy cảm"
+        ordering = ["-timestamp"]
+        indexes = [
+            models.Index(fields=["user", "-timestamp"]),
+            models.Index(fields=["action", "-timestamp"]),
+            models.Index(fields=["resource_type", "resource_id"]),
+        ]
+
+    def __str__(self):
+        username = self.user.username if self.user else "unknown"
+        return f"{username} - {self.get_action_display()} - {self.timestamp}"

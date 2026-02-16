@@ -43,9 +43,9 @@ These must be fixed before any production deployment.
 | ID | Gap | Location | Risk |
 |----|-----|----------|------|
 | SEC-05 | **Biometric login doesn't re-authenticate** | `login_screen.dart:66-74` | Uses cached JWT without server validation — expired tokens appear logged in |
-| SEC-06 | **Sensitive data not encrypted at rest** | Backend: Guest ID numbers, passport data | Design plan specifies AES-256 for HIGH fields — not implemented |
+| SEC-06 | ~~Sensitive data not encrypted at rest~~ | **FIXED (Phase D)** | Fernet encryption for `id_number` and `visa_number` with SHA-256 hash columns for lookup/uniqueness. `encrypt_guest_data` management command for migration. |
 | SEC-07 | **No session timeout implementation** | Design plan: 30 minutes inactive | Auth timer exists but no inactivity detection — sessions persist indefinitely |
-| SEC-08 | **No audit trail for sensitive data access** | Design plan Section 9 | No logging when staff views guest ID numbers or financial data |
+| SEC-08 | ~~No audit trail for sensitive data access~~ | **FIXED (Phase D)** | `SensitiveDataAccessLog` model tracks all access to guest data. Audit logging on retrieve, list, search, create, update, history, declaration export, receipt generation. Read-only admin. Separate security audit log file in production. |
 | SEC-09 | **Production .env has dev secret key** | `hoang_lam_backend/.env` | Placeholder `DJANGO_SECRET_KEY=dev-secret-key-...` must be replaced |
 
 ### 1.3 MEDIUM
@@ -162,7 +162,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | ID | Design Plan Section | What's Missing |
 |----|-------------------|----------------|
 | DP-01 | **Section 2: Offline-First Strategy** | Only foundation exists (models + SyncManager skeleton). All entity-specific sync handlers are TODOs. No Hive adapters registered. Offline queue doesn't actually sync. |
-| DP-02 | **Section 9: Guest Data Encryption** | `HIGH` sensitivity fields (CCCD, passport) should be AES-256 encrypted at rest — currently stored as plaintext |
+| DP-02 | ~~Section 9: Guest Data Encryption~~ | **FIXED (Phase D)** — Fernet encryption for `id_number` and `visa_number`. SHA-256 hash columns for lookup/uniqueness. 22 tests covering encryption, decryption, hash-based search, and serializer transparency. |
 | DP-03 | **Section 9: Data Retention Policy** | Auto-archive after 1 year, delete after 3 — no implementation exists |
 
 ### 4.2 HIGH (Partially implemented)
@@ -348,20 +348,22 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
-| # | Task | Effort | Priority |
-|---|------|--------|----------|
-| 1 | Implement sensitive data encryption (CCCD, passport) | 6h | P2 |
-| 2 | Add audit logging for sensitive data access | 4h | P2 |
-| 3 | Implement data retention policy | 4h | P2 |
-| 4 | Set up Sentry error tracking | 2h | P2 |
-| 5 | Configure pgbouncer connection pooling | 2h | P2 |
-| 6 | Set up media storage (S3 or nginx) | 3h | P2 |
-| 7 | Implement real SMS gateway integration | 4h | P2 |
-| 8 | Add CI coverage reporting | 2h | P2 |
-| 9 | Implement offline sync handlers | 16h | P3 |
-| 10 | Flutter release build setup (Fastlane) | 8h | P3 |
+**STATUS: IN PROGRESS (2/10 done)**
 
-**Estimated total: ~51 hours**
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 1 | Implement sensitive data encryption (CCCD, passport) | **DONE** | Fernet encryption for `id_number` & `visa_number`. SHA-256 hash for lookups. `encryption.py` utility, `Guest.save()` override, serializer decryption, hash-based search. `encrypt_guest_data` management command. Migration `0018`. 22 new tests. |
+| 2 | Add audit logging for sensitive data access | **DONE** | `SensitiveDataAccessLog` model with 8 action types. `audit.py` utility with `log_sensitive_access()`. Wired into GuestViewSet (retrieve, list, create, update, search, history), declaration export, receipt generation. Read-only admin. `hotel_api.security` logger in production settings. 9 new tests. |
+| 3 | Implement data retention policy | Pending | P2 |
+| 4 | Set up Sentry error tracking | Pending | P2 |
+| 5 | Configure pgbouncer connection pooling | Pending | P2 |
+| 6 | Set up media storage (S3 or nginx) | Pending | P2 |
+| 7 | Implement real SMS gateway integration | Pending | P2 |
+| 8 | Add CI coverage reporting | Pending | P2 |
+| 9 | Implement offline sync handlers | Pending | P3 |
+| 10 | Flutter release build setup (Fastlane) | Pending | P3 |
+
+**Estimated remaining: ~41 hours**
 
 ---
 
@@ -369,18 +371,18 @@ Features specified in the Design Plan that are missing or incomplete.
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| Production readiness | ~90% (Phase C complete) | 95% |
-| Backend test count | 550 test methods (19 test files) | 550+ |
+| Production readiness | ~92% (Phase D started) | 95% |
+| Backend test count | 581 test methods (21 test files) | 550+ |
 | Backend error case coverage | 239+ HTTP 4xx assertions | 260+ |
 | Frontend test files | 36 test files | 60+ |
 | Frontend provider/notifier tests | 85 (4 test files) | 10+ |
 | Backend integration tests | 28 (1 test file) | 5+ |
 | Critical bugs | 0 (fixed in Phase A) | 0 |
-| High-severity bugs | ~12 remaining (down from 30+) | 0 |
-| Security vulnerabilities | 0 critical, 5 high | 0 critical, 0 high |
+| High-severity bugs | ~10 remaining (down from 30+) | 0 |
+| Security vulnerabilities | 0 critical, 3 high | 0 critical, 0 high |
 | Hardcoded colors (dark mode blockers) | 0 semantic (53 intentional white/transparent/black) | 0 |
 | Hardcoded Vietnamese strings (i18n blockers) | 0 (fully localized) | 0 |
-| Design plan compliance | ~88% (Phases 1-5) | 95% (Phases 1-5) |
+| Design plan compliance | ~90% (Phases 1-5) | 95% (Phases 1-5) |
 
 ### Total Effort to Production-Ready
 
@@ -388,12 +390,12 @@ Features specified in the Design Plan that are missing or incomplete.
 |-------|-------|----------|--------|
 | Phase A (Critical) | ~22h | Weeks 1-2 | COMPLETED (2026-02-13) |
 | Phase B (High) | ~30h | Weeks 3-4 | COMPLETED (2026-02-13) |
-| Phase C (Quality) | ~40h | Weeks 5-6 | **COMPLETED** (2026-02-16) |
-| Phase D (Hardening) | ~51h | Weeks 7-8 | Pending |
-| **Total** | **~143h** | **8 weeks** | **Phases A+B+C done** |
+| Phase C (Quality) | ~40h | Weeks 5-6 | COMPLETED (2026-02-16) |
+| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (2/10 done) |
+| **Total** | **~143h** | **8 weeks** | **Phases A+B+C done, D started** |
 
 ---
 
 *This analysis supersedes the previous [DESIGN_GAPS_ANALYSIS.md](./DESIGN_GAPS_ANALYSIS.md) (dated 2026-02-05) which focused only on design plan model/field gaps and is marked as "all fixed". This report covers a broader scope including security, bugs, testing, architecture, and deployment.*
 
-*Last updated: 2026-02-16 (Phase C complete — all 10/10 tasks done. 550 backend tests passing.)*
+*Last updated: 2026-02-17 (Phase D tasks 1-2 complete — encryption + audit logging. 581 backend tests passing.)*
