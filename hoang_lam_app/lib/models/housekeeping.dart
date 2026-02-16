@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'housekeeping.freezed.dart';
 part 'housekeeping.g.dart';
@@ -97,6 +98,22 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
         return 'inspection';
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case HousekeepingTaskType.checkoutClean:
+        return l10n.taskTypeCheckoutClean;
+      case HousekeepingTaskType.stayClean:
+        return l10n.taskTypeStayoverClean;
+      case HousekeepingTaskType.deepClean:
+        return l10n.taskTypeDeepClean;
+      case HousekeepingTaskType.maintenance:
+        return l10n.taskTypeMaintenance;
+      case HousekeepingTaskType.inspection:
+        return l10n.taskTypeInspection;
+    }
+  }
 }
 
 /// Task status matching backend HousekeepingTask.Status choices
@@ -182,6 +199,20 @@ extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
       this == HousekeepingTaskStatus.pending ||
       this == HousekeepingTaskStatus.inProgress;
   bool get canVerify => this == HousekeepingTaskStatus.completed;
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case HousekeepingTaskStatus.pending:
+        return l10n.housekeepingStatusPending;
+      case HousekeepingTaskStatus.inProgress:
+        return l10n.housekeepingStatusInProgress;
+      case HousekeepingTaskStatus.completed:
+        return l10n.housekeepingStatusCompleted;
+      case HousekeepingTaskStatus.verified:
+        return l10n.housekeepingStatusVerified;
+    }
+  }
 }
 
 // ============================================================
@@ -263,6 +294,20 @@ extension MaintenancePriorityExtension on MaintenancePriority {
         return 'high';
       case MaintenancePriority.urgent:
         return 'urgent';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case MaintenancePriority.low:
+        return l10n.priorityLow;
+      case MaintenancePriority.medium:
+        return l10n.priorityMedium;
+      case MaintenancePriority.high:
+        return l10n.priorityHigh;
+      case MaintenancePriority.urgent:
+        return l10n.priorityUrgent;
     }
   }
 }
@@ -384,6 +429,24 @@ extension MaintenanceStatusExtension on MaintenanceStatus {
   bool get isActive =>
       this != MaintenanceStatus.completed &&
       this != MaintenanceStatus.cancelled;
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case MaintenanceStatus.pending:
+        return l10n.maintenanceStatusPending;
+      case MaintenanceStatus.assigned:
+        return l10n.maintenanceStatusAssigned;
+      case MaintenanceStatus.inProgress:
+        return l10n.maintenanceStatusInProgress;
+      case MaintenanceStatus.onHold:
+        return l10n.maintenanceStatusPaused;
+      case MaintenanceStatus.completed:
+        return l10n.maintenanceStatusCompleted;
+      case MaintenanceStatus.cancelled:
+        return l10n.maintenanceStatusCancelled;
+    }
+  }
 }
 
 /// Category matching backend MaintenanceRequest.Category choices
@@ -509,6 +572,28 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
         return 'safety';
       case MaintenanceCategory.other:
         return 'other';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case MaintenanceCategory.electrical:
+        return l10n.maintCatElectrical;
+      case MaintenanceCategory.plumbing:
+        return l10n.maintCatPlumbing;
+      case MaintenanceCategory.acHeating:
+        return l10n.maintCatHvac;
+      case MaintenanceCategory.furniture:
+        return l10n.maintCatFurniture;
+      case MaintenanceCategory.appliance:
+        return l10n.maintCatAppliance;
+      case MaintenanceCategory.structural:
+        return l10n.maintCatStructural;
+      case MaintenanceCategory.safety:
+        return l10n.maintCatSafety;
+      case MaintenanceCategory.other:
+        return l10n.maintCatOther;
     }
   }
 }

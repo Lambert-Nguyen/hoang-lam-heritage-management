@@ -292,7 +292,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                 ),
                 AppSpacing.gapHorizontalSm,
                 Text(
-                  category.displayName,
+                  category.localizedName(context.l10n),
                   style: TextStyle(
                     color:
                         isSelected ? category.color : AppColors.textSecondary,
@@ -350,7 +350,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     ),
                     AppSpacing.gapVerticalXs,
                     Text(
-                      priority.displayName,
+                      priority.localizedName(context.l10n),
                       style: TextStyle(
                         color: isSelected
                             ? priority.color

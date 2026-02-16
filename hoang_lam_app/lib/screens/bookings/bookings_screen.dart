@@ -216,7 +216,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: FilterChip(
-                  label: Text(status.displayName),
+                  label: Text(status.localizedName(context.l10n)),
                   selected: _selectedStatus == status,
                   onSelected: (selected) {
                     setState(() {
@@ -340,7 +340,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ),
                     ...BookingStatus.values.map((status) {
                       return ChoiceChip(
-                        label: Text(status.displayName),
+                        label: Text(status.localizedName(context.l10n)),
                         selected: _selectedStatus == status,
                         onSelected: (selected) {
                           setDialogState(() {
@@ -371,7 +371,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ),
                     ...BookingSource.values.map((source) {
                       return ChoiceChip(
-                        label: Text(source.displayName),
+                        label: Text(source.localizedName(context.l10n)),
                         selected: _selectedSource == source,
                         onSelected: (selected) {
                           setDialogState(() {

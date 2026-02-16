@@ -72,7 +72,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(item.status.icon, size: 16, color: item.status.color),
                   const SizedBox(width: 4),
-                  Text(item.status.displayName, style: TextStyle(color: item.status.color, fontWeight: FontWeight.bold)),
+                  Text(item.status.localizedName(context.l10n), style: TextStyle(color: item.status.color, fontWeight: FontWeight.bold)),
                 ]),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -82,7 +82,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(item.category.icon, size: 16, color: item.category.color),
                   const SizedBox(width: 4),
-                  Text(item.category.displayName, style: TextStyle(color: item.category.color)),
+                  Text(item.category.localizedName(context.l10n), style: TextStyle(color: item.category.color)),
                 ]),
               ),
             ],

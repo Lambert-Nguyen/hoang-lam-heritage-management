@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/minibar.dart';
 import '../repositories/minibar_repository.dart';
+import 'settings_provider.dart';
 
 part 'minibar_provider.freezed.dart';
 
@@ -222,12 +223,12 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
   /// Process cart and create sales
   Future<bool> processCart() async {
     if (state.bookingId == null) {
-      state = state.copyWith(errorMessage: 'Chưa chọn đặt phòng');
+      state = state.copyWith(errorMessage: _ref.read(l10nProvider).errorNoBookingSelected);
       return false;
     }
 
     if (state.items.isEmpty) {
-      state = state.copyWith(errorMessage: 'Giỏ hàng trống');
+      state = state.copyWith(errorMessage: _ref.read(l10nProvider).errorEmptyCart);
       return false;
     }
 

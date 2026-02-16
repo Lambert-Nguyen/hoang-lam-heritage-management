@@ -482,7 +482,7 @@ class _MaintenanceAssignDialogState
                       ),
                       title: Text(staff.displayName),
                       subtitle: Text(
-                          staff.roleDisplay ?? staff.role?.displayName ?? ''),
+                          staff.roleDisplay ?? staff.role?.localizedName(context.l10n) ?? ''),
                       trailing: isSelected
                           ? Icon(Icons.check_circle,
                               color: AppColors.primary)

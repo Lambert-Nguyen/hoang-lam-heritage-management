@@ -321,7 +321,7 @@ class _StatusBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Text(
-        status.displayName,
+        status.localizedName(context.l10n),
         style: TextStyle(
           color: _getColor(),
           fontSize: 11,

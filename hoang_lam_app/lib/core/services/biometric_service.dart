@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../l10n/app_localizations.dart';
 
 /// iOS-compatible secure storage options
 const _iOSOptions = IOSOptions(
@@ -57,7 +58,7 @@ class BiometricService {
 
   /// Authenticate using biometrics
   Future<bool> authenticate({
-    String localizedReason = 'Xác thực để đăng nhập',
+    required String localizedReason,
   }) async {
     try {
       return await _localAuth.authenticate(
@@ -96,6 +97,7 @@ class BiometricService {
   }
 
   /// Get biometric type display name in Vietnamese
+  @Deprecated('Use getLocalizedBiometricTypeName instead')
   String getBiometricTypeName(List<BiometricType> types) {
     if (types.contains(BiometricType.face)) {
       return 'Face ID';
@@ -105,5 +107,20 @@ class BiometricService {
       return 'Quét mống mắt';
     }
     return 'Sinh trắc học';
+  }
+
+  /// Get localized biometric type display name
+  String getLocalizedBiometricTypeName(
+    List<BiometricType> types,
+    AppLocalizations l10n,
+  ) {
+    if (types.contains(BiometricType.face)) {
+      return 'Face ID'; // Brand name
+    } else if (types.contains(BiometricType.fingerprint)) {
+      return l10n.biometricFingerprint;
+    } else if (types.contains(BiometricType.iris)) {
+      return l10n.biometricIris;
+    }
+    return l10n.biometricGeneric;
   }
 }

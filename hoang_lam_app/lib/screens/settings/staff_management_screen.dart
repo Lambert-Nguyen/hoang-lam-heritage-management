@@ -298,7 +298,7 @@ class _StaffManagementScreenState
                 staffList.where((u) => u.role == role).length;
             if (count == 0) return const SizedBox.shrink();
             return ChoiceChip(
-              label: Text('${role.displayName} ($count)'),
+              label: Text('${role.localizedName(context.l10n)} ($count)'),
               selected: _roleFilter == role,
               onSelected: (_) => setState(() {
                 _roleFilter = _roleFilter == role ? null : role;
@@ -552,7 +552,7 @@ class _StaffDetailSheet extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      user.roleDisplay ?? user.role?.displayName ?? context.l10n.staffRole,
+                      user.roleDisplay ?? user.role?.localizedName(context.l10n) ?? context.l10n.staffRole,
                       style: TextStyle(
                         color: roleColor,
                         fontWeight: FontWeight.w600,

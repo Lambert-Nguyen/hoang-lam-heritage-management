@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
 import 'booking.dart';
+import '../l10n/app_localizations.dart';
 
 part 'group_booking.freezed.dart';
 part 'group_booking.g.dart';
@@ -80,6 +81,22 @@ extension GroupBookingStatusX on GroupBookingStatus {
         return Icons.logout;
       case GroupBookingStatus.cancelled:
         return Icons.cancel;
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case GroupBookingStatus.tentative:
+        return l10n.groupStatusPending;
+      case GroupBookingStatus.confirmed:
+        return l10n.groupStatusConfirmed;
+      case GroupBookingStatus.checkedIn:
+        return l10n.groupStatusCheckedIn;
+      case GroupBookingStatus.checkedOut:
+        return l10n.groupStatusCheckedOut;
+      case GroupBookingStatus.cancelled:
+        return l10n.groupStatusCancelled;
     }
   }
 }

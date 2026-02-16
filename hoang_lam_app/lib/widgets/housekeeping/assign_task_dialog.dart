@@ -271,7 +271,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
         ),
       ),
       subtitle: Text(
-        staff.roleDisplay ?? staff.role?.displayName ?? '',
+        staff.roleDisplay ?? staff.role?.localizedName(context.l10n) ?? '',
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: AppColors.textSecondary,
             ),

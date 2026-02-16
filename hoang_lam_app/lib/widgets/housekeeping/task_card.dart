@@ -90,7 +90,7 @@ class TaskCard extends StatelessWidget {
                         ),
                         AppSpacing.gapHorizontalXs,
                         Text(
-                          task.taskType.displayName,
+                          task.taskType.localizedName(context.l10n),
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: task.taskType.color,
                                 fontWeight: FontWeight.w500,
@@ -269,7 +269,7 @@ class _StatusBadge extends StatelessWidget {
           ),
           AppSpacing.gapHorizontalXs,
           Text(
-            status.displayName,
+            status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: status.color,
                   fontWeight: FontWeight.w600,

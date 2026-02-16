@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'settings_provider.freezed.dart';
 
@@ -162,6 +163,12 @@ final themeModeProvider = Provider<ThemeMode>((ref) {
 final localeProvider = Provider<Locale>((ref) {
   final localeStr = ref.watch(settingsProvider.select((s) => s.locale));
   return Locale(localeStr);
+});
+
+/// Provider for AppLocalizations — use in providers that need localized strings
+final l10nProvider = Provider<AppLocalizations>((ref) {
+  final locale = ref.watch(localeProvider);
+  return AppLocalizations(locale);
 });
 
 /// Provider for text scale factor

@@ -49,7 +49,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${result.displayName}'),
+          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${result.localizedName(context.l10n)}'),
           backgroundColor: AppColors.success,
         ),
       );
@@ -145,7 +145,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           ),
           AppSpacing.gapVerticalMd,
           Text(
-            _room.status.displayName,
+            _room.status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: _room.status.color,
@@ -308,7 +308,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${newStatus.displayName}'),
+          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${newStatus.localizedName(context.l10n)}'),
           backgroundColor: AppColors.success,
         ),
       );

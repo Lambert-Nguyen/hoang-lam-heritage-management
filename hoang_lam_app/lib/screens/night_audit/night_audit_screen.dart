@@ -191,7 +191,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
               Icon(audit.status.icon, size: 16, color: audit.status.color),
               AppSpacing.gapHorizontalXs,
               Text(
-                audit.status.displayName,
+                audit.status.localizedName(context.l10n),
                 style: TextStyle(
                   color: audit.status.color,
                   fontWeight: FontWeight.w500,
@@ -700,7 +700,7 @@ class _AuditHistorySheet extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  audit.status.displayName,
+                  audit.status.localizedName(context.l10n),
                   style: TextStyle(
                     color: audit.status.color,
                     fontSize: 12,
@@ -757,7 +757,7 @@ class _AuditHistorySheet extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDetailRow(context.l10n.statusLabel, audit.status.displayName),
+              _buildDetailRow(context.l10n.statusLabel, audit.status.localizedName(context.l10n)),
               _buildDetailRow(context.l10n.room, '${audit.roomsOccupied}/${audit.totalRooms}'),
               _buildDetailRow(context.l10n.occupancyRate, '${audit.occupancyRate.toStringAsFixed(1)}%'),
               _buildDetailRow(context.l10n.totalIncome, CurrencyFormatter.format(audit.totalIncome)),

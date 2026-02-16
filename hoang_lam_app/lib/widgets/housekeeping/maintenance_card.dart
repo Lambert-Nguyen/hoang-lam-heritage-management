@@ -104,7 +104,7 @@ class MaintenanceCard extends StatelessWidget {
                   ),
                   AppSpacing.gapHorizontalXs,
                   Text(
-                    request.category.displayName,
+                    request.category.localizedName(context.l10n),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: request.category.color,
                         ),
@@ -256,7 +256,7 @@ class _StatusBadge extends StatelessWidget {
           ),
           AppSpacing.gapHorizontalXs,
           Text(
-            status.displayName,
+            status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: status.color,
                   fontWeight: FontWeight.w600,
@@ -295,7 +295,7 @@ class _PriorityBadge extends StatelessWidget {
           ),
           AppSpacing.gapHorizontalXs,
           Text(
-            priority.displayName,
+            priority.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: priority.color,
                   fontWeight: FontWeight.w600,

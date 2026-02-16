@@ -107,7 +107,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                       ),
                       ...MaintenanceStatus.values.map((status) {
                         return _buildFilterChip(
-                          label: status.displayName,
+                          label: status.localizedName(context.l10n),
                           icon: status.icon,
                           color: status.color,
                           isSelected: _selectedStatus == status,
@@ -138,7 +138,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                       ),
                       ...MaintenancePriority.values.map((priority) {
                         return _buildFilterChip(
-                          label: priority.displayName,
+                          label: priority.localizedName(context.l10n),
                           icon: priority.icon,
                           color: priority.color,
                           isSelected: _selectedPriority == priority,
@@ -170,7 +170,7 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                       ),
                       ...MaintenanceCategory.values.map((category) {
                         return _buildFilterChip(
-                          label: category.displayName,
+                          label: category.localizedName(context.l10n),
                           icon: category.icon,
                           color: category.color,
                           isSelected: _selectedCategory == category,

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/errors/app_exceptions.dart';
 import '../models/auth.dart';
 import '../models/user.dart';
+import 'settings_provider.dart';
 import '../repositories/auth_repository.dart';
 
 /// Provider for AuthRepository
@@ -19,7 +20,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 final authStateProvider =
     StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
-  return AuthNotifier(repository);
+  return AuthNotifier(repository, ref);
 });
 
 /// Provider for current user
@@ -58,9 +59,10 @@ final staffListProvider = FutureProvider<List<User>>((ref) async {
 /// Auth state notifier
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _repository;
+  final Ref _ref;
   Timer? _sessionTimer;
 
-  AuthNotifier(this._repository) : super(const AuthState.initial());
+  AuthNotifier(this._repository, this._ref) : super(const AuthState.initial());
 
   @override
   void dispose() {
@@ -293,6 +295,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
   /// Get user-friendly error message
   String _getErrorMessage(dynamic error) {
+    final l10n = _ref.read(l10nProvider);
     // Use typed exceptions from ErrorInterceptor
     if (error is DioException && error.error is AppException) {
       final appException = error.error as AppException;
@@ -305,11 +308,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
         message.contains('đăng nhập') ||
         message.contains('mật khẩu') ||
         message.contains('invalid credentials')) {
-      return 'Tên đăng nhập hoặc mật khẩu không đúng';
+      return l10n.errorWrongCredentials;
     }
     if (message.contains('network') || message.contains('connection')) {
-      return 'Không có kết nối mạng';
+      return l10n.errorNoNetwork;
     }
-    return 'Đã xảy ra lỗi. Vui lòng thử lại.';
+    return l10n.errorGeneric;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import '../config/app_constants.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Date/time formatting utilities
 class DateFormatter {
@@ -75,48 +76,51 @@ class DateFormatter {
   }
 
   /// Get relative date description
-  static String getRelativeDate(DateTime date) {
+  static String getRelativeDate(DateTime date, AppLocalizations l10n) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final targetDate = DateTime(date.year, date.month, date.day);
     final difference = targetDate.difference(today).inDays;
 
     if (difference == 0) {
-      return 'Hôm nay';
+      return l10n.dateToday;
     } else if (difference == 1) {
-      return 'Ngày mai';
+      return l10n.dateTomorrow;
     } else if (difference == -1) {
-      return 'Hôm qua';
+      return l10n.dateYesterday;
     } else if (difference > 1 && difference <= 7) {
-      return 'Trong $difference ngày';
+      return l10n.dateInDays.replaceAll('{count}', '$difference');
     } else if (difference < -1 && difference >= -7) {
-      return '${-difference} ngày trước';
+      return l10n.dateDaysAgo.replaceAll('{count}', '${-difference}');
     } else {
       return formatDate(date);
     }
   }
 
-  /// Get Vietnamese day of week
-  static String getDayOfWeek(DateTime date) {
-    const days = [
-      'Chủ nhật',
-      'Thứ hai',
-      'Thứ ba',
-      'Thứ tư',
-      'Thứ năm',
-      'Thứ sáu',
-      'Thứ bảy',
+  /// Get localized day of week
+  static String getDayOfWeek(DateTime date, AppLocalizations l10n) {
+    final days = [
+      l10n.daySunday,
+      l10n.dayMonday,
+      l10n.dayTuesday,
+      l10n.dayWednesday,
+      l10n.dayThursday,
+      l10n.dayFriday,
+      l10n.daySaturday,
     ];
     return days[date.weekday % 7];
   }
 
-  /// Get Vietnamese month name
-  static String getMonthName(int month) {
-    return 'Tháng $month';
+  /// Get localized month name
+  static String getMonthName(int month, AppLocalizations l10n) {
+    final date = DateTime(2000, month);
+    final formatted = DateFormat.MMMM(l10n.locale.languageCode).format(date);
+    // Capitalize first letter for display
+    return formatted[0].toUpperCase() + formatted.substring(1);
   }
 
-  /// Format month and year (e.g., "Tháng 1, 2026")
-  static String formatMonthYear(DateTime date) {
-    return '${getMonthName(date.month)}, ${date.year}';
+  /// Format month and year (e.g., "Tháng 1, 2026" / "January, 2026")
+  static String formatMonthYear(DateTime date, AppLocalizations l10n) {
+    return '${getMonthName(date.month, l10n)}, ${date.year}';
   }
 }

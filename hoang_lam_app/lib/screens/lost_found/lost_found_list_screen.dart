@@ -88,7 +88,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
               child: Row(
                 children: [
                   Chip(
-                    label: Text(_categoryFilter!.displayName),
+                    label: Text(_categoryFilter!.localizedName(context.l10n)),
                     deleteIcon: const Icon(Icons.close, size: 18),
                     onDeleted: () => setState(() => _categoryFilter = null),
                   ),
@@ -196,7 +196,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
                   Navigator.pop(context);
                 }),
                 ...LostFoundCategory.values.map((c) => FilterChip(
-                  label: Text(c.displayName),
+                  label: Text(c.localizedName(context.l10n)),
                   selected: _categoryFilter == c,
                   onSelected: (_) {
                     setState(() => _categoryFilter = c);
@@ -255,7 +255,7 @@ class _LostFoundItemCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                           decoration: BoxDecoration(color: item.status.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
-                          child: Text(item.status.displayName, style: TextStyle(color: item.status.color, fontSize: 11, fontWeight: FontWeight.w600)),
+                          child: Text(item.status.localizedName(context.l10n), style: TextStyle(color: item.status.color, fontSize: 11, fontWeight: FontWeight.w600)),
                         ),
                       ],
                     ),

@@ -91,7 +91,7 @@ class FolioItemListWidget extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        type.displayName,
+                        type.localizedName(context.l10n),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: type.color,

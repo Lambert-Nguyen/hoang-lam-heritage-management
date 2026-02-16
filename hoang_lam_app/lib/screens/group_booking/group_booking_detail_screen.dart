@@ -73,7 +73,7 @@ class _GroupBookingDetailScreenState extends ConsumerState<GroupBookingDetailScr
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Icon(booking.status.icon, size: 18, color: booking.status.color),
               const SizedBox(width: 4),
-              Text(booking.status.displayName, style: TextStyle(color: booking.status.color, fontWeight: FontWeight.bold)),
+              Text(booking.status.localizedName(context.l10n), style: TextStyle(color: booking.status.color, fontWeight: FontWeight.bold)),
             ]),
           ),
           const SizedBox(height: AppSpacing.md),

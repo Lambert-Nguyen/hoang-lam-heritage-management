@@ -314,7 +314,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             _buildInfoRow(
               _guest.gender!.icon,
               context.l10n.gender,
-              _guest.gender!.displayName,
+              _guest.gender!.localizedName(context.l10n),
             ),
           if (_guest.dateOfBirth != null) ...[
             _buildInfoRow(

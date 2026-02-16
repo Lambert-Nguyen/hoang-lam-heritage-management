@@ -290,7 +290,7 @@ class _RatePlanCard extends ConsumerWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      _formatDateRange(plan.validFrom, plan.validTo),
+                      _formatDateRange(context, plan.validFrom, plan.validTo),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -305,7 +305,7 @@ class _RatePlanCard extends ConsumerWidget {
     );
   }
 
-  String _formatDateRange(DateTime? from, DateTime? to) {
+  String _formatDateRange(BuildContext context, DateTime? from, DateTime? to) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     if (from != null && to != null) {
       return '${dateFormat.format(from)} - ${dateFormat.format(to)}';

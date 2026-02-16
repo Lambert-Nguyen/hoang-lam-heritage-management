@@ -134,7 +134,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        inspection.inspectionType.displayName,
+                        inspection.inspectionType.localizedName(context.l10n),
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
@@ -492,7 +492,7 @@ class _InspectionDetailContentState extends ConsumerState<_InspectionDetailConte
           Icon(status.icon, size: 14, color: status.color),
           const SizedBox(width: 4),
           Text(
-            status.displayName,
+            status.localizedName(context.l10n),
             style: TextStyle(color: status.color, fontWeight: FontWeight.w500, fontSize: 12),
           ),
         ],

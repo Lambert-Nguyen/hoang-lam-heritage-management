@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'rate_plan.freezed.dart';
 part 'rate_plan.g.dart';
@@ -62,6 +63,22 @@ extension CancellationPolicyExtension on CancellationPolicy {
         return 'Strict';
       case CancellationPolicy.nonRefundable:
         return 'Non-refundable';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case CancellationPolicy.free:
+        return l10n.cancelPolicyFree;
+      case CancellationPolicy.flexible:
+        return l10n.cancelPolicyFlexible;
+      case CancellationPolicy.moderate:
+        return l10n.cancelPolicyModerate;
+      case CancellationPolicy.strict:
+        return l10n.cancelPolicyStrict;
+      case CancellationPolicy.nonRefundable:
+        return l10n.cancelPolicyNonRefundable;
     }
   }
 }

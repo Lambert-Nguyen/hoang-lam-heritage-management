@@ -270,7 +270,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
               items: CancellationPolicy.values
                   .map((policy) => DropdownMenuItem(
                         value: policy,
-                        child: Text(policy.displayName),
+                        child: Text(policy.localizedName(context.l10n)),
                       ))
                   .toList(),
               onChanged: (value) {

@@ -110,7 +110,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                       ),
                       ...HousekeepingTaskStatus.values.map((status) {
                         return _buildFilterChip(
-                          label: status.displayName,
+                          label: status.localizedName(context.l10n),
                           icon: status.icon,
                           color: status.color,
                           isSelected: _selectedStatus == status,
@@ -141,7 +141,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                       ),
                       ...HousekeepingTaskType.values.map((type) {
                         return _buildFilterChip(
-                          label: type.displayName,
+                          label: type.localizedName(context.l10n),
                           icon: type.icon,
                           color: type.color,
                           isSelected: _selectedType == type,

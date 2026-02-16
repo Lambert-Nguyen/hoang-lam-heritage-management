@@ -219,7 +219,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                       ? Colors.white
                       : type.color,
                 ),
-                label: Text('${type.displayName} ($count)'),
+                label: Text('${type.localizedName(context.l10n)} ($count)'),
                 selected: folioState.filterType == type,
                 selectedColor: type.color,
                 onSelected: (_) {

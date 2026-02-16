@@ -331,7 +331,7 @@ class _TemplateTile extends StatelessWidget {
       ),
       title: Text(template.name),
       subtitle: Text(
-        template.templateType.displayName,
+        template.templateType.localizedName(context.l10n),
         style: Theme.of(context).textTheme.bodySmall,
       ),
       trailing: const Icon(Icons.chevron_right),

@@ -183,7 +183,7 @@ class ReportScreen extends ConsumerWidget {
                     color: isSelected ? AppColors.onPrimary : AppColors.textPrimary,
                   ),
                   AppSpacing.gapHorizontalXs,
-                  Text(type.displayName),
+                  Text(type.localizedName(context.l10n)),
                 ],
               ),
               selected: isSelected,

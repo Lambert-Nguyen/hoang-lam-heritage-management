@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'booking.freezed.dart';
 part 'booking.g.dart';
@@ -169,6 +170,24 @@ extension BookingStatusExtension on BookingStatus {
         return 'no_show';
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case BookingStatus.pending:
+        return l10n.bookingStatusPending;
+      case BookingStatus.confirmed:
+        return l10n.bookingStatusConfirmed;
+      case BookingStatus.checkedIn:
+        return l10n.bookingStatusCheckedIn;
+      case BookingStatus.checkedOut:
+        return l10n.bookingStatusCheckedOut;
+      case BookingStatus.cancelled:
+        return l10n.bookingStatusCancelled;
+      case BookingStatus.noShow:
+        return l10n.bookingStatusNoShow;
+    }
+  }
 }
 
 /// Booking source matching backend Booking.Source choices
@@ -326,6 +345,30 @@ extension BookingSourceExtension on BookingSource {
         BookingSource.phone,
         BookingSource.website,
       ].contains(this);
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case BookingSource.walkIn:
+        return l10n.bookingSourceWalkIn;
+      case BookingSource.phone:
+        return l10n.bookingSourcePhone;
+      case BookingSource.website:
+        return 'Website';
+      case BookingSource.bookingCom:
+        return 'Booking.com';
+      case BookingSource.agoda:
+        return 'Agoda';
+      case BookingSource.airbnb:
+        return 'Airbnb';
+      case BookingSource.traveloka:
+        return 'Traveloka';
+      case BookingSource.otherOta:
+        return l10n.bookingSourceOtherOta;
+      case BookingSource.other:
+        return l10n.bookingSourceOther;
+    }
+  }
 }
 
 /// Payment method matching backend Booking.PaymentMethod choices
@@ -423,6 +466,26 @@ extension PaymentMethodExtension on PaymentMethod {
         return const Color(0xFF9E9E9E); // Grey
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case PaymentMethod.cash:
+        return l10n.paymentMethodCash;
+      case PaymentMethod.bankTransfer:
+        return l10n.paymentMethodBankTransfer;
+      case PaymentMethod.momo:
+        return 'MoMo';
+      case PaymentMethod.vnpay:
+        return 'VNPay';
+      case PaymentMethod.card:
+        return l10n.paymentMethodCard;
+      case PaymentMethod.otaCollect:
+        return l10n.paymentMethodOtaCollect;
+      case PaymentMethod.other:
+        return l10n.paymentMethodOther;
+    }
+  }
 }
 
 /// Booking type (hourly or overnight)
@@ -468,6 +531,16 @@ extension BookingTypeExtension on BookingType {
         return const Color(0xFF3F51B5); // Indigo
       case BookingType.hourly:
         return const Color(0xFF00BCD4); // Cyan
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case BookingType.overnight:
+        return l10n.bookingTypeOvernight;
+      case BookingType.hourly:
+        return l10n.bookingTypeHourly;
     }
   }
 }

@@ -233,7 +233,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                 ),
                 AppSpacing.gapHorizontalSm,
                 Text(
-                  type.displayName,
+                  type.localizedName(context.l10n),
                   style: TextStyle(
                     color: isSelected ? type.color : AppColors.textSecondary,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,

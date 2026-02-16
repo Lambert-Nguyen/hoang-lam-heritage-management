@@ -128,7 +128,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                 return Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: FilterChip(
-                    label: Text(type.displayName),
+                    label: Text(type.localizedName(context.l10n)),
                     selected: isSelected,
                     onSelected: (selected) {
                       setState(() => _typeFilter = selected ? type : null);
@@ -400,7 +400,7 @@ class _InspectionCard extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        inspection.inspectionType.displayName,
+                        inspection.inspectionType.localizedName(context.l10n),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
                     ],
@@ -481,7 +481,7 @@ class _InspectionCard extends StatelessWidget {
           Icon(inspection.status.icon, size: 14, color: inspection.status.color),
           const SizedBox(width: 4),
           Text(
-            inspection.status.displayName,
+            inspection.status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: inspection.status.color,
                   fontWeight: FontWeight.w500,

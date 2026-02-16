@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'finance.freezed.dart';
 part 'finance.g.dart';
@@ -61,6 +62,16 @@ extension EntryTypeExtension on EntryType {
 
   /// Convert to API value (snake_case)
   String get toApiValue => name;
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case EntryType.income:
+        return l10n.entryTypeIncome;
+      case EntryType.expense:
+        return l10n.entryTypeExpense;
+    }
+  }
 }
 
 /// Payment method choices matching backend
@@ -149,6 +160,26 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'ota_collect';
       default:
         return name;
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case PaymentMethod.cash:
+        return l10n.paymentMethodCash;
+      case PaymentMethod.bankTransfer:
+        return l10n.paymentMethodBankTransfer;
+      case PaymentMethod.momo:
+        return 'MoMo';
+      case PaymentMethod.vnpay:
+        return 'VNPay';
+      case PaymentMethod.card:
+        return l10n.paymentMethodCard;
+      case PaymentMethod.otaCollect:
+        return l10n.paymentMethodOtaCollect;
+      case PaymentMethod.other:
+        return l10n.paymentMethodOther;
     }
   }
 }
@@ -545,6 +576,22 @@ extension PaymentTypeExtension on PaymentType {
         return name;
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case PaymentType.deposit:
+        return l10n.paymentTypeDeposit;
+      case PaymentType.roomCharge:
+        return l10n.paymentTypeRoomCharge;
+      case PaymentType.extraCharge:
+        return l10n.paymentTypeExtraCharge;
+      case PaymentType.refund:
+        return l10n.paymentTypeRefund;
+      case PaymentType.adjustment:
+        return l10n.paymentTypeAdjustment;
+    }
+  }
 }
 
 /// Payment status enum matching backend Payment.Status
@@ -620,6 +667,22 @@ extension PaymentStatusExtension on PaymentStatus {
         return const Color(0xFFF3E5F5); // Purple light
       case PaymentStatus.cancelled:
         return const Color(0xFFECEFF1); // Blue Grey light
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case PaymentStatus.pending:
+        return l10n.paymentStatusPending;
+      case PaymentStatus.completed:
+        return l10n.paymentStatusCompleted;
+      case PaymentStatus.failed:
+        return l10n.paymentStatusFailed;
+      case PaymentStatus.refunded:
+        return l10n.paymentStatusRefunded;
+      case PaymentStatus.cancelled:
+        return l10n.paymentStatusCancelled;
     }
   }
 }
@@ -855,6 +918,32 @@ extension FolioItemTypeExtension on FolioItemType {
         return 'late_checkout';
       default:
         return name;
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case FolioItemType.room:
+        return l10n.folioTypeRoom;
+      case FolioItemType.minibar:
+        return l10n.folioTypeMinibar;
+      case FolioItemType.laundry:
+        return l10n.folioTypeLaundry;
+      case FolioItemType.food:
+        return l10n.folioTypeFood;
+      case FolioItemType.service:
+        return l10n.folioTypeService;
+      case FolioItemType.extraBed:
+        return l10n.folioTypeExtraBed;
+      case FolioItemType.earlyCheckin:
+        return l10n.folioTypeEarlyCheckin;
+      case FolioItemType.lateCheckout:
+        return l10n.folioTypeLateCheckout;
+      case FolioItemType.damage:
+        return l10n.folioTypeDamage;
+      case FolioItemType.other:
+        return l10n.folioTypeOther;
     }
   }
 }

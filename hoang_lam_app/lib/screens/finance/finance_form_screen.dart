@@ -381,7 +381,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
                     color: isSelected ? Colors.white : AppColors.textPrimary,
                   ),
                   AppSpacing.gapHorizontalXs,
-                  Text(method.displayName),
+                  Text(method.localizedName(context.l10n)),
                 ],
               ),
               selected: isSelected,

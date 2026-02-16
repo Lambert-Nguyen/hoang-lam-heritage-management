@@ -137,7 +137,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _task.status.displayName,
+                  _task.status.localizedName(context.l10n),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: _task.status.color,
                         fontWeight: FontWeight.bold,
@@ -145,7 +145,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 ),
                 AppSpacing.gapVerticalXs,
                 Text(
-                  _task.taskType.displayName,
+                  _task.taskType.localizedName(context.l10n),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -184,7 +184,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _buildInfoRow(
             Icons.cleaning_services,
             l10n.taskType,
-            _task.taskType.displayName,
+            _task.taskType.localizedName(context.l10n),
           ),
           _buildInfoRow(
             Icons.calendar_today,

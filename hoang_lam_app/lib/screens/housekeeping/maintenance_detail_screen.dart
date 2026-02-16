@@ -169,7 +169,7 @@ class _MaintenanceDetailScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _request.status.displayName,
+                  _request.status.localizedName(context.l10n),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: _request.status.color,
                         fontWeight: FontWeight.bold,
@@ -214,7 +214,7 @@ class _MaintenanceDetailScreenState
           ),
           AppSpacing.gapHorizontalXs,
           Text(
-            _request.priority.displayName,
+            _request.priority.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: _request.priority.color,
                   fontWeight: FontWeight.w600,
@@ -248,7 +248,7 @@ class _MaintenanceDetailScreenState
           ),
           AppSpacing.gapHorizontalXs,
           Text(
-            _request.category.displayName,
+            _request.category.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: _request.category.color,
                   fontWeight: FontWeight.w600,
@@ -285,12 +285,12 @@ class _MaintenanceDetailScreenState
           _buildInfoRow(
             Icons.category,
             l10n.category,
-            _request.category.displayName,
+            _request.category.localizedName(context.l10n),
           ),
           _buildInfoRow(
             Icons.priority_high,
             l10n.priorityLevel,
-            _request.priority.displayName,
+            _request.priority.localizedName(context.l10n),
           ),
           if (_request.estimatedCost != null)
             _buildInfoRow(
@@ -835,7 +835,7 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                       ),
                       title: Text(staff.displayName),
                       subtitle: Text(staff.roleDisplay ??
-                          staff.role?.displayName ??
+                          staff.role?.localizedName(context.l10n) ??
                           ''),
                       trailing: isSelected
                           ? Icon(Icons.check_circle,

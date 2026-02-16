@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 part 'lost_found.freezed.dart';
 part 'lost_found.g.dart';
@@ -79,6 +80,22 @@ extension LostFoundStatusX on LostFoundStatus {
         return Icons.volunteer_activism;
       case LostFoundStatus.disposed:
         return Icons.delete;
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case LostFoundStatus.found:
+        return l10n.lostFoundStatusFound;
+      case LostFoundStatus.stored:
+        return l10n.lostFoundStatusStored;
+      case LostFoundStatus.claimed:
+        return l10n.lostFoundStatusClaimed;
+      case LostFoundStatus.donated:
+        return l10n.lostFoundStatusDonated;
+      case LostFoundStatus.disposed:
+        return l10n.lostFoundStatusDisposed;
     }
   }
 }
@@ -188,6 +205,28 @@ extension LostFoundCategoryX on LostFoundCategory {
         return Colors.purple;
       case LostFoundCategory.other:
         return Colors.grey;
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case LostFoundCategory.electronics:
+        return l10n.lostFoundCatElectronics;
+      case LostFoundCategory.clothing:
+        return l10n.lostFoundCatClothing;
+      case LostFoundCategory.jewelry:
+        return l10n.lostFoundCatJewelry;
+      case LostFoundCategory.documents:
+        return l10n.lostFoundCatDocuments;
+      case LostFoundCategory.money:
+        return l10n.lostFoundCatMoney;
+      case LostFoundCategory.bags:
+        return l10n.lostFoundCatBags;
+      case LostFoundCategory.personal:
+        return l10n.lostFoundCatPersonal;
+      case LostFoundCategory.other:
+        return l10n.lostFoundCatOther;
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../core/theme/app_colors.dart';
+import '../l10n/app_localizations.dart';
 
 part 'room.freezed.dart';
 part 'room.g.dart';
@@ -120,6 +121,22 @@ extension RoomStatusExtension on RoomStatus {
   /// Check if status change to 'available' is allowed
   bool get canMarkAvailable {
     return this == RoomStatus.cleaning || this == RoomStatus.blocked;
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case RoomStatus.available:
+        return l10n.roomStatusAvailable;
+      case RoomStatus.occupied:
+        return l10n.roomStatusOccupied;
+      case RoomStatus.cleaning:
+        return l10n.roomStatusCleaning;
+      case RoomStatus.maintenance:
+        return l10n.roomStatusMaintenance;
+      case RoomStatus.blocked:
+        return l10n.roomStatusBlocked;
+    }
   }
 }
 

@@ -242,7 +242,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
             size: 16,
             color: isSelected ? Colors.white : type.color,
           ),
-          label: Text(type.displayName),
+          label: Text(type.localizedName(context.l10n)),
           selected: isSelected,
           selectedColor: type.color,
           labelStyle: TextStyle(
@@ -254,7 +254,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
               _selectedType = type;
               // Auto-fill description based on type
               if (_descriptionController.text.isEmpty) {
-                _descriptionController.text = type.displayName;
+                _descriptionController.text = type.localizedName(context.l10n);
               }
             });
           },

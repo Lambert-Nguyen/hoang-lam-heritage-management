@@ -133,7 +133,7 @@ class _InspectionTemplateScreenState extends ConsumerState<InspectionTemplateScr
                     Icon(template.inspectionType.icon, size: 16, color: AppColors.textSecondary),
                     const SizedBox(width: 4),
                     Text(
-                      template.inspectionType.displayName,
+                      template.inspectionType.localizedName(context.l10n),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                     ),
                     if (template.roomTypeName != null) ...[
@@ -382,7 +382,7 @@ class _TemplateCard extends StatelessWidget {
                       Icon(template.inspectionType.icon, size: 14, color: AppColors.textSecondary),
                       const SizedBox(width: 4),
                       Text(
-                        template.inspectionType.displayName,
+                        template.inspectionType.localizedName(context.l10n),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                       ),
                       const SizedBox(width: 12),
@@ -500,7 +500,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                   children: InspectionType.values.map((type) {
                     final isSelected = _type == type;
                     return ChoiceChip(
-                      label: Text(type.displayName),
+                      label: Text(type.localizedName(context.l10n)),
                       selected: isSelected,
                       onSelected: (selected) {
                         if (selected) {

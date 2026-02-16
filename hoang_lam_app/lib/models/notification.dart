@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'notification.freezed.dart';
 part 'notification.g.dart';
@@ -88,6 +89,28 @@ extension NotificationTypeExtension on NotificationType {
         return 'door_front';
       case NotificationType.general:
         return 'notifications';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case NotificationType.bookingCreated:
+        return l10n.notificationTypeNewBooking;
+      case NotificationType.bookingConfirmed:
+        return l10n.notificationTypeBookingConfirmed;
+      case NotificationType.bookingCancelled:
+        return l10n.notificationTypeBookingCancelled;
+      case NotificationType.checkinReminder:
+        return l10n.notificationTypeCheckinReminder;
+      case NotificationType.checkoutReminder:
+        return l10n.notificationTypeCheckoutReminder;
+      case NotificationType.checkinCompleted:
+        return l10n.notificationTypeCheckedIn;
+      case NotificationType.checkoutCompleted:
+        return l10n.notificationTypeCheckedOut;
+      case NotificationType.general:
+        return l10n.notificationTypeGeneral;
     }
   }
 }

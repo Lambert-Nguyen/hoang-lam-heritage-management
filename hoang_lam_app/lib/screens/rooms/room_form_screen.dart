@@ -208,7 +208,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                 spacing: 8,
                 runSpacing: 8,
                 children: RoomStatus.values.map((status) => ChoiceChip(
-                  label: Text(status.displayName),
+                  label: Text(status.localizedName(context.l10n)),
                   selected: _status == status,
                   selectedColor: status.color.withValues(alpha: 0.3),
                   avatar: Icon(status.icon, size: 18, color: status.color),

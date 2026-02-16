@@ -106,7 +106,7 @@ class GuestCard extends StatelessWidget {
             _buildInfoChip(
               context,
               icon: guest.idType.icon,
-              label: guest.idType.displayName,
+              label: guest.idType.localizedName(context.l10n),
             ),
             AppSpacing.gapHorizontalSm,
             _buildInfoChip(

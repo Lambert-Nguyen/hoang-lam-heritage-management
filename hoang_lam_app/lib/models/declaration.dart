@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'declaration.freezed.dart';
 part 'declaration.g.dart';
@@ -104,6 +105,29 @@ extension DeclarationFormTypeExtension on DeclarationFormType {
         return 'na17';
       case DeclarationFormType.all:
         return 'all';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case DeclarationFormType.dd10:
+        return l10n.declarationDd10;
+      case DeclarationFormType.na17:
+        return l10n.declarationNa17;
+      case DeclarationFormType.all:
+        return l10n.declarationAll;
+    }
+  }
+
+  String localizedDescription(AppLocalizations l10n) {
+    switch (this) {
+      case DeclarationFormType.dd10:
+        return l10n.declarationDd10Desc;
+      case DeclarationFormType.na17:
+        return l10n.declarationNa17Desc;
+      case DeclarationFormType.all:
+        return l10n.declarationAllDesc;
     }
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/guest.dart';
 import '../repositories/guest_repository.dart';
+import 'settings_provider.dart';
 
 part 'guest_provider.freezed.dart';
 
@@ -139,8 +141,8 @@ class GuestNotifier extends StateNotifier<GuestState> {
   /// Search guests
   Future<void> searchGuests(String query, {String searchBy = 'all'}) async {
     if (query.trim().length < 2) {
-      state = const GuestState.error(
-        message: 'Từ khóa tìm kiếm phải có ít nhất 2 ký tự',
+      state = GuestState.error(
+        message: _ref.read(l10nProvider).searchMinChars,
       );
       return;
     }
@@ -170,7 +172,7 @@ class GuestNotifier extends StateNotifier<GuestState> {
 
       state = GuestState.success(
         guest: createdGuest,
-        message: 'Đã thêm khách hàng thành công',
+        message: _ref.read(l10nProvider).guestAddedSuccess,
       );
 
       return createdGuest;
@@ -194,7 +196,7 @@ class GuestNotifier extends StateNotifier<GuestState> {
 
       state = GuestState.success(
         guest: updatedGuest,
-        message: 'Đã cập nhật thông tin khách hàng',
+        message: _ref.read(l10nProvider).guestUpdatedSuccess,
       );
 
       return updatedGuest;
@@ -277,26 +279,27 @@ class GuestNotifier extends StateNotifier<GuestState> {
 
   /// Get error message from exception
   String _getErrorMessage(dynamic error) {
+    final l10n = _ref.read(l10nProvider);
     final message = error.toString().toLowerCase();
     if (message.contains('network') || message.contains('connection')) {
-      return 'Không có kết nối mạng';
+      return l10n.errorNoNetwork;
     }
     if (message.contains('phone') && message.contains('exists')) {
-      return 'Số điện thoại đã được đăng ký';
+      return l10n.errorPhoneRegistered;
     }
     if (message.contains('id_number') && message.contains('exists')) {
-      return 'Số CCCD/Passport đã được đăng ký';
+      return l10n.errorIdRegistered;
     }
     if (message.contains('phone') && message.contains('digits')) {
-      return 'Số điện thoại phải có 10-11 chữ số';
+      return l10n.errorPhoneDigits;
     }
     if (message.contains('không thể xóa') || message.contains('cannot delete')) {
-      return 'Không thể xóa khách hàng có lịch sử đặt phòng';
+      return l10n.errorCannotDeleteGuest;
     }
     if (message.contains('not found') || message.contains('404')) {
-      return 'Không tìm thấy khách hàng';
+      return l10n.errorGuestNotFound;
     }
-    return 'Đã xảy ra lỗi. Vui lòng thử lại.';
+    return l10n.errorGeneric;
   }
 }
 

@@ -131,7 +131,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                     DropdownButtonFormField<LostFoundCategory>(
                       value: _selectedCategory,
                       decoration: InputDecoration(labelText: l10n.category, border: const OutlineInputBorder()),
-                      items: LostFoundCategory.values.map((c) => DropdownMenuItem(value: c, child: Row(children: [Icon(c.icon, size: 20, color: c.color), const SizedBox(width: 8), Text(c.displayName)]))).toList(),
+                      items: LostFoundCategory.values.map((c) => DropdownMenuItem(value: c, child: Row(children: [Icon(c.icon, size: 20, color: c.color), const SizedBox(width: 8), Text(c.localizedName(context.l10n))]))).toList(),
                       onChanged: (v) { if (v != null) setState(() => _selectedCategory = v); },
                     ),
                     const SizedBox(height: AppSpacing.md),

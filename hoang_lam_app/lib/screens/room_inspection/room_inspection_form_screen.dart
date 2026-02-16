@@ -138,7 +138,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                               children: [
                                 Icon(type.icon, size: 16, color: isSelected ? Colors.white : type.color),
                                 const SizedBox(width: 4),
-                                Text(type.displayName),
+                                Text(type.localizedName(context.l10n)),
                               ],
                             ),
                             selected: isSelected,

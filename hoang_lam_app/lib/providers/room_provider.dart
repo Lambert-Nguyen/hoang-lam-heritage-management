@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/room.dart';
 import '../repositories/room_repository.dart';
+import 'settings_provider.dart';
 
 part 'room_provider.freezed.dart';
 
@@ -218,17 +219,18 @@ class RoomNotifier extends StateNotifier<RoomState> {
 
   /// Get error message from exception
   String _getErrorMessage(dynamic error) {
+    final l10n = _ref.read(l10nProvider);
     final message = error.toString().toLowerCase();
     if (message.contains('network') || message.contains('connection')) {
-      return 'Không có kết nối mạng';
+      return l10n.errorNoNetwork;
     }
     if (message.contains('đã tồn tại') || message.contains('duplicate')) {
-      return 'Số phòng đã tồn tại';
+      return l10n.errorRoomExists;
     }
     if (message.contains('không thể xóa') || message.contains('cannot delete')) {
-      return 'Không thể xóa phòng đang có đặt phòng';
+      return l10n.errorCannotDeleteRoom;
     }
-    return 'Đã xảy ra lỗi. Vui lòng thử lại.';
+    return l10n.errorGeneric;
   }
 }
 

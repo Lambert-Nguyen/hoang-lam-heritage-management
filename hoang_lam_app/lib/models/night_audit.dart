@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'night_audit.freezed.dart';
 part 'night_audit.g.dart';
@@ -38,6 +39,17 @@ enum NightAuditStatus {
         return 'Hoàn thành';
       case NightAuditStatus.closed:
         return 'Đã đóng';
+    }
+  }
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case NightAuditStatus.draft:
+        return l10n.nightAuditStatusDraft;
+      case NightAuditStatus.completed:
+        return l10n.nightAuditStatusCompleted;
+      case NightAuditStatus.closed:
+        return l10n.nightAuditStatusClosed;
     }
   }
 

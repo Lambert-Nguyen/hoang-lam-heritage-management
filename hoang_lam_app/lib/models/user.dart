@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'user.freezed.dart';
 part 'user.g.dart';
@@ -56,6 +57,20 @@ extension UserRoleExtension on UserRole {
   /// Check if user can manage bookings
   bool get canManageBookings {
     return this != UserRole.housekeeping;
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case UserRole.owner:
+        return l10n.userRoleOwner;
+      case UserRole.manager:
+        return l10n.userRoleManager;
+      case UserRole.staff:
+        return l10n.userRoleStaff;
+      case UserRole.housekeeping:
+        return l10n.userRoleHousekeeping;
+    }
   }
 }
 

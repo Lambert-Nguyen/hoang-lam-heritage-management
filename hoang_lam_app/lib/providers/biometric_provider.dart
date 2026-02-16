@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 
 import '../core/services/biometric_service.dart';
+import '../l10n/app_localizations.dart';
+import 'settings_provider.dart';
 
 /// Provider for BiometricService
 final biometricServiceProvider = Provider<BiometricService>((ref) {
@@ -63,7 +65,10 @@ class BiometricNotifier extends AsyncNotifier<BiometricState> {
   /// Authenticate using biometrics
   Future<bool> authenticate() async {
     final service = ref.read(biometricServiceProvider);
-    return await service.authenticate();
+    final l10n = ref.read(l10nProvider);
+    return await service.authenticate(
+      localizedReason: l10n.biometricAuthenticateLogin,
+    );
   }
 }
 
@@ -97,6 +102,18 @@ class BiometricState {
       return 'Quét mống mắt';
     }
     return 'Sinh trắc học';
+  }
+
+  /// Localized biometric type name
+  String localizedBiometricTypeName(AppLocalizations l10n) {
+    if (biometricTypes.contains(BiometricType.face)) {
+      return 'Face ID';
+    } else if (biometricTypes.contains(BiometricType.fingerprint)) {
+      return l10n.biometricFingerprint;
+    } else if (biometricTypes.contains(BiometricType.iris)) {
+      return l10n.biometricIris;
+    }
+    return l10n.biometricGeneric;
   }
 
   /// Check if biometric login can be offered

@@ -61,7 +61,7 @@ class BookingSourceSelector extends StatelessWidget {
                 color: source.color,
               ),
               const SizedBox(width: 12),
-              Text(source.displayName),
+              Text(source.localizedName(context.l10n)),
             ],
           ),
         );
@@ -97,7 +97,7 @@ class BookingSourceChip extends StatelessWidget {
             color: selected ? Colors.white : source.color,
           ),
           const SizedBox(width: 6),
-          Text(source.displayName),
+          Text(source.localizedName(context.l10n)),
         ],
       ),
       selected: selected,
@@ -180,7 +180,7 @@ class BookingSourceGrid extends StatelessWidget {
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        source.displayName,
+                        source.localizedName(context.l10n),
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight:

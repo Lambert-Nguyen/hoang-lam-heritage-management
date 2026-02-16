@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/material.dart';
+import '../l10n/app_localizations.dart';
 
 part 'room_inspection.freezed.dart';
 part 'room_inspection.g.dart';
@@ -69,6 +70,20 @@ extension InspectionStatusX on InspectionStatus {
         return Icons.check_circle;
       case InspectionStatus.requiresAction:
         return Icons.warning_amber;
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case InspectionStatus.pending:
+        return l10n.inspectionStatusPending;
+      case InspectionStatus.inProgress:
+        return l10n.inspectionStatusInProgress;
+      case InspectionStatus.completed:
+        return l10n.inspectionStatusCompleted;
+      case InspectionStatus.requiresAction:
+        return l10n.inspectionStatusActionRequired;
     }
   }
 }
@@ -148,6 +163,22 @@ extension InspectionTypeX on InspectionType {
         return Colors.brown;
       case InspectionType.deepClean:
         return Colors.teal;
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case InspectionType.checkout:
+        return l10n.inspectionTypeCheckout;
+      case InspectionType.checkin:
+        return l10n.inspectionTypeCheckin;
+      case InspectionType.routine:
+        return l10n.inspectionTypeRoutine;
+      case InspectionType.maintenance:
+        return l10n.inspectionTypeMaintenance;
+      case InspectionType.deepClean:
+        return l10n.inspectionTypeDeepClean;
     }
   }
 }

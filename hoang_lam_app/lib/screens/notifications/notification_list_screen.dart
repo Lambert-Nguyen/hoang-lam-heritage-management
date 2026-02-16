@@ -233,7 +233,7 @@ class _NotificationTile extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        notification.notificationType.displayName,
+                        notification.notificationType.localizedName(context.l10n),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: _getIconColor(),
                           fontWeight: FontWeight.w600,

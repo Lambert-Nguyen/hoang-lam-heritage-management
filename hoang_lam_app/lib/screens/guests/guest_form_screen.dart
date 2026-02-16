@@ -341,7 +341,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
                     children: [
                       Icon(gender.icon, size: 20),
                       AppSpacing.gapHorizontalSm,
-                      Text(gender.displayName),
+                      Text(gender.localizedName(context.l10n)),
                     ],
                   ),
                 ),

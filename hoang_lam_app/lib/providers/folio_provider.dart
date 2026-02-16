@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../models/finance.dart';
 import '../repositories/finance_repository.dart';
 import 'providers.dart';
+import 'settings_provider.dart';
 
 part 'folio_provider.freezed.dart';
 
@@ -90,8 +91,9 @@ sealed class FolioState with _$FolioState {
 /// State notifier for folio management
 class FolioNotifier extends StateNotifier<FolioState> {
   final FinanceRepository _repository;
+  final Ref _ref;
 
-  FolioNotifier(this._repository) : super(const FolioState());
+  FolioNotifier(this._repository, this._ref) : super(const FolioState());
 
   /// Load folio for a booking
   Future<void> loadFolio(int bookingId) async {
@@ -118,7 +120,7 @@ class FolioNotifier extends StateNotifier<FolioState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Không thể tải folio: ${e.toString()}',
+        error: _ref.read(l10nProvider).errorFolioLoad.replaceAll('{error}', e.toString()),
       );
     }
   }
@@ -156,7 +158,7 @@ class FolioNotifier extends StateNotifier<FolioState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Không thể thêm phí: ${e.toString()}',
+        error: _ref.read(l10nProvider).errorChargeAdd.replaceAll('{error}', e.toString()),
       );
       return false;
     }
@@ -176,7 +178,7 @@ class FolioNotifier extends StateNotifier<FolioState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: 'Không thể hủy phí: ${e.toString()}',
+        error: _ref.read(l10nProvider).errorChargeVoid.replaceAll('{error}', e.toString()),
       );
       return false;
     }
@@ -192,5 +194,5 @@ class FolioNotifier extends StateNotifier<FolioState> {
 final folioNotifierProvider =
     StateNotifierProvider.autoDispose<FolioNotifier, FolioState>((ref) {
   final repository = ref.watch(financeRepositoryProvider);
-  return FolioNotifier(repository);
+  return FolioNotifier(repository, ref);
 });

@@ -203,7 +203,7 @@ class RoomStatusLegend extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.xs),
               Text(
-                status.displayName,
+                status.localizedName(context.l10n),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
             ],

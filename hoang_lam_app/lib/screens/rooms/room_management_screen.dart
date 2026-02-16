@@ -297,7 +297,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
             const SizedBox(width: 4),
             Flexible(
               child: Text(
-                room.status.displayName,
+                room.status.localizedName(context.l10n),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

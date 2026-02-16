@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'guest.freezed.dart';
 part 'guest.g.dart';
@@ -79,6 +80,37 @@ extension IDTypeExtension on IDType {
         return Icons.description;
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case IDType.cccd:
+        return l10n.idTypeCccd;
+      case IDType.passport:
+        return l10n.idTypePassport;
+      case IDType.cmnd:
+        return l10n.idTypeCmnd;
+      case IDType.gplx:
+        return l10n.idTypeDrivingLicense;
+      case IDType.other:
+        return l10n.idTypeOther;
+    }
+  }
+
+  String localizedFullName(AppLocalizations l10n) {
+    switch (this) {
+      case IDType.cccd:
+        return l10n.idTypeCccdFull;
+      case IDType.passport:
+        return l10n.idTypePassportFull;
+      case IDType.cmnd:
+        return l10n.idTypeCmndFull;
+      case IDType.gplx:
+        return l10n.idTypeDrivingLicenseFull;
+      case IDType.other:
+        return l10n.idTypeOtherFull;
+    }
+  }
 }
 
 /// Guest gender matching backend choices
@@ -125,6 +157,18 @@ extension GenderExtension on Gender {
         return Icons.person;
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case Gender.male:
+        return l10n.genderMale;
+      case Gender.female:
+        return l10n.genderFemale;
+      case Gender.other:
+        return l10n.genderOther;
+    }
+  }
 }
 
 /// Passport type for foreign guests (matching backend Guest.PassportType)
@@ -163,6 +207,20 @@ extension PassportTypeExtension on PassportType {
         return 'Diplomatic';
       case PassportType.other:
         return 'Other';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case PassportType.ordinary:
+        return l10n.passportTypeRegular;
+      case PassportType.official:
+        return l10n.passportTypeOfficial;
+      case PassportType.diplomatic:
+        return l10n.passportTypeDiplomatic;
+      case PassportType.other:
+        return l10n.passportTypeOther;
     }
   }
 }
@@ -209,6 +267,22 @@ extension VisaTypeExtension on VisaType {
         return 'ABTC Card';
       case VisaType.none:
         return 'Visa Exempt';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case VisaType.visa:
+        return l10n.visaTypeVisa;
+      case VisaType.tempResidenceCard:
+        return l10n.visaTypeTemporaryResidence;
+      case VisaType.visaExemption:
+        return l10n.visaTypeVisaExemptionCert;
+      case VisaType.abtc:
+        return l10n.visaTypeAbtc;
+      case VisaType.none:
+        return l10n.visaTypeVisaExempt;
     }
   }
 }

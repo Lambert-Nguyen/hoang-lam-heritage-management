@@ -1463,6 +1463,269 @@ class AppLocalizations {
   String get phoneValidationLength => translate('phone_validation_length');
   String get phoneValidationStartWithZero => translate('phone_validation_start_with_zero');
   String get productTab => translate('product_tab');
+
+  // ===== ENUM DISPLAY NAMES & ERROR MESSAGES (Batch 5) =====
+  String get bookingStatusPending => translate('booking_status_pending');
+  String get bookingStatusConfirmed => translate('booking_status_confirmed');
+  String get bookingStatusCheckedIn => translate('booking_status_checked_in');
+  String get bookingStatusCheckedOut => translate('booking_status_checked_out');
+  String get bookingStatusCancelled => translate('booking_status_cancelled');
+  String get bookingStatusNoShow => translate('booking_status_no_show');
+  String get bookingSourceWalkIn => translate('booking_source_walk_in');
+  String get bookingSourcePhone => translate('booking_source_phone');
+  String get bookingSourceOtherOta => translate('booking_source_other_ota');
+  String get bookingSourceOther => translate('booking_source_other');
+  String get paymentMethodCash => translate('payment_method_cash');
+  String get paymentMethodBankTransfer => translate('payment_method_bank_transfer');
+  String get paymentMethodCard => translate('payment_method_card');
+  String get paymentMethodOtaCollect => translate('payment_method_ota_collect');
+  String get paymentMethodOther => translate('payment_method_other');
+  String get bookingTypeOvernight => translate('booking_type_overnight');
+  String get bookingTypeHourly => translate('booking_type_hourly');
+  String get roomStatusAvailable => translate('room_status_available');
+  String get roomStatusOccupied => translate('room_status_occupied');
+  String get roomStatusCleaning => translate('room_status_cleaning');
+  String get roomStatusMaintenance => translate('room_status_maintenance');
+  String get roomStatusBlocked => translate('room_status_blocked');
+  String get paymentTypeDeposit => translate('payment_type_deposit');
+  String get paymentTypeRoomCharge => translate('payment_type_room_charge');
+  String get paymentTypeExtraCharge => translate('payment_type_extra_charge');
+  String get paymentTypeRefund => translate('payment_type_refund');
+  String get paymentTypeAdjustment => translate('payment_type_adjustment');
+  String get paymentStatusPending => translate('payment_status_pending');
+  String get paymentStatusCompleted => translate('payment_status_completed');
+  String get paymentStatusFailed => translate('payment_status_failed');
+  String get paymentStatusRefunded => translate('payment_status_refunded');
+  String get paymentStatusCancelled => translate('payment_status_cancelled');
+  String get folioTypeRoom => translate('folio_type_room');
+  String get folioTypeMinibar => translate('folio_type_minibar');
+  String get folioTypeLaundry => translate('folio_type_laundry');
+  String get folioTypeFood => translate('folio_type_food');
+  String get folioTypeService => translate('folio_type_service');
+  String get folioTypeExtraBed => translate('folio_type_extra_bed');
+  String get folioTypeEarlyCheckin => translate('folio_type_early_checkin');
+  String get folioTypeLateCheckout => translate('folio_type_late_checkout');
+  String get folioTypeDamage => translate('folio_type_damage');
+  String get folioTypeOther => translate('folio_type_other');
+  String get month1 => translate('month_1');
+  String get month2 => translate('month_2');
+  String get month3 => translate('month_3');
+  String get month4 => translate('month_4');
+  String get month5 => translate('month_5');
+  String get month6 => translate('month_6');
+  String get month7 => translate('month_7');
+  String get month8 => translate('month_8');
+  String get month9 => translate('month_9');
+  String get month10 => translate('month_10');
+  String get month11 => translate('month_11');
+  String get month12 => translate('month_12');
+  String get idTypeCccd => translate('id_type_cccd');
+  String get idTypePassport => translate('id_type_passport');
+  String get idTypeCmnd => translate('id_type_cmnd');
+  String get idTypeDrivingLicense => translate('id_type_driving_license');
+  String get idTypeOther => translate('id_type_other');
+  String get idTypeCccdFull => translate('id_type_cccd_full');
+  String get idTypePassportFull => translate('id_type_passport_full');
+  String get idTypeCmndFull => translate('id_type_cmnd_full');
+  String get idTypeDrivingLicenseFull => translate('id_type_driving_license_full');
+  String get idTypeOtherFull => translate('id_type_other_full');
+  String get genderMale => translate('gender_male');
+  String get genderFemale => translate('gender_female');
+  String get genderOther => translate('gender_other');
+  String get passportTypeRegular => translate('passport_type_regular');
+  String get passportTypeOfficial => translate('passport_type_official');
+  String get passportTypeDiplomatic => translate('passport_type_diplomatic');
+  String get passportTypeOther => translate('passport_type_other');
+  String get visaTypeVisa => translate('visa_type_visa');
+  String get visaTypeTemporaryResidence => translate('visa_type_temporary_residence');
+  String get visaTypeVisaExemptionCert => translate('visa_type_visa_exemption_cert');
+  String get visaTypeAbtc => translate('visa_type_abtc');
+  String get visaTypeVisaExempt => translate('visa_type_visa_exempt');
+  String get nationalityVietnam => translate('nationality_vietnam');
+  String get nationalityChina => translate('nationality_china');
+  String get nationalitySouthKorea => translate('nationality_south_korea');
+  String get nationalityJapan => translate('nationality_japan');
+  String get nationalityUsa => translate('nationality_usa');
+  String get nationalityFrance => translate('nationality_france');
+  String get nationalityUk => translate('nationality_uk');
+  String get nationalityAustralia => translate('nationality_australia');
+  String get nationalityGermany => translate('nationality_germany');
+  String get nationalityRussia => translate('nationality_russia');
+  String get nationalityThailand => translate('nationality_thailand');
+  String get nationalitySingapore => translate('nationality_singapore');
+  String get nationalityMalaysia => translate('nationality_malaysia');
+  String get nationalityTaiwan => translate('nationality_taiwan');
+  String get nationalityHongKong => translate('nationality_hong_kong');
+  String get nationalityOther => translate('nationality_other');
+  String get taskTypeCheckoutClean => translate('task_type_checkout_clean');
+  String get taskTypeStayoverClean => translate('task_type_stayover_clean');
+  String get taskTypeDeepClean => translate('task_type_deep_clean');
+  String get taskTypeMaintenance => translate('task_type_maintenance');
+  String get taskTypeInspection => translate('task_type_inspection');
+  String get housekeepingStatusPending => translate('housekeeping_status_pending');
+  String get housekeepingStatusInProgress => translate('housekeeping_status_in_progress');
+  String get housekeepingStatusCompleted => translate('housekeeping_status_completed');
+  String get housekeepingStatusVerified => translate('housekeeping_status_verified');
+  String get priorityLow => translate('priority_low');
+  String get priorityMedium => translate('priority_medium');
+  String get priorityHigh => translate('priority_high');
+  String get priorityUrgent => translate('priority_urgent');
+  String get maintenanceStatusPending => translate('maintenance_status_pending');
+  String get maintenanceStatusAssigned => translate('maintenance_status_assigned');
+  String get maintenanceStatusInProgress => translate('maintenance_status_in_progress');
+  String get maintenanceStatusPaused => translate('maintenance_status_paused');
+  String get maintenanceStatusCompleted => translate('maintenance_status_completed');
+  String get maintenanceStatusCancelled => translate('maintenance_status_cancelled');
+  String get maintCatElectrical => translate('maint_cat_electrical');
+  String get maintCatPlumbing => translate('maint_cat_plumbing');
+  String get maintCatHvac => translate('maint_cat_hvac');
+  String get maintCatFurniture => translate('maint_cat_furniture');
+  String get maintCatAppliance => translate('maint_cat_appliance');
+  String get maintCatStructural => translate('maint_cat_structural');
+  String get maintCatSafety => translate('maint_cat_safety');
+  String get maintCatOther => translate('maint_cat_other');
+  String get inspectionStatusPending => translate('inspection_status_pending');
+  String get inspectionStatusInProgress => translate('inspection_status_in_progress');
+  String get inspectionStatusCompleted => translate('inspection_status_completed');
+  String get inspectionStatusActionRequired => translate('inspection_status_action_required');
+  String get inspectionTypeCheckout => translate('inspection_type_checkout');
+  String get inspectionTypeCheckin => translate('inspection_type_checkin');
+  String get inspectionTypeRoutine => translate('inspection_type_routine');
+  String get inspectionTypeMaintenance => translate('inspection_type_maintenance');
+  String get inspectionTypeDeepClean => translate('inspection_type_deep_clean');
+  String get inspectionCatBedroom => translate('inspection_cat_bedroom');
+  String get inspectionCatBathroom => translate('inspection_cat_bathroom');
+  String get inspectionCatAmenities => translate('inspection_cat_amenities');
+  String get inspectionCatElectronics => translate('inspection_cat_electronics');
+  String get inspectionCatSafety => translate('inspection_cat_safety');
+  String get inspectionCatGeneral => translate('inspection_cat_general');
+  String get lostFoundStatusFound => translate('lost_found_status_found');
+  String get lostFoundStatusStored => translate('lost_found_status_stored');
+  String get lostFoundStatusClaimed => translate('lost_found_status_claimed');
+  String get lostFoundStatusDonated => translate('lost_found_status_donated');
+  String get lostFoundStatusDisposed => translate('lost_found_status_disposed');
+  String get lostFoundCatElectronics => translate('lost_found_cat_electronics');
+  String get lostFoundCatClothing => translate('lost_found_cat_clothing');
+  String get lostFoundCatJewelry => translate('lost_found_cat_jewelry');
+  String get lostFoundCatDocuments => translate('lost_found_cat_documents');
+  String get lostFoundCatMoney => translate('lost_found_cat_money');
+  String get lostFoundCatBags => translate('lost_found_cat_bags');
+  String get lostFoundCatPersonal => translate('lost_found_cat_personal');
+  String get lostFoundCatOther => translate('lost_found_cat_other');
+  String get cancelPolicyFree => translate('cancel_policy_free');
+  String get cancelPolicyFlexible => translate('cancel_policy_flexible');
+  String get cancelPolicyModerate => translate('cancel_policy_moderate');
+  String get cancelPolicyStrict => translate('cancel_policy_strict');
+  String get cancelPolicyNonRefundable => translate('cancel_policy_non_refundable');
+  String get userRoleOwner => translate('user_role_owner');
+  String get userRoleManager => translate('user_role_manager');
+  String get userRoleStaff => translate('user_role_staff');
+  String get userRoleHousekeeping => translate('user_role_housekeeping');
+  String get nightAuditStatusDraft => translate('night_audit_status_draft');
+  String get nightAuditStatusCompleted => translate('night_audit_status_completed');
+  String get nightAuditStatusClosed => translate('night_audit_status_closed');
+  String get notificationTypeNewBooking => translate('notification_type_new_booking');
+  String get notificationTypeBookingConfirmed => translate('notification_type_booking_confirmed');
+  String get notificationTypeBookingCancelled => translate('notification_type_booking_cancelled');
+  String get notificationTypeCheckinReminder => translate('notification_type_checkin_reminder');
+  String get notificationTypeCheckoutReminder => translate('notification_type_checkout_reminder');
+  String get notificationTypeCheckedIn => translate('notification_type_checked_in');
+  String get notificationTypeCheckedOut => translate('notification_type_checked_out');
+  String get notificationTypeGeneral => translate('notification_type_general');
+  String get messageStatusDraft => translate('message_status_draft');
+  String get messageStatusSending => translate('message_status_sending');
+  String get messageStatusSent => translate('message_status_sent');
+  String get messageStatusDelivered => translate('message_status_delivered');
+  String get messageStatusFailed => translate('message_status_failed');
+  String get msgTemplateBookingConfirm => translate('msg_template_booking_confirm');
+  String get msgTemplatePreArrival => translate('msg_template_pre_arrival');
+  String get msgTemplateCheckoutReminder => translate('msg_template_checkout_reminder');
+  String get msgTemplateReviewRequest => translate('msg_template_review_request');
+  String get msgTemplateCustom => translate('msg_template_custom');
+  String get reportGroupDaily => translate('report_group_daily');
+  String get reportGroupWeekly => translate('report_group_weekly');
+  String get reportGroupMonthly => translate('report_group_monthly');
+  String get reportTypeOccupancy => translate('report_type_occupancy');
+  String get reportTypeRevenue => translate('report_type_revenue');
+  String get reportTypeExpense => translate('report_type_expense');
+  String get reportTypeKpi => translate('report_type_kpi');
+  String get reportTypeChannel => translate('report_type_channel');
+  String get reportTypeGuest => translate('report_type_guest');
+  String get comparisonPreviousPeriod => translate('comparison_previous_period');
+  String get comparisonPreviousYear => translate('comparison_previous_year');
+  String get comparisonCustom => translate('comparison_custom');
+  String get demographicsNationality => translate('demographics_nationality');
+  String get demographicsSource => translate('demographics_source');
+  String get demographicsRoomType => translate('demographics_room_type');
+  String get declarationDd10 => translate('declaration_dd10');
+  String get declarationNa17 => translate('declaration_na17');
+  String get declarationAll => translate('declaration_all');
+  String get declarationDd10Desc => translate('declaration_dd10_desc');
+  String get declarationNa17Desc => translate('declaration_na17_desc');
+  String get declarationAllDesc => translate('declaration_all_desc');
+  String get groupStatusPending => translate('group_status_pending');
+  String get groupStatusConfirmed => translate('group_status_confirmed');
+  String get groupStatusCheckedIn => translate('group_status_checked_in');
+  String get groupStatusCheckedOut => translate('group_status_checked_out');
+  String get groupStatusCancelled => translate('group_status_cancelled');
+  String get minibarCharged => translate('minibar_charged');
+  String get minibarUncharged => translate('minibar_uncharged');
+  String get guestNumber => translate('guest_number');
+  String get reportMetricOccupancy => translate('report_metric_occupancy');
+  String get reportMetricBookings => translate('report_metric_bookings');
+  String get reportMetricGuests => translate('report_metric_guests');
+  String get monthLabel => translate('month_label');
+  String get entryTypeIncome => translate('entry_type_income');
+  String get entryTypeExpense => translate('entry_type_expense');
+  String get searchMinChars => translate('search_min_chars');
+  String get guestAddedSuccess => translate('guest_added_success');
+  String get guestUpdatedSuccess => translate('guest_updated_success');
+  String get errorNoNetwork => translate('error_no_network');
+  String get errorPhoneRegistered => translate('error_phone_registered');
+  String get errorIdRegistered => translate('error_id_registered');
+  String get errorPhoneDigits => translate('error_phone_digits');
+  String get errorCannotDeleteGuest => translate('error_cannot_delete_guest');
+  String get errorGuestNotFound => translate('error_guest_not_found');
+  String get errorGeneric => translate('error_generic');
+  String get errorWrongCredentials => translate('error_wrong_credentials');
+  String get errorFolioLoad => translate('error_folio_load');
+  String get errorChargeAdd => translate('error_charge_add');
+  String get errorChargeVoid => translate('error_charge_void');
+  String get errorNoBookingSelected => translate('error_no_booking_selected');
+  String get errorEmptyCart => translate('error_empty_cart');
+  String get errorRoomExists => translate('error_room_exists');
+  String get errorCannotDeleteRoom => translate('error_cannot_delete_room');
+  String get errorReportExport => translate('error_report_export');
+  String get biometricAuthenticateLogin => translate('biometric_authenticate_login');
+  String get biometricFingerprint => translate('biometric_fingerprint');
+  String get biometricIris => translate('biometric_iris');
+  String get biometricGeneric => translate('biometric_generic');
+  String get dateToday => translate('date_today');
+  String get dateTomorrow => translate('date_tomorrow');
+  String get dateYesterday => translate('date_yesterday');
+  String get dateInDays => translate('date_in_days');
+  String get dateDaysAgo => translate('date_days_ago');
+  String get daySunday => translate('day_sunday');
+  String get dayMonday => translate('day_monday');
+  String get dayTuesday => translate('day_tuesday');
+  String get dayWednesday => translate('day_wednesday');
+  String get dayThursday => translate('day_thursday');
+  String get dayFriday => translate('day_friday');
+  String get daySaturday => translate('day_saturday');
+  String get errorBookingConflict => translate('error_booking_conflict');
+  String get errorCache => translate('error_cache');
+  String get errorOffline => translate('error_offline');
+  String get errorConnectionTimeout => translate('error_connection_timeout');
+  String get errorNoConnection => translate('error_no_connection');
+  String get errorRequestCancelled => translate('error_request_cancelled');
+  String get errorUnknown => translate('error_unknown');
+  String get errorInvalidData => translate('error_invalid_data');
+  String get errorSessionExpired => translate('error_session_expired');
+  String get errorNoPermission => translate('error_no_permission');
+  String get errorNotFound => translate('error_not_found');
+  String get errorConflict => translate('error_conflict');
+  String get errorServer => translate('error_server');
+
 }
 
 // Vietnamese translations
@@ -2813,6 +3076,269 @@ const Map<String, String> _viTranslations = {
   'phone_validation_length': 'Số điện thoại phải có 10-11 số',
   'phone_validation_start_with_zero': 'Số điện thoại phải bắt đầu bằng 0',
   'product_tab': 'Sản phẩm',
+
+  // ===== ENUM DISPLAY NAMES & ERROR MESSAGES (Batch 5) =====
+  'booking_status_pending': 'Chờ xác nhận',
+  'booking_status_confirmed': 'Đã xác nhận',
+  'booking_status_checked_in': 'Đang ở',
+  'booking_status_checked_out': 'Đã trả phòng',
+  'booking_status_cancelled': 'Đã hủy',
+  'booking_status_no_show': 'Không đến',
+  'booking_source_walk_in': 'Khách vãng lai',
+  'booking_source_phone': 'Điện thoại',
+  'booking_source_other_ota': 'OTA khác',
+  'booking_source_other': 'Khác',
+  'payment_method_cash': 'Tiền mặt',
+  'payment_method_bank_transfer': 'Chuyển khoản',
+  'payment_method_card': 'Thẻ',
+  'payment_method_ota_collect': 'OTA thu hộ',
+  'payment_method_other': 'Khác',
+  'booking_type_overnight': 'Qua đêm',
+  'booking_type_hourly': 'Theo giờ',
+  'room_status_available': 'Trống',
+  'room_status_occupied': 'Có khách',
+  'room_status_cleaning': 'Đang dọn',
+  'room_status_maintenance': 'Bảo trì',
+  'room_status_blocked': 'Khóa',
+  'payment_type_deposit': 'Đặt cọc',
+  'payment_type_room_charge': 'Tiền phòng',
+  'payment_type_extra_charge': 'Phí bổ sung',
+  'payment_type_refund': 'Hoàn tiền',
+  'payment_type_adjustment': 'Điều chỉnh',
+  'payment_status_pending': 'Chờ xử lý',
+  'payment_status_completed': 'Hoàn tất',
+  'payment_status_failed': 'Thất bại',
+  'payment_status_refunded': 'Đã hoàn',
+  'payment_status_cancelled': 'Đã hủy',
+  'folio_type_room': 'Tiền phòng',
+  'folio_type_minibar': 'Minibar',
+  'folio_type_laundry': 'Giặt là',
+  'folio_type_food': 'Đồ ăn',
+  'folio_type_service': 'Dịch vụ',
+  'folio_type_extra_bed': 'Giường phụ',
+  'folio_type_early_checkin': 'Nhận sớm',
+  'folio_type_late_checkout': 'Trả muộn',
+  'folio_type_damage': 'Hư hỏng',
+  'folio_type_other': 'Khác',
+  'month_1': 'Tháng 1',
+  'month_2': 'Tháng 2',
+  'month_3': 'Tháng 3',
+  'month_4': 'Tháng 4',
+  'month_5': 'Tháng 5',
+  'month_6': 'Tháng 6',
+  'month_7': 'Tháng 7',
+  'month_8': 'Tháng 8',
+  'month_9': 'Tháng 9',
+  'month_10': 'Tháng 10',
+  'month_11': 'Tháng 11',
+  'month_12': 'Tháng 12',
+  'id_type_cccd': 'CCCD',
+  'id_type_passport': 'Hộ chiếu',
+  'id_type_cmnd': 'CMND',
+  'id_type_driving_license': 'GPLX',
+  'id_type_other': 'Khác',
+  'id_type_cccd_full': 'CCCD (Căn cước công dân)',
+  'id_type_passport_full': 'Hộ chiếu',
+  'id_type_cmnd_full': 'CMND (Chứng minh nhân dân)',
+  'id_type_driving_license_full': 'GPLX (Giấy phép lái xe)',
+  'id_type_other_full': 'Khác',
+  'gender_male': 'Nam',
+  'gender_female': 'Nữ',
+  'gender_other': 'Khác',
+  'passport_type_regular': 'Phổ thông',
+  'passport_type_official': 'Công vụ',
+  'passport_type_diplomatic': 'Ngoại giao',
+  'passport_type_other': 'Khác',
+  'visa_type_visa': 'Thị thực (Visa)',
+  'visa_type_temporary_residence': 'Thẻ tạm trú',
+  'visa_type_visa_exemption_cert': 'Giấy miễn thị thực',
+  'visa_type_abtc': 'Thẻ ABTC',
+  'visa_type_visa_exempt': 'Miễn thị thực',
+  'nationality_vietnam': 'Việt Nam',
+  'nationality_china': 'Trung Quốc',
+  'nationality_south_korea': 'Hàn Quốc',
+  'nationality_japan': 'Nhật Bản',
+  'nationality_usa': 'Mỹ',
+  'nationality_france': 'Pháp',
+  'nationality_uk': 'Anh',
+  'nationality_australia': 'Úc',
+  'nationality_germany': 'Đức',
+  'nationality_russia': 'Nga',
+  'nationality_thailand': 'Thái Lan',
+  'nationality_singapore': 'Singapore',
+  'nationality_malaysia': 'Malaysia',
+  'nationality_taiwan': 'Đài Loan',
+  'nationality_hong_kong': 'Hồng Kông',
+  'nationality_other': 'Khác',
+  'task_type_checkout_clean': 'Dọn trả phòng',
+  'task_type_stayover_clean': 'Dọn phòng đang ở',
+  'task_type_deep_clean': 'Dọn sâu',
+  'task_type_maintenance': 'Bảo trì',
+  'task_type_inspection': 'Kiểm tra',
+  'housekeeping_status_pending': 'Chờ xử lý',
+  'housekeeping_status_in_progress': 'Đang làm',
+  'housekeeping_status_completed': 'Hoàn thành',
+  'housekeeping_status_verified': 'Đã xác nhận',
+  'priority_low': 'Thấp',
+  'priority_medium': 'Trung bình',
+  'priority_high': 'Cao',
+  'priority_urgent': 'Khẩn cấp',
+  'maintenance_status_pending': 'Chờ xử lý',
+  'maintenance_status_assigned': 'Đã phân công',
+  'maintenance_status_in_progress': 'Đang thực hiện',
+  'maintenance_status_paused': 'Tạm dừng',
+  'maintenance_status_completed': 'Hoàn thành',
+  'maintenance_status_cancelled': 'Đã hủy',
+  'maint_cat_electrical': 'Điện',
+  'maint_cat_plumbing': 'Nước',
+  'maint_cat_hvac': 'Điều hòa/Sưởi',
+  'maint_cat_furniture': 'Nội thất',
+  'maint_cat_appliance': 'Thiết bị',
+  'maint_cat_structural': 'Kết cấu',
+  'maint_cat_safety': 'An toàn',
+  'maint_cat_other': 'Khác',
+  'inspection_status_pending': 'Chờ kiểm tra',
+  'inspection_status_in_progress': 'Đang kiểm tra',
+  'inspection_status_completed': 'Hoàn thành',
+  'inspection_status_action_required': 'Cần xử lý',
+  'inspection_type_checkout': 'Sau trả phòng',
+  'inspection_type_checkin': 'Trước nhận phòng',
+  'inspection_type_routine': 'Định kỳ',
+  'inspection_type_maintenance': 'Bảo trì',
+  'inspection_type_deep_clean': 'Vệ sinh tổng',
+  'inspection_cat_bedroom': 'Phòng ngủ',
+  'inspection_cat_bathroom': 'Phòng tắm',
+  'inspection_cat_amenities': 'Tiện nghi',
+  'inspection_cat_electronics': 'Điện tử',
+  'inspection_cat_safety': 'An toàn',
+  'inspection_cat_general': 'Tổng quát',
+  'lost_found_status_found': 'Đã tìm thấy',
+  'lost_found_status_stored': 'Đang lưu giữ',
+  'lost_found_status_claimed': 'Đã trả khách',
+  'lost_found_status_donated': 'Đã quyên góp',
+  'lost_found_status_disposed': 'Đã tiêu hủy',
+  'lost_found_cat_electronics': 'Đồ điện tử',
+  'lost_found_cat_clothing': 'Quần áo',
+  'lost_found_cat_jewelry': 'Trang sức',
+  'lost_found_cat_documents': 'Giấy tờ',
+  'lost_found_cat_money': 'Tiền',
+  'lost_found_cat_bags': 'Túi/Vali',
+  'lost_found_cat_personal': 'Đồ cá nhân',
+  'lost_found_cat_other': 'Khác',
+  'cancel_policy_free': 'Miễn phí hủy',
+  'cancel_policy_flexible': 'Linh hoạt',
+  'cancel_policy_moderate': 'Trung bình',
+  'cancel_policy_strict': 'Nghiêm ngặt',
+  'cancel_policy_non_refundable': 'Không hoàn tiền',
+  'user_role_owner': 'Chủ căn hộ',
+  'user_role_manager': 'Quản lý',
+  'user_role_staff': 'Nhân viên',
+  'user_role_housekeeping': 'Phòng buồng',
+  'night_audit_status_draft': 'Nháp',
+  'night_audit_status_completed': 'Hoàn thành',
+  'night_audit_status_closed': 'Đã đóng',
+  'notification_type_new_booking': 'Đặt phòng mới',
+  'notification_type_booking_confirmed': 'Xác nhận đặt phòng',
+  'notification_type_booking_cancelled': 'Hủy đặt phòng',
+  'notification_type_checkin_reminder': 'Nhắc nhận phòng',
+  'notification_type_checkout_reminder': 'Nhắc trả phòng',
+  'notification_type_checked_in': 'Đã nhận phòng',
+  'notification_type_checked_out': 'Đã trả phòng',
+  'notification_type_general': 'Thông báo chung',
+  'message_status_draft': 'Nháp',
+  'message_status_sending': 'Đang gửi',
+  'message_status_sent': 'Đã gửi',
+  'message_status_delivered': 'Đã nhận',
+  'message_status_failed': 'Thất bại',
+  'msg_template_booking_confirm': 'Xác nhận đặt phòng',
+  'msg_template_pre_arrival': 'Thông tin trước khi đến',
+  'msg_template_checkout_reminder': 'Nhắc trả phòng',
+  'msg_template_review_request': 'Yêu cầu đánh giá',
+  'msg_template_custom': 'Tùy chỉnh',
+  'report_group_daily': 'Ngày',
+  'report_group_weekly': 'Tuần',
+  'report_group_monthly': 'Tháng',
+  'report_type_occupancy': 'Công suất phòng',
+  'report_type_revenue': 'Doanh thu',
+  'report_type_expense': 'Chi phí',
+  'report_type_kpi': 'KPI',
+  'report_type_channel': 'Kênh bán',
+  'report_type_guest': 'Khách hàng',
+  'comparison_previous_period': 'Kỳ trước',
+  'comparison_previous_year': 'Năm trước',
+  'comparison_custom': 'Tùy chỉnh',
+  'demographics_nationality': 'Quốc tịch',
+  'demographics_source': 'Nguồn đặt',
+  'demographics_room_type': 'Loại phòng',
+  'declaration_dd10': 'ĐD10 - Khách Việt Nam',
+  'declaration_na17': 'NA17 - Khách nước ngoài',
+  'declaration_all': 'Tất cả',
+  'declaration_dd10_desc': 'Sổ quản lý lưu trú (Nghị định 144/2021)',
+  'declaration_na17_desc': 'Phiếu khai báo tạm trú người nước ngoài (Thông tư 04/2015)',
+  'declaration_all_desc': 'Cả ĐD10 và NA17',
+  'group_status_pending': 'Đang chờ',
+  'group_status_confirmed': 'Đã xác nhận',
+  'group_status_checked_in': 'Đang ở',
+  'group_status_checked_out': 'Đã trả phòng',
+  'group_status_cancelled': 'Đã hủy',
+  'minibar_charged': 'Đã tính tiền',
+  'minibar_uncharged': 'Chưa tính tiền',
+  'guest_number': 'Khách #{guest}',
+  'report_metric_occupancy': 'Công suất',
+  'report_metric_bookings': 'Số đặt phòng',
+  'report_metric_guests': 'Số khách',
+  'month_label': 'Tháng {month}',
+  'entry_type_income': 'Thu',
+  'entry_type_expense': 'Chi',
+  'search_min_chars': 'Từ khóa tìm kiếm phải có ít nhất 2 ký tự',
+  'guest_added_success': 'Đã thêm khách hàng thành công',
+  'guest_updated_success': 'Đã cập nhật thông tin khách hàng',
+  'error_no_network': 'Không có kết nối mạng',
+  'error_phone_registered': 'Số điện thoại đã được đăng ký',
+  'error_id_registered': 'Số CCCD/Passport đã được đăng ký',
+  'error_phone_digits': 'Số điện thoại phải có 10-11 chữ số',
+  'error_cannot_delete_guest': 'Không thể xóa khách hàng có lịch sử đặt phòng',
+  'error_guest_not_found': 'Không tìm thấy khách hàng',
+  'error_generic': 'Đã xảy ra lỗi. Vui lòng thử lại.',
+  'error_wrong_credentials': 'Tên đăng nhập hoặc mật khẩu không đúng',
+  'error_folio_load': 'Không thể tải folio: {error}',
+  'error_charge_add': 'Không thể thêm phí: {error}',
+  'error_charge_void': 'Không thể hủy phí: {error}',
+  'error_no_booking_selected': 'Chưa chọn đặt phòng',
+  'error_empty_cart': 'Giỏ hàng trống',
+  'error_room_exists': 'Số phòng đã tồn tại',
+  'error_cannot_delete_room': 'Không thể xóa phòng đang có đặt phòng',
+  'error_report_export': 'Lỗi xuất báo cáo: {error}',
+  'biometric_authenticate_login': 'Xác thực để đăng nhập',
+  'biometric_fingerprint': 'Vân tay',
+  'biometric_iris': 'Quét mống mắt',
+  'biometric_generic': 'Sinh trắc học',
+  'date_today': 'Hôm nay',
+  'date_tomorrow': 'Ngày mai',
+  'date_yesterday': 'Hôm qua',
+  'date_in_days': 'Trong {count} ngày',
+  'date_days_ago': '{count} ngày trước',
+  'day_sunday': 'Chủ nhật',
+  'day_monday': 'Thứ hai',
+  'day_tuesday': 'Thứ ba',
+  'day_wednesday': 'Thứ tư',
+  'day_thursday': 'Thứ năm',
+  'day_friday': 'Thứ sáu',
+  'day_saturday': 'Thứ bảy',
+  'error_booking_conflict': 'Phòng đã được đặt trong thời gian này.',
+  'error_cache': 'Lỗi bộ nhớ đệm.',
+  'error_offline': 'Không có kết nối mạng. Đang làm việc offline.',
+  'error_connection_timeout': 'Kết nối quá thời gian. Vui lòng thử lại.',
+  'error_no_connection': 'Không có kết nối mạng.',
+  'error_request_cancelled': 'Yêu cầu đã bị hủy.',
+  'error_unknown': 'Đã xảy ra lỗi. Vui lòng thử lại.',
+  'error_invalid_data': 'Dữ liệu không hợp lệ.',
+  'error_session_expired': 'Phiên đăng nhập đã hết hạn.',
+  'error_no_permission': 'Bạn không có quyền thực hiện thao tác này.',
+  'error_not_found': 'Không tìm thấy dữ liệu.',
+  'error_conflict': 'Dữ liệu bị xung đột.',
+  'error_server': 'Lỗi máy chủ. Vui lòng thử lại sau.',
+
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -4162,6 +4688,269 @@ const Map<String, String> _enTranslations = {
   'phone_validation_length': 'Phone number must be 10-11 digits',
   'phone_validation_start_with_zero': 'Phone number must start with 0',
   'product_tab': 'Product',
+
+  // ===== ENUM DISPLAY NAMES & ERROR MESSAGES (Batch 5) =====
+  'booking_status_pending': 'Pending',
+  'booking_status_confirmed': 'Confirmed',
+  'booking_status_checked_in': 'Checked In',
+  'booking_status_checked_out': 'Checked Out',
+  'booking_status_cancelled': 'Cancelled',
+  'booking_status_no_show': 'No Show',
+  'booking_source_walk_in': 'Walk-in',
+  'booking_source_phone': 'Phone',
+  'booking_source_other_ota': 'Other OTA',
+  'booking_source_other': 'Other',
+  'payment_method_cash': 'Cash',
+  'payment_method_bank_transfer': 'Bank Transfer',
+  'payment_method_card': 'Card',
+  'payment_method_ota_collect': 'OTA Collect',
+  'payment_method_other': 'Other',
+  'booking_type_overnight': 'Overnight',
+  'booking_type_hourly': 'Hourly',
+  'room_status_available': 'Available',
+  'room_status_occupied': 'Occupied',
+  'room_status_cleaning': 'Cleaning',
+  'room_status_maintenance': 'Maintenance',
+  'room_status_blocked': 'Blocked',
+  'payment_type_deposit': 'Deposit',
+  'payment_type_room_charge': 'Room Charge',
+  'payment_type_extra_charge': 'Extra Charge',
+  'payment_type_refund': 'Refund',
+  'payment_type_adjustment': 'Adjustment',
+  'payment_status_pending': 'Pending',
+  'payment_status_completed': 'Completed',
+  'payment_status_failed': 'Failed',
+  'payment_status_refunded': 'Refunded',
+  'payment_status_cancelled': 'Cancelled',
+  'folio_type_room': 'Room Charge',
+  'folio_type_minibar': 'Minibar',
+  'folio_type_laundry': 'Laundry',
+  'folio_type_food': 'Food',
+  'folio_type_service': 'Service',
+  'folio_type_extra_bed': 'Extra Bed',
+  'folio_type_early_checkin': 'Early Check-in',
+  'folio_type_late_checkout': 'Late Check-out',
+  'folio_type_damage': 'Damage',
+  'folio_type_other': 'Other',
+  'month_1': 'January',
+  'month_2': 'February',
+  'month_3': 'March',
+  'month_4': 'April',
+  'month_5': 'May',
+  'month_6': 'June',
+  'month_7': 'July',
+  'month_8': 'August',
+  'month_9': 'September',
+  'month_10': 'October',
+  'month_11': 'November',
+  'month_12': 'December',
+  'id_type_cccd': 'National ID',
+  'id_type_passport': 'Passport',
+  'id_type_cmnd': 'Old National ID',
+  'id_type_driving_license': 'Driving License',
+  'id_type_other': 'Other',
+  'id_type_cccd_full': 'CCCD (National ID Card)',
+  'id_type_passport_full': 'Passport',
+  'id_type_cmnd_full': 'CMND (Old ID Card)',
+  'id_type_driving_license_full': 'GPLX (Driving License)',
+  'id_type_other_full': 'Other',
+  'gender_male': 'Male',
+  'gender_female': 'Female',
+  'gender_other': 'Other',
+  'passport_type_regular': 'Regular',
+  'passport_type_official': 'Official',
+  'passport_type_diplomatic': 'Diplomatic',
+  'passport_type_other': 'Other',
+  'visa_type_visa': 'Visa',
+  'visa_type_temporary_residence': 'Temporary Residence Card',
+  'visa_type_visa_exemption_cert': 'Visa Exemption Certificate',
+  'visa_type_abtc': 'ABTC Card',
+  'visa_type_visa_exempt': 'Visa Exempt',
+  'nationality_vietnam': 'Vietnam',
+  'nationality_china': 'China',
+  'nationality_south_korea': 'South Korea',
+  'nationality_japan': 'Japan',
+  'nationality_usa': 'USA',
+  'nationality_france': 'France',
+  'nationality_uk': 'UK',
+  'nationality_australia': 'Australia',
+  'nationality_germany': 'Germany',
+  'nationality_russia': 'Russia',
+  'nationality_thailand': 'Thailand',
+  'nationality_singapore': 'Singapore',
+  'nationality_malaysia': 'Malaysia',
+  'nationality_taiwan': 'Taiwan',
+  'nationality_hong_kong': 'Hong Kong',
+  'nationality_other': 'Other',
+  'task_type_checkout_clean': 'Checkout Clean',
+  'task_type_stayover_clean': 'Stayover Clean',
+  'task_type_deep_clean': 'Deep Clean',
+  'task_type_maintenance': 'Maintenance',
+  'task_type_inspection': 'Inspection',
+  'housekeeping_status_pending': 'Pending',
+  'housekeeping_status_in_progress': 'In Progress',
+  'housekeeping_status_completed': 'Completed',
+  'housekeeping_status_verified': 'Verified',
+  'priority_low': 'Low',
+  'priority_medium': 'Medium',
+  'priority_high': 'High',
+  'priority_urgent': 'Urgent',
+  'maintenance_status_pending': 'Pending',
+  'maintenance_status_assigned': 'Assigned',
+  'maintenance_status_in_progress': 'In Progress',
+  'maintenance_status_paused': 'Paused',
+  'maintenance_status_completed': 'Completed',
+  'maintenance_status_cancelled': 'Cancelled',
+  'maint_cat_electrical': 'Electrical',
+  'maint_cat_plumbing': 'Plumbing',
+  'maint_cat_hvac': 'HVAC',
+  'maint_cat_furniture': 'Furniture',
+  'maint_cat_appliance': 'Appliance',
+  'maint_cat_structural': 'Structural',
+  'maint_cat_safety': 'Safety',
+  'maint_cat_other': 'Other',
+  'inspection_status_pending': 'Pending Inspection',
+  'inspection_status_in_progress': 'Inspecting',
+  'inspection_status_completed': 'Completed',
+  'inspection_status_action_required': 'Action Required',
+  'inspection_type_checkout': 'Post-Checkout',
+  'inspection_type_checkin': 'Pre-Check-in',
+  'inspection_type_routine': 'Routine',
+  'inspection_type_maintenance': 'Maintenance',
+  'inspection_type_deep_clean': 'Deep Clean',
+  'inspection_cat_bedroom': 'Bedroom',
+  'inspection_cat_bathroom': 'Bathroom',
+  'inspection_cat_amenities': 'Amenities',
+  'inspection_cat_electronics': 'Electronics',
+  'inspection_cat_safety': 'Safety',
+  'inspection_cat_general': 'General',
+  'lost_found_status_found': 'Found',
+  'lost_found_status_stored': 'In Storage',
+  'lost_found_status_claimed': 'Claimed',
+  'lost_found_status_donated': 'Donated',
+  'lost_found_status_disposed': 'Disposed',
+  'lost_found_cat_electronics': 'Electronics',
+  'lost_found_cat_clothing': 'Clothing',
+  'lost_found_cat_jewelry': 'Jewelry',
+  'lost_found_cat_documents': 'Documents',
+  'lost_found_cat_money': 'Money',
+  'lost_found_cat_bags': 'Bags/Luggage',
+  'lost_found_cat_personal': 'Personal Items',
+  'lost_found_cat_other': 'Other',
+  'cancel_policy_free': 'Free Cancellation',
+  'cancel_policy_flexible': 'Flexible',
+  'cancel_policy_moderate': 'Moderate',
+  'cancel_policy_strict': 'Strict',
+  'cancel_policy_non_refundable': 'Non-refundable',
+  'user_role_owner': 'Owner',
+  'user_role_manager': 'Manager',
+  'user_role_staff': 'Staff',
+  'user_role_housekeeping': 'Housekeeping',
+  'night_audit_status_draft': 'Draft',
+  'night_audit_status_completed': 'Completed',
+  'night_audit_status_closed': 'Closed',
+  'notification_type_new_booking': 'New Booking',
+  'notification_type_booking_confirmed': 'Booking Confirmed',
+  'notification_type_booking_cancelled': 'Booking Cancelled',
+  'notification_type_checkin_reminder': 'Check-in Reminder',
+  'notification_type_checkout_reminder': 'Check-out Reminder',
+  'notification_type_checked_in': 'Checked In',
+  'notification_type_checked_out': 'Checked Out',
+  'notification_type_general': 'General Notice',
+  'message_status_draft': 'Draft',
+  'message_status_sending': 'Sending',
+  'message_status_sent': 'Sent',
+  'message_status_delivered': 'Delivered',
+  'message_status_failed': 'Failed',
+  'msg_template_booking_confirm': 'Booking Confirmation',
+  'msg_template_pre_arrival': 'Pre-arrival Info',
+  'msg_template_checkout_reminder': 'Check-out Reminder',
+  'msg_template_review_request': 'Review Request',
+  'msg_template_custom': 'Custom',
+  'report_group_daily': 'Daily',
+  'report_group_weekly': 'Weekly',
+  'report_group_monthly': 'Monthly',
+  'report_type_occupancy': 'Room Occupancy',
+  'report_type_revenue': 'Revenue',
+  'report_type_expense': 'Expense',
+  'report_type_kpi': 'KPI',
+  'report_type_channel': 'Channels',
+  'report_type_guest': 'Guests',
+  'comparison_previous_period': 'Previous Period',
+  'comparison_previous_year': 'Previous Year',
+  'comparison_custom': 'Custom',
+  'demographics_nationality': 'Nationality',
+  'demographics_source': 'Booking Source',
+  'demographics_room_type': 'Room Type',
+  'declaration_dd10': 'ĐD10 - Vietnamese Guests',
+  'declaration_na17': 'NA17 - Foreign Guests',
+  'declaration_all': 'All',
+  'declaration_dd10_desc': 'Accommodation management book (Decree 144/2021)',
+  'declaration_na17_desc': 'Foreign guest temporary residence form (Circular 04/2015)',
+  'declaration_all_desc': 'Both ĐD10 and NA17',
+  'group_status_pending': 'Pending',
+  'group_status_confirmed': 'Confirmed',
+  'group_status_checked_in': 'Checked In',
+  'group_status_checked_out': 'Checked Out',
+  'group_status_cancelled': 'Cancelled',
+  'minibar_charged': 'Charged',
+  'minibar_uncharged': 'Not Charged',
+  'guest_number': 'Guest #{guest}',
+  'report_metric_occupancy': 'Occupancy',
+  'report_metric_bookings': 'Bookings Count',
+  'report_metric_guests': 'Guests Count',
+  'month_label': 'Month {month}',
+  'entry_type_income': 'Income',
+  'entry_type_expense': 'Expense',
+  'search_min_chars': 'Search query must be at least 2 characters',
+  'guest_added_success': 'Guest added successfully',
+  'guest_updated_success': 'Guest information updated',
+  'error_no_network': 'No network connection',
+  'error_phone_registered': 'Phone number already registered',
+  'error_id_registered': 'ID/Passport number already registered',
+  'error_phone_digits': 'Phone number must be 10-11 digits',
+  'error_cannot_delete_guest': 'Cannot delete guest with booking history',
+  'error_guest_not_found': 'Guest not found',
+  'error_generic': 'An error occurred. Please try again.',
+  'error_wrong_credentials': 'Wrong username or password',
+  'error_folio_load': 'Cannot load folio: {error}',
+  'error_charge_add': 'Cannot add charge: {error}',
+  'error_charge_void': 'Cannot void charge: {error}',
+  'error_no_booking_selected': 'No booking selected',
+  'error_empty_cart': 'Cart is empty',
+  'error_room_exists': 'Room number already exists',
+  'error_cannot_delete_room': 'Cannot delete room with active bookings',
+  'error_report_export': 'Report export error: {error}',
+  'biometric_authenticate_login': 'Authenticate to login',
+  'biometric_fingerprint': 'Fingerprint',
+  'biometric_iris': 'Iris Scan',
+  'biometric_generic': 'Biometrics',
+  'date_today': 'Today',
+  'date_tomorrow': 'Tomorrow',
+  'date_yesterday': 'Yesterday',
+  'date_in_days': 'In {count} days',
+  'date_days_ago': '{count} days ago',
+  'day_sunday': 'Sunday',
+  'day_monday': 'Monday',
+  'day_tuesday': 'Tuesday',
+  'day_wednesday': 'Wednesday',
+  'day_thursday': 'Thursday',
+  'day_friday': 'Friday',
+  'day_saturday': 'Saturday',
+  'error_booking_conflict': 'Room is already booked for this period.',
+  'error_cache': 'Cache error.',
+  'error_offline': 'No network connection. Working offline.',
+  'error_connection_timeout': 'Connection timed out. Please try again.',
+  'error_no_connection': 'No network connection.',
+  'error_request_cancelled': 'Request was cancelled.',
+  'error_unknown': 'An error occurred. Please try again.',
+  'error_invalid_data': 'Invalid data.',
+  'error_session_expired': 'Session expired. Please login again.',
+  'error_no_permission': 'You do not have permission for this action.',
+  'error_not_found': 'Data not found.',
+  'error_conflict': 'Data conflict.',
+  'error_server': 'Server error. Please try again later.',
+
 };
 
 // Delegate

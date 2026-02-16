@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'report.freezed.dart';
 part 'report.g.dart';
@@ -40,6 +41,18 @@ extension ReportGroupByExtension on ReportGroupBy {
 
   /// Convert to API value
   String get toApiValue => name;
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case ReportGroupBy.day:
+        return l10n.reportGroupDaily;
+      case ReportGroupBy.week:
+        return l10n.reportGroupWeekly;
+      case ReportGroupBy.month:
+        return l10n.reportGroupMonthly;
+    }
+  }
 }
 
 /// Export format types
@@ -163,6 +176,24 @@ extension ReportTypeExtension on ReportType {
 
   /// Convert to API value
   String get toApiValue => name;
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case ReportType.occupancy:
+        return l10n.reportTypeOccupancy;
+      case ReportType.revenue:
+        return l10n.reportTypeRevenue;
+      case ReportType.expenses:
+        return l10n.reportTypeExpense;
+      case ReportType.kpi:
+        return l10n.reportTypeKpi;
+      case ReportType.channels:
+        return l10n.reportTypeChannel;
+      case ReportType.demographics:
+        return l10n.reportTypeGuest;
+    }
+  }
 }
 
 /// Comparison type for comparative reports
@@ -198,6 +229,18 @@ extension ComparisonTypeExtension on ComparisonType {
         return 'custom';
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case ComparisonType.previousPeriod:
+        return l10n.comparisonPreviousPeriod;
+      case ComparisonType.previousYear:
+        return l10n.comparisonPreviousYear;
+      case ComparisonType.custom:
+        return l10n.comparisonCustom;
+    }
+  }
 }
 
 /// Demographics group by options
@@ -231,6 +274,18 @@ extension DemographicsGroupByExtension on DemographicsGroupBy {
         return 'source';
       case DemographicsGroupBy.roomType:
         return 'room_type';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case DemographicsGroupBy.nationality:
+        return l10n.demographicsNationality;
+      case DemographicsGroupBy.source:
+        return l10n.demographicsSource;
+      case DemographicsGroupBy.roomType:
+        return l10n.demographicsRoomType;
     }
   }
 }

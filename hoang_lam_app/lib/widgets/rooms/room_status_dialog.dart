@@ -94,7 +94,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
           children: [
             // Current status
             Text(
-              '${context.l10n.currentStatusLabel}: ${widget.room.status.displayName}',
+              '${context.l10n.currentStatusLabel}: ${widget.room.status.localizedName(context.l10n)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: widget.room.status.color,
                     fontWeight: FontWeight.w500,
@@ -146,7 +146,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  status.displayName,
+                                  status.localizedName(context.l10n),
                                   style: TextStyle(
                                     fontWeight: isSelected
                                         ? FontWeight.bold
@@ -306,7 +306,7 @@ class QuickStatusBottomSheet extends ConsumerWidget {
                   ),
             ),
             Text(
-              '${context.l10n.currentStatusLabel}: ${room.status.displayName}',
+              '${context.l10n.currentStatusLabel}: ${room.status.localizedName(context.l10n)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: room.status.color,
                   ),
@@ -326,7 +326,7 @@ class QuickStatusBottomSheet extends ConsumerWidget {
                     size: 18,
                     color: isCurrentStatus ? Colors.white : status.color,
                   ),
-                  label: Text(status.displayName),
+                  label: Text(status.localizedName(context.l10n)),
                   backgroundColor: isCurrentStatus
                       ? status.color
                       : status.color.withAlpha(30),

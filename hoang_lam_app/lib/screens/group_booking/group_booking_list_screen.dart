@@ -156,7 +156,7 @@ class _GroupBookingCard extends StatelessWidget {
                     child: Row(mainAxisSize: MainAxisSize.min, children: [
                       Icon(booking.status.icon, size: 14, color: booking.status.color),
                       const SizedBox(width: 4),
-                      Text(booking.status.displayName, style: TextStyle(color: booking.status.color, fontSize: 12, fontWeight: FontWeight.w600)),
+                      Text(booking.status.localizedName(context.l10n), style: TextStyle(color: booking.status.color, fontSize: 12, fontWeight: FontWeight.w600)),
                     ]),
                   ),
                 ],

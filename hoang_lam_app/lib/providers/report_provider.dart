@@ -5,6 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/report.dart';
 import '../repositories/report_repository.dart';
+import 'settings_provider.dart';
 
 part 'report_provider.freezed.dart';
 
@@ -275,8 +276,9 @@ sealed class ReportScreenState with _$ReportScreenState {
 /// State notifier for report screen
 class ReportScreenNotifier extends StateNotifier<ReportScreenState> {
   final ReportRepository _repository;
+  final Ref _ref;
 
-  ReportScreenNotifier(this._repository)
+  ReportScreenNotifier(this._repository, this._ref)
       : super(ReportScreenState(
           startDate: DateTime.now().subtract(const Duration(days: 30)),
           endDate: DateTime.now(),
@@ -365,7 +367,7 @@ class ReportScreenNotifier extends StateNotifier<ReportScreenState> {
     } catch (e) {
       state = state.copyWith(
         isExporting: false,
-        error: 'Lỗi xuất báo cáo: $e',
+        error: _ref.read(l10nProvider).errorReportExport.replaceAll('{error}', '$e'),
       );
       return null;
     }
@@ -381,7 +383,7 @@ final reportScreenStateProvider =
     StateNotifierProvider.autoDispose<ReportScreenNotifier, ReportScreenState>(
   (ref) {
     final repository = ref.watch(reportRepositoryProvider);
-    return ReportScreenNotifier(repository);
+    return ReportScreenNotifier(repository, ref);
   },
 );
 

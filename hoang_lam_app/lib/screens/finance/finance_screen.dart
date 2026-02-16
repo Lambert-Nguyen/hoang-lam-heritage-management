@@ -449,7 +449,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                   ),
                 ),
                 Text(
-                  '${entry.description.isNotEmpty ? entry.description : context.l10n.noData} • ${entry.paymentMethod.displayName}',
+                  '${entry.description.isNotEmpty ? entry.description : context.l10n.noData} • ${entry.paymentMethod.localizedName(context.l10n)}',
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
@@ -685,7 +685,7 @@ class _EntryDetailSheet extends StatelessWidget {
           // Details
           _buildDetailRow(context.l10n.description, entry.description.isNotEmpty ? entry.description : '-'),
           _buildDetailRow(context.l10n.dateLabel, dateFormat.format(entry.entryDate)),
-          _buildDetailRow(context.l10n.paymentMethod, entry.paymentMethod.displayName),
+          _buildDetailRow(context.l10n.paymentMethod, entry.paymentMethod.localizedName(context.l10n)),
           if (entry.reference.isNotEmpty)
             _buildDetailRow(context.l10n.referenceCode, entry.reference),
           if (entry.notes.isNotEmpty)

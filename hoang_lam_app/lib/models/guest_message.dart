@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../l10n/app_localizations.dart';
 
 part 'guest_message.freezed.dart';
 part 'guest_message.g.dart';
@@ -88,6 +89,22 @@ extension MessageStatusExtension on MessageStatus {
         return 'Failed';
     }
   }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case MessageStatus.draft:
+        return l10n.messageStatusDraft;
+      case MessageStatus.pending:
+        return l10n.messageStatusSending;
+      case MessageStatus.sent:
+        return l10n.messageStatusSent;
+      case MessageStatus.delivered:
+        return l10n.messageStatusDelivered;
+      case MessageStatus.failed:
+        return l10n.messageStatusFailed;
+    }
+  }
 }
 
 // ============================================================
@@ -135,6 +152,22 @@ extension MessageTemplateTypeExtension on MessageTemplateType {
         return 'Review Request';
       case MessageTemplateType.custom:
         return 'Custom';
+    }
+  }
+
+
+  String localizedName(AppLocalizations l10n) {
+    switch (this) {
+      case MessageTemplateType.bookingConfirmation:
+        return l10n.msgTemplateBookingConfirm;
+      case MessageTemplateType.preArrival:
+        return l10n.msgTemplatePreArrival;
+      case MessageTemplateType.checkoutReminder:
+        return l10n.msgTemplateCheckoutReminder;
+      case MessageTemplateType.reviewRequest:
+        return l10n.msgTemplateReviewRequest;
+      case MessageTemplateType.custom:
+        return l10n.msgTemplateCustom;
     }
   }
 }

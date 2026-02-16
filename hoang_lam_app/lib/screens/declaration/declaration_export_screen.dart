@@ -124,7 +124,7 @@ class _DeclarationExportScreenState
               children: DeclarationFormType.values.map((type) {
                 final isSelected = _formType == type;
                 return ChoiceChip(
-                  label: Text(type.displayName),
+                  label: Text(type.localizedName(context.l10n)),
                   selected: isSelected,
                   onSelected: (selected) {
                     if (selected) {

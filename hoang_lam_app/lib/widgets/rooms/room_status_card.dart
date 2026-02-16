@@ -141,7 +141,7 @@ class RoomDetailCard extends StatelessWidget {
                           ),
                           const SizedBox(width: AppSpacing.xs),
                           Text(
-                            room.status.displayName,
+                            room.status.localizedName(context.l10n),
                             style: TextStyle(
                               color: room.status.color,
                               fontWeight: FontWeight.w500,
