@@ -61,7 +61,7 @@ class BookingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      booking.roomNumber ?? 'Phòng ${booking.room}',
+                      booking.roomNumber ?? context.l10n.roomWithNumber.replaceAll('{number}', '${booking.room}'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -108,7 +108,7 @@ class BookingCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      '${_calculateNights(booking.checkInDate, booking.checkOutDate)} đêm',
+                      context.l10n.nightsCountDisplay.replaceAll('{count}', '${_calculateNights(booking.checkInDate, booking.checkOutDate)}'),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -145,7 +145,7 @@ class BookingCard extends StatelessWidget {
                 if (booking.status == BookingStatus.pending && booking.depositAmount > 0) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'Đặt cọc: ${currencyFormat.format(booking.depositAmount)}',
+                    context.l10n.depositLabelAmount.replaceAll('{amount}', currencyFormat.format(booking.depositAmount)),
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -230,11 +230,11 @@ class BookingCard extends StatelessWidget {
       case BookingSource.traveloka:
         return (label: 'Traveloka', icon: Icons.public, color: const Color(0xFF2D90ED));
       case BookingSource.otherOta:
-        return (label: 'OTA khác', icon: Icons.public, color: const Color(0xFF607D8B));
+        return (label: context.l10n.otherOta, icon: Icons.public, color: const Color(0xFF607D8B));
       case BookingSource.website:
         return (label: 'Website', icon: Icons.language, color: Colors.purple);
       case BookingSource.other:
-        return (label: 'Khác', icon: Icons.more_horiz, color: Colors.grey);
+        return (label: context.l10n.otherLabel, icon: Icons.more_horiz, color: Colors.grey);
     }
   }
 

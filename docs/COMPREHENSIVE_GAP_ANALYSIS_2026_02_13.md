@@ -98,10 +98,10 @@ Key examples:
 | Pattern | Count | Fix Approach |
 |---------|-------|--------------|
 | Missing `context.mounted` checks after async gaps | ~20 screens | ~~Systematic audit~~ **Verified OK (Phase B)** — all 41 files already guarded |
-| `void` async methods instead of `Future<void>` | ~15 files | Bulk search-replace |
-| Hardcoded colors breaking dark mode | ~10 screens | Replace with `Theme.of(context)` |
-| Deprecated `withOpacity()` calls | ~30 instances | Replace with `withValues(alpha:)` |
-| Hardcoded Vietnamese strings (not using l10n) | ~10 locations | Extract to AppLocalizations |
+| `void` async methods instead of `Future<void>` | ~2 remaining | ~~Bulk search-replace~~ **Mostly done** — only `api_interceptors.dart` `onRequest`/`onError` remain (Dio overrides) |
+| Hardcoded colors breaking dark mode | **281 instances** | Replace with `Theme.of(context)` — scope much larger than originally estimated (~10 screens → 20+ files) |
+| ~~Deprecated `withOpacity()` calls~~ | 0 remaining | ~~Replace with `withValues(alpha:)`~~ **FIXED** — all migrated |
+| Hardcoded Vietnamese strings (not using l10n) | **~281 across 27 files** | Extract to AppLocalizations — **UI layer complete** (screens/widgets fully localized, ~100 keys added). Remaining: 210 model displayName strings, 32 provider messages, 50 core utility strings (require architectural changes — no BuildContext). |
 | Stale local state copies on detail screens | ~5 screens | ~~Refactor to read from providers~~ **FIXED (Phase B)** |
 | Missing provider invalidation after mutations | ~8 methods | ~~Audit all state mutations~~ **FIXED (Phase B)** |
 
@@ -215,7 +215,7 @@ Features specified in the Design Plan that are missing or incomplete.
 |----|-----|--------|
 | TQ-02 | **No provider/notifier tests** (Frontend) | AuthNotifier, RoomNotifier, BookingNotifier, GuestNotifier — most complex state logic has zero tests |
 | TQ-03 | **No screen-level tests** (Frontend) | Only 2 screen tests (login, password change). 39+ screens have no widget tests. |
-| TQ-04 | **No error case API tests** (Backend) | Only happy paths tested — validation errors, permission denials, edge cases not covered |
+| TQ-04 | ~~No error case API tests~~ **Partially addressed** (Backend) | 217 HTTP 4xx assertions across 500 test methods — good coverage in early_late_fees, night_audit, payment. Remaining gaps in auth edge cases and booking validation. |
 | TQ-05 | **No performance/load tests** | No profiling for N+1 queries, no concurrent booking stress test |
 
 ### 5.3 MEDIUM
@@ -331,20 +331,22 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase C: Cross-Cutting Quality (Weeks 5-6)
 
-| # | Task | Effort | Priority |
-|---|------|--------|----------|
-| 1 | Replace all `withOpacity()` with `withValues(alpha:)` | 2h | P2 |
-| 2 | Fix hardcoded colors for dark mode (~10 screens) | 4h | P2 |
-| 3 | Extract hardcoded Vietnamese strings to l10n | 3h | P2 |
-| 4 | Fix provider invalidation gaps after mutations | 4h | P2 |
-| 5 | Replace `void` async with `Future<void>` (~15 files) | 2h | P2 |
-| 6 | Add integration tests for critical flows | 8h | P2 |
-| 7 | Add provider tests for core notifiers | 8h | P2 |
-| 8 | Add backend error case tests | 6h | P2 |
-| 9 | Set up Celery + Redis for async tasks | 6h | P2 |
-| 10 | Document deployment guide | 4h | P2 |
+**STATUS: IN PROGRESS — 4/10 done, 1 partial, 5 not started**
 
-**Estimated total: ~47 hours**
+| # | Task | Status | Notes |
+|---|------|--------|-------|
+| 1 | Replace all `withOpacity()` with `withValues(alpha:)` | **DONE** | Zero `withOpacity()` calls remain. All migrated to `withValues(alpha:)`. |
+| 2 | Fix hardcoded colors for dark mode (~10 screens) | **NOT DONE** | Scope much larger than estimated: **281 `Colors.*` + `Color(0x...)` instances** across screens/widgets. Top offenders: room_inspection (50+), folio (18), booking_detail (12), finance (12). Effort re-estimate: **8h**. |
+| 3 | Extract hardcoded Vietnamese strings to l10n | **UI LAYER DONE** | **Screen/widget layer fully localized** — ~100 new l10n keys added across 4 batches, 20+ files migrated. Remaining scope requires architectural changes: **210 model enum `displayName` strings** (need `localizedName(l10n)` extensions), **32 provider error/success messages** (need error code pattern), **~14 date_formatter strings** (need l10n parameter), **~4 biometric_service strings** (need l10n parameter). API interceptor exceptions already have bilingual support (`message`+`messageEn`). Non-display strings (currency ₫, symbols •→✓✗, debug logs, switch case data patterns) correctly kept as-is. Effort remaining for model/provider/core: **~8h**. |
+| 4 | Fix provider invalidation gaps after mutations | **DONE (Phase B)** | Already completed during Phase B. |
+| 5 | Replace `void` async with `Future<void>` (~15 files) | **MOSTLY DONE** | Only 2 remaining: `api_interceptors.dart` `onRequest` and `onError` (Dio interceptor overrides — may need to stay `void`). All screen/widget methods already use `Future<void>`. |
+| 6 | Add integration tests for critical flows | **NOT DONE** | Zero integration test files. No multi-step flow tests (check-in→housekeeping, payment→booking). |
+| 7 | Add provider tests for core notifiers | **NOT DONE** | Zero provider/notifier test files. AuthNotifier, BookingNotifier, RoomNotifier, GuestNotifier untested. |
+| 8 | Add backend error case tests | **PARTIALLY DONE** | 217 HTTP 4xx assertions across 500 test methods already exist (early_late_fees, night_audit, payment have good error coverage). Remaining gaps: auth edge cases, booking validation errors. Effort re-estimate: **3h**. |
+| 9 | Set up Celery + Redis for async tasks | **NOT DONE** | Celery still commented out in `requirements.txt`. No `celery.py`, no task modules, no beat schedule. |
+| 10 | Document deployment guide | **NOT DONE** | No deployment documentation exists. |
+
+**Revised estimated remaining: ~40 hours (tasks 2, 3, 6, 7, 8, 9, 10)**
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
@@ -369,12 +371,17 @@ Features specified in the Design Plan that are missing or incomplete.
 
 | Metric | Current | Target |
 |--------|---------|--------|
-| Production readiness | ~85% (post Phase B) | 95% |
-| Backend test coverage (estimated) | ~80% (38 tests passing) | 85%+ |
-| Frontend test coverage (estimated) | ~40% (484 passing, 50 pre-existing failures) | 70%+ |
+| Production readiness | ~87% (post Phase C review) | 95% |
+| Backend test count | 500 test methods (17 test files) | 550+ |
+| Backend error case coverage | 217 HTTP 4xx assertions | 260+ |
+| Frontend test files | 36 test files | 60+ |
+| Frontend provider/notifier tests | 0 | 10+ |
+| Frontend integration tests | 0 | 5+ |
 | Critical bugs | 0 (fixed in Phase A) | 0 |
-| High-severity bugs | ~15 remaining (down from 30+) | 0 |
+| High-severity bugs | ~12 remaining (down from 30+) | 0 |
 | Security vulnerabilities | 0 critical, 5 high | 0 critical, 0 high |
+| Hardcoded colors (dark mode blockers) | 281 instances | 0 |
+| Hardcoded Vietnamese strings (i18n blockers) | ~292 remaining (model/provider/core) | 0 |
 | Design plan compliance | ~85% (Phases 1-5) | 95% (Phases 1-5) |
 
 ### Total Effort to Production-Ready
@@ -383,12 +390,12 @@ Features specified in the Design Plan that are missing or incomplete.
 |-------|-------|----------|--------|
 | Phase A (Critical) | ~22h | Weeks 1-2 | COMPLETED (2026-02-13) |
 | Phase B (High) | ~30h | Weeks 3-4 | COMPLETED (2026-02-13) |
-| Phase C (Quality) | ~47h | Weeks 5-6 | Pending |
+| Phase C (Quality) | ~40h | Weeks 5-6 | **IN PROGRESS** (4/10 done, ~35h remaining) |
 | Phase D (Hardening) | ~51h | Weeks 7-8 | Pending |
-| **Total** | **~150h** | **8 weeks** | **Phases A+B done** |
+| **Total** | **~143h** | **8 weeks** | **Phases A+B done, C reviewed** |
 
 ---
 
 *This analysis supersedes the previous [DESIGN_GAPS_ANALYSIS.md](./DESIGN_GAPS_ANALYSIS.md) (dated 2026-02-05) which focused only on design plan model/field gaps and is marked as "all fixed". This report covers a broader scope including security, bugs, testing, architecture, and deployment.*
 
-*Last updated: 2026-02-13 (Phases A + B completed)*
+*Last updated: 2026-02-15 (Phase C in progress — Task 3 UI layer complete, 4/10 tasks done)*

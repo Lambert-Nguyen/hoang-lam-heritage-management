@@ -56,7 +56,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: l10n.addProduct.replaceAll('Thêm ', '')),
+            Tab(text: l10n.productTab),
             Tab(text: l10n.history),
           ],
         ),

@@ -105,7 +105,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               controller: _numberController,
               decoration: InputDecoration(
                 labelText: context.l10n.roomNumberLabel,
-                hintText: 'Ví dụ: 101, 102, 201...',
+                hintText: context.l10n.roomNumberHint,
                 prefixIcon: const Icon(Icons.meeting_room),
               ),
               textCapitalization: TextCapitalization.characters,

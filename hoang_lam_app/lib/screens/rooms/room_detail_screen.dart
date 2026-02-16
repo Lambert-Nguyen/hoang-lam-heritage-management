@@ -60,7 +60,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Phòng ${_room.number}'),
+        title: Text(context.l10n.roomWithNumber.replaceAll('{number}', _room.number)),
         actions: [
           AppIconButton(
             icon: Icons.edit,

@@ -144,7 +144,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
                   labelText: context.l10n.depositAmount,
                   prefixText: '₫ ',
                   border: const OutlineInputBorder(),
-                  hintText: 'Nhập số tiền',
+                  hintText: context.l10n.enterAmountHint,
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -153,11 +153,11 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
                 ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Vui lòng nhập số tiền';
+                    return context.l10n.pleaseEnterAmount;
                   }
                   final amount = double.tryParse(value.replaceAll(',', ''));
                   if (amount == null || amount <= 0) {
-                    return 'Số tiền không hợp lệ';
+                    return context.l10n.invalidAmount;
                   }
                   return null;
                 },
@@ -261,11 +261,11 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
       case PaymentMethod.vnpay:
         return 'VNPay';
       case PaymentMethod.card:
-        return 'Thẻ';
+        return context.l10n.cardPayment;
       case PaymentMethod.otaCollect:
         return 'OTA';
       case PaymentMethod.other:
-        return 'Khác';
+        return context.l10n.otherLabel;
     }
   }
 }

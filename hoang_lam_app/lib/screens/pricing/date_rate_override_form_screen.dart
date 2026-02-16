@@ -40,16 +40,16 @@ class _DateRateOverrideFormScreenState
   bool _isInitialized = false;
   bool get _isEditing => widget.overrideId != null;
 
-  // Common reasons for quick selection
-  final List<String> _commonReasons = [
-    'Cuối tuần',
-    'Ngày lễ',
-    'Tết Nguyên Đán',
-    'Giáng sinh',
-    'Mùa hè',
-    'Mùa thấp điểm',
-    'Khuyến mãi',
-    'Sự kiện đặc biệt',
+  // Common reasons built from l10n
+  List<String> _getCommonReasons(AppLocalizations l10n) => [
+    l10n.weekend,
+    l10n.holiday,
+    l10n.tetHoliday,
+    l10n.christmas,
+    l10n.summerSeason,
+    l10n.lowSeason,
+    l10n.promotion,
+    l10n.specialEvent,
   ];
 
   @override
@@ -177,7 +177,7 @@ class _DateRateOverrideFormScreenState
                 children: [
                   Expanded(
                     child: _DatePickerField(
-                      label: 'Từ ngày *',
+                      label: '${l10n.fromDateRequired} *',
                       value: _selectedDate,
                       onChanged: (date) => setState(() => _selectedDate = date),
                     ),
@@ -185,7 +185,7 @@ class _DateRateOverrideFormScreenState
                   const SizedBox(width: 16),
                   Expanded(
                     child: _DatePickerField(
-                      label: 'Đến ngày *',
+                      label: '${l10n.toDateRequired} *',
                       value: _endDate,
                       onChanged: (date) => setState(() => _endDate = date),
                       firstDate: _selectedDate,
@@ -195,7 +195,7 @@ class _DateRateOverrideFormScreenState
               ),
             ] else ...[
               _DatePickerField(
-                label: 'Chọn ngày *',
+                label: '${l10n.selectDateRequired} *',
                 value: _selectedDate,
                 onChanged: (date) => setState(() => _selectedDate = date),
               ),
@@ -204,21 +204,21 @@ class _DateRateOverrideFormScreenState
             AppSpacing.gapVerticalLg,
 
             // Rate
-            _buildSectionHeader('Giá'),
+            _buildSectionHeader(l10n.priceSection),
             TextFormField(
               controller: _rateController,
-              decoration: const InputDecoration(
-                labelText: 'Giá cho ngày này *',
-                prefixIcon: Icon(Icons.attach_money),
-                suffixText: 'VNĐ',
+              decoration: InputDecoration(
+                labelText: l10n.priceForThisDate,
+                prefixIcon: const Icon(Icons.attach_money),
+                suffixText: l10n.vndSuffix,
               ),
               keyboardType: TextInputType.number,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập giá';
+                  return l10n.pleaseEnterPrice;
                 }
                 if (int.tryParse(value) == null || int.parse(value) <= 0) {
-                  return 'Giá phải lớn hơn 0';
+                  return l10n.priceMustBePositive;
                 }
                 return null;
               },
@@ -243,7 +243,7 @@ class _DateRateOverrideFormScreenState
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _commonReasons
+              children: _getCommonReasons(l10n)
                   .map((reason) => ActionChip(
                         label: Text(reason),
                         onPressed: () =>
@@ -308,10 +308,10 @@ class _DateRateOverrideFormScreenState
                     )
                   : const Icon(Icons.save),
               label: Text(_isEditing
-                  ? 'Cập nhật'
+                  ? l10n.update
                   : _isBulkMode
-                      ? 'Tạo giá cho nhiều ngày'
-                      : 'Tạo giá theo ngày'),
+                      ? l10n.createPriceMultipleDays
+                      : l10n.createDateRate),
             ),
 
             AppSpacing.gapVerticalXl,
@@ -336,16 +336,17 @@ class _DateRateOverrideFormScreenState
 
   Future<void> _saveOverride() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
     if (_selectedRoomTypeId == null) {
-      _showError('Vui lòng chọn loại phòng');
+      _showError(l10n.pleaseSelectRoomType);
       return;
     }
     if (_selectedDate == null) {
-      _showError('Vui lòng chọn ngày');
+      _showError(l10n.pleaseSelectDate);
       return;
     }
     if (_isBulkMode && _endDate == null) {
-      _showError('Vui lòng chọn ngày kết thúc');
+      _showError(l10n.pleaseSelectEndDate);
       return;
     }
 
@@ -369,7 +370,7 @@ class _DateRateOverrideFormScreenState
 
         if (mounted) {
           ref.invalidate(dateRateOverridesProvider);
-          _showSuccess('Đã cập nhật giá theo ngày');
+          _showSuccess(l10n.dateRateUpdated);
           Navigator.of(context).pop(true);
         }
       } else if (_isBulkMode) {
@@ -392,7 +393,7 @@ class _DateRateOverrideFormScreenState
         if (mounted) {
           ref.invalidate(dateRateOverridesProvider);
           final days = _endDate!.difference(_selectedDate!).inDays + 1;
-          _showSuccess('Đã tạo giá cho $days ngày');
+          _showSuccess(l10n.dateRateCreatedForDays.replaceAll('{days}', '$days'));
           Navigator.of(context).pop(true);
         }
       } else {
@@ -413,12 +414,12 @@ class _DateRateOverrideFormScreenState
 
         if (mounted) {
           ref.invalidate(dateRateOverridesProvider);
-          _showSuccess('Đã tạo giá theo ngày');
+          _showSuccess(l10n.dateRateCreated);
           Navigator.of(context).pop(true);
         }
       }
     } catch (e) {
-      _showError('Lỗi: ${e.toString()}');
+      _showError('${l10n.error}: ${e.toString()}');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -427,17 +428,18 @@ class _DateRateOverrideFormScreenState
   }
 
   void _confirmDelete() {
+    final l10n = AppLocalizations.of(context)!;
     final dateFormat = DateFormat('dd/MM/yyyy');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xóa giá theo ngày?'),
+        title: Text(l10n.deleteDateRateTitle),
         content: Text(
-            'Bạn có chắc muốn xóa giá cho ngày ${_selectedDate != null ? dateFormat.format(_selectedDate!) : ''}?'),
+            '${l10n.confirmDeleteDateRate} ${_selectedDate != null ? dateFormat.format(_selectedDate!) : ''}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -445,7 +447,7 @@ class _DateRateOverrideFormScreenState
               await _deleteOverride();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Xóa'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -459,13 +461,15 @@ class _DateRateOverrideFormScreenState
       final notifier = ref.read(dateRateOverrideNotifierProvider.notifier);
       await notifier.deleteOverride(widget.overrideId!);
 
+      final l10n = AppLocalizations.of(context)!;
       if (mounted) {
         ref.invalidate(dateRateOverridesProvider);
-        _showSuccess('Đã xóa giá theo ngày');
+        _showSuccess(l10n.dateRateDeleted);
         Navigator.of(context).pop(true);
       }
     } catch (e) {
-      _showError('Lỗi: ${e.toString()}');
+      final l10n = AppLocalizations.of(context)!;
+      _showError('${l10n.error}: ${e.toString()}');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -527,7 +531,7 @@ class _DatePickerField extends StatelessWidget {
               : const Icon(Icons.calendar_today),
         ),
         child: Text(
-          value != null ? dateFormat.format(value!) : 'Chọn ngày',
+          value != null ? dateFormat.format(value!) : AppLocalizations.of(context)!.selectDatePlaceholder,
           style: TextStyle(
             color: value != null ? null : AppColors.textSecondary,
           ),

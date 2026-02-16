@@ -1357,6 +1357,112 @@ class AppLocalizations {
   String get safetyCategory => translate('safety_category');
   String get pleaseAddAtLeastOne => translate('please_add_at_least_one');
   String get itemsSuffix => translate('items_suffix');
+
+  // ===== PHASE C7: HARDCODED VIETNAMESE STRING EXTRACTION =====
+
+  // Date Rate Override Form
+  String get tetHoliday => translate('tet_holiday');
+  String get christmas => translate('christmas');
+  String get summerSeason => translate('summer_season');
+  String get priceSection => translate('price_section');
+  String get priceForThisDate => translate('price_for_this_date');
+  String get vndSuffix => translate('vnd_suffix');
+  String get pleaseEnterPrice => translate('please_enter_price');
+  String get priceMustBePositive => translate('price_must_be_positive');
+  String get createPriceMultipleDays => translate('create_price_multiple_days');
+  String get createDateRate => translate('create_date_rate');
+  String get pleaseSelectDate => translate('please_select_date');
+  String get dateRateCreatedForDays => translate('date_rate_created_for_days');
+  String get deleteDateRateTitle => translate('delete_date_rate_title');
+  String get selectDatePlaceholder => translate('select_date_placeholder');
+
+  // Complete Task Dialog
+  String get cleanBathroom => translate('clean_bathroom');
+  String get generalCleaning => translate('general_cleaning');
+  String get cleanGlass => translate('clean_glass');
+  String get completeTaskTitle => translate('complete_task_title');
+  String get completeAllItemsWarning => translate('complete_all_items_warning');
+
+  // Financial Category Screen
+  String get cannotDeleteCategoryMsg => translate('cannot_delete_category_msg');
+  String get confirmDeleteCategoryMsg => translate('confirm_delete_category_msg');
+  String get activeInUseCount => translate('active_in_use_count');
+  String get hiddenCount => translate('hidden_count');
+  String get editCategory => translate('edit_category');
+  String get addIncomeCategoryTitle => translate('add_income_category_title');
+  String get addExpenseCategoryTitle => translate('add_expense_category_title');
+  String get categoryUpdatedMsg => translate('category_updated_msg');
+  String get categoryCreatedMsg => translate('category_created_msg');
+  String get incomeShort => translate('income_short');
+  String get previewLabel => translate('preview_label');
+  String get categoryNamePlaceholder => translate('category_name_placeholder');
+  String get exampleElectricity => translate('example_electricity');
+  String get exampleElectricityEn => translate('example_electricity_en');
+
+  // Room Inspection Form Screen
+  String get enterRoomIdHint => translate('enter_room_id_hint');
+  String get pleaseEnterRoomId => translate('please_enter_room_id');
+  String get noDefaultTemplateDesc => translate('no_default_template_desc');
+  String get checklistItemsSuffix => translate('checklist_items_suffix');
+  String get creatingText => translate('creating_text');
+  String get createInspectionBtn => translate('create_inspection_btn');
+  String get inspectionNotFound => translate('inspection_not_found');
+  String get completeBtnLabel => translate('complete_btn_label');
+  String get progressCount => translate('progress_count');
+  String get importantBadge => translate('important_badge');
+  String get passBtn => translate('pass_btn');
+  String get failBtn => translate('fail_btn');
+  String get enterNotesHint => translate('enter_notes_hint');
+  String get actionRequiredIfAny => translate('action_required_if_any');
+  String get describeActionRequired => translate('describe_action_required');
+  String get pleaseSelectRoomMsg => translate('please_select_room_msg');
+  String get inspectionCreatedSuccess => translate('inspection_created_success');
+
+  // PHASE C7 Batch 2: Group Booking, Inspection List, Pricing
+  String get checkInDateRequired => translate('check_in_date_required');
+  String get checkOutDateRequired => translate('check_out_date_required');
+  String get nightsCountDisplay => translate('nights_count_display');
+  String get noPendingInspections => translate('no_pending_inspections');
+  String get noCompletedInspections => translate('no_completed_inspections');
+  String get noActionRequiredInspections => translate('no_action_required_inspections');
+  String get noInspectionsYet => translate('no_inspections_yet');
+  String get pendingInspectionsLabel => translate('pending_inspections_label');
+  String get totalIssues => translate('total_issues');
+  String get roomWithNumber => translate('room_with_number');
+  String get scoreValueDisplay => translate('score_value_display');
+  String get noRatePlansYet => translate('no_rate_plans_yet');
+  String get pausedStatus => translate('paused_status');
+  String get minNightsStayDisplay => translate('min_nights_stay_display');
+  String get fromDateDisplay => translate('from_date_display');
+  String get toDateDisplay => translate('to_date_display');
+  String get noDailyRatesYet => translate('no_daily_rates_yet');
+
+  // PHASE C7 Batch 3: Lost & Found strings
+  String get lostAndFound => translate('lost_and_found');
+  String get noClaimedItems => translate('no_claimed_items');
+  String get noUnclaimedItems => translate('no_unclaimed_items');
+  String get noLostFoundItems => translate('no_lost_found_items');
+  String get confirmGuestClaimed => translate('confirm_guest_claimed');
+  String get disposeReasonTitle => translate('dispose_reason_title');
+  String get disposeReasonHint => translate('dispose_reason_hint');
+
+  // PHASE C7 Batch 3: Widget/screen strings
+  String get enterAmountHint => translate('enter_amount_hint');
+  String get pleaseEnterAmount => translate('please_enter_amount');
+  String get invalidAmount => translate('invalid_amount');
+  String get cardPayment => translate('card_payment');
+  String get otherLabel => translate('other_label');
+  String get otherOta => translate('other_ota');
+  String get errorLoadingStaffList => translate('error_loading_staff_list');
+  String get assignToSelf => translate('assign_to_self');
+  String get depositLabelAmount => translate('deposit_label_amount');
+  String get overlapWarningTitle => translate('overlap_warning_title');
+  String get overlapWarningMessage => translate('overlap_warning_message');
+  String get roomNumberHint => translate('room_number_hint');
+  String get paidAbbreviation => translate('paid_abbreviation');
+  String get phoneValidationLength => translate('phone_validation_length');
+  String get phoneValidationStartWithZero => translate('phone_validation_start_with_zero');
+  String get productTab => translate('product_tab');
 }
 
 // Vietnamese translations
@@ -2601,8 +2707,113 @@ const Map<String, String> _viTranslations = {
   'safety_category': 'An toàn',
   'please_add_at_least_one': 'Vui lòng thêm ít nhất một mục kiểm tra',
   'items_suffix': 'mục',
-};
 
+  // ===== PHASE C7: HARDCODED VIETNAMESE STRING EXTRACTION =====
+
+  // Date Rate Override Form
+  'tet_holiday': 'Tết Nguyên Đán',
+  'christmas': 'Giáng sinh',
+  'summer_season': 'Mùa hè',
+  'price_section': 'Giá',
+  'price_for_this_date': 'Giá cho ngày này *',
+  'vnd_suffix': 'VNĐ',
+  'please_enter_price': 'Vui lòng nhập giá',
+  'price_must_be_positive': 'Giá phải lớn hơn 0',
+  'create_price_multiple_days': 'Tạo giá cho nhiều ngày',
+  'create_date_rate': 'Tạo giá theo ngày',
+  'please_select_date': 'Vui lòng chọn ngày',
+  'date_rate_created_for_days': 'Đã tạo giá cho {days} ngày',
+  'delete_date_rate_title': 'Xóa giá theo ngày?',
+  'select_date_placeholder': 'Chọn ngày',
+
+  // Complete Task Dialog
+  'clean_bathroom': 'Dọn dẹp phòng tắm',
+  'general_cleaning': 'Dọn dẹp chung',
+  'clean_glass': 'Lau kính',
+  'complete_task_title': 'Hoàn thành công việc',
+  'complete_all_items_warning': 'Vui lòng hoàn thành tất cả các mục',
+
+  // Financial Category Screen
+  'cannot_delete_category_msg': 'Không thể xoá danh mục "{name}" vì có {count} giao dịch liên quan.',
+  'confirm_delete_category_msg': 'Bạn có chắc muốn xoá danh mục "{name}"?\n\nThao tác này không thể hoàn tác.',
+  'active_in_use_count': 'Đang sử dụng ({count})',
+  'hidden_count': 'Đã ẩn ({count})',
+  'edit_category': 'Sửa danh mục',
+  'add_income_category_title': 'Thêm danh mục thu',
+  'add_expense_category_title': 'Thêm danh mục chi',
+  'category_updated_msg': 'Đã cập nhật danh mục',
+  'category_created_msg': 'Đã tạo danh mục mới',
+  'income_short': 'Thu',
+  'preview_label': 'Xem trước',
+  'category_name_placeholder': 'Tên danh mục',
+  'example_electricity': 'VD: Tiền điện',
+  'example_electricity_en': 'VD: Electricity',
+
+  // Room Inspection Form Screen
+  'enter_room_id_hint': 'Nhập ID phòng',
+  'please_enter_room_id': 'Vui lòng nhập ID phòng',
+  'no_default_template_desc': 'Không có mẫu mặc định nào. Bạn có thể tạo mẫu mới từ danh sách mẫu.',
+  'checklist_items_suffix': 'mục kiểm tra',
+  'creating_text': 'Đang tạo...',
+  'create_inspection_btn': 'Tạo kiểm tra',
+  'inspection_not_found': 'Không tìm thấy kiểm tra',
+  'complete_btn_label': 'Hoàn tất',
+  'progress_count': 'Tiến độ:',
+  'important_badge': 'Quan trọng',
+  'pass_btn': 'Đạt',
+  'fail_btn': 'Không đạt',
+  'enter_notes_hint': 'Nhập ghi chú...',
+  'action_required_if_any': 'Hành động cần thực hiện (nếu có)',
+  'describe_action_required': 'Mô tả hành động cần thực hiện...',
+  'please_select_room_msg': 'Vui lòng chọn phòng',
+  'inspection_created_success': 'Đã tạo kiểm tra thành công',
+
+  // PHASE C7 Batch 2
+  'check_in_date_required': 'Ngày nhận phòng *',
+  'check_out_date_required': 'Ngày trả phòng *',
+  'nights_count_display': 'Số đêm: {count}',
+  'no_pending_inspections': 'Không có kiểm tra chờ xử lý',
+  'no_completed_inspections': 'Chưa có kiểm tra hoàn thành',
+  'no_action_required_inspections': 'Không có kiểm tra cần xử lý',
+  'no_inspections_yet': 'Chưa có kiểm tra nào',
+  'pending_inspections_label': 'Đang chờ',
+  'total_issues': 'Tổng vấn đề',
+  'room_with_number': 'Phòng {number}',
+  'score_value_display': 'Điểm: {value}%',
+  'no_rate_plans_yet': 'Chưa có gói giá nào',
+  'paused_status': 'Tạm dừng',
+  'min_nights_stay_display': 'Tối thiểu {count} đêm',
+  'from_date_display': 'Từ {date}',
+  'to_date_display': 'Đến {date}',
+  'no_daily_rates_yet': 'Chưa có giá theo ngày',
+
+  // PHASE C7 Batch 3: Lost & Found strings
+  'lost_and_found': 'Lost & Found',
+  'no_claimed_items': 'Không có đồ đã nhận',
+  'no_unclaimed_items': 'Không có đồ chưa nhận',
+  'no_lost_found_items': 'Chưa có đồ thất lạc',
+  'confirm_guest_claimed': 'Xác nhận khách đã nhận lại đồ?',
+  'dispose_reason_title': 'Lý do xử lý',
+  'dispose_reason_hint': 'Nhập lý do xử lý/quyên góp',
+
+  // PHASE C7 Batch 3: Widget/screen strings
+  'enter_amount_hint': 'Nhập số tiền',
+  'please_enter_amount': 'Vui lòng nhập số tiền',
+  'invalid_amount': 'Số tiền không hợp lệ',
+  'card_payment': 'Thẻ',
+  'other_label': 'Khác',
+  'other_ota': 'OTA khác',
+  'error_loading_staff_list': 'Lỗi tải danh sách nhân viên',
+  'assign_to_self': 'Tự nhận việc',
+  'deposit_label_amount': 'Đặt cọc: {amount}',
+  'overlap_warning_title': 'Cảnh báo trùng lịch',
+  'overlap_warning_message': 'Phòng này đã có {count} đặt phòng trong khoảng thời gian đã chọn. Bạn có muốn tiếp tục?',
+  'room_number_hint': 'Ví dụ: 101, 102, 201...',
+  'paid_abbreviation': 'Đã TT',
+  'phone_validation_length': 'Số điện thoại phải có 10-11 số',
+  'phone_validation_start_with_zero': 'Số điện thoại phải bắt đầu bằng 0',
+  'product_tab': 'Sản phẩm',
+};
 // English translations
 const Map<String, String> _enTranslations = {
   // ===== COMMON =====
@@ -3845,6 +4056,112 @@ const Map<String, String> _enTranslations = {
   'safety_category': 'Safety',
   'please_add_at_least_one': 'Please add at least one checklist item',
   'items_suffix': 'items',
+
+  // ===== PHASE C7: HARDCODED VIETNAMESE STRING EXTRACTION =====
+
+  // Date Rate Override Form
+  'tet_holiday': 'Tet Holiday',
+  'christmas': 'Christmas',
+  'summer_season': 'Summer',
+  'price_section': 'Price',
+  'price_for_this_date': 'Price for this date *',
+  'vnd_suffix': 'VND',
+  'please_enter_price': 'Please enter price',
+  'price_must_be_positive': 'Price must be greater than 0',
+  'create_price_multiple_days': 'Create price for multiple days',
+  'create_date_rate': 'Create date rate',
+  'please_select_date': 'Please select a date',
+  'date_rate_created_for_days': 'Created price for {days} days',
+  'delete_date_rate_title': 'Delete date rate?',
+  'select_date_placeholder': 'Select date',
+
+  // Complete Task Dialog
+  'clean_bathroom': 'Clean bathroom',
+  'general_cleaning': 'General cleaning',
+  'clean_glass': 'Clean glass',
+  'complete_task_title': 'Complete task',
+  'complete_all_items_warning': 'Please complete all items',
+
+  // Financial Category Screen
+  'cannot_delete_category_msg': 'Cannot delete category "{name}" because it has {count} related transactions.',
+  'confirm_delete_category_msg': 'Are you sure you want to delete category "{name}"?\n\nThis action cannot be undone.',
+  'active_in_use_count': 'Active ({count})',
+  'hidden_count': 'Hidden ({count})',
+  'edit_category': 'Edit category',
+  'add_income_category_title': 'Add income category',
+  'add_expense_category_title': 'Add expense category',
+  'category_updated_msg': 'Category updated',
+  'category_created_msg': 'New category created',
+  'income_short': 'Income',
+  'preview_label': 'Preview',
+  'category_name_placeholder': 'Category name',
+  'example_electricity': 'e.g. Electricity bill',
+  'example_electricity_en': 'e.g. Electricity',
+
+  // Room Inspection Form Screen
+  'enter_room_id_hint': 'Enter room ID',
+  'please_enter_room_id': 'Please enter room ID',
+  'no_default_template_desc': 'No default templates available. You can create new templates from the template list.',
+  'checklist_items_suffix': 'checklist items',
+  'creating_text': 'Creating...',
+  'create_inspection_btn': 'Create inspection',
+  'inspection_not_found': 'Inspection not found',
+  'complete_btn_label': 'Complete',
+  'progress_count': 'Progress:',
+  'important_badge': 'Important',
+  'pass_btn': 'Pass',
+  'fail_btn': 'Fail',
+  'enter_notes_hint': 'Enter notes...',
+  'action_required_if_any': 'Action required (if any)',
+  'describe_action_required': 'Describe required action...',
+  'please_select_room_msg': 'Please select a room',
+  'inspection_created_success': 'Inspection created successfully',
+
+  // PHASE C7 Batch 2
+  'check_in_date_required': 'Check-in date *',
+  'check_out_date_required': 'Check-out date *',
+  'nights_count_display': 'Nights: {count}',
+  'no_pending_inspections': 'No pending inspections',
+  'no_completed_inspections': 'No completed inspections',
+  'no_action_required_inspections': 'No inspections requiring action',
+  'no_inspections_yet': 'No inspections yet',
+  'pending_inspections_label': 'Pending',
+  'total_issues': 'Total issues',
+  'room_with_number': 'Room {number}',
+  'score_value_display': 'Score: {value}%',
+  'no_rate_plans_yet': 'No rate plans yet',
+  'paused_status': 'Paused',
+  'min_nights_stay_display': 'Minimum {count} nights',
+  'from_date_display': 'From {date}',
+  'to_date_display': 'Until {date}',
+  'no_daily_rates_yet': 'No daily rates yet',
+
+  // PHASE C7 Batch 3: Lost & Found strings
+  'lost_and_found': 'Lost & Found',
+  'no_claimed_items': 'No claimed items',
+  'no_unclaimed_items': 'No unclaimed items',
+  'no_lost_found_items': 'No lost & found items yet',
+  'confirm_guest_claimed': 'Confirm guest has claimed the item?',
+  'dispose_reason_title': 'Dispose reason',
+  'dispose_reason_hint': 'Enter dispose/donation reason',
+
+  // PHASE C7 Batch 3: Widget/screen strings
+  'enter_amount_hint': 'Enter amount',
+  'please_enter_amount': 'Please enter amount',
+  'invalid_amount': 'Invalid amount',
+  'card_payment': 'Card',
+  'other_label': 'Other',
+  'other_ota': 'Other OTA',
+  'error_loading_staff_list': 'Error loading staff list',
+  'assign_to_self': 'Assign to self',
+  'deposit_label_amount': 'Deposit: {amount}',
+  'overlap_warning_title': 'Schedule Overlap Warning',
+  'overlap_warning_message': 'This room already has {count} bookings in the selected period. Do you want to continue?',
+  'room_number_hint': 'E.g.: 101, 102, 201...',
+  'paid_abbreviation': 'Paid',
+  'phone_validation_length': 'Phone number must be 10-11 digits',
+  'phone_validation_start_with_zero': 'Phone number must start with 0',
+  'product_tab': 'Product',
 };
 
 // Delegate

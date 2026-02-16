@@ -188,12 +188,12 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
           const SizedBox(height: AppSpacing.md),
           Text(
             status == InspectionStatus.pending
-                ? 'Không có kiểm tra chờ xử lý'
+                ? AppLocalizations.of(context)!.noPendingInspections
                 : status == InspectionStatus.completed
-                    ? 'Chưa có kiểm tra hoàn thành'
+                    ? AppLocalizations.of(context)!.noCompletedInspections
                     : status == InspectionStatus.requiresAction
-                        ? 'Không có kiểm tra cần xử lý'
-                        : 'Chưa có kiểm tra nào',
+                        ? AppLocalizations.of(context)!.noActionRequiredInspections
+                        : AppLocalizations.of(context)!.noInspectionsYet,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -236,25 +236,25 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                       Text(context.l10n.inspectionStatistics, style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: AppSpacing.lg),
                       _StatCard(
-                        title: 'Tổng số kiểm tra',
+                        title: context.l10n.totalInspections,
                         value: stats.totalInspections.toString(),
                         icon: Icons.checklist,
                         color: Colors.blue,
                       ),
                       _StatCard(
-                        title: 'Đã hoàn thành',
+                        title: context.l10n.completed,
                         value: stats.completedInspections.toString(),
                         icon: Icons.check_circle,
                         color: Colors.green,
                       ),
                       _StatCard(
-                        title: 'Đang chờ',
+                        title: context.l10n.pending,
                         value: stats.pendingInspections.toString(),
                         icon: Icons.schedule,
                         color: Colors.grey,
                       ),
                       _StatCard(
-                        title: 'Cần xử lý',
+                        title: context.l10n.requiresAction,
                         value: stats.requiresAction.toString(),
                         icon: Icons.warning,
                         color: Colors.orange,
@@ -266,7 +266,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Điểm trung bình', style: Theme.of(context).textTheme.titleMedium),
+                              Text(context.l10n.averageScore, style: Theme.of(context).textTheme.titleMedium),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
@@ -298,7 +298,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Vấn đề phát hiện', style: Theme.of(context).textTheme.titleMedium),
+                              Text(context.l10n.issuesDetected, style: Theme.of(context).textTheme.titleMedium),
                               const SizedBox(height: 8),
                               Row(
                                 children: [
@@ -309,7 +309,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                                           stats.totalIssues.toString(),
                                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                                         ),
-                                        const Text('Tổng vấn đề'),
+                                        Text(context.l10n.totalIssues),
                                       ],
                                     ),
                                   ),
@@ -323,7 +323,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                                                 color: Colors.red,
                                               ),
                                         ),
-                                        const Text('Nghiêm trọng'),
+                                        Text(context.l10n.criticalLabel),
                                       ],
                                     ),
                                   ),
@@ -336,7 +336,7 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
                     ],
                   ),
                   loading: () => const LoadingIndicator(),
-                  error: (e, _) => ErrorDisplay(message: 'Lỗi: $e'),
+                  error: (e, _) => ErrorDisplay(message: '${context.l10n.error}: $e'),
                 ),
               );
             },
@@ -396,7 +396,7 @@ class _InspectionCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Phòng ${inspection.roomNumber}',
+                        AppLocalizations.of(context)!.roomWithNumber.replaceAll('{number}', inspection.roomNumber),
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
@@ -435,7 +435,7 @@ class _InspectionCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    'Điểm: ${inspection.score.toStringAsFixed(0)}%',
+                    AppLocalizations.of(context)!.scoreValueDisplay.replaceAll('{value}', inspection.score.toStringAsFixed(0)),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: _getScoreColor(inspection.score),
                           fontWeight: FontWeight.w600,
@@ -446,7 +446,7 @@ class _InspectionCard extends StatelessWidget {
                     Icon(Icons.warning_amber, size: 16, color: Colors.orange),
                     const SizedBox(width: 4),
                     Text(
-                      '${inspection.issuesFound} vấn đề',
+                      '${inspection.issuesFound} ${AppLocalizations.of(context)!.issuesCount}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.orange),
                     ),
                   ],
@@ -455,7 +455,7 @@ class _InspectionCard extends StatelessWidget {
                     Icon(Icons.error, size: 16, color: Colors.red),
                     const SizedBox(width: 4),
                     Text(
-                      '${inspection.criticalIssues} nghiêm trọng',
+                      '${inspection.criticalIssues} ${AppLocalizations.of(context)!.criticalIssuesLabel}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.red),
                     ),
                   ],

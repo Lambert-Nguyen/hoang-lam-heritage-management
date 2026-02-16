@@ -260,7 +260,7 @@ class FolioItemListWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Đã TT',
+                        context.l10n.paidAbbreviation,
                         style: TextStyle(
                           fontSize: 10,
                           color: Colors.green[700],
@@ -273,7 +273,7 @@ class FolioItemListWidget extends StatelessWidget {
             if (!isVoided && onVoid != null)
               IconButton(
                 icon: Icon(Icons.block, color: Colors.red[400], size: 20),
-                tooltip: 'Hủy phí',
+                tooltip: context.l10n.cancelCharge,
                 onPressed: () => onVoid!(item),
                 padding: const EdgeInsets.only(left: 8),
                 constraints: const BoxConstraints(),

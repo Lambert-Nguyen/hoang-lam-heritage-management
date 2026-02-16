@@ -23,57 +23,67 @@ class CompleteTaskDialog extends StatefulWidget {
 class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
   final _notesController = TextEditingController();
   final List<_ChecklistItem> _checklist = [];
+  bool _isChecklistInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeChecklist();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isChecklistInitialized) {
+      _isChecklistInitialized = true;
+      _initializeChecklist();
+    }
   }
 
   void _initializeChecklist() {
+    final l10n = AppLocalizations.of(context)!;
     // Initialize checklist based on task type
     switch (widget.task.taskType) {
       case HousekeepingTaskType.checkoutClean:
         _checklist.addAll([
-          _ChecklistItem(label: 'Thay ga giường'),
-          _ChecklistItem(label: 'Dọn dẹp phòng tắm'),
-          _ChecklistItem(label: 'Hút bụi'),
-          _ChecklistItem(label: 'Lau sàn'),
-          _ChecklistItem(label: 'Bổ sung đồ dùng'),
-          _ChecklistItem(label: 'Kiểm tra minibar'),
+          _ChecklistItem(label: l10n.changeBedSheets),
+          _ChecklistItem(label: l10n.cleanBathroom),
+          _ChecklistItem(label: l10n.vacuum),
+          _ChecklistItem(label: l10n.mopFloor),
+          _ChecklistItem(label: l10n.restockSupplies),
+          _ChecklistItem(label: l10n.checkMinibar),
         ]);
         break;
       case HousekeepingTaskType.stayClean:
         _checklist.addAll([
-          _ChecklistItem(label: 'Dọn dẹp chung'),
-          _ChecklistItem(label: 'Thay khăn'),
-          _ChecklistItem(label: 'Đổ rác'),
-          _ChecklistItem(label: 'Bổ sung nước'),
+          _ChecklistItem(label: l10n.generalCleaning),
+          _ChecklistItem(label: l10n.changeTowels),
+          _ChecklistItem(label: l10n.emptyTrash),
+          _ChecklistItem(label: l10n.restockWater),
         ]);
         break;
       case HousekeepingTaskType.deepClean:
         _checklist.addAll([
-          _ChecklistItem(label: 'Vệ sinh sâu phòng tắm'),
-          _ChecklistItem(label: 'Giặt rèm'),
-          _ChecklistItem(label: 'Vệ sinh điều hòa'),
-          _ChecklistItem(label: 'Lau kính'),
-          _ChecklistItem(label: 'Vệ sinh tủ lạnh'),
-          _ChecklistItem(label: 'Kiểm tra nội thất'),
+          _ChecklistItem(label: l10n.deepCleanBathroom),
+          _ChecklistItem(label: l10n.washCurtains),
+          _ChecklistItem(label: l10n.cleanAC),
+          _ChecklistItem(label: l10n.cleanGlass),
+          _ChecklistItem(label: l10n.cleanFridge),
+          _ChecklistItem(label: l10n.checkFurniture),
         ]);
         break;
       case HousekeepingTaskType.inspection:
         _checklist.addAll([
-          _ChecklistItem(label: 'Kiểm tra độ sạch'),
-          _ChecklistItem(label: 'Kiểm tra thiết bị'),
-          _ChecklistItem(label: 'Kiểm tra đồ dùng'),
-          _ChecklistItem(label: 'Kiểm tra an toàn'),
+          _ChecklistItem(label: l10n.checkCleanliness),
+          _ChecklistItem(label: l10n.checkEquipment),
+          _ChecklistItem(label: l10n.checkSupplies),
+          _ChecklistItem(label: l10n.checkSafety),
         ]);
         break;
       case HousekeepingTaskType.maintenance:
         _checklist.addAll([
-          _ChecklistItem(label: 'Kiểm tra sự cố'),
-          _ChecklistItem(label: 'Thực hiện sửa chữa'),
-          _ChecklistItem(label: 'Kiểm tra lại'),
+          _ChecklistItem(label: l10n.checkForIssues),
+          _ChecklistItem(label: l10n.performRepair),
+          _ChecklistItem(label: l10n.reinspect),
         ]);
         break;
     }
@@ -89,6 +99,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -128,14 +139,14 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hoàn thành công việc',
+                          l10n.completeTaskTitle,
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
                         Text(
-                          'Phòng ${widget.task.roomNumber ?? widget.task.room}',
+                          '${l10n.roomLabel} ${widget.task.roomNumber ?? widget.task.room}',
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: AppColors.textSecondary,
@@ -157,7 +168,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                   children: [
                     // Checklist
                     Text(
-                      'Danh sách kiểm tra',
+                      l10n.checklistLabel,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textSecondary,
@@ -171,7 +182,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
 
                     // Notes
                     Text(
-                      'Ghi chú (tùy chọn)',
+                      l10n.notesOptional,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: AppColors.textSecondary,
@@ -180,7 +191,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                     AppSpacing.gapVerticalSm,
                     AppTextField(
                       controller: _notesController,
-                      hint: 'Nhập ghi chú về công việc...',
+                      hint: l10n.enterTaskNotes,
                       maxLines: 3,
                     ),
                   ],
@@ -214,7 +225,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                           AppSpacing.gapHorizontalSm,
                           Expanded(
                             child: Text(
-                              'Vui lòng hoàn thành tất cả các mục',
+                              l10n.completeAllItemsWarning,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
@@ -232,7 +243,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                     children: [
                       Expanded(
                         child: AppButton(
-                          label: 'Hủy',
+                          label: l10n.cancel,
                           onPressed: () => Navigator.pop(context),
                           isOutlined: true,
                         ),
@@ -240,7 +251,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                       AppSpacing.gapHorizontalMd,
                       Expanded(
                         child: AppButton(
-                          label: 'Hoàn thành',
+                          label: l10n.completeBtn,
                           onPressed: _allItemsChecked
                               ? () => Navigator.pop(
                                     context,

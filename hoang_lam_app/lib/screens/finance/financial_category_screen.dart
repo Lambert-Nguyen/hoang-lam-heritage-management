@@ -157,7 +157,7 @@ class _FinancialCategoryScreenState
                   : '${context.l10n.categoryShown} "${category.name}"',
             ),
             action: SnackBarAction(
-              label: 'Hoàn tác',
+              label: context.l10n.undo,
               onPressed: () async {
                 await ref.read(financeRepositoryProvider).toggleCategoryActive(
                       category.id,
@@ -172,7 +172,7 @@ class _FinancialCategoryScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -180,11 +180,14 @@ class _FinancialCategoryScreenState
 
   Future<void> _confirmDelete(
       BuildContext context, FinancialCategory category) async {
+    final l10n = context.l10n;
     if (category.entryCount != null && category.entryCount! > 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Không thể xoá danh mục "${category.name}" vì có ${category.entryCount} giao dịch liên quan.',
+            l10n.cannotDeleteCategoryMsg
+                .replaceAll('{name}', category.name)
+                .replaceAll('{count}', '${category.entryCount}'),
           ),
           backgroundColor: AppColors.warning,
         ),
@@ -195,21 +198,21 @@ class _FinancialCategoryScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Xoá danh mục'),
+        title: Text(l10n.deleteCategory),
         content: Text(
-          'Bạn có chắc muốn xoá danh mục "${category.name}"?\n\nThao tác này không thể hoàn tác.',
+          l10n.confirmDeleteCategoryMsg.replaceAll('{name}', category.name),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Huỷ'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
             ),
-            child: const Text('Xoá'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -221,14 +224,14 @@ class _FinancialCategoryScreenState
         _refreshCategories();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Đã xoá danh mục "${category.name}"')),
+            SnackBar(content: Text('${l10n.categoryDeletedMsg} "${category.name}"')),
           );
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content: Text('Lỗi: $e'), backgroundColor: AppColors.error),
+                content: Text('${l10n.error}: $e'), backgroundColor: AppColors.error),
           );
         }
       }
@@ -287,6 +290,7 @@ class _CategoryList extends StatelessWidget {
     // Separate active and inactive
     final active = categories.where((c) => c.isActive).toList();
     final inactive = categories.where((c) => !c.isActive).toList();
+    final l10n = AppLocalizations.of(context)!;
 
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
@@ -299,7 +303,7 @@ class _CategoryList extends StatelessWidget {
           // Active categories
           if (active.isNotEmpty) ...[
             _buildSectionLabel(
-              'Đang sử dụng (${active.length})',
+              l10n.activeInUseCount.replaceAll('{count}', '${active.length}'),
               color: AppColors.success,
             ),
             ...active.map((cat) => _CategoryTile(
@@ -313,7 +317,7 @@ class _CategoryList extends StatelessWidget {
           // Inactive categories
           if (inactive.isNotEmpty) ...[
             _buildSectionLabel(
-              'Đã ẩn (${inactive.length})',
+              l10n.hiddenCount.replaceAll('{count}', '${inactive.length}'),
               color: AppColors.textSecondary,
             ),
             ...inactive.map((cat) => _CategoryTile(
@@ -368,6 +372,7 @@ class _CategoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isIncome = category.categoryType == EntryType.income;
     final typeColor = isIncome ? AppColors.income : AppColors.expense;
 
@@ -435,7 +440,7 @@ class _CategoryTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                isIncome ? 'Thu' : 'Chi',
+                isIncome ? l10n.incomeShort : l10n.expenseShort,
                 style: TextStyle(
                   fontSize: 11,
                   color: typeColor,
@@ -446,7 +451,7 @@ class _CategoryTile extends StatelessWidget {
             if (category.entryCount != null && category.entryCount! > 0) ...[
               const SizedBox(width: 8),
               Text(
-                '${category.entryCount} giao dịch',
+                '${category.entryCount} ${l10n.transactionsLabel}',
                 style: const TextStyle(fontSize: 12),
               ),
             ],
@@ -459,9 +464,9 @@ class _CategoryTile extends StatelessWidget {
                   color: AppColors.info.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
-                  'Mặc định',
-                  style: TextStyle(
+                child: Text(
+                  l10n.defaultBadge,
+                  style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.info,
                     fontWeight: FontWeight.w600,
@@ -586,11 +591,12 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isIncome = widget.entryType == EntryType.income;
 
     return AlertDialog(
       title: Text(
-        _isEditing ? 'Sửa danh mục' : 'Thêm danh mục ${isIncome ? "thu" : "chi"}',
+        _isEditing ? l10n.editCategory : isIncome ? l10n.addIncomeCategoryTitle : l10n.addExpenseCategoryTitle,
       ),
       content: SizedBox(
         width: double.maxFinite,
@@ -604,14 +610,14 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
                 // Name
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tên danh mục *',
-                    hintText: 'VD: Tiền điện',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.categoryNameRequired,
+                    hintText: l10n.categoryNameHint,
+                    border: const OutlineInputBorder(),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Vui lòng nhập tên danh mục';
+                      return l10n.pleaseEnterCategoryName;
                     }
                     return null;
                   },
@@ -622,18 +628,18 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
                 // Name EN
                 TextFormField(
                   controller: _nameEnController,
-                  decoration: const InputDecoration(
-                    labelText: 'Tên tiếng Anh',
-                    hintText: 'VD: Electricity',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l10n.englishName,
+                    hintText: l10n.exampleElectricityEn,
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 AppSpacing.gapVerticalLg,
 
                 // Icon picker
-                const Text(
-                  'Biểu tượng',
-                  style: TextStyle(
+                Text(
+                  l10n.iconLabel,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -643,9 +649,9 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
                 AppSpacing.gapVerticalLg,
 
                 // Color picker
-                const Text(
-                  'Màu sắc',
-                  style: TextStyle(
+                Text(
+                  l10n.colorLabel,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -664,7 +670,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.pop(context, false),
-          child: const Text('Huỷ'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: _saving ? null : _save,
@@ -674,7 +680,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text(_isEditing ? 'Lưu' : 'Tạo'),
+              : Text(_isEditing ? l10n.save : l10n.create),
         ),
       ],
     );
@@ -744,11 +750,12 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
   }
 
   Widget _buildPreview() {
+    final l10n = AppLocalizations.of(context)!;
     final previewColor = _hexToColor(_selectedColor);
     final previewIcon = _availableIcons[_selectedIcon] ?? Icons.category;
     final name = _nameController.text.isNotEmpty
         ? _nameController.text
-        : 'Tên danh mục';
+        : l10n.categoryNamePlaceholder;
 
     return Container(
       padding: AppSpacing.paddingAll,
@@ -773,9 +780,9 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Xem trước',
-                  style: TextStyle(
+                Text(
+                  l10n.previewLabel,
+                  style: const TextStyle(
                     fontSize: 10,
                     color: AppColors.textSecondary,
                   ),
@@ -803,6 +810,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
 
     setState(() => _saving = true);
 
@@ -837,7 +845,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
         messenger.showSnackBar(
           SnackBar(
             content: Text(
-              _isEditing ? 'Đã cập nhật danh mục' : 'Đã tạo danh mục mới',
+              _isEditing ? l10n.categoryUpdatedMsg : l10n.categoryCreatedMsg,
             ),
           ),
         );
@@ -846,7 +854,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
       setState(() => _saving = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: AppColors.error),
         );
       }
     }

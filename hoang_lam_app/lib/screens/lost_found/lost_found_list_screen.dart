@@ -45,7 +45,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lost & Found'),
+        title: Text(l10n.lostAndFound),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
@@ -58,7 +58,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
           IconButton(
             icon: const Icon(Icons.bar_chart),
             onPressed: () => _showStatisticsSheet(),
-            tooltip: 'Thống kê',
+            tooltip: l10n.statistics,
           ),
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -135,7 +135,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
       },
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: 'Không thể tải: $error',
+        message: '${AppLocalizations.of(context)!.error}: $error',
         onRetry: () => ref.invalidate(lostFoundItemsProvider),
       ),
     );
@@ -168,7 +168,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
           Icon(Icons.inventory_2_outlined, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.5)),
           const SizedBox(height: AppSpacing.md),
           Text(
-            claimed == true ? 'Không có đồ đã nhận' : claimed == false ? 'Không có đồ chưa nhận' : 'Chưa có đồ thất lạc',
+            claimed == true ? AppLocalizations.of(context)!.noClaimedItems : claimed == false ? AppLocalizations.of(context)!.noUnclaimedItems : AppLocalizations.of(context)!.noLostFoundItems,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
           ),
         ],
@@ -185,13 +185,13 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Lọc theo danh mục', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+            Text(AppLocalizations.of(context)!.filterByCategoryLabel, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
             const SizedBox(height: AppSpacing.md),
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: [
-                FilterChip(label: const Text('Tất cả'), selected: _categoryFilter == null, onSelected: (_) {
+                FilterChip(label: Text(AppLocalizations.of(context)!.all), selected: _categoryFilter == null, onSelected: (_) {
                   setState(() => _categoryFilter = null);
                   Navigator.pop(context);
                 }),
@@ -297,23 +297,23 @@ class _StatisticsSheet extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Thống kê', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                Text(context.l10n.statistics, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: AppSpacing.lg),
                 Row(
                   children: [
-                    Expanded(child: _StatCard(title: 'Tổng số', value: stats.totalItems.toString(), icon: Icons.inventory_2, color: AppColors.primary)),
+                    Expanded(child: _StatCard(title: context.l10n.total, value: stats.totalItems.toString(), icon: Icons.inventory_2, color: AppColors.primary)),
                     const SizedBox(width: AppSpacing.md),
-                    Expanded(child: _StatCard(title: 'Giá trị chưa nhận', value: '${stats.unclaimedValue.toStringAsFixed(0)}₫', icon: Icons.attach_money, color: Colors.green)),
+                    Expanded(child: _StatCard(title: context.l10n.unclaimedValue, value: '${stats.unclaimedValue.toStringAsFixed(0)}₫', icon: Icons.attach_money, color: Colors.green)),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                Text('Theo trạng thái', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                Text(context.l10n.byStatusLabel, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 ...stats.byStatus.entries.map((e) => _StatRow(label: e.key, value: e.value.toString())),
               ],
             ),
           ),
           loading: () => const LoadingIndicator(),
-          error: (e, _) => Center(child: Text('Lỗi: $e')),
+          error: (e, _) => Center(child: Text('${context.l10n.error}: $e')),
         ),
       ),
     );

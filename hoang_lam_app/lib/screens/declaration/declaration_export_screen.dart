@@ -114,7 +114,7 @@ class _DeclarationExportScreenState
 
             // Form type selection
             Text(
-              'Loại biểu mẫu',
+              context.l10n.formType,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),

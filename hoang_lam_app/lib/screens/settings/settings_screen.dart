@@ -687,10 +687,11 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final l10n = context.l10n;
     showAboutDialog(
       context: context,
       applicationName: AppConstants.hotelName,
-      applicationVersion: 'Phiên bản ${AppConstants.appVersion}',
+      applicationVersion: '${l10n.version} ${AppConstants.appVersion}',
       applicationIcon: ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: Image.asset(
@@ -701,13 +702,13 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
       children: [
-        const Text(
-          'Ứng dụng quản lý căn hộ đơn giản, dễ sử dụng dành cho gia đình.',
+        Text(
+          l10n.appDescription,
         ),
         AppSpacing.gapVerticalMd,
-        const Text(
-          'Phát triển bởi: Duy Lâm',
-          style: TextStyle(color: AppColors.textSecondary),
+        Text(
+          l10n.developedBy,
+          style: const TextStyle(color: AppColors.textSecondary),
         ),
         AppSpacing.gapVerticalSm,
         const Text(
@@ -761,20 +762,20 @@ class SettingsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('📋 Quản lý phòng', style: TextStyle(fontWeight: FontWeight.bold)),
-              const Text('Xem trạng thái phòng, thay đổi trạng thái, tạo đặt phòng mới.'),
+              Text('📋 ${l10n.helpRoomManagement}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(l10n.helpRoomManagementDesc),
               const SizedBox(height: 12),
-              Text('📅 Đặt phòng', style: TextStyle(fontWeight: FontWeight.bold)),
-              const Text('Quản lý check-in, check-out, và lịch đặt phòng.'),
+              Text('📅 ${l10n.helpBookings}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(l10n.helpBookingsDesc),
               const SizedBox(height: 12),
-              Text('🧹 Housekeeping', style: TextStyle(fontWeight: FontWeight.bold)),
-              const Text('Phân công dọn phòng, theo dõi bảo trì.'),
+              Text('🧹 ${l10n.helpHousekeeping}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(l10n.helpHousekeepingDesc),
               const SizedBox(height: 12),
-              Text('💰 Tài chính', style: TextStyle(fontWeight: FontWeight.bold)),
-              const Text('Báo cáo thu chi, quản lý folio khách.'),
+              Text('💰 ${l10n.helpFinance}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(l10n.helpFinanceDesc),
               const SizedBox(height: 12),
-              Text('🌙 Night Audit', style: TextStyle(fontWeight: FontWeight.bold)),
-              const Text('Kiểm toán cuối ngày, đối soát doanh thu.'),
+              Text('🌙 ${l10n.helpNightAudit}', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(l10n.helpNightAuditDesc),
             ],
           ),
         ),

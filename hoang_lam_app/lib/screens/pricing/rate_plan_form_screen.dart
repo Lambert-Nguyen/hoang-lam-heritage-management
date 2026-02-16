@@ -204,10 +204,10 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
               keyboardType: TextInputType.number,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Vui lòng nhập giá';
+                  return l10n.pleaseEnterPrice;
                 }
                 if (int.tryParse(value) == null || int.parse(value) <= 0) {
-                  return 'Giá phải lớn hơn 0';
+                  return l10n.priceMustBePositive;
                 }
                 return null;
               },
@@ -216,7 +216,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             AppSpacing.gapVerticalLg,
 
             // Stay Requirements Section
-            _buildSectionHeader('Yêu cầu lưu trú'),
+            _buildSectionHeader(l10n.stayRequirements),
 
             Row(
               children: [
@@ -352,7 +352,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.save),
-              label: Text(_isEditing ? 'Cập nhật' : 'Tạo gói giá'),
+              label: Text(_isEditing ? l10n.update : l10n.createRatePlan),
             ),
 
             AppSpacing.gapVerticalXl,
@@ -378,6 +378,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
   Future<void> _saveRatePlan() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedRoomTypeId == null) return;
+    final l10n = context.l10n;
 
     setState(() => _isLoading = true);
 
@@ -405,7 +406,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
           ref.invalidate(ratePlansProvider);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Đã cập nhật gói giá "${_nameController.text}"'),
+              content: Text('${l10n.ratePlanUpdated} "${_nameController.text}"'),
               backgroundColor: AppColors.success,
             ),
           );
@@ -434,7 +435,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
           ref.invalidate(ratePlansProvider);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Đã tạo gói giá "${_nameController.text}"'),
+              content: Text('${l10n.ratePlanCreated} "${_nameController.text}"'),
               backgroundColor: AppColors.success,
             ),
           );
@@ -445,7 +446,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${l10n.error}: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -458,15 +459,16 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
   }
 
   void _confirmDelete() {
+    final l10n = context.l10n;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xóa gói giá?'),
-        content: Text('Bạn có chắc muốn xóa gói giá "${_nameController.text}"?'),
+        title: Text('${l10n.deleteRatePlan}?'),
+        content: Text('${l10n.confirmDeleteRatePlan} "${_nameController.text}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -474,7 +476,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
               await _deleteRatePlan();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Xóa'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -483,6 +485,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
 
   Future<void> _deleteRatePlan() async {
     setState(() => _isLoading = true);
+    final l10n = context.l10n;
 
     try {
       final notifier = ref.read(ratePlanNotifierProvider.notifier);
@@ -492,7 +495,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
         ref.invalidate(ratePlansProvider);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đã xóa gói giá "${_nameController.text}"'),
+            content: Text('${l10n.ratePlanDeleted} "${_nameController.text}"'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -502,7 +505,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi: ${e.toString()}'),
+            content: Text('${l10n.error}: ${e.toString()}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -554,7 +557,7 @@ class _DatePickerField extends StatelessWidget {
               : const Icon(Icons.calendar_today),
         ),
         child: Text(
-          value != null ? dateFormat.format(value!) : 'Chọn ngày',
+          value != null ? dateFormat.format(value!) : AppLocalizations.of(context)!.selectDatePlaceholder,
           style: TextStyle(
             color: value != null ? null : AppColors.textSecondary,
           ),

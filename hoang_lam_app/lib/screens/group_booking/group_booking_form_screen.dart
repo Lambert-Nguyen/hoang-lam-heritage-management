@@ -133,12 +133,12 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(children: [
-                  AppTextField(controller: _nameController, label: '${context.l10n.groupNameRequired} *', hint: context.l10n.exampleGroupName, validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
+                  AppTextField(controller: _nameController, label: '${context.l10n.groupNameRequired} *', hint: context.l10n.exampleGroupName, validator: (v) => v == null || v.isEmpty ? context.l10n.pleaseEnterValue : null),
                   const SizedBox(height: AppSpacing.md),
                   Row(children: [
-                    Expanded(child: AppTextField(controller: _roomCountController, label: '${context.l10n.numberOfRooms} *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? 'Không hợp lệ' : null)),
+                    Expanded(child: AppTextField(controller: _roomCountController, label: '${context.l10n.numberOfRooms} *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? context.l10n.invalid : null)),
                     const SizedBox(width: AppSpacing.md),
-                    Expanded(child: AppTextField(controller: _guestCountController, label: '${context.l10n.numberOfGuests} *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? 'Không hợp lệ' : null)),
+                    Expanded(child: AppTextField(controller: _guestCountController, label: '${context.l10n.numberOfGuests} *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || int.tryParse(v) == null || int.parse(v) < 1 ? context.l10n.invalid : null)),
                   ]),
                 ]),
               ),
@@ -150,70 +150,70 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(children: [
-                  AppTextField(controller: _contactNameController, label: '${context.l10n.contactPersonRequired} *', validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
+                  AppTextField(controller: _contactNameController, label: '${context.l10n.contactPersonRequired} *', validator: (v) => v == null || v.isEmpty ? context.l10n.pleaseEnterValue : null),
                   const SizedBox(height: AppSpacing.md),
-                  AppTextField(controller: _contactPhoneController, label: '${context.l10n.phoneRequired} *', keyboardType: TextInputType.phone, validator: (v) => v == null || v.isEmpty ? 'Vui lòng nhập' : null),
+                  AppTextField(controller: _contactPhoneController, label: '${context.l10n.phoneRequired} *', keyboardType: TextInputType.phone, validator: (v) => v == null || v.isEmpty ? context.l10n.pleaseEnterValue : null),
                   const SizedBox(height: AppSpacing.md),
                   AppTextField(controller: _contactEmailController, label: context.l10n.emailLabel, keyboardType: TextInputType.emailAddress),
                 ]),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionTitle(title: 'Thời gian lưu trú'),
+            _SectionTitle(title: context.l10n.stayPeriod),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(children: [
-                  _buildDatePicker('Ngày nhận phòng *', _checkInDate, (d) {
+                  _buildDatePicker(context.l10n.checkInDateRequired, _checkInDate, (d) {
                     setState(() {
                       _checkInDate = d;
                       if (_checkOutDate.isBefore(_checkInDate)) _checkOutDate = _checkInDate.add(const Duration(days: 1));
                     });
                   }, DateTime.now()),
                   const SizedBox(height: AppSpacing.md),
-                  _buildDatePicker('Ngày trả phòng *', _checkOutDate, (d) => setState(() => _checkOutDate = d), _checkInDate.add(const Duration(days: 1))),
+                  _buildDatePicker(context.l10n.checkOutDateRequired, _checkOutDate, (d) => setState(() => _checkOutDate = d), _checkInDate.add(const Duration(days: 1))),
                   const SizedBox(height: AppSpacing.sm),
-                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [Text('Số đêm: ${_checkOutDate.difference(_checkInDate).inDays}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600))]),
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [Text(context.l10n.nightsCountDisplay.replaceAll('{count}', '${_checkOutDate.difference(_checkInDate).inDays}'), style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600))]),
                 ]),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionTitle(title: 'Thanh toán'),
+            _SectionTitle(title: context.l10n.payment),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(children: [
-                  AppTextField(controller: _totalAmountController, label: 'Tổng tiền (VNĐ) *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || double.tryParse(v) == null ? 'Không hợp lệ' : null),
+                  AppTextField(controller: _totalAmountController, label: '${context.l10n.totalAmountVnd} *', keyboardType: TextInputType.number, validator: (v) => v == null || v.isEmpty || double.tryParse(v) == null ? context.l10n.invalid : null),
                   const SizedBox(height: AppSpacing.md),
                   Row(children: [
-                    Expanded(child: AppTextField(controller: _depositAmountController, label: 'Đặt cọc (VNĐ)', keyboardType: TextInputType.number)),
+                    Expanded(child: AppTextField(controller: _depositAmountController, label: context.l10n.depositVnd, keyboardType: TextInputType.number)),
                     const SizedBox(width: AppSpacing.md),
-                    Expanded(child: AppTextField(controller: _discountController, label: 'Giảm giá (%)', keyboardType: TextInputType.number)),
+                    Expanded(child: AppTextField(controller: _discountController, label: context.l10n.discountPercent, keyboardType: TextInputType.number)),
                   ]),
                   const SizedBox(height: AppSpacing.md),
-                  SwitchListTile(title: const Text('Đã thanh toán đặt cọc'), value: _depositPaid, onChanged: (v) => setState(() => _depositPaid = v), contentPadding: EdgeInsets.zero),
+                  SwitchListTile(title: Text(context.l10n.depositPaidLabel), value: _depositPaid, onChanged: (v) => setState(() => _depositPaid = v), contentPadding: EdgeInsets.zero),
                 ]),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
-            _SectionTitle(title: 'Thông tin bổ sung'),
+            _SectionTitle(title: context.l10n.additionalInfoSection),
             const SizedBox(height: AppSpacing.sm),
             AppCard(
               child: Padding(
                 padding: AppSpacing.paddingCard,
                 child: Column(children: [
-                  AppTextField(controller: _specialRequestsController, label: 'Yêu cầu đặc biệt', maxLines: 3),
+                  AppTextField(controller: _specialRequestsController, label: context.l10n.specialRequests, maxLines: 3),
                   const SizedBox(height: AppSpacing.md),
-                  AppTextField(controller: _notesController, label: 'Ghi chú', maxLines: 3),
+                  AppTextField(controller: _notesController, label: context.l10n.notes, maxLines: 3),
                 ]),
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
             SizedBox(
               width: double.infinity,
-              child: AppButton(label: widget.isEditing ? 'Cập nhật' : 'Tạo đặt phòng', onPressed: _isLoading ? null : _handleSubmit, isLoading: _isLoading, icon: widget.isEditing ? Icons.save : Icons.add),
+              child: AppButton(label: widget.isEditing ? context.l10n.update : context.l10n.createBooking, onPressed: _isLoading ? null : _handleSubmit, isLoading: _isLoading, icon: widget.isEditing ? Icons.save : Icons.add),
             ),
             const SizedBox(height: AppSpacing.lg),
           ],
@@ -267,7 +267,7 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
         final result = await notifier.updateBooking(widget.bookingId!, update);
         if (result != null && mounted) {
           ref.invalidate(groupBookingsProvider);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã cập nhật')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.groupUpdated)));
           context.pop();
         }
       } else {
@@ -290,12 +290,12 @@ class _GroupBookingFormScreenState extends ConsumerState<GroupBookingFormScreen>
         final result = await notifier.createBooking(create);
         if (result != null && mounted) {
           ref.invalidate(groupBookingsProvider);
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã tạo đặt phòng')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.bookingCreated)));
           context.pop();
         }
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

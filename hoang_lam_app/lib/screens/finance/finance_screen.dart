@@ -683,13 +683,13 @@ class _EntryDetailSheet extends StatelessWidget {
           AppSpacing.gapVerticalLg,
 
           // Details
-          _buildDetailRow('Mô tả', entry.description.isNotEmpty ? entry.description : '-'),
-          _buildDetailRow('Ngày', dateFormat.format(entry.entryDate)),
-          _buildDetailRow('Phương thức', entry.paymentMethod.displayName),
+          _buildDetailRow(context.l10n.description, entry.description.isNotEmpty ? entry.description : '-'),
+          _buildDetailRow(context.l10n.dateLabel, dateFormat.format(entry.entryDate)),
+          _buildDetailRow(context.l10n.paymentMethod, entry.paymentMethod.displayName),
           if (entry.reference.isNotEmpty)
-            _buildDetailRow('Mã tham chiếu', entry.reference),
+            _buildDetailRow(context.l10n.referenceCode, entry.reference),
           if (entry.notes.isNotEmpty)
-            _buildDetailRow('Ghi chú', entry.notes),
+            _buildDetailRow(context.l10n.notes, entry.notes),
 
           AppSpacing.gapVerticalLg,
 

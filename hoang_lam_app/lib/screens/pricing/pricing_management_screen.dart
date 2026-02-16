@@ -132,14 +132,14 @@ class _RatePlansTab extends ConsumerWidget {
                 ),
                 AppSpacing.gapVerticalMd,
                 Text(
-                  'Chưa có gói giá nào',
+                  context.l10n.noRatePlansYet,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
                 AppSpacing.gapVerticalSm,
                 Text(
-                  'Thêm gói giá để quản lý giá linh hoạt',
+                  context.l10n.addRatePlanFlexiblePricing,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -171,11 +171,11 @@ class _RatePlansTab extends ConsumerWidget {
               children: [
                 Icon(Icons.error_outline, size: 48, color: AppColors.error),
                 AppSpacing.gapVerticalMd,
-                Text('Lỗi: $error'),
+                Text('${context.l10n.error}: $error'),
                 AppSpacing.gapVerticalMd,
                 ElevatedButton(
                   onPressed: () => ref.invalidate(ratePlansProvider),
-                  child: const Text('Thử lại'),
+                  child: Text(context.l10n.retry),
                 ),
               ],
             ),
@@ -241,7 +241,7 @@ class _RatePlanCard extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      plan.isActive ? 'Đang hoạt động' : 'Tạm dừng',
+                      plan.isActive ? context.l10n.isActive : context.l10n.pausedStatus,
                       style: TextStyle(
                         color:
                             plan.isActive
@@ -267,14 +267,14 @@ class _RatePlanCard extends ConsumerWidget {
                     Expanded(
                       child: _InfoChip(
                         icon: Icons.nights_stay,
-                        label: 'Tối thiểu ${plan.minStay} đêm',
+                        label: context.l10n.minNightsStayDisplay.replaceAll('{count}', '${plan.minStay}'),
                       ),
                     ),
                   if (plan.includesBreakfast)
-                    const Expanded(
+                    Expanded(
                       child: _InfoChip(
                         icon: Icons.free_breakfast,
-                        label: 'Bao gồm sáng',
+                        label: context.l10n.includesBreakfastLabel,
                       ),
                     ),
                 ],
@@ -310,9 +310,9 @@ class _RatePlanCard extends ConsumerWidget {
     if (from != null && to != null) {
       return '${dateFormat.format(from)} - ${dateFormat.format(to)}';
     } else if (from != null) {
-      return 'Từ ${dateFormat.format(from)}';
+      return context.l10n.fromDateDisplay.replaceAll('{date}', dateFormat.format(from));
     } else if (to != null) {
-      return 'Đến ${dateFormat.format(to)}';
+      return context.l10n.toDateDisplay.replaceAll('{date}', dateFormat.format(to));
     }
     return '';
   }
@@ -348,14 +348,14 @@ class _DateOverridesTab extends ConsumerWidget {
                 ),
                 AppSpacing.gapVerticalMd,
                 Text(
-                  'Chưa có giá theo ngày',
+                  context.l10n.noDailyRatesYet,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
                 AppSpacing.gapVerticalSm,
                 Text(
-                  'Thêm giá đặc biệt cho ngày lễ, cuối tuần...',
+                  context.l10n.addSpecialRates,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -395,11 +395,11 @@ class _DateOverridesTab extends ConsumerWidget {
               children: [
                 Icon(Icons.error_outline, size: 48, color: AppColors.error),
                 AppSpacing.gapVerticalMd,
-                Text('Lỗi: $error'),
+                Text('${context.l10n.error}: $error'),
                 AppSpacing.gapVerticalMd,
                 ElevatedButton(
                   onPressed: () => ref.invalidate(dateRateOverridesProvider),
-                  child: const Text('Thử lại'),
+                  child: Text(context.l10n.retry),
                 ),
               ],
             ),
@@ -501,11 +501,11 @@ class _DateOverrideCard extends ConsumerWidget {
                 Row(
                   children: [
                     if (item.closedToArrival)
-                      _WarningChip(label: 'Không nhận khách'),
+                      _WarningChip(label: context.l10n.noArrivalsLabel),
                     if (item.closedToArrival && item.closedToDeparture)
                       const SizedBox(width: 8),
                     if (item.closedToDeparture)
-                      _WarningChip(label: 'Không trả phòng'),
+                      _WarningChip(label: context.l10n.noDeparturesLabel),
                   ],
                 ),
               ],

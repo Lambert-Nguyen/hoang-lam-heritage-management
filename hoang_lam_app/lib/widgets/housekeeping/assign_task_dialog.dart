@@ -129,12 +129,12 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Lỗi tải danh sách nhân viên',
+                        context.l10n.errorLoadingStaffList,
                         style: TextStyle(color: AppColors.error),
                       ),
                       TextButton(
                         onPressed: () => ref.invalidate(staffListProvider),
-                        child: const Text('Thử lại'),
+                        child: Text(context.l10n.retry),
                       ),
                     ],
                   ),
@@ -214,7 +214,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Tự nhận việc',
+                    context.l10n.assignToSelf,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),

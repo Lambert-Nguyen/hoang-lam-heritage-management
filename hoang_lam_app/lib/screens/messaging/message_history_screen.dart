@@ -12,18 +12,19 @@ import '../../providers/messaging_provider.dart';
 class MessageHistoryScreen extends ConsumerWidget {
   final int? guestId;
   final int? bookingId;
-  final String title;
+  final String? title;
 
   const MessageHistoryScreen({
     super.key,
     this.guestId,
     this.bookingId,
-    this.title = 'Lịch sử tin nhắn',
+    this.title,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final displayTitle = title ?? l10n.messageHistory;
     final messagesAsync = guestId != null
         ? ref.watch(guestMessagesByGuestProvider(guestId!))
         : bookingId != null
@@ -32,7 +33,7 @@ class MessageHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(displayTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
@@ -263,7 +264,7 @@ class _MessageTile extends StatelessWidget {
                     child: TextButton.icon(
                       onPressed: onResend,
                       icon: const Icon(Icons.refresh, size: 16),
-                      label: const Text('Gửi lại'),
+                      label: Text(AppLocalizations.of(context)!.resendBtn),
                       style: TextButton.styleFrom(
                         visualDensity: VisualDensity.compact,
                       ),

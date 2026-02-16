@@ -67,8 +67,9 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     } catch (e) {
       setState(() => _isLoading = false);
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -114,11 +115,11 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                       TextFormField(
                         decoration: InputDecoration(
                           labelText: context.l10n.roomIdRequired,
-                          hintText: 'Nhập ID phòng',
+                          hintText: context.l10n.enterRoomIdHint,
                           prefixIcon: const Icon(Icons.meeting_room),
                         ),
                         keyboardType: TextInputType.number,
-                        validator: (v) => v?.isEmpty ?? true ? 'Vui lòng nhập ID phòng' : null,
+                        validator: (v) => v?.isEmpty ?? true ? context.l10n.pleaseEnterRoomId : null,
                         onChanged: (v) => _selectedRoomId = int.tryParse(v),
                       ),
                       const SizedBox(height: AppSpacing.md),
@@ -170,7 +171,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
               const SizedBox(height: AppSpacing.lg),
 
               // Template selection
-              Text('Mẫu kiểm tra (tùy chọn)', style: Theme.of(context).textTheme.titleMedium),
+              Text(context.l10n.inspectionTemplateOptional, style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: AppSpacing.md),
               templatesAsync.when(
                 data: (templates) {
@@ -182,7 +183,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                           children: [
                             Icon(Icons.info_outline, color: AppColors.textSecondary),
                             const SizedBox(width: 12),
-                            const Expanded(child: Text('Không có mẫu mặc định nào. Bạn có thể tạo mẫu mới từ danh sách mẫu.')),
+                            Expanded(child: Text(context.l10n.noDefaultTemplateDesc)),
                           ],
                         ),
                       ),
@@ -217,7 +218,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                                   children: [
                                     Text(template.name, style: const TextStyle(fontWeight: FontWeight.w500)),
                                     Text(
-                                      '${template.items.length} mục kiểm tra',
+                                      '${template.items.length} ${context.l10n.checklistItemsSuffix}',
                                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                                     ),
                                   ],
@@ -230,8 +231,8 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                                     color: Colors.green.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: const Text(
-                                    'Mặc định',
+                                  child: Text(
+                                    context.l10n.defaultBadge,
                                     style: TextStyle(color: Colors.green, fontSize: 12),
                                   ),
                                 ),
@@ -243,7 +244,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                   );
                 },
                 loading: () => const LoadingIndicator(),
-                error: (e, _) => ErrorDisplay(message: 'Lỗi: $e'),
+                error: (e, _) => ErrorDisplay(message: '${context.l10n.error}: $e'),
               ),
               const SizedBox(height: AppSpacing.xl),
 
@@ -254,7 +255,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                   icon: _isSubmitting
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                       : const Icon(Icons.add),
-                  label: Text(_isSubmitting ? 'Đang tạo...' : 'Tạo kiểm tra'),
+                  label: Text(_isSubmitting ? context.l10n.creatingText : context.l10n.createInspectionBtn),
                 ),
               ),
             ],
@@ -267,8 +268,8 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
   Widget _buildConductScreen() {
     if (_existingInspection == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Tiến hành kiểm tra')),
-        body: const ErrorDisplay(message: 'Không tìm thấy kiểm tra'),
+        appBar: AppBar(title: Text(context.l10n.conductInspection)),
+        body: ErrorDisplay(message: context.l10n.inspectionNotFound),
       );
     }
 
@@ -278,12 +279,12 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Phòng ${inspection.roomNumber}'),
+        title: Text('${context.l10n.roomLabel} ${inspection.roomNumber}'),
         actions: [
           TextButton.icon(
             onPressed: _isSubmitting ? null : _completeInspection,
             icon: const Icon(Icons.check),
-            label: const Text('Hoàn tất'),
+            label: Text(context.l10n.completeBtnLabel),
           ),
         ],
       ),
@@ -300,7 +301,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Tiến độ: ${passedCount + failedCount}/${_checklistItems.length}',
+                        '${context.l10n.progressCount} ${passedCount + failedCount}/${_checklistItems.length}',
                         style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 4),
@@ -392,7 +393,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: const Text('Quan trọng', style: TextStyle(fontSize: 10, color: Colors.red)),
+                    child: Text(l10n.importantBadge, style: const TextStyle(fontSize: 10, color: Colors.red)),
                   ),
               ],
             ),
@@ -403,7 +404,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                   child: OutlinedButton.icon(
                     onPressed: () => _updateItemStatus(index, true),
                     icon: Icon(Icons.check, color: isPassed == true ? Colors.white : Colors.green),
-                    label: Text('Đạt', style: TextStyle(color: isPassed == true ? Colors.white : Colors.green)),
+                    label: Text(l10n.passBtn, style: TextStyle(color: isPassed == true ? Colors.white : Colors.green)),
                     style: OutlinedButton.styleFrom(
                       backgroundColor: isPassed == true ? Colors.green : null,
                       side: const BorderSide(color: Colors.green),
@@ -415,7 +416,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                   child: OutlinedButton.icon(
                     onPressed: () => _updateItemStatus(index, false),
                     icon: Icon(Icons.close, color: isPassed == false ? Colors.white : Colors.red),
-                    label: Text('Không đạt', style: TextStyle(color: isPassed == false ? Colors.white : Colors.red)),
+                    label: Text(l10n.failBtn, style: TextStyle(color: isPassed == false ? Colors.white : Colors.red)),
                     style: OutlinedButton.styleFrom(
                       backgroundColor: isPassed == false ? Colors.red : null,
                       side: const BorderSide(color: Colors.red),
@@ -445,6 +446,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
   }
 
   Widget _buildNotesSection() {
+    final l10n = AppLocalizations.of(context)!;
     return AppCard(
       margin: const EdgeInsets.only(top: AppSpacing.md),
       child: Padding(
@@ -452,25 +454,25 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Ghi chú chung', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.generalNotes, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             TextFormField(
               initialValue: _notes,
-              decoration: const InputDecoration(
-                hintText: 'Nhập ghi chú...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: l10n.enterNotesHint,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
               onChanged: (value) => _notes = value,
             ),
             const SizedBox(height: 16),
-            Text('Hành động cần thực hiện (nếu có)', style: Theme.of(context).textTheme.titleMedium),
+            Text(l10n.actionRequiredIfAny, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             TextFormField(
               initialValue: _actionRequired,
-              decoration: const InputDecoration(
-                hintText: 'Mô tả hành động cần thực hiện...',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                hintText: l10n.describeActionRequired,
+                border: const OutlineInputBorder(),
               ),
               maxLines: 3,
               onChanged: (value) => _actionRequired = value,
@@ -513,7 +515,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     }
     if (_selectedRoomId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng chọn phòng'), backgroundColor: Colors.red),
+        SnackBar(content: Text(context.l10n.pleaseSelectRoomMsg), backgroundColor: Colors.red),
       );
       return;
     }
@@ -530,13 +532,13 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       if (mounted) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã tạo kiểm tra thành công'), backgroundColor: Colors.green),
+          SnackBar(content: Text(context.l10n.inspectionCreatedSuccess), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -552,7 +554,7 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     if (uncheckedCritical.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Còn ${uncheckedCritical.length} mục quan trọng chưa kiểm tra'),
+          content: Text('${context.l10n.uncheckedCriticalItems}: ${uncheckedCritical.length}'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -574,13 +576,13 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       if (mounted) {
         context.go('/room-inspections');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Đã hoàn thành kiểm tra'), backgroundColor: Colors.green),
+          SnackBar(content: Text(context.l10n.inspectionCompleted), backgroundColor: Colors.green),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: Colors.red),
         );
       }
     } finally {

@@ -660,12 +660,13 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         ).toList();
 
         if (overlapping.isNotEmpty && mounted) {
+          final l10n = context.l10n;
           final proceed = await showDialog<bool>(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('Cảnh báo trùng lịch'),
+              title: Text(l10n.overlapWarningTitle),
               content: Text(
-                'Phòng này đã có ${overlapping.length} đặt phòng trong khoảng thời gian đã chọn. Bạn có muốn tiếp tục?',
+                l10n.overlapWarningMessage.replaceAll('{count}', overlapping.length.toString()),
               ),
               actions: [
                 TextButton(

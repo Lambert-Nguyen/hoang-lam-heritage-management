@@ -404,7 +404,7 @@ class GuestStatsSummary extends StatelessWidget {
                 context,
                 icon: Icons.star,
                 value: 'VIP',
-                label: 'Hạng',
+                label: context.l10n.rankLabel,
                 valueColor: AppColors.warning,
               ),
             ],

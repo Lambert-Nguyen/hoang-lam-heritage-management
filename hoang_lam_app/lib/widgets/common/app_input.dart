@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Standard text input field
 class AppTextField extends StatelessWidget {
@@ -102,9 +103,10 @@ class PhoneTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return AppTextField(
       controller: controller,
-      label: label ?? 'Số điện thoại',
+      label: label ?? l10n.phoneNumber,
       hint: '0901234567',
       error: error,
       keyboardType: TextInputType.phone,
@@ -115,19 +117,19 @@ class PhoneTextField extends StatelessWidget {
         LengthLimitingTextInputFormatter(11),
       ],
       onChanged: onChanged,
-      validator: validator ?? _defaultPhoneValidator,
+      validator: validator ?? (value) => _defaultPhoneValidator(value, l10n),
     );
   }
 
-  String? _defaultPhoneValidator(String? value) {
+  String? _defaultPhoneValidator(String? value, AppLocalizations l10n) {
     if (value == null || value.isEmpty) {
       return null; // Optional field
     }
     if (value.length < 10 || value.length > 11) {
-      return 'Số điện thoại phải có 10-11 số';
+      return l10n.phoneValidationLength;
     }
     if (!value.startsWith('0')) {
-      return 'Số điện thoại phải bắt đầu bằng 0';
+      return l10n.phoneValidationStartWithZero;
     }
     return null;
   }
@@ -154,7 +156,7 @@ class CurrencyTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppTextField(
       controller: controller,
-      label: label ?? 'Số tiền',
+      label: label ?? context.l10n.amount,
       hint: '0',
       error: error,
       keyboardType: TextInputType.number,

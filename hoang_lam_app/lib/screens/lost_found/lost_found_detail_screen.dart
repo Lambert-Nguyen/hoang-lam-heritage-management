@@ -31,7 +31,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lost & Found'),
+        title: Text(l10n.lostAndFound),
         actions: [
           itemAsync.whenOrNull(
             data: (item) => PopupMenuButton<String>(
@@ -52,7 +52,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
       body: itemAsync.when(
         data: (item) => _buildContent(item),
         loading: () => const LoadingIndicator(),
-        error: (e, _) => ErrorDisplay(message: 'Không thể tải: $e', onRetry: () => ref.invalidate(lostFoundItemByIdProvider(widget.itemId))),
+        error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(lostFoundItemByIdProvider(widget.itemId))),
       ),
       bottomNavigationBar: itemAsync.whenOrNull(data: (item) => _buildBottomBar(item)),
     );
@@ -127,7 +127,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _InfoRow(label: context.l10n.name, value: item.guestName!),
-                  _InfoRow(label: context.l10n.guestContacted, value: item.guestContacted ? 'Có' : 'Chưa'),
+                  _InfoRow(label: context.l10n.guestContacted, value: item.guestContacted ? context.l10n.yesLabel : context.l10n.notYetLabel),
                 ],
               ),
             ),
@@ -195,7 +195,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Future<void> _claimItem(LostFoundItem item) async {
-    final confirmed = await _showConfirmDialog('Xác nhận', 'Xác nhận khách đã nhận lại đồ?');
+    final confirmed = await _showConfirmDialog(context.l10n.confirm, context.l10n.confirmGuestClaimed);
     if (confirmed != true) return;
     setState(() => _isLoading = true);
     try {
@@ -210,7 +210,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Future<void> _disposeItem(LostFoundItem item) async {
-    final reason = await _showInputDialog('Lý do xử lý', 'Nhập lý do xử lý/quyên góp');
+    final reason = await _showInputDialog(context.l10n.disposeReasonTitle, context.l10n.disposeReasonHint);
     if (reason == null || reason.isEmpty) return;
     setState(() => _isLoading = true);
     try {
@@ -232,8 +232,8 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         title: Text(title),
         content: TextField(controller: controller, decoration: InputDecoration(hintText: hint)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Lưu')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
+          ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: Text(AppLocalizations.of(context)!.save)),
         ],
       ),
     ).then((result) {
@@ -249,8 +249,8 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         title: Text(title),
         content: Text(content),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Xác nhận')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppLocalizations.of(context)!.cancel)),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: Text(AppLocalizations.of(context)!.confirm)),
         ],
       ),
     );
