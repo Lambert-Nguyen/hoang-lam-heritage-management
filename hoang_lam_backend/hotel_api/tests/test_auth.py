@@ -2,12 +2,14 @@
 Tests for authentication endpoints.
 """
 
+from datetime import timedelta
+
 import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 from hotel_api.models import HotelUser
 
@@ -427,3 +429,116 @@ class TestLogoutErrorCases:
             status.HTTP_200_OK,
             status.HTTP_400_BAD_REQUEST,
         ]
+
+
+@pytest.mark.django_db
+class TestLoginEdgeCases:
+    """Edge case tests for login endpoint."""
+
+    def test_login_sql_injection_username(self, api_client):
+        """Test login with SQL injection characters in username."""
+        url = reverse("login")
+        data = {"username": "' OR 1=1 --", "password": "testpass123"}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_login_extremely_long_password(self, api_client, staff_user):
+        """Test login with an extremely long password string."""
+        url = reverse("login")
+        data = {"username": "staff", "password": "x" * 10000}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_login_with_null_values(self, api_client):
+        """Test login with null username and password."""
+        url = reverse("login")
+        data = {"username": None, "password": None}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_login_with_extra_fields_ignored(self, api_client, staff_user):
+        """Test that extra fields in login request are ignored."""
+        url = reverse("login")
+        data = {
+            "username": "staff",
+            "password": "testpass123",
+            "extra_field": "should be ignored",
+            "admin": True,
+        }
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_200_OK
+        assert "access" in response.data
+
+
+@pytest.mark.django_db
+class TestTokenEdgeCases:
+    """Edge case tests for token operations."""
+
+    def test_refresh_with_access_token(self, api_client, staff_user):
+        """Test using an access token as a refresh token."""
+        access = AccessToken.for_user(staff_user)
+        url = reverse("token_refresh")
+        data = {"refresh": str(access)}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_refresh_missing_refresh_key(self, api_client):
+        """Test token refresh with wrong field name."""
+        url = reverse("token_refresh")
+        data = {"token": "some-token-value"}
+        response = api_client.post(url, data, format="json")
+        assert response.status_code in [
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_401_UNAUTHORIZED,
+        ]
+
+    def test_expired_token_returns_401(self, api_client, staff_user):
+        """Test that an expired access token returns 401."""
+        access = AccessToken.for_user(staff_user)
+        # Set token to expire immediately
+        access.set_exp(lifetime=-timedelta(seconds=1))
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {str(access)}")
+        url = reverse("user_profile")
+        response = api_client.get(url)
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.django_db
+class TestPasswordChangeEdgeCases:
+    """Edge case tests for password change."""
+
+    def test_password_change_common_password(self, authenticated_client):
+        """Test password change with a commonly used password."""
+        url = reverse("password_change")
+        data = {
+            "old_password": "testpass123",
+            "new_password": "password123",
+            "confirm_password": "password123",
+        }
+        response = authenticated_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_password_change_too_similar_to_username(self, api_client, create_user):
+        """Test password change with password too similar to username."""
+        user = create_user(username="johndoe", password="oldpass!@#456")
+        refresh = RefreshToken.for_user(user)
+        api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+        url = reverse("password_change")
+        data = {
+            "old_password": "oldpass!@#456",
+            "new_password": "johndoe1",
+            "confirm_password": "johndoe1",
+        }
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_password_change_numeric_only(self, authenticated_client):
+        """Test password change with numeric-only password."""
+        url = reverse("password_change")
+        data = {
+            "old_password": "testpass123",
+            "new_password": "12345678",
+            "confirm_password": "12345678",
+        }
+        response = authenticated_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_400_BAD_REQUEST

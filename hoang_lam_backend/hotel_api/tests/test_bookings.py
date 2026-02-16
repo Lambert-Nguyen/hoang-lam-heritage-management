@@ -444,3 +444,157 @@ class BookingAPITestCase(TestCase):
             f"/api/v1/bookings/{self.booking1.id}/update-status/", data, format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_booking_guest_count_exceeds_capacity(self):
+        """Test that guest count exceeding room capacity is rejected."""
+        self.client.force_authenticate(user=self.staff_user)
+        today = date.today()
+        data = {
+            "guest": self.guest1.id,
+            "room": self.room2.id,
+            "check_in_date": str(today + timedelta(days=20)),
+            "check_out_date": str(today + timedelta(days=22)),
+            "guest_count": 5,  # room max_guests=2
+            "nightly_rate": 1000000,
+            "total_amount": 2000000,
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("guest_count", response.data)
+
+    def test_create_booking_deposit_exceeds_total(self):
+        """Test that deposit amount exceeding total is rejected."""
+        self.client.force_authenticate(user=self.staff_user)
+        today = date.today()
+        data = {
+            "guest": self.guest1.id,
+            "room": self.room2.id,
+            "check_in_date": str(today + timedelta(days=20)),
+            "check_out_date": str(today + timedelta(days=22)),
+            "nightly_rate": 1000000,
+            "total_amount": 2000000,
+            "deposit_amount": 5000000,  # > total_amount
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("deposit_amount", response.data)
+
+    def test_create_booking_checkin_too_far_in_past(self):
+        """Test that check-in date more than 7 days in the past is rejected."""
+        self.client.force_authenticate(user=self.staff_user)
+        today = date.today()
+        data = {
+            "guest": self.guest1.id,
+            "room": self.room2.id,
+            "check_in_date": str(today - timedelta(days=30)),
+            "check_out_date": str(today - timedelta(days=28)),
+            "nightly_rate": 1000000,
+            "total_amount": 2000000,
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("check_in_date", response.data)
+
+    def test_create_booking_cancelled_overlap_allowed(self):
+        """Test that cancelled bookings don't block new bookings for same dates."""
+        self.client.force_authenticate(user=self.staff_user)
+        # Cancel booking1 first
+        self.booking1.status = Booking.Status.CANCELLED
+        self.booking1.save()
+
+        today = date.today()
+        data = {
+            "guest": self.guest2.id,
+            "room": self.room1.id,
+            "check_in_date": str(today + timedelta(days=7)),
+            "check_out_date": str(today + timedelta(days=10)),
+            "nightly_rate": 1000000,
+            "total_amount": 3000000,
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_update_booking_creates_overlap(self):
+        """Test that updating dates to overlap another booking is rejected."""
+        self.client.force_authenticate(user=self.staff_user)
+        # Move booking2 to room1 dates (overlap with booking1)
+        today = date.today()
+        data = {
+            "room": self.room1.id,
+            "check_in_date": str(today + timedelta(days=8)),
+            "check_out_date": str(today + timedelta(days=11)),
+        }
+        response = self.client.patch(
+            f"/api/v1/bookings/{self.booking2.id}/", data, format="json"
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_check_in_nonexistent_booking(self):
+        """Test check-in on a non-existent booking ID."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.post("/api/v1/bookings/99999/check-in/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_check_out_nonexistent_booking(self):
+        """Test check-out on a non-existent booking ID."""
+        self.client.force_authenticate(user=self.staff_user)
+        response = self.client.post("/api/v1/bookings/99999/check-out/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_check_in_no_show_booking(self):
+        """Test checking in a no-show booking."""
+        self.client.force_authenticate(user=self.staff_user)
+        self.booking1.status = Booking.Status.NO_SHOW
+        self.booking1.save()
+        response = self.client.post(f"/api/v1/bookings/{self.booking1.id}/check-in/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_check_out_pending_booking(self):
+        """Test checking out a pending booking (not checked in)."""
+        self.client.force_authenticate(user=self.staff_user)
+        self.booking1.status = Booking.Status.PENDING
+        self.booking1.save()
+        response = self.client.post(f"/api/v1/bookings/{self.booking1.id}/check-out/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_check_out_already_checked_out(self):
+        """Test checking out an already checked-out booking."""
+        self.client.force_authenticate(user=self.staff_user)
+        self.booking1.status = Booking.Status.CHECKED_OUT
+        self.booking1.save()
+        response = self.client.post(f"/api/v1/bookings/{self.booking1.id}/check-out/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_booking_unauthenticated(self):
+        """Test creating a booking without authentication."""
+        today = date.today()
+        data = {
+            "guest": self.guest1.id,
+            "room": self.room2.id,
+            "check_in_date": str(today + timedelta(days=20)),
+            "check_out_date": str(today + timedelta(days=22)),
+            "nightly_rate": 1000000,
+            "total_amount": 2000000,
+            "status": Booking.Status.CONFIRMED,
+            "source": Booking.Source.WALK_IN,
+        }
+        response = self.client.post("/api/v1/bookings/", data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_calendar_end_before_start(self):
+        """Test calendar with end_date before start_date."""
+        self.client.force_authenticate(user=self.staff_user)
+        today = date.today()
+        response = self.client.get(
+            f"/api/v1/bookings/calendar/?start_date={today + timedelta(days=10)}&end_date={today}"
+        )
+        # Should return 400 or empty results
+        self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST])

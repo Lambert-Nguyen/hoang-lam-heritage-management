@@ -185,6 +185,32 @@ SPECTACULAR_SETTINGS = {
 }
 
 
+# Celery Configuration
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/0")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
+
+from celery.schedules import crontab  # noqa: E402
+
+CELERY_BEAT_SCHEDULE = {
+    "send-checkin-reminders": {
+        "task": "hotel_api.tasks.send_checkin_reminders",
+        "schedule": crontab(hour=9, minute=0),
+    },
+    "send-checkout-reminders": {
+        "task": "hotel_api.tasks.send_checkout_reminders",
+        "schedule": crontab(hour=8, minute=0),
+    },
+    "cleanup-expired-tokens": {
+        "task": "hotel_api.tasks.cleanup_expired_tokens",
+        "schedule": crontab(hour=2, minute=0),
+    },
+}
+
+
 # Firebase Cloud Messaging (Push Notifications - Phase 5)
 FCM_ENABLED = os.getenv("FCM_ENABLED", "False").lower() == "true"
 FCM_CREDENTIALS_FILE = os.getenv("FCM_CREDENTIALS_FILE", "")

@@ -34,5 +34,37 @@ services:
     ports:
       - "6379:6379"
 
+  celery-worker:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./hoang_lam_backend:/app
+    command: >
+      bash -c "pip install -r requirements.txt && celery -A backend worker -l info"
+    env_file:
+      - hoang_lam_backend/.env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  celery-beat:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./hoang_lam_backend:/app
+    command: >
+      bash -c "pip install -r requirements.txt && celery -A backend beat -l info"
+    env_file:
+      - hoang_lam_backend/.env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
 volumes:
   pgdata:
