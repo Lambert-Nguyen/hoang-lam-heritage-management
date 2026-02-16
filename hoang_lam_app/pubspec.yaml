@@ -21,7 +21,7 @@ dependencies:
   riverpod_annotation: ^2.6.1
 
   # HTTP Client
-  dio: ^5.8.0+1
+  dio: ^5.9.1
 
   # Local Storage - Hive
   hive: ^2.2.3
