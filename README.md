@@ -5,8 +5,9 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Backend%20Tests-38%20passing-brightgreen" alt="Backend Tests" />
-  <img src="https://img.shields.io/badge/Frontend%20Tests-484%20passing-brightgreen" alt="Frontend Tests" />
+  <a href="https://github.com/Lambert-Nguyen/hoang-lam-heritage-management/actions/workflows/backend-ci.yml"><img src="https://github.com/Lambert-Nguyen/hoang-lam-heritage-management/actions/workflows/backend-ci.yml/badge.svg" alt="Backend CI" /></a>
+  <a href="https://github.com/Lambert-Nguyen/hoang-lam-heritage-management/actions/workflows/flutter-ci.yml"><img src="https://github.com/Lambert-Nguyen/hoang-lam-heritage-management/actions/workflows/flutter-ci.yml/badge.svg" alt="Flutter CI" /></a>
+  <a href="https://codecov.io/gh/Lambert-Nguyen/hoang-lam-heritage-management"><img src="https://codecov.io/gh/Lambert-Nguyen/hoang-lam-heritage-management/branch/main/graph/badge.svg" alt="Coverage" /></a>
   <img src="https://img.shields.io/badge/Python-3.11+-blue" alt="Python" />
   <img src="https://img.shields.io/badge/Flutter-3.x-02569B" alt="Flutter" />
   <img src="https://img.shields.io/badge/Django-5.x-092E20" alt="Django" />

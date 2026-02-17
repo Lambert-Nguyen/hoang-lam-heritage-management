@@ -271,7 +271,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | ID | Gap | Details |
 |----|-----|---------|
 | AD-05 | ~~No monitoring/alerting~~ | **PARTIALLY FIXED (Phase D)** — Sentry SDK integrated for error tracking (`sentry-sdk>=2.0`). Auto-captures Django, DRF, Celery errors. Privacy-safe (`send_default_pii=False`). Health checks and uptime monitoring still pending. |
-| AD-06 | **No CI coverage reporting** | Tests run in CI but coverage metrics not tracked |
+| AD-06 | ~~No CI coverage reporting~~ | **FIXED (Phase D)** — Fixed `testpaths` in `pyproject.toml` so CI discovers all tests. Added `fail_under=70` coverage threshold. Dynamic badges in README (GitHub Actions workflow status + Codecov coverage). Codecov upload already configured in `backend-ci.yml` and `flutter-ci.yml`. |
 | AD-07 | **No APM/performance monitoring** | No Django debug toolbar, no query profiling in production |
 | AD-08 | ~~Media files served by Django~~ | **FIXED (Phase D)** — Local storage with nginx serving (`/media/` location block) + optional S3 backend via `django-storages` (`MEDIA_STORAGE_BACKEND=s3`). Nginx service in `docker-compose.yml` (`--profile production`). Named volumes for media persistence. Signed URLs for sensitive files. |
 
@@ -348,7 +348,7 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
-**STATUS: IN PROGRESS (7/10 done)**
+**STATUS: IN PROGRESS (8/10 done)**
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -359,7 +359,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | 5 | Configure pgbouncer connection pooling | **DONE** | Django persistent connections: `CONN_MAX_AGE=600`, `CONN_HEALTH_CHECKS=True` in `base.py`. Configurable via `DB_CONN_MAX_AGE` env var. Optional pgbouncer in `docker-compose.yml` with `--profile pooling` (transaction mode, 200 max clients, 20 pool size). Documented in DEPLOYMENT.md Section 12. |
 | 6 | Set up media storage (S3 or nginx) | **DONE** | Fixed `MEDIA_URL` to `/media/` (absolute). Optional S3 backend via `django-storages` + `boto3` (`MEDIA_STORAGE_BACKEND=s3`). Nginx service in `docker-compose.yml` (`--profile production`) with `nginx/default.conf`. Named volumes `media_files`/`static_files` for persistence. Signed URLs for sensitive files (`AWS_QUERYSTRING_AUTH=True`). Supports AWS S3, MinIO, DigitalOcean Spaces. Documented in DEPLOYMENT.md Section 13. |
 | 7 | Implement real SMS gateway integration | **DONE** | Real eSMS.vn HTTP integration in `SMSService.send()`. API endpoint: `SendMultipleMessage_V4_post`, SmsType=2 (CSKH). Timeout=30s, proper error handling for HTTP errors, timeouts, and API error codes. Gated by `SMS_ENABLED` env var. Settings: `SMS_API_KEY`, `SMS_SECRET_KEY`, `SMS_BRAND_NAME` in `base.py`. `requests` added to requirements. Documented in DEPLOYMENT.md Section 14. |
-| 8 | Add CI coverage reporting | Pending | P2 |
+| 8 | Add CI coverage reporting | **DONE** | Fixed `testpaths` in `pyproject.toml` (`hotel_api/tests` instead of `tests`). Added `fail_under=70` coverage threshold. Replaced static README badges (outdated "38 passing") with dynamic GitHub Actions workflow status + Codecov coverage badges. CI already uploads to Codecov via `codecov/codecov-action@v4` in both `backend-ci.yml` and `flutter-ci.yml`. |
 | 9 | Implement offline sync handlers | Pending | P3 |
 | 10 | Flutter release build setup (Fastlane) | Pending | P3 |
 

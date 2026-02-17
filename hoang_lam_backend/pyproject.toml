@@ -38,7 +38,7 @@ sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLD
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "backend.settings.development"
 python_files = ["tests.py", "test_*.py", "*_tests.py"]
-testpaths = ["tests"]
+testpaths = ["hotel_api/tests"]
 addopts = [
     "--verbose",
     "--strict-markers",
@@ -63,3 +63,4 @@ omit = [
 precision = 2
 show_missing = true
 skip_covered = false
+fail_under = 70
