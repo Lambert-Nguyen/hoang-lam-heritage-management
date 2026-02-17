@@ -138,7 +138,7 @@ Key examples:
 
 | ID | Gap | Details |
 |----|-----|---------|
-| BE-09 | **No data retention/archival policy** | Design plan specifies auto-archive after 1 year, delete after 3 — not implemented |
+| BE-09 | ~~No data retention/archival policy~~ | **FIXED (Phase D)** — Retention policy implemented with configurable per-model retention periods. Celery task runs weekly (Sunday 3 AM). Management command `apply_retention_policy` for manual runs with `--dry-run`. 19 tests. |
 | BE-10 | **No database backup strategy documented** | No backup commands, no restore procedures |
 | BE-11 | **Guest admin not registered** | `Guest`, `GuestMessage`, `MessageTemplate` missing from Django admin |
 | BE-12 | **No phone number format validation** | CharField with no regex — any string accepted |
@@ -163,7 +163,7 @@ Features specified in the Design Plan that are missing or incomplete.
 |----|-------------------|----------------|
 | DP-01 | **Section 2: Offline-First Strategy** | Only foundation exists (models + SyncManager skeleton). All entity-specific sync handlers are TODOs. No Hive adapters registered. Offline queue doesn't actually sync. |
 | DP-02 | ~~Section 9: Guest Data Encryption~~ | **FIXED (Phase D)** — Fernet encryption for `id_number` and `visa_number`. SHA-256 hash columns for lookup/uniqueness. 22 tests covering encryption, decryption, hash-based search, and serializer transparency. |
-| DP-03 | **Section 9: Data Retention Policy** | Auto-archive after 1 year, delete after 3 — no implementation exists |
+| DP-03 | ~~Section 9: Data Retention Policy~~ | **FIXED (Phase D)** — Configurable retention periods per model: 90d notifications, 1y housekeeping, 3y bookings, 5y financial, 7y audit logs. Weekly Celery task + manual management command. 19 tests. |
 
 ### 4.2 HIGH (Partially implemented)
 
@@ -348,13 +348,13 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
-**STATUS: IN PROGRESS (2/10 done)**
+**STATUS: IN PROGRESS (3/10 done)**
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | 1 | Implement sensitive data encryption (CCCD, passport) | **DONE** | Fernet encryption for `id_number` & `visa_number`. SHA-256 hash for lookups. `encryption.py` utility, `Guest.save()` override, serializer decryption, hash-based search. `encrypt_guest_data` management command. Migration `0018`. 22 new tests. |
 | 2 | Add audit logging for sensitive data access | **DONE** | `SensitiveDataAccessLog` model with 8 action types. `audit.py` utility with `log_sensitive_access()`. Wired into GuestViewSet (retrieve, list, create, update, search, history), declaration export, receipt generation. Read-only admin. `hotel_api.security` logger in production settings. 9 new tests. |
-| 3 | Implement data retention policy | Pending | P2 |
+| 3 | Implement data retention policy | **DONE** | `retention.py` with configurable per-model retention periods. 13 model categories: 90d notifications, 30d inactive tokens, 1y housekeeping/inspections, 2y maintenance/messages/lost&found, 3y bookings/rates, 5y financial/audits, 7y access logs. Celery task weekly Sunday 3 AM. `apply_retention_policy` management command with `--dry-run` and `--model` filter. Settings override via `DATA_RETENTION_OVERRIDES` env var. 19 new tests. |
 | 4 | Set up Sentry error tracking | Pending | P2 |
 | 5 | Configure pgbouncer connection pooling | Pending | P2 |
 | 6 | Set up media storage (S3 or nginx) | Pending | P2 |
@@ -372,7 +372,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | Metric | Current | Target |
 |--------|---------|--------|
 | Production readiness | ~92% (Phase D started) | 95% |
-| Backend test count | 581 test methods (21 test files) | 550+ |
+| Backend test count | 600 test methods (22 test files) | 550+ |
 | Backend error case coverage | 239+ HTTP 4xx assertions | 260+ |
 | Frontend test files | 36 test files | 60+ |
 | Frontend provider/notifier tests | 85 (4 test files) | 10+ |
@@ -391,11 +391,11 @@ Features specified in the Design Plan that are missing or incomplete.
 | Phase A (Critical) | ~22h | Weeks 1-2 | COMPLETED (2026-02-13) |
 | Phase B (High) | ~30h | Weeks 3-4 | COMPLETED (2026-02-13) |
 | Phase C (Quality) | ~40h | Weeks 5-6 | COMPLETED (2026-02-16) |
-| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (2/10 done) |
+| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (3/10 done) |
 | **Total** | **~143h** | **8 weeks** | **Phases A+B+C done, D started** |
 
 ---
 
 *This analysis supersedes the previous [DESIGN_GAPS_ANALYSIS.md](./DESIGN_GAPS_ANALYSIS.md) (dated 2026-02-05) which focused only on design plan model/field gaps and is marked as "all fixed". This report covers a broader scope including security, bugs, testing, architecture, and deployment.*
 
-*Last updated: 2026-02-17 (Phase D tasks 1-2 complete — encryption + audit logging. 581 backend tests passing.)*
+*Last updated: 2026-02-17 (Phase D tasks 1-3 complete — encryption + audit logging + data retention. 600 backend tests passing.)*

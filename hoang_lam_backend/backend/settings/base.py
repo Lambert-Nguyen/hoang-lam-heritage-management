@@ -208,7 +208,17 @@ CELERY_BEAT_SCHEDULE = {
         "task": "hotel_api.tasks.cleanup_expired_tokens",
         "schedule": crontab(hour=2, minute=0),
     },
+    "apply-data-retention-policy": {
+        "task": "hotel_api.tasks.apply_data_retention_policy",
+        "schedule": crontab(hour=3, minute=0, day_of_week=0),  # Sunday 3 AM
+    },
 }
+
+
+# Data Retention Policy (Phase D - Task 3)
+# Override individual retention periods via environment variable
+# Format: model_name=days, comma-separated (e.g., "notification=60,booking=1825")
+DATA_RETENTION_OVERRIDES = os.getenv("DATA_RETENTION_OVERRIDES", "")
 
 
 # Field-Level Encryption (Phase D - Sensitive Data Protection)

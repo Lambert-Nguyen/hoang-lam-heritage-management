@@ -113,3 +113,19 @@ def cleanup_expired_tokens():
         logger.info("No expired tokens to clean up.")
 
     return f"Cleaned up {expired_count} expired token(s)."
+
+
+@shared_task(name="hotel_api.tasks.apply_data_retention_policy")
+def apply_data_retention_policy():
+    """
+    Apply data retention policy — delete records past their retention period.
+
+    Scheduled weekly on Sundays at 3:00 AM via Celery Beat.
+    See hotel_api/retention.py for retention periods and logic.
+    """
+    from hotel_api.retention import apply_retention_policy
+
+    results = apply_retention_policy(dry_run=False)
+    total = sum(results.values())
+    logger.info(f"Retention policy applied. Deleted {total} record(s): {results}")
+    return f"Deleted {total} record(s): {results}"
