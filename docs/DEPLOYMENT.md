@@ -305,6 +305,8 @@ sudo certbot --nginx -d your-domain.com
 | `SENTRY_DSN` | No | — | Sentry Data Source Name. Leave empty to disable Sentry. See Section 11. |
 | `SENTRY_ENVIRONMENT` | No | `development` | Environment tag sent to Sentry. Falls back to `DJANGO_ENVIRONMENT`. |
 | `SENTRY_TRACES_SAMPLE_RATE` | No | `0` | Sentry performance tracing rate (0.0–1.0). Use `0.1` in production. |
+| `MEDIA_STORAGE_BACKEND` | No | `local` | Media storage backend. Set to `s3` for S3-compatible storage. See Section 13. |
+| `AWS_STORAGE_BUCKET_NAME` | If S3 | — | S3 bucket name (only when `MEDIA_STORAGE_BACKEND=s3`). |
 
 ---
 
@@ -708,3 +710,68 @@ DB_CONN_MAX_AGE=0   # let pgbouncer manage connection lifetime
 ```
 
 > **Note:** When using pgbouncer in transaction mode, set `DB_CONN_MAX_AGE=0` on the Django side — pgbouncer handles connection reuse.
+
+---
+
+## 13. Media Storage
+
+Uploaded files (guest ID photos, receipts, lost & found images) need to be served efficiently in production. Two backends are supported, switchable via `MEDIA_STORAGE_BACKEND` env var.
+
+### Option A: Local Filesystem + Nginx (Default)
+
+Files are stored on disk in `MEDIA_ROOT` and served by nginx. This is the default and works well for single-server VPS deployments.
+
+**VPS deployment:** The nginx config in Section 2.7 already includes a `/media/` location block — no extra setup needed.
+
+**Docker deployment:** Use the production profile to start nginx:
+
+```bash
+docker compose --profile production up -d
+```
+
+This starts an nginx container that serves `/media/` and `/static/` files, and proxies API requests to Django. The nginx config is at `nginx/default.conf`.
+
+### Option B: S3-Compatible Storage (Cloud)
+
+For cloud deployments or when you need CDN distribution, use S3-compatible storage (AWS S3, MinIO, DigitalOcean Spaces).
+
+**Setup:**
+
+```bash
+# In .env
+MEDIA_STORAGE_BACKEND=s3
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_STORAGE_BUCKET_NAME=hoang-lam-media
+AWS_S3_REGION_NAME=ap-southeast-1
+```
+
+**Optional S3 settings:**
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `MEDIA_STORAGE_BACKEND` | `local` | Set to `s3` for S3-compatible storage |
+| `AWS_ACCESS_KEY_ID` | — | S3 access key |
+| `AWS_SECRET_ACCESS_KEY` | — | S3 secret key |
+| `AWS_STORAGE_BUCKET_NAME` | — | S3 bucket name |
+| `AWS_S3_REGION_NAME` | `ap-southeast-1` | AWS region |
+| `AWS_S3_ENDPOINT_URL` | — | Custom endpoint for MinIO/DigitalOcean Spaces |
+| `AWS_S3_CUSTOM_DOMAIN` | — | CloudFront/CDN domain for serving files |
+
+**For DigitalOcean Spaces:**
+
+```bash
+MEDIA_STORAGE_BACKEND=s3
+AWS_ACCESS_KEY_ID=your-spaces-key
+AWS_SECRET_ACCESS_KEY=your-spaces-secret
+AWS_STORAGE_BUCKET_NAME=hoang-lam-media
+AWS_S3_REGION_NAME=sgp1
+AWS_S3_ENDPOINT_URL=https://sgp1.digitaloceanspaces.com
+```
+
+### Security Notes
+
+- **Signed URLs** (`AWS_QUERYSTRING_AUTH=True`): Guest ID photos and receipts are served via signed URLs that expire, preventing unauthorized access.
+- **No file overwrite** (`AWS_S3_FILE_OVERWRITE=False`): Prevents accidental overwriting of existing files.
+- **5 MB upload limit**: Enforced by both Django (`FILE_UPLOAD_MAX_MEMORY_SIZE`) and nginx (`client_max_body_size`).
+- **Image validation**: All ImageFields use `validate_image_file()` — max 5 MB, allowed types: jpg, jpeg, png, gif, webp.

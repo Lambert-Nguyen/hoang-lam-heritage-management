@@ -31,7 +31,9 @@
       "Bash(.venv/bin/pip show:*)",
       "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development .venv/bin/python:*)",
       "Bash(USE_SQLITE=true DJANGO_SETTINGS_MODULE=backend.settings.base DB_CONN_MAX_AGE=0 python:*)",
-      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.base DB_CONN_MAX_AGE=0 python:*)"
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.base DB_CONN_MAX_AGE=0 python:*)",
+      "Bash(USE_SQLITE=true DJANGO_SETTINGS_MODULE=backend.settings.base python:*)",
+      "Bash(USE_SQLITE=true DJANGO_SETTINGS_MODULE=backend.settings.base MEDIA_STORAGE_BACKEND=s3 AWS_STORAGE_BUCKET_NAME=test-bucket python:*)"
     ]
   }
 }

@@ -273,7 +273,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | AD-05 | ~~No monitoring/alerting~~ | **PARTIALLY FIXED (Phase D)** — Sentry SDK integrated for error tracking (`sentry-sdk>=2.0`). Auto-captures Django, DRF, Celery errors. Privacy-safe (`send_default_pii=False`). Health checks and uptime monitoring still pending. |
 | AD-06 | **No CI coverage reporting** | Tests run in CI but coverage metrics not tracked |
 | AD-07 | **No APM/performance monitoring** | No Django debug toolbar, no query profiling in production |
-| AD-08 | **Media files served by Django** | Production should use S3/CDN for uploads |
+| AD-08 | ~~Media files served by Django~~ | **FIXED (Phase D)** — Local storage with nginx serving (`/media/` location block) + optional S3 backend via `django-storages` (`MEDIA_STORAGE_BACKEND=s3`). Nginx service in `docker-compose.yml` (`--profile production`). Named volumes for media persistence. Signed URLs for sensitive files. |
 
 ### 6.4 LOW
 
@@ -348,7 +348,7 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
-**STATUS: IN PROGRESS (5/10 done)**
+**STATUS: IN PROGRESS (6/10 done)**
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -357,7 +357,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | 3 | Implement data retention policy | **DONE** | `retention.py` with configurable per-model retention periods. 13 model categories: 90d notifications, 30d inactive tokens, 1y housekeeping/inspections, 2y maintenance/messages/lost&found, 3y bookings/rates, 5y financial/audits, 7y access logs. Celery task weekly Sunday 3 AM. `apply_retention_policy` management command with `--dry-run` and `--model` filter. Settings override via `DATA_RETENTION_OVERRIDES` env var. 19 new tests. |
 | 4 | Set up Sentry error tracking | **DONE** | `sentry-sdk>=2.0` added to requirements. Initialized in `base.py` gated by `SENTRY_DSN` env var (empty = disabled). Auto-integrates with Django, DRF, Celery, Python logging. `send_default_pii=False` for guest data privacy. Configurable traces sample rate. Documented in DEPLOYMENT.md Section 11. |
 | 5 | Configure pgbouncer connection pooling | **DONE** | Django persistent connections: `CONN_MAX_AGE=600`, `CONN_HEALTH_CHECKS=True` in `base.py`. Configurable via `DB_CONN_MAX_AGE` env var. Optional pgbouncer in `docker-compose.yml` with `--profile pooling` (transaction mode, 200 max clients, 20 pool size). Documented in DEPLOYMENT.md Section 12. |
-| 6 | Set up media storage (S3 or nginx) | Pending | P2 |
+| 6 | Set up media storage (S3 or nginx) | **DONE** | Fixed `MEDIA_URL` to `/media/` (absolute). Optional S3 backend via `django-storages` + `boto3` (`MEDIA_STORAGE_BACKEND=s3`). Nginx service in `docker-compose.yml` (`--profile production`) with `nginx/default.conf`. Named volumes `media_files`/`static_files` for persistence. Signed URLs for sensitive files (`AWS_QUERYSTRING_AUTH=True`). Supports AWS S3, MinIO, DigitalOcean Spaces. Documented in DEPLOYMENT.md Section 13. |
 | 7 | Implement real SMS gateway integration | Pending | P2 |
 | 8 | Add CI coverage reporting | Pending | P2 |
 | 9 | Implement offline sync handlers | Pending | P3 |
