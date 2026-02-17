@@ -290,6 +290,8 @@ sudo certbot --nginx -d your-domain.com
 | `CELERY_RESULT_BACKEND` | No | `redis://localhost:6379/0` | Redis URL for results |
 | `REDIS_URL` | No | — | Redis URL for Django caching |
 | `CORS_ALLOWED_ORIGINS` | No | `http://localhost:3000` | Allowed CORS origins |
+| `FIELD_ENCRYPTION_KEY` | **Yes (prod)** | — | Fernet key for encrypting guest ID/passport data. Generate: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. Leave empty to disable encryption (dev/test). |
+| `DATA_RETENTION_OVERRIDES` | No | — | Override default retention periods. Format: `model=days,model=days` (e.g., `notification=60,booking=1825`). See Section 9. |
 | `FCM_ENABLED` | No | `False` | Enable push notifications |
 | `FCM_CREDENTIALS_FILE` | No | — | Path to Firebase credentials JSON |
 | `FCM_CREDENTIALS_JSON` | No | — | Firebase credentials as JSON string |
@@ -353,6 +355,7 @@ python manage.py makemigrations hotel_api
 |---------|----------|
 | Django (production) | `hoang_lam_backend/logs/production.log` |
 | Django errors | `hoang_lam_backend/logs/production_errors.log` |
+| Security audit log | `hoang_lam_backend/logs/security_audit.log` |
 | Gunicorn access | `hoang_lam_backend/logs/gunicorn_access.log` |
 | Gunicorn errors | `hoang_lam_backend/logs/gunicorn_error.log` |
 | Celery worker | `hoang_lam_backend/logs/celery_worker.log` |
@@ -450,3 +453,149 @@ sudo systemctl restart hoanglam-celery-beat
 | SSL certificate expired | Certbot auto-renewal failed | `sudo certbot renew --force-renewal` |
 | Push notifications not sent | FCM not configured | Set `FCM_ENABLED=True` and provide credentials in `.env` |
 | Migrations fail | Database state mismatch | Check `python manage.py showmigrations`, resolve conflicts |
+| Retention task not running | Celery Beat not started or schedule missing | Check `systemctl status hoanglam-celery-beat`, verify `CELERY_BEAT_SCHEDULE` in settings |
+| Encrypted fields unreadable | `FIELD_ENCRYPTION_KEY` changed or missing | Restore the original key from backup. Never rotate keys without re-encrypting data first. |
+
+---
+
+## 9. Data Retention Policy
+
+The system automatically deletes old records based on configurable retention periods. This ensures database performance, compliance with Vietnam data protection regulations, and reduced storage costs.
+
+### Retention Periods
+
+| Data Category | Retention | Date Field | Conditions |
+|---------------|-----------|------------|------------|
+| Notifications | 90 days | `created_at` | All notifications |
+| Device tokens (inactive) | 30 days | `updated_at` | Only `is_active=False` tokens |
+| Housekeeping tasks | 1 year | `created_at` | Only `completed` or `verified` status |
+| Room inspections | 1 year | `created_at` | Only completed inspections |
+| Guest messages | 2 years | `created_at` | All messages |
+| Maintenance requests | 2 years | `created_at` | Only `completed` or `cancelled` status |
+| Lost & found | 2 years | `created_at` | Only `disposed` status |
+| Bookings | 3 years | `check_out_date` | Only `checked_out`, `cancelled`, or `no_show` status |
+| Payments, folio items, minibar sales | 3 years | — | Cascade-deleted with their booking |
+| Exchange rates | 3 years | `date` | All rates |
+| Date rate overrides | 3 years | `date` | All overrides |
+| Night audits | 5 years | `audit_date` | Only `closed` status |
+| Financial entries | 5 years | `date` | Only entries not linked to a booking |
+| Sensitive data access logs | 7 years | `timestamp` | Legal compliance requirement |
+
+**Records NOT subject to retention:**
+- Guest profiles (kept indefinitely for returning customers)
+- Master data: rooms, room types, rate plans, minibar items, financial categories, message templates
+- Active bookings (`pending`, `confirmed`, `checked_in`)
+- Users and hotel profiles
+
+### Automatic Execution
+
+The retention policy runs automatically via Celery Beat:
+
+- **Schedule**: Every Sunday at 3:00 AM (Vietnam time)
+- **Task**: `hotel_api.tasks.apply_data_retention_policy`
+- **Logging**: All deletions are logged to `hotel_api` logger
+
+### Manual Execution
+
+```bash
+cd hoang_lam_backend
+source .venv/bin/activate
+
+# Preview what would be deleted (no actual deletions)
+python manage.py apply_retention_policy --dry-run
+
+# Apply retention policy
+python manage.py apply_retention_policy
+
+# Apply only for a specific model
+python manage.py apply_retention_policy --model notification
+python manage.py apply_retention_policy --model booking --dry-run
+```
+
+Available model names for `--model` filter: `booking`, `date_rate_override`, `device_token`, `exchange_rate`, `financial_entry`, `guest_message`, `housekeeping_task`, `lost_and_found`, `maintenance_request`, `night_audit`, `notification`, `room_inspection`, `sensitive_data_access_log`.
+
+### Customizing Retention Periods
+
+Override default retention periods via the `DATA_RETENTION_OVERRIDES` environment variable:
+
+```bash
+# In .env — set notifications to 60 days, bookings to 5 years (1825 days)
+DATA_RETENTION_OVERRIDES=notification=60,booking=1825
+```
+
+Format: comma-separated `model_name=days` pairs.
+
+### Cascade Behavior
+
+When a booking is deleted by the retention policy, the following related records are automatically deleted (via database CASCADE):
+
+- **Payments** linked to the booking
+- **Folio items** linked to the booking
+- **Minibar sales** linked to the booking
+- **Housekeeping tasks** linked to the booking (via `SET_NULL` — the task remains but loses its booking reference)
+- **Notifications** linked to the booking (via `SET_NULL`)
+- **Financial entries** linked to the booking (via `SET_NULL`)
+
+---
+
+## 10. Sensitive Data Encryption
+
+Guest identity data (`id_number` / CCCD and `visa_number`) is encrypted at rest using Fernet symmetric encryption (AES-128-CBC + HMAC-SHA256).
+
+### Setup
+
+1. Generate an encryption key:
+
+```bash
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+2. Add to `.env`:
+
+```bash
+FIELD_ENCRYPTION_KEY=your-generated-key-here
+```
+
+3. Encrypt existing data (one-time, after setting the key):
+
+```bash
+cd hoang_lam_backend
+source .venv/bin/activate
+
+# Preview
+python manage.py encrypt_guest_data --dry-run
+
+# Encrypt
+python manage.py encrypt_guest_data
+```
+
+### How It Works
+
+- **On save**: Guest `id_number` and `visa_number` are automatically encrypted. A SHA-256 hash is stored in `id_number_hash` / `visa_number_hash` for searchability.
+- **On read**: The API serializer automatically decrypts values before returning them to the client.
+- **Search**: Searching by ID number uses exact hash matching (not partial/fuzzy search).
+- **Disabled by default**: If `FIELD_ENCRYPTION_KEY` is empty, fields are stored as plaintext (for development/testing).
+
+### Key Management
+
+- **Never lose the key.** If the encryption key is lost, encrypted data cannot be recovered.
+- **Back up the key** separately from the database backup.
+- **Key rotation** is not currently supported — to rotate, you must decrypt all data with the old key, then re-encrypt with the new key.
+
+### Audit Logging
+
+All access to guest sensitive data is logged in the `SensitiveDataAccessLog` table:
+
+| Field | Description |
+|-------|-------------|
+| `user` | Staff member who accessed the data |
+| `action` | What they did: `view_guest`, `list_guests`, `search_guest`, `create_guest`, `update_guest`, `view_guest_history`, `export_declaration`, `export_receipt` |
+| `resource_id` | Guest ID accessed |
+| `ip_address` | Client IP address |
+| `user_agent` | Browser/app user agent |
+| `fields_accessed` | Which sensitive fields were accessed |
+| `timestamp` | When the access occurred |
+
+View audit logs in Django admin at `/admin/hotel_api/sensitivedataaccesslog/` (read-only).
+
+In production, audit entries are also written to `logs/security_audit.log` (rotating, 50 MB max, 10 backups).

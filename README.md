@@ -632,6 +632,8 @@ flutter test
 | [Pricing Management](docs/PRICING_MANAGEMENT.md) | Rate plan system |
 | [Router Race Condition Fix](docs/ROUTER_RACE_CONDITION_FIX.md) | Navigation issues & solutions |
 | [UI Issues Report](docs/UI_ISSUES_REPORT.md) | UI problem tracking |
+| [Deployment Guide](docs/DEPLOYMENT.md) | Server setup, env vars, data retention, encryption |
+| [Gap Analysis](docs/COMPREHENSIVE_GAP_ANALYSIS_2026_02_13.md) | Comprehensive readiness assessment |
 
 ---
 
