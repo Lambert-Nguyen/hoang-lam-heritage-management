@@ -29,7 +29,9 @@
       "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development python -m pytest:*)",
       "Bash(grep:*)",
       "Bash(.venv/bin/pip show:*)",
-      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development .venv/bin/python:*)"
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.development .venv/bin/python:*)",
+      "Bash(USE_SQLITE=true DJANGO_SETTINGS_MODULE=backend.settings.base DB_CONN_MAX_AGE=0 python:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=backend.settings.base DB_CONN_MAX_AGE=0 python:*)"
     ]
   }
 }

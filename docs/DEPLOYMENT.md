@@ -301,6 +301,10 @@ sudo certbot --nginx -d your-domain.com
 | `EMAIL_HOST_PASSWORD` | No | — | SMTP password |
 | `DEFAULT_FROM_EMAIL` | No | `noreply@hoanglam.com` | Sender email address |
 | `ADMIN_EMAIL` | No | `admin@hoanglam.com` | Admin notification email |
+| `DB_CONN_MAX_AGE` | No | `600` | Database connection lifetime in seconds. Set to `0` to disable persistent connections. See Section 12. |
+| `SENTRY_DSN` | No | — | Sentry Data Source Name. Leave empty to disable Sentry. See Section 11. |
+| `SENTRY_ENVIRONMENT` | No | `development` | Environment tag sent to Sentry. Falls back to `DJANGO_ENVIRONMENT`. |
+| `SENTRY_TRACES_SAMPLE_RATE` | No | `0` | Sentry performance tracing rate (0.0–1.0). Use `0.1` in production. |
 
 ---
 
@@ -652,3 +656,55 @@ Sentry automatically captures:
 - Cookies or session data
 
 This ensures compliance with Vietnam data protection regulations.
+
+---
+
+## 12. Database Connection Pooling
+
+By default, Django opens and closes a PostgreSQL connection for every request. Connection pooling keeps connections alive and reuses them, reducing overhead under load.
+
+### Django Persistent Connections (Built-in)
+
+Enabled by default in `base.py`:
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `CONN_MAX_AGE` | `600` (10 min) | How long a connection stays open for reuse. Set to `0` to disable. |
+| `CONN_HEALTH_CHECKS` | `True` | Validates connections before reuse (Django 4.1+). Prevents stale connection errors. |
+
+Override via environment variable:
+
+```bash
+DB_CONN_MAX_AGE=600   # seconds (0 = close after each request)
+```
+
+This is sufficient for most deployments with a single Django process (or a few Gunicorn workers).
+
+### pgbouncer (Optional — Production Scaling)
+
+For high-traffic deployments with many Gunicorn workers, pgbouncer acts as a connection multiplexer between Django and PostgreSQL. It is included in `docker-compose.yml` but disabled by default.
+
+**Start with pgbouncer:**
+
+```bash
+docker compose --profile pooling up -d
+```
+
+**pgbouncer settings (docker-compose.yml):**
+
+| Setting | Value | Description |
+|---------|-------|-------------|
+| `POOL_MODE` | `transaction` | Connections returned to pool after each transaction (Django-compatible). |
+| `MAX_CLIENT_CONN` | `200` | Maximum client connections pgbouncer accepts. |
+| `DEFAULT_POOL_SIZE` | `20` | Actual PostgreSQL connections maintained per database. |
+| `MIN_POOL_SIZE` | `5` | Minimum idle connections kept open. |
+
+**To route Django through pgbouncer**, update `.env`:
+
+```bash
+DB_HOST=pgbouncer   # instead of db
+DB_PORT=6432        # pgbouncer port
+DB_CONN_MAX_AGE=0   # let pgbouncer manage connection lifetime
+```
+
+> **Note:** When using pgbouncer in transaction mode, set `DB_CONN_MAX_AGE=0` on the Django side — pgbouncer handles connection reuse.

@@ -262,7 +262,7 @@ Features specified in the Design Plan that are missing or incomplete.
 
 | ID | Gap | Details |
 |----|-----|---------|
-| AD-02 | **No database connection pooling** | Direct PostgreSQL without pgbouncer — will exhaust connections under load |
+| AD-02 | ~~No database connection pooling~~ | **FIXED (Phase D)** — `CONN_MAX_AGE=600` + `CONN_HEALTH_CHECKS=True` in `base.py`. Configurable via `DB_CONN_MAX_AGE` env var. Optional pgbouncer service in `docker-compose.yml` (transaction mode, `--profile pooling`). |
 | AD-03 | **No caching layer active** | Redis mentioned in docker-compose but not configured in Django settings (development) |
 | AD-04 | ~~Hive adapters not registered~~ | N/A — Models use Freezed (not Hive codegen). Boxes use `dynamic` and store JSON maps. No adapters needed. |
 
@@ -348,7 +348,7 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
-**STATUS: IN PROGRESS (4/10 done)**
+**STATUS: IN PROGRESS (5/10 done)**
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -356,7 +356,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | 2 | Add audit logging for sensitive data access | **DONE** | `SensitiveDataAccessLog` model with 8 action types. `audit.py` utility with `log_sensitive_access()`. Wired into GuestViewSet (retrieve, list, create, update, search, history), declaration export, receipt generation. Read-only admin. `hotel_api.security` logger in production settings. 9 new tests. |
 | 3 | Implement data retention policy | **DONE** | `retention.py` with configurable per-model retention periods. 13 model categories: 90d notifications, 30d inactive tokens, 1y housekeeping/inspections, 2y maintenance/messages/lost&found, 3y bookings/rates, 5y financial/audits, 7y access logs. Celery task weekly Sunday 3 AM. `apply_retention_policy` management command with `--dry-run` and `--model` filter. Settings override via `DATA_RETENTION_OVERRIDES` env var. 19 new tests. |
 | 4 | Set up Sentry error tracking | **DONE** | `sentry-sdk>=2.0` added to requirements. Initialized in `base.py` gated by `SENTRY_DSN` env var (empty = disabled). Auto-integrates with Django, DRF, Celery, Python logging. `send_default_pii=False` for guest data privacy. Configurable traces sample rate. Documented in DEPLOYMENT.md Section 11. |
-| 5 | Configure pgbouncer connection pooling | Pending | P2 |
+| 5 | Configure pgbouncer connection pooling | **DONE** | Django persistent connections: `CONN_MAX_AGE=600`, `CONN_HEALTH_CHECKS=True` in `base.py`. Configurable via `DB_CONN_MAX_AGE` env var. Optional pgbouncer in `docker-compose.yml` with `--profile pooling` (transaction mode, 200 max clients, 20 pool size). Documented in DEPLOYMENT.md Section 12. |
 | 6 | Set up media storage (S3 or nginx) | Pending | P2 |
 | 7 | Implement real SMS gateway integration | Pending | P2 |
 | 8 | Add CI coverage reporting | Pending | P2 |
