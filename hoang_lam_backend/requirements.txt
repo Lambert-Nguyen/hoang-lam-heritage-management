@@ -29,3 +29,6 @@ pytest-django>=4.8,<5.0
 # Task Queue & Scheduling
 celery>=5.3,<6.0
 redis>=5.0,<6.0
+
+# Error Tracking & Monitoring
+sentry-sdk>=2.0,<3.0

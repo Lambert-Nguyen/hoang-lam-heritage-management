@@ -231,3 +231,23 @@ FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY", "")
 FCM_ENABLED = os.getenv("FCM_ENABLED", "False").lower() == "true"
 FCM_CREDENTIALS_FILE = os.getenv("FCM_CREDENTIALS_FILE", "")
 FCM_CREDENTIALS_JSON = os.getenv("FCM_CREDENTIALS_JSON", "")
+
+
+# Sentry Error Tracking (Phase D - Task 4)
+# Get your DSN from https://sentry.io → Project Settings → Client Keys
+# Leave empty to disable Sentry (dev/test mode)
+SENTRY_DSN = os.getenv("SENTRY_DSN", "")
+SENTRY_ENVIRONMENT = os.getenv(
+    "SENTRY_ENVIRONMENT", os.getenv("DJANGO_ENVIRONMENT", "development")
+)
+SENTRY_TRACES_SAMPLE_RATE = float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0"))
+
+if SENTRY_DSN:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=SENTRY_ENVIRONMENT,
+        traces_sample_rate=SENTRY_TRACES_SAMPLE_RATE,
+        send_default_pii=False,
+    )

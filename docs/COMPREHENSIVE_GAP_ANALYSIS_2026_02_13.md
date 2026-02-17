@@ -270,7 +270,7 @@ Features specified in the Design Plan that are missing or incomplete.
 
 | ID | Gap | Details |
 |----|-----|---------|
-| AD-05 | **No monitoring/alerting** | No Sentry, no health checks, no uptime monitoring |
+| AD-05 | ~~No monitoring/alerting~~ | **PARTIALLY FIXED (Phase D)** — Sentry SDK integrated for error tracking (`sentry-sdk>=2.0`). Auto-captures Django, DRF, Celery errors. Privacy-safe (`send_default_pii=False`). Health checks and uptime monitoring still pending. |
 | AD-06 | **No CI coverage reporting** | Tests run in CI but coverage metrics not tracked |
 | AD-07 | **No APM/performance monitoring** | No Django debug toolbar, no query profiling in production |
 | AD-08 | **Media files served by Django** | Production should use S3/CDN for uploads |
@@ -348,14 +348,14 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
-**STATUS: IN PROGRESS (3/10 done)**
+**STATUS: IN PROGRESS (4/10 done)**
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
 | 1 | Implement sensitive data encryption (CCCD, passport) | **DONE** | Fernet encryption for `id_number` & `visa_number`. SHA-256 hash for lookups. `encryption.py` utility, `Guest.save()` override, serializer decryption, hash-based search. `encrypt_guest_data` management command. Migration `0018`. 22 new tests. |
 | 2 | Add audit logging for sensitive data access | **DONE** | `SensitiveDataAccessLog` model with 8 action types. `audit.py` utility with `log_sensitive_access()`. Wired into GuestViewSet (retrieve, list, create, update, search, history), declaration export, receipt generation. Read-only admin. `hotel_api.security` logger in production settings. 9 new tests. |
 | 3 | Implement data retention policy | **DONE** | `retention.py` with configurable per-model retention periods. 13 model categories: 90d notifications, 30d inactive tokens, 1y housekeeping/inspections, 2y maintenance/messages/lost&found, 3y bookings/rates, 5y financial/audits, 7y access logs. Celery task weekly Sunday 3 AM. `apply_retention_policy` management command with `--dry-run` and `--model` filter. Settings override via `DATA_RETENTION_OVERRIDES` env var. 19 new tests. |
-| 4 | Set up Sentry error tracking | Pending | P2 |
+| 4 | Set up Sentry error tracking | **DONE** | `sentry-sdk>=2.0` added to requirements. Initialized in `base.py` gated by `SENTRY_DSN` env var (empty = disabled). Auto-integrates with Django, DRF, Celery, Python logging. `send_default_pii=False` for guest data privacy. Configurable traces sample rate. Documented in DEPLOYMENT.md Section 11. |
 | 5 | Configure pgbouncer connection pooling | Pending | P2 |
 | 6 | Set up media storage (S3 or nginx) | Pending | P2 |
 | 7 | Implement real SMS gateway integration | Pending | P2 |
@@ -391,11 +391,11 @@ Features specified in the Design Plan that are missing or incomplete.
 | Phase A (Critical) | ~22h | Weeks 1-2 | COMPLETED (2026-02-13) |
 | Phase B (High) | ~30h | Weeks 3-4 | COMPLETED (2026-02-13) |
 | Phase C (Quality) | ~40h | Weeks 5-6 | COMPLETED (2026-02-16) |
-| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (3/10 done) |
+| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (4/10 done) |
 | **Total** | **~143h** | **8 weeks** | **Phases A+B+C done, D started** |
 
 ---
 
 *This analysis supersedes the previous [DESIGN_GAPS_ANALYSIS.md](./DESIGN_GAPS_ANALYSIS.md) (dated 2026-02-05) which focused only on design plan model/field gaps and is marked as "all fixed". This report covers a broader scope including security, bugs, testing, architecture, and deployment.*
 
-*Last updated: 2026-02-17 (Phase D tasks 1-3 complete — encryption + audit logging + data retention. 600 backend tests passing.)*
+*Last updated: 2026-02-17 (Phase D tasks 1-4 complete — encryption + audit logging + data retention + Sentry. 600 backend tests passing.)*

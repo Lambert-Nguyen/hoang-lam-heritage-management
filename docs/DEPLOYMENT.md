@@ -599,3 +599,56 @@ All access to guest sensitive data is logged in the `SensitiveDataAccessLog` tab
 View audit logs in Django admin at `/admin/hotel_api/sensitivedataaccesslog/` (read-only).
 
 In production, audit entries are also written to `logs/security_audit.log` (rotating, 50 MB max, 10 backups).
+
+---
+
+## 11. Sentry Error Tracking
+
+Sentry provides real-time error tracking, alerting, and performance monitoring. The integration is optional and disabled by default (no DSN = disabled).
+
+### Setup
+
+1. Create a project at [sentry.io](https://sentry.io) (or your self-hosted Sentry instance)
+2. Copy the DSN from **Project Settings > Client Keys**
+3. Add to `.env`:
+
+```bash
+SENTRY_DSN=https://your-key@o123456.ingest.sentry.io/1234567
+SENTRY_ENVIRONMENT=production
+SENTRY_TRACES_SAMPLE_RATE=0.1
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SENTRY_DSN` | (empty) | Sentry Data Source Name. Leave empty to disable. |
+| `SENTRY_ENVIRONMENT` | `development` | Environment tag in Sentry (development/staging/production). Falls back to `DJANGO_ENVIRONMENT`. |
+| `SENTRY_TRACES_SAMPLE_RATE` | `0` | Performance tracing sample rate (0.0 to 1.0). Set to `0.1` for 10% sampling in production. |
+
+### What Gets Captured
+
+Sentry automatically captures:
+
+- **Unhandled exceptions** in Django views and middleware
+- **DRF API errors** (500 Internal Server Error responses)
+- **Celery task failures** (check-in reminders, checkout reminders, retention policy, token cleanup)
+- **Python logging** errors (ERROR level and above)
+- **Request context** (URL, method, headers — but NOT guest PII due to `send_default_pii=False`)
+
+### Recommended Settings Per Environment
+
+| Environment | `SENTRY_DSN` | `SENTRY_TRACES_SAMPLE_RATE` | Notes |
+|-------------|-------------|---------------------------|-------|
+| Development | (empty) | — | Sentry disabled |
+| Staging | Set DSN | `1.0` | Capture everything for testing |
+| Production | Set DSN | `0.1` | 10% sampling to save quota |
+
+### Privacy
+
+`send_default_pii` is set to `False` — Sentry will NOT capture:
+- User IP addresses in breadcrumbs
+- Request body data (guest CCCD, passport numbers)
+- Cookies or session data
+
+This ensures compliance with Vietnam data protection regulations.
