@@ -307,6 +307,10 @@ sudo certbot --nginx -d your-domain.com
 | `SENTRY_TRACES_SAMPLE_RATE` | No | `0` | Sentry performance tracing rate (0.0–1.0). Use `0.1` in production. |
 | `MEDIA_STORAGE_BACKEND` | No | `local` | Media storage backend. Set to `s3` for S3-compatible storage. See Section 13. |
 | `AWS_STORAGE_BUCKET_NAME` | If S3 | — | S3 bucket name (only when `MEDIA_STORAGE_BACKEND=s3`). |
+| `SMS_ENABLED` | No | `False` | Enable real SMS sending via eSMS.vn. See Section 14. |
+| `SMS_API_KEY` | If SMS | — | eSMS.vn API key. |
+| `SMS_SECRET_KEY` | If SMS | — | eSMS.vn secret key. |
+| `SMS_BRAND_NAME` | If SMS | — | Registered brandname for SMS sender ID. |
 
 ---
 
@@ -775,3 +779,62 @@ AWS_S3_ENDPOINT_URL=https://sgp1.digitaloceanspaces.com
 - **No file overwrite** (`AWS_S3_FILE_OVERWRITE=False`): Prevents accidental overwriting of existing files.
 - **5 MB upload limit**: Enforced by both Django (`FILE_UPLOAD_MAX_MEMORY_SIZE`) and nginx (`client_max_body_size`).
 - **Image validation**: All ImageFields use `validate_image_file()` — max 5 MB, allowed types: jpg, jpeg, png, gif, webp.
+
+---
+
+## 14. SMS Gateway (eSMS.vn)
+
+Guest SMS messaging uses [eSMS.vn](https://esms.vn) as the SMS gateway. SMS is disabled by default in development (returns mock responses).
+
+### Setup
+
+1. Register at [esms.vn](https://esms.vn) and get your API credentials
+2. Register a brandname (e.g., `HOANGLAM`) — required for customer care SMS in Vietnam
+3. Add to `.env`:
+
+```bash
+SMS_ENABLED=True
+SMS_API_KEY=your-api-key
+SMS_SECRET_KEY=your-secret-key
+SMS_BRAND_NAME=HOANGLAM
+```
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `SMS_ENABLED` | `False` | Enable real SMS sending. When `False`, logs messages without sending. |
+| `SMS_API_KEY` | — | eSMS.vn API key from dashboard |
+| `SMS_SECRET_KEY` | — | eSMS.vn secret key from dashboard |
+| `SMS_BRAND_NAME` | — | Registered brandname for SMS sender ID |
+
+### How It Works
+
+- Staff sends SMS from the Flutter app via `POST /api/v1/guest-messages/send/`
+- Backend routes to `SMSService.send()` → eSMS.vn REST API
+- Message templates support variables: `{guest_name}`, `{room_number}`, `{check_in_date}`, etc.
+- Delivery status tracked in `GuestMessage` model (pending → sent/failed)
+- 4 default templates seeded: booking confirmation, pre-arrival info, checkout reminder, review request
+
+### eSMS API Details
+
+- **Endpoint**: `https://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_post`
+- **SmsType**: `2` (customer care / CSKH — not advertising)
+- **Success code**: `CodeResult == "100"`
+- **Timeout**: 30 seconds
+- **Error handling**: HTTP errors, timeouts, and API error codes are all captured in `GuestMessage.send_error`
+
+### Testing
+
+In development (`SMS_ENABLED=False`), SMS calls return mock success responses and log the message content. This allows full testing of the messaging flow without sending real SMS.
+
+To test with real SMS (staging):
+
+```bash
+SMS_ENABLED=True SMS_API_KEY=your-key SMS_SECRET_KEY=your-secret SMS_BRAND_NAME=HOANGLAM \
+  python manage.py shell -c "
+from hotel_api.messaging_service import SMSService
+result = SMSService.send('0912345678', 'Test từ Hoàng Lâm Heritage')
+print(result)
+"
+```

@@ -235,6 +235,15 @@ FCM_CREDENTIALS_FILE = os.getenv("FCM_CREDENTIALS_FILE", "")
 FCM_CREDENTIALS_JSON = os.getenv("FCM_CREDENTIALS_JSON", "")
 
 
+# SMS Gateway (Phase D - Task 7)
+# eSMS.vn integration for guest SMS messaging
+# Leave SMS_ENABLED=False in development (returns mock responses)
+SMS_ENABLED = os.getenv("SMS_ENABLED", "False").lower() == "true"
+SMS_API_KEY = os.getenv("SMS_API_KEY", "")
+SMS_SECRET_KEY = os.getenv("SMS_SECRET_KEY", "")
+SMS_BRAND_NAME = os.getenv("SMS_BRAND_NAME", "")
+
+
 # Media Storage Backend (Phase D - Task 6)
 # Set to "s3" for S3-compatible storage (AWS S3, MinIO, DigitalOcean Spaces)
 MEDIA_STORAGE_BACKEND = os.getenv("MEDIA_STORAGE_BACKEND", "local")

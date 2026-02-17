@@ -129,7 +129,7 @@ Key examples:
 |----|-----|---------|
 | BE-03 | ~~Dynamic pricing engine not connected~~ | **FIXED (Phase B)** — `RatePricingService` added, auto-applied in `BookingSerializer.create()` |
 | BE-04 | ~~Auto-task creation on checkout not implemented~~ | **FIXED (Phase B)** — `check_out` action now creates `HousekeepingTask(CHECKOUT_CLEAN)` |
-| BE-05 | **SMS service is a mock** | `messaging_service.py:59-80` returns fake message IDs — real guests never receive SMS |
+| BE-05 | ~~SMS service is a mock~~ | **FIXED (Phase D)** — Real eSMS.vn integration in `SMSService.send()`. HTTP POST to eSMS REST API with timeout, error handling, response parsing. Gated by `SMS_ENABLED` env var (disabled = mock mode). Settings: `SMS_API_KEY`, `SMS_SECRET_KEY`, `SMS_BRAND_NAME`. Documented in DEPLOYMENT.md Section 14. |
 | BE-06 | **Zalo channel declared but not implemented** | `MessageTemplate.Channel.ZALO` exists but no sending logic |
 | BE-07 | ~~No Celery/Redis for async tasks~~ | **FIXED (Phase C)** — `backend/celery.py` + `hotel_api/tasks.py` with 3 tasks. Beat schedule for check-in/out reminders and token cleanup. Docker services added. |
 | BE-08 | **NightAudit.calculate_statistics() has multiple separate queries** | N+1 style — could be single aggregation query for performance |
@@ -348,7 +348,7 @@ Features specified in the Design Plan that are missing or incomplete.
 
 ### Phase D: Production Hardening (Weeks 7-8)
 
-**STATUS: IN PROGRESS (6/10 done)**
+**STATUS: IN PROGRESS (7/10 done)**
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
@@ -358,7 +358,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | 4 | Set up Sentry error tracking | **DONE** | `sentry-sdk>=2.0` added to requirements. Initialized in `base.py` gated by `SENTRY_DSN` env var (empty = disabled). Auto-integrates with Django, DRF, Celery, Python logging. `send_default_pii=False` for guest data privacy. Configurable traces sample rate. Documented in DEPLOYMENT.md Section 11. |
 | 5 | Configure pgbouncer connection pooling | **DONE** | Django persistent connections: `CONN_MAX_AGE=600`, `CONN_HEALTH_CHECKS=True` in `base.py`. Configurable via `DB_CONN_MAX_AGE` env var. Optional pgbouncer in `docker-compose.yml` with `--profile pooling` (transaction mode, 200 max clients, 20 pool size). Documented in DEPLOYMENT.md Section 12. |
 | 6 | Set up media storage (S3 or nginx) | **DONE** | Fixed `MEDIA_URL` to `/media/` (absolute). Optional S3 backend via `django-storages` + `boto3` (`MEDIA_STORAGE_BACKEND=s3`). Nginx service in `docker-compose.yml` (`--profile production`) with `nginx/default.conf`. Named volumes `media_files`/`static_files` for persistence. Signed URLs for sensitive files (`AWS_QUERYSTRING_AUTH=True`). Supports AWS S3, MinIO, DigitalOcean Spaces. Documented in DEPLOYMENT.md Section 13. |
-| 7 | Implement real SMS gateway integration | Pending | P2 |
+| 7 | Implement real SMS gateway integration | **DONE** | Real eSMS.vn HTTP integration in `SMSService.send()`. API endpoint: `SendMultipleMessage_V4_post`, SmsType=2 (CSKH). Timeout=30s, proper error handling for HTTP errors, timeouts, and API error codes. Gated by `SMS_ENABLED` env var. Settings: `SMS_API_KEY`, `SMS_SECRET_KEY`, `SMS_BRAND_NAME` in `base.py`. `requests` added to requirements. Documented in DEPLOYMENT.md Section 14. |
 | 8 | Add CI coverage reporting | Pending | P2 |
 | 9 | Implement offline sync handlers | Pending | P3 |
 | 10 | Flutter release build setup (Fastlane) | Pending | P3 |

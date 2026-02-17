@@ -6,6 +6,7 @@ Phase 5.3: Guest Communication
 
 import logging
 
+import requests
 from django.conf import settings
 from django.utils import timezone
 
@@ -56,34 +57,40 @@ class SMSService:
                 "error": "",
             }
 
-        # Production SMS integration would go here
-        # Example with eSMS.vn:
-        # try:
-        #     response = requests.post(
-        #         "https://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_post",
-        #         json={
-        #             "ApiKey": settings.SMS_API_KEY,
-        #             "SecretKey": settings.SMS_SECRET_KEY,
-        #             "Phone": phone_number,
-        #             "Content": message,
-        #             "SmsType": "2",
-        #             "Brandname": settings.SMS_BRAND_NAME,
-        #         }
-        #     )
-        #     data = response.json()
-        #     return {
-        #         "success": data.get("CodeResult") == "100",
-        #         "message_id": data.get("SMSID", ""),
-        #         "error": data.get("ErrorMessage", ""),
-        #     }
-        # except Exception as e:
-        #     return {"success": False, "message_id": "", "error": str(e)}
+        # eSMS.vn production integration
+        try:
+            response = requests.post(
+                "https://rest.esms.vn/MainService.svc/json/SendMultipleMessage_V4_post",
+                json={
+                    "ApiKey": settings.SMS_API_KEY,
+                    "SecretKey": settings.SMS_SECRET_KEY,
+                    "Phone": phone_number,
+                    "Content": message,
+                    "SmsType": "2",
+                    "Brandname": settings.SMS_BRAND_NAME,
+                },
+                timeout=30,
+            )
+            response.raise_for_status()
+            data = response.json()
 
-        return {
-            "success": True,
-            "message_id": f"mock-sms-{timezone.now().timestamp():.0f}",
-            "error": "",
-        }
+            success = str(data.get("CodeResult")) == "100"
+            return {
+                "success": success,
+                "message_id": data.get("SMSID", ""),
+                "error": "" if success else data.get(
+                    "ErrorMessage", f"eSMS error code: {data.get('CodeResult')}"
+                ),
+            }
+        except requests.Timeout:
+            logger.error(f"SMS timeout sending to {phone_number}")
+            return {"success": False, "message_id": "", "error": "SMS gateway timeout"}
+        except requests.RequestException as e:
+            logger.error(f"SMS request error to {phone_number}: {e}")
+            return {"success": False, "message_id": "", "error": str(e)}
+        except Exception as e:
+            logger.error(f"SMS unexpected error to {phone_number}: {e}")
+            return {"success": False, "message_id": "", "error": str(e)}
 
 
 class EmailService:
