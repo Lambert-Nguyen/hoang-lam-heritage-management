@@ -8,6 +8,7 @@ import '../../core/config/app_constants.dart';
 import '../../models/auth.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/biometric_provider.dart';
+import '../../providers/settings_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_input.dart';
@@ -134,6 +135,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = ref.watch(isAuthLoadingProvider);
     final biometricAsync = ref.watch(biometricNotifierProvider);
 
+    final currentLocale = ref.watch(settingsProvider).locale;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -143,7 +146,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AppSpacing.gapVerticalXl,
+                // Language switcher
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      final newLocale =
+                          currentLocale == 'vi' ? 'en' : 'vi';
+                      ref
+                          .read(settingsProvider.notifier)
+                          .setLocale(newLocale);
+                    },
+                    icon: const Icon(Icons.language, size: 20),
+                    label: Text(
+                      currentLocale == 'vi' ? 'English' : 'Tiếng Việt',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                ),
                 AppSpacing.gapVerticalXl,
 
                 // Logo/Title
