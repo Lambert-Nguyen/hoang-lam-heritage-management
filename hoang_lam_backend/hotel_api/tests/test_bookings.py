@@ -590,11 +590,14 @@ class BookingAPITestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_calendar_end_before_start(self):
-        """Test calendar with end_date before start_date."""
+        """Test calendar with end_date before start_date returns 200 with empty results."""
         self.client.force_authenticate(user=self.staff_user)
         today = date.today()
         response = self.client.get(
             f"/api/v1/bookings/calendar/?start_date={today + timedelta(days=10)}&end_date={today}"
         )
-        # Should return 400 or empty results
-        self.assertIn(response.status_code, [status.HTTP_200_OK, status.HTTP_400_BAD_REQUEST])
+        # The view does not validate date order — an inverted range simply
+        # matches no bookings and returns an empty list with HTTP 200.
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["total"], 0)
+        self.assertEqual(response.data["bookings"], [])

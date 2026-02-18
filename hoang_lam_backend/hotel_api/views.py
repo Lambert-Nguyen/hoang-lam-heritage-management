@@ -2059,7 +2059,8 @@ class FinancialCategoryViewSet(viewsets.ModelViewSet):
             is_active_bool = is_active.lower() in ["true", "1", "yes"]
             queryset = queryset.filter(is_active=is_active_bool)
 
-        return queryset
+        # Explicit ordering ensures consistent pagination even after annotation
+        return queryset.order_by("category_type", "sort_order", "name")
 
 
 @extend_schema_view(
