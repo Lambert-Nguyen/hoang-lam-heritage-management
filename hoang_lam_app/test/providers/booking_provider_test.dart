@@ -9,9 +9,12 @@ import 'package:hoang_lam_app/repositories/booking_repository.dart';
 
 import 'booking_provider_test.mocks.dart';
 
+class MockRef extends Mock implements Ref {}
+
 @GenerateMocks([BookingRepository])
 void main() {
   late MockBookingRepository mockRepository;
+  late MockRef mockRef;
   late ProviderContainer container;
 
   BookingNotifier createNotifier() {
@@ -20,7 +23,7 @@ void main() {
         bookingRepositoryProvider.overrideWithValue(mockRepository),
       ],
     );
-    return BookingNotifier(mockRepository, container.read(bookingRepositoryProvider) as Never);
+    return BookingNotifier(mockRepository, mockRef);
   }
 
   // Provide dummy values for Freezed types that Mockito can't auto-generate
@@ -65,6 +68,7 @@ void main() {
 
   setUp(() {
     mockRepository = MockBookingRepository();
+    mockRef = MockRef();
   });
 
   group('BookingNotifier', () {
@@ -80,7 +84,7 @@ void main() {
           ordering: anyNamed('ordering'),
         )).thenAnswer((_) async => testBookings);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         // Constructor calls loadBookings, wait for it
         await Future.delayed(Duration.zero);
 
@@ -101,7 +105,7 @@ void main() {
           ordering: anyNamed('ordering'),
         )).thenThrow(Exception('Network error'));
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         expect(notifier.state.hasError, true);
@@ -120,7 +124,7 @@ void main() {
           ordering: anyNamed('ordering'),
         )).thenAnswer((_) async => testBookings);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         final filter = BookingFilter(
@@ -154,7 +158,7 @@ void main() {
           ordering: anyNamed('ordering'),
         )).thenAnswer((_) async => testBookings);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         await notifier.clearFilter();
@@ -196,7 +200,7 @@ void main() {
         when(mockRepository.createBooking(any))
             .thenAnswer((_) async => newBooking);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         final result = await notifier.createBooking(createData);
@@ -219,7 +223,7 @@ void main() {
         when(mockRepository.createBooking(any))
             .thenThrow(Exception('Validation error'));
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         expect(
@@ -264,7 +268,7 @@ source: BookingSource.walkIn,
                 actualCheckInNotes: anyNamed('actualCheckInNotes')))
             .thenAnswer((_) async => checkedInBooking);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         final result = await notifier.checkIn(1, notes: 'Early check-in');
@@ -304,7 +308,7 @@ source: BookingSource.walkIn,
           finalAmount: anyNamed('finalAmount'),
         )).thenAnswer((_) async => checkedOutBooking);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         final result = await notifier.checkOut(1, notes: 'Normal checkout');
@@ -340,7 +344,7 @@ source: BookingSource.walkIn,
                 cancellationReason: anyNamed('cancellationReason')))
             .thenAnswer((_) async => cancelledBooking);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         final result =
@@ -367,7 +371,7 @@ source: BookingSource.walkIn,
 
         when(mockRepository.deleteBooking(any)).thenAnswer((_) async {});
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         await notifier.deleteBooking(1);
@@ -389,7 +393,7 @@ source: BookingSource.walkIn,
         when(mockRepository.deleteBooking(any))
             .thenThrow(Exception('Cannot delete'));
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         expect(
@@ -425,7 +429,7 @@ source: BookingSource.walkIn,
         when(mockRepository.markAsNoShow(any, notes: anyNamed('notes')))
             .thenAnswer((_) async => noShowBooking);
 
-        final notifier = BookingNotifier(mockRepository);
+        final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         final result = await notifier.markAsNoShow(1, notes: 'No contact');
