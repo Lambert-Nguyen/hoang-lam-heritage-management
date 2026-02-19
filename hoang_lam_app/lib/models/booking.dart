@@ -591,6 +591,8 @@ sealed class Booking with _$Booking {
     // Guest
     required int guest,
     @JsonKey(name: 'guest_details') GuestSummary? guestDetails,
+    @JsonKey(name: 'guest_name') String? guestNameField,
+    @JsonKey(name: 'guest_phone') String? guestPhoneField,
     @JsonKey(name: 'guest_count') @Default(1) int guestCount,
 
     // Status
@@ -694,11 +696,11 @@ sealed class Booking with _$Booking {
   /// Total fees (early + late)
   int get totalFees => earlyCheckInFee + lateCheckOutFee;
 
-  /// Get guest name (from details or fallback)
-  String get guestName => guestDetails?.fullName ?? 'Khách #$guest';
+  /// Get guest name (from details, list field, or fallback)
+  String get guestName => guestDetails?.fullName ?? guestNameField ?? 'Khách #$guest';
 
-  /// Get guest phone (from details or empty)
-  String get guestPhone => guestDetails?.phone ?? '';
+  /// Get guest phone (from details, list field, or empty)
+  String get guestPhone => guestDetails?.phone ?? guestPhoneField ?? '';
 
   /// Check if booking is for today
   bool get isToday {
