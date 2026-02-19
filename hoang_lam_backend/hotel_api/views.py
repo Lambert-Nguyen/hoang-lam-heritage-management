@@ -700,18 +700,21 @@ class GuestViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         response = super().retrieve(request, *args, **kwargs)
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, "view_guest", resource_id=kwargs.get("pk"),
+            request, SensitiveDataAccessLog.Action.VIEW_GUEST,
+            resource_id=int(kwargs["pk"]),
         )
         return response
 
     def list(self, request, *args, **kwargs):
         response = super().list(request, *args, **kwargs)
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, "list_guests",
+            request, SensitiveDataAccessLog.Action.LIST_GUESTS,
             details={"query_params": dict(request.query_params)},
         )
         return response
@@ -719,19 +722,23 @@ class GuestViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         if response.status_code == 201:
             log_sensitive_access(
-                request, "create_guest", resource_id=response.data.get("id"),
+                request, SensitiveDataAccessLog.Action.CREATE_GUEST,
+                resource_id=response.data.get("id"),
             )
         return response
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, "update_guest", resource_id=kwargs.get("pk"),
+            request, SensitiveDataAccessLog.Action.UPDATE_GUEST,
+            resource_id=int(kwargs["pk"]),
         )
         return response
 
@@ -751,6 +758,7 @@ class GuestViewSet(viewsets.ModelViewSet):
         query = serializer.validated_data["query"]
         from hotel_api.encryption import hash_value
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         id_hash = hash_value(query)
         guests = Guest.objects.filter(
@@ -758,7 +766,7 @@ class GuestViewSet(viewsets.ModelViewSet):
         )
 
         log_sensitive_access(
-            request, "search_guest",
+            request, SensitiveDataAccessLog.Action.SEARCH_GUEST,
             details={"query": query, "results_count": guests.count()},
         )
 
@@ -795,9 +803,11 @@ class GuestViewSet(viewsets.ModelViewSet):
         )
 
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, "view_guest_history", resource_id=pk,
+            request, SensitiveDataAccessLog.Action.VIEW_HISTORY,
+            resource_id=int(pk),
         )
 
         return Response(
@@ -868,9 +878,10 @@ class GuestViewSet(viewsets.ModelViewSet):
         from django.http import HttpResponse
         from django.utils import timezone as tz
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, "export_declaration",
+            request, SensitiveDataAccessLog.Action.EXPORT_DECLARATION,
             details={"query_params": dict(request.query_params)},
         )
 
@@ -3263,9 +3274,11 @@ class ReceiptViewSet(viewsets.ViewSet):
         receipt_data = self._get_receipt_data(booking, payment, include_folio)
 
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, "export_receipt", resource_id=booking.guest.id,
+            request, SensitiveDataAccessLog.Action.EXPORT_RECEIPT,
+            resource_id=booking.guest.id,
             details={"booking_id": booking.id},
         )
 

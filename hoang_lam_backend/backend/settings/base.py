@@ -228,6 +228,12 @@ DATA_RETENTION_OVERRIDES = os.getenv("DATA_RETENTION_OVERRIDES", "")
 # Leave empty to disable encryption (dev/test mode)
 FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY", "")
 
+# Hash pepper for sensitive field lookups (Phase D)
+# Prevents precomputation attacks on low-entropy values like 12-digit CCCD numbers.
+# Generate: python -c "import secrets; print(secrets.token_urlsafe(32))"
+# IMPORTANT: Changing this invalidates all existing hash columns — re-run encrypt_guest_data.
+HASH_PEPPER = os.getenv("HASH_PEPPER", "")
+
 
 # Firebase Cloud Messaging (Push Notifications - Phase 5)
 FCM_ENABLED = os.getenv("FCM_ENABLED", "False").lower() == "true"

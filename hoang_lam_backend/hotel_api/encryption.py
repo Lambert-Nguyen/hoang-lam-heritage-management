@@ -60,21 +60,25 @@ def decrypt(ciphertext):
 
     try:
         return fernet.decrypt(ciphertext.encode()).decode()
-    except (InvalidToken, Exception):
+    except (InvalidToken, ValueError, UnicodeDecodeError):
         # Value is likely still plaintext (pre-encryption migration)
         return ciphertext
 
 
 def hash_value(plaintext):
     """
-    Compute SHA-256 hash of a plaintext value for lookup/uniqueness.
+    Compute peppered SHA-256 hash of a plaintext value for lookup/uniqueness.
+
+    Uses HASH_PEPPER from settings to prevent precomputation attacks
+    on low-entropy values (e.g., 12-digit CCCD numbers).
 
     Returns hex digest string (64 chars).
     Returns empty string if plaintext is empty/None.
     """
     if not plaintext:
         return ""
-    return hashlib.sha256(plaintext.strip().encode()).hexdigest()
+    pepper = getattr(settings, "HASH_PEPPER", "")
+    return hashlib.sha256((pepper + plaintext.strip()).encode()).hexdigest()
 
 
 def is_encrypted(value):
@@ -87,5 +91,5 @@ def is_encrypted(value):
             return False
         fernet.decrypt(value.encode())
         return True
-    except (InvalidToken, Exception):
+    except (InvalidToken, ValueError, UnicodeDecodeError):
         return False

@@ -272,31 +272,24 @@ class Guest(models.Model):
         return f"{self.full_name} - {self.phone}"
 
     def save(self, *args, **kwargs):
-        from hotel_api.encryption import encrypt, hash_value, is_encrypted
+        from hotel_api.encryption import decrypt, encrypt, hash_value, is_encrypted
 
-        # Compute hashes from plaintext (before encryption)
+        # Encrypt id_number and compute hash from plaintext
         if self.id_number:
-            # If already encrypted, decrypt first to get plaintext for hashing
-            if is_encrypted(self.id_number):
-                from hotel_api.encryption import decrypt
-                plaintext = decrypt(self.id_number)
-            else:
-                plaintext = self.id_number
+            already_encrypted = is_encrypted(self.id_number)
+            plaintext = decrypt(self.id_number) if already_encrypted else self.id_number
             self.id_number_hash = hash_value(plaintext)
-            # Encrypt the field value
-            if not is_encrypted(self.id_number):
+            if not already_encrypted:
                 self.id_number = encrypt(self.id_number)
         else:
             self.id_number_hash = None
 
+        # Encrypt visa_number and compute hash from plaintext
         if self.visa_number:
-            if is_encrypted(self.visa_number):
-                from hotel_api.encryption import decrypt
-                plaintext = decrypt(self.visa_number)
-            else:
-                plaintext = self.visa_number
+            already_encrypted = is_encrypted(self.visa_number)
+            plaintext = decrypt(self.visa_number) if already_encrypted else self.visa_number
             self.visa_number_hash = hash_value(plaintext)
-            if not is_encrypted(self.visa_number):
+            if not already_encrypted:
                 self.visa_number = encrypt(self.visa_number)
         else:
             self.visa_number_hash = ""

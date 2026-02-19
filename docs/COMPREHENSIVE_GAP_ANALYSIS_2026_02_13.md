@@ -43,7 +43,7 @@ These must be fixed before any production deployment.
 | ID | Gap | Location | Risk |
 |----|-----|----------|------|
 | SEC-05 | **Biometric login doesn't re-authenticate** | `login_screen.dart:66-74` | Uses cached JWT without server validation — expired tokens appear logged in |
-| SEC-06 | ~~Sensitive data not encrypted at rest~~ | **FIXED (Phase D)** | Fernet encryption for `id_number` and `visa_number` with SHA-256 hash columns for lookup/uniqueness. `encrypt_guest_data` management command for migration. |
+| SEC-06 | ~~Sensitive data not encrypted at rest~~ | **FIXED (Phase D)** | Fernet encryption for `id_number` and `visa_number` with peppered SHA-256 hash columns for secure lookup/uniqueness. `HASH_PEPPER` env var prevents precomputation attacks on low-entropy CCCD numbers. `encrypt_guest_data` management command for migration. |
 | SEC-07 | **No session timeout implementation** | Design plan: 30 minutes inactive | Auth timer exists but no inactivity detection — sessions persist indefinitely |
 | SEC-08 | ~~No audit trail for sensitive data access~~ | **FIXED (Phase D)** | `SensitiveDataAccessLog` model tracks all access to guest data. Audit logging on retrieve, list, search, create, update, history, declaration export, receipt generation. Read-only admin. Separate security audit log file in production. |
 | SEC-09 | **Production .env has dev secret key** | `hoang_lam_backend/.env` | Placeholder `DJANGO_SECRET_KEY=dev-secret-key-...` must be replaced |
@@ -352,9 +352,9 @@ Features specified in the Design Plan that are missing or incomplete.
 
 | # | Task | Status | Notes |
 |---|------|--------|-------|
-| 1 | Implement sensitive data encryption (CCCD, passport) | **DONE** | Fernet encryption for `id_number` & `visa_number`. SHA-256 hash for lookups. `encryption.py` utility, `Guest.save()` override, serializer decryption, hash-based search. `encrypt_guest_data` management command. Migration `0018`. 22 new tests. |
-| 2 | Add audit logging for sensitive data access | **DONE** | `SensitiveDataAccessLog` model with 8 action types. `audit.py` utility with `log_sensitive_access()`. Wired into GuestViewSet (retrieve, list, create, update, search, history), declaration export, receipt generation. Read-only admin. `hotel_api.security` logger in production settings. 9 new tests. |
-| 3 | Implement data retention policy | **DONE** | `retention.py` with configurable per-model retention periods. 13 model categories: 90d notifications, 30d inactive tokens, 1y housekeeping/inspections, 2y maintenance/messages/lost&found, 3y bookings/rates, 5y financial/audits, 7y access logs. Celery task weekly Sunday 3 AM. `apply_retention_policy` management command with `--dry-run` and `--model` filter. Settings override via `DATA_RETENTION_OVERRIDES` env var. 19 new tests. |
+| 1 | Implement sensitive data encryption (CCCD, passport) | **DONE** | Fernet encryption for `id_number` & `visa_number`. SHA-256 hash with server-side pepper (`HASH_PEPPER` env var) for secure lookups. `encryption.py` utility, `Guest.save()` override, serializer decryption, hash-based search. `encrypt_guest_data` management command. Migration `0018`. 22 new tests. **Review fixes (2026-02-18):** Added `HASH_PEPPER` to prevent precomputation attacks on low-entropy CCCD hashes. Narrowed `except Exception` to specific exceptions. Optimized `Guest.save()` to avoid redundant `is_encrypted()` calls. |
+| 2 | Add audit logging for sensitive data access | **DONE** | `SensitiveDataAccessLog` model with 8 action types. `audit.py` utility with `log_sensitive_access()`. Wired into GuestViewSet (retrieve, list, create, update, search, history), declaration export, receipt generation. Read-only admin. `hotel_api.security` logger in production settings. 9 new tests. **Review fixes (2026-02-18):** Replaced hardcoded action strings with `SensitiveDataAccessLog.Action` enum constants. Fixed `resource_id` type coercion (string→int). |
+| 3 | Implement data retention policy | **DONE** | `retention.py` with configurable per-model retention periods. 13 model categories: 90d notifications, 30d inactive tokens, 1y housekeeping/inspections, 2y maintenance/messages/lost&found, 3y bookings/rates, 5y financial/audits, 7y access logs. Celery task weekly Sunday 3 AM. `apply_retention_policy` management command with `--dry-run` and `--model` filter. Settings override via `DATA_RETENTION_OVERRIDES` env var. 19 new tests. **Review fixes (2026-02-18):** Added missing retention tests for `guest_message`, `maintenance_request`, `room_inspection`, `exchange_rate`, and `date_rate_override` (5 new test classes). |
 | 4 | Set up Sentry error tracking | **DONE** | `sentry-sdk>=2.0` added to requirements. Initialized in `base.py` gated by `SENTRY_DSN` env var (empty = disabled). Auto-integrates with Django, DRF, Celery, Python logging. `send_default_pii=False` for guest data privacy. Configurable traces sample rate. Documented in DEPLOYMENT.md Section 11. |
 | 5 | Configure pgbouncer connection pooling | **DONE** | Django persistent connections: `CONN_MAX_AGE=600`, `CONN_HEALTH_CHECKS=True` in `base.py`. Configurable via `DB_CONN_MAX_AGE` env var. Optional pgbouncer in `docker-compose.yml` with `--profile pooling` (transaction mode, 200 max clients, 20 pool size). Documented in DEPLOYMENT.md Section 12. |
 | 6 | Set up media storage (S3 or nginx) | **DONE** | Fixed `MEDIA_URL` to `/media/` (absolute). Optional S3 backend via `django-storages` + `boto3` (`MEDIA_STORAGE_BACKEND=s3`). Nginx service in `docker-compose.yml` (`--profile production`) with `nginx/default.conf`. Named volumes `media_files`/`static_files` for persistence. Signed URLs for sensitive files (`AWS_QUERYSTRING_AUTH=True`). Supports AWS S3, MinIO, DigitalOcean Spaces. Documented in DEPLOYMENT.md Section 13. |
@@ -391,11 +391,11 @@ Features specified in the Design Plan that are missing or incomplete.
 | Phase A (Critical) | ~22h | Weeks 1-2 | COMPLETED (2026-02-13) |
 | Phase B (High) | ~30h | Weeks 3-4 | COMPLETED (2026-02-13) |
 | Phase C (Quality) | ~40h | Weeks 5-6 | COMPLETED (2026-02-16) |
-| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (4/10 done) |
-| **Total** | **~143h** | **8 weeks** | **Phases A+B+C done, D started** |
+| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (8/10 done) |
+| **Total** | **~143h** | **8 weeks** | **Phases A+B+C done, D 80%** |
 
 ---
 
 *This analysis supersedes the previous [DESIGN_GAPS_ANALYSIS.md](./DESIGN_GAPS_ANALYSIS.md) (dated 2026-02-05) which focused only on design plan model/field gaps and is marked as "all fixed". This report covers a broader scope including security, bugs, testing, architecture, and deployment.*
 
-*Last updated: 2026-02-17 (Phase D tasks 1-4 complete — encryption + audit logging + data retention + Sentry. 600 backend tests passing.)*
+*Last updated: 2026-02-18 (Phase D tasks 1-8 complete with review hardening — hash pepper, narrowed exceptions, enum action constants, 5 new retention tests. Remaining: offline sync + Fastlane.)*
