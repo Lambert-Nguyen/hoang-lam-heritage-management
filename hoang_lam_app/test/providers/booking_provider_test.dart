@@ -12,6 +12,16 @@ import 'booking_provider_test.mocks.dart';
 @GenerateMocks([BookingRepository])
 void main() {
   late MockBookingRepository mockRepository;
+  late ProviderContainer container;
+
+  BookingNotifier createNotifier() {
+    container = ProviderContainer(
+      overrides: [
+        bookingRepositoryProvider.overrideWithValue(mockRepository),
+      ],
+    );
+    return BookingNotifier(mockRepository, container.read(bookingRepositoryProvider) as Never);
+  }
 
   // Provide dummy values for Freezed types that Mockito can't auto-generate
   setUpAll(() {

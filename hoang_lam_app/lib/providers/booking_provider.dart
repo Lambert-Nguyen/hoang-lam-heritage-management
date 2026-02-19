@@ -1,7 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../core/services/sync_manager.dart';
 import '../models/booking.dart';
+import '../models/offline_operation.dart';
 import '../repositories/booking_repository.dart';
 
 part 'booking_provider.freezed.dart';
@@ -103,10 +106,19 @@ sealed class BookingsByRoomParams with _$BookingsByRoomParams {
 /// State notifier for booking management operations
 class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   final BookingRepository _repository;
+  final Ref _ref;
   BookingFilter? _currentFilter;
 
-  BookingNotifier(this._repository) : super(const AsyncValue.loading()) {
+  BookingNotifier(this._repository, this._ref) : super(const AsyncValue.loading()) {
     loadBookings();
+  }
+
+  bool _isNetworkError(DioException e) {
+    return e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.unknown;
   }
 
   /// Load bookings with current filter
@@ -144,10 +156,19 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<Booking> createBooking(BookingCreate booking) async {
     try {
       final newBooking = await _repository.createBooking(booking);
-      // Reload bookings after creation
       await loadBookings();
       return newBooking;
-    } catch (error) {
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        final syncManager = _ref.read(syncManagerProvider);
+        await syncManager.queueOperation(
+          entityType: EntityType.booking,
+          operationType: OperationType.create,
+          payload: booking.toJson(),
+        );
+        await loadBookings();
+        rethrow;
+      }
       rethrow;
     }
   }
@@ -156,10 +177,20 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<Booking> updateBooking(int id, BookingUpdate booking) async {
     try {
       final updatedBooking = await _repository.updateBooking(id, booking);
-      // Reload bookings after update
       await loadBookings();
       return updatedBooking;
-    } catch (error) {
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        final syncManager = _ref.read(syncManagerProvider);
+        await syncManager.queueOperation(
+          entityType: EntityType.booking,
+          entityId: id.toString(),
+          operationType: OperationType.update,
+          payload: booking.toJson(),
+        );
+        await loadBookings();
+        rethrow;
+      }
       rethrow;
     }
   }
@@ -289,9 +320,19 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<void> deleteBooking(int id) async {
     try {
       await _repository.deleteBooking(id);
-      // Reload bookings after deletion
       await loadBookings();
-    } catch (error) {
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        final syncManager = _ref.read(syncManagerProvider);
+        await syncManager.queueOperation(
+          entityType: EntityType.booking,
+          entityId: id.toString(),
+          operationType: OperationType.delete,
+          payload: {},
+        );
+        await loadBookings();
+        rethrow;
+      }
       rethrow;
     }
   }
@@ -304,7 +345,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
 final bookingNotifierProvider =
     StateNotifierProvider<BookingNotifier, AsyncValue<List<Booking>>>((ref) {
   final repository = ref.watch(bookingRepositoryProvider);
-  return BookingNotifier(repository);
+  return BookingNotifier(repository, ref);
 });
 
 /// Provider for getting booking statistics

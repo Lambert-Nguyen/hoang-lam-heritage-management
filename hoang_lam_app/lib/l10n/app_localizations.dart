@@ -1226,8 +1226,15 @@ class AppLocalizations {
   String get searchGuestHint => translate('search_guest_hint');
   String get idNumber => translate('id_number');
 
-  // Common Widgets
+  // Offline Sync
   String get offlineSyncMessage => translate('offline_sync_message');
+  String get offlineOperationQueued => translate('offline_operation_queued');
+  String get syncComplete => translate('sync_complete');
+  String get syncFailed => translate('sync_failed');
+  String get syncInProgress => translate('sync_in_progress');
+  String get offlineDataCached => translate('offline_data_cached');
+
+  // Common Widgets
   String get incomeExpenseChart => translate('income_expense_chart');
   String get incomeLabel => translate('income_label');
   String get expenseShort => translate('expense_short');
@@ -3339,6 +3346,13 @@ const Map<String, String> _viTranslations = {
   'error_conflict': 'Dữ liệu bị xung đột.',
   'error_server': 'Lỗi máy chủ. Vui lòng thử lại sau.',
 
+  // Offline Sync
+  'offline_operation_queued': 'Thao tác đã được lưu. Sẽ đồng bộ khi có mạng.',
+  'sync_complete': 'Đồng bộ thành công',
+  'sync_failed': 'Đồng bộ thất bại',
+  'sync_in_progress': 'Đang đồng bộ dữ liệu...',
+  'offline_data_cached': 'Đang hiển thị dữ liệu đã lưu',
+
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -4950,6 +4964,13 @@ const Map<String, String> _enTranslations = {
   'error_not_found': 'Data not found.',
   'error_conflict': 'Data conflict.',
   'error_server': 'Server error. Please try again later.',
+
+  // Offline Sync
+  'offline_operation_queued': 'Operation saved. Will sync when online.',
+  'sync_complete': 'Sync complete',
+  'sync_failed': 'Sync failed',
+  'sync_in_progress': 'Syncing data...',
+  'offline_data_cached': 'Showing cached data',
 
 };
 

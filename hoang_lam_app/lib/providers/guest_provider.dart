@@ -1,8 +1,11 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../core/services/sync_manager.dart';
 import '../l10n/app_localizations.dart';
 import '../models/guest.dart';
+import '../models/offline_operation.dart';
 import '../repositories/guest_repository.dart';
 import 'settings_provider.dart';
 
@@ -117,6 +120,15 @@ class GuestNotifier extends StateNotifier<GuestState> {
 
   GuestNotifier(this._repository, this._ref) : super(const GuestState.initial());
 
+  bool _isNetworkError(Object e) {
+    return e is DioException &&
+        (e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.connectionError ||
+            e.type == DioExceptionType.unknown);
+  }
+
   /// Load all guests
   Future<void> loadGuests({
     String? search,
@@ -167,7 +179,6 @@ class GuestNotifier extends StateNotifier<GuestState> {
     try {
       final createdGuest = await _repository.createGuest(guest);
 
-      // Refresh providers
       _invalidateGuestProviders();
 
       state = GuestState.success(
@@ -177,6 +188,19 @@ class GuestNotifier extends StateNotifier<GuestState> {
 
       return createdGuest;
     } catch (e) {
+      if (_isNetworkError(e)) {
+        final syncManager = _ref.read(syncManagerProvider);
+        await syncManager.queueOperation(
+          entityType: EntityType.guest,
+          operationType: OperationType.create,
+          payload: guest.toJson(),
+        );
+        state = GuestState.success(
+          guest: guest,
+          message: _ref.read(l10nProvider).offlineOperationQueued,
+        );
+        return null;
+      }
       state = GuestState.error(message: _getErrorMessage(e));
       return null;
     }
@@ -189,7 +213,6 @@ class GuestNotifier extends StateNotifier<GuestState> {
     try {
       final updatedGuest = await _repository.updateGuest(guest);
 
-      // Refresh providers
       _invalidateGuestProviders();
       _ref.invalidate(guestByIdProvider(guest.id));
       _ref.invalidate(guestHistoryProvider(guest.id));
@@ -201,6 +224,20 @@ class GuestNotifier extends StateNotifier<GuestState> {
 
       return updatedGuest;
     } catch (e) {
+      if (_isNetworkError(e)) {
+        final syncManager = _ref.read(syncManagerProvider);
+        await syncManager.queueOperation(
+          entityType: EntityType.guest,
+          entityId: guest.id.toString(),
+          operationType: OperationType.update,
+          payload: guest.toJson(),
+        );
+        state = GuestState.success(
+          guest: guest,
+          message: _ref.read(l10nProvider).offlineOperationQueued,
+        );
+        return null;
+      }
       state = GuestState.error(message: _getErrorMessage(e));
       return null;
     }
@@ -213,13 +250,26 @@ class GuestNotifier extends StateNotifier<GuestState> {
     try {
       await _repository.deleteGuest(guestId);
 
-      // Refresh providers
       _invalidateGuestProviders();
 
       state = const GuestState.initial();
 
       return true;
     } catch (e) {
+      if (_isNetworkError(e)) {
+        final syncManager = _ref.read(syncManagerProvider);
+        await syncManager.queueOperation(
+          entityType: EntityType.guest,
+          entityId: guestId.toString(),
+          operationType: OperationType.delete,
+          payload: {},
+        );
+        state = GuestState.success(
+          guest: const Guest(id: 0, fullName: '', phone: ''),
+          message: _ref.read(l10nProvider).offlineOperationQueued,
+        );
+        return true;
+      }
       state = GuestState.error(message: _getErrorMessage(e));
       return false;
     }

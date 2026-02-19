@@ -2,7 +2,11 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../models/booking.dart';
+import '../../models/guest.dart';
 import '../../models/offline_operation.dart';
+import '../../providers/booking_provider.dart';
+import '../../providers/guest_provider.dart';
 import '../storage/hive_storage.dart';
 import 'connectivity_service.dart';
 
@@ -123,6 +127,12 @@ class SyncManager {
         }
       }
 
+      // Invalidate providers to refresh UI with synced data
+      if (synced > 0) {
+        _ref.invalidate(bookingsProvider);
+        _ref.invalidate(guestsProvider);
+      }
+
       return SyncResult(
         success: failed == 0,
         synced: synced,
@@ -162,22 +172,40 @@ class SyncManager {
   }
 
   Future<void> _executeBookingOperation(OfflineOperation operation) async {
-    // TODO: Implement booking sync
-    // final repository = _ref.read(bookingRepositoryProvider);
-    // switch (operation.operationType) {
-    //   case OperationType.create:
-    //     await repository.create(...);
-    //   case OperationType.update:
-    //     await repository.update(...);
-    //   case OperationType.delete:
-    //     await repository.delete(...);
-    // }
-    throw UnimplementedError('Booking sync not implemented');
+    final repository = _ref.read(bookingRepositoryProvider);
+    switch (operation.operationType) {
+      case OperationType.create:
+        final booking = BookingCreate.fromJson(operation.payload);
+        final created = await repository.createBooking(booking);
+        await _cacheBooking(created);
+      case OperationType.update:
+        final entityId = int.parse(operation.entityId!);
+        final update = BookingUpdate.fromJson(operation.payload);
+        final updated = await repository.updateBooking(entityId, update);
+        await _cacheBooking(updated);
+      case OperationType.delete:
+        final entityId = int.parse(operation.entityId!);
+        await repository.deleteBooking(entityId);
+        await _removeCachedBooking(entityId);
+    }
   }
 
   Future<void> _executeGuestOperation(OfflineOperation operation) async {
-    // TODO: Implement guest sync
-    throw UnimplementedError('Guest sync not implemented');
+    final repository = _ref.read(guestRepositoryProvider);
+    switch (operation.operationType) {
+      case OperationType.create:
+        final guest = Guest.fromJson(operation.payload);
+        final created = await repository.createGuest(guest);
+        await _cacheGuest(created);
+      case OperationType.update:
+        final guest = Guest.fromJson(operation.payload);
+        final updated = await repository.updateGuest(guest);
+        await _cacheGuest(updated);
+      case OperationType.delete:
+        final entityId = int.parse(operation.entityId!);
+        await repository.deleteGuest(entityId);
+        await _removeCachedGuest(entityId);
+    }
   }
 
   Future<void> _executeRoomOperation(OfflineOperation operation) async {
@@ -198,6 +226,28 @@ class SyncManager {
   Future<void> _executePaymentOperation(OfflineOperation operation) async {
     // TODO: Implement payment sync
     throw UnimplementedError('Payment sync not implemented');
+  }
+
+  // ==================== Sync Cache Helpers ====================
+
+  Future<void> _cacheBooking(Booking booking) async {
+    final box = await HiveStorage.bookingsBox;
+    await box.put('booking_${booking.id}', booking.toJson());
+  }
+
+  Future<void> _removeCachedBooking(int id) async {
+    final box = await HiveStorage.bookingsBox;
+    await box.delete('booking_$id');
+  }
+
+  Future<void> _cacheGuest(Guest guest) async {
+    final box = await HiveStorage.guestsBox;
+    await box.put('guest_${guest.id}', guest.toJson());
+  }
+
+  Future<void> _removeCachedGuest(int id) async {
+    final box = await HiveStorage.guestsBox;
+    await box.delete('guest_$id');
   }
 
   /// Remove an operation from the queue

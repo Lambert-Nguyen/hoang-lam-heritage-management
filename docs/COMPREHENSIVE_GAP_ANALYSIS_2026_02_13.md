@@ -360,7 +360,7 @@ Features specified in the Design Plan that are missing or incomplete.
 | 6 | Set up media storage (S3 or nginx) | **DONE** | Fixed `MEDIA_URL` to `/media/` (absolute). Optional S3 backend via `django-storages` + `boto3` (`MEDIA_STORAGE_BACKEND=s3`). Nginx service in `docker-compose.yml` (`--profile production`) with `nginx/default.conf`. Named volumes `media_files`/`static_files` for persistence. Signed URLs for sensitive files (`AWS_QUERYSTRING_AUTH=True`). Supports AWS S3, MinIO, DigitalOcean Spaces. Documented in DEPLOYMENT.md Section 13. |
 | 7 | Implement real SMS gateway integration | **DONE** | Real eSMS.vn HTTP integration in `SMSService.send()`. API endpoint: `SendMultipleMessage_V4_post`, SmsType=2 (CSKH). Timeout=30s, proper error handling for HTTP errors, timeouts, and API error codes. Gated by `SMS_ENABLED` env var. Settings: `SMS_API_KEY`, `SMS_SECRET_KEY`, `SMS_BRAND_NAME` in `base.py`. `requests` added to requirements. Documented in DEPLOYMENT.md Section 14. |
 | 8 | Add CI coverage reporting | **DONE** | Fixed `testpaths` in `pyproject.toml` (`hotel_api/tests` instead of `tests`). Added `fail_under=70` coverage threshold. Replaced static README badges (outdated "38 passing") with dynamic GitHub Actions workflow status + Codecov coverage badges. CI already uploads to Codecov via `codecov/codecov-action@v4` in both `backend-ci.yml` and `flutter-ci.yml`. |
-| 9 | Implement offline sync handlers | Pending | P3 |
+| 9 | Implement offline sync handlers | **DONE** | Cache-first reads in `BookingRepository` and `GuestRepository` (Hive-backed, `_list_default` + `{entity}_{id}` keys). `SyncManager` booking + guest handlers implemented (create/update/delete with cache sync, provider invalidation after sync). Offline-aware writes in `BookingNotifier` (queues via `SyncManager` on `DioException` network errors) and `GuestNotifier` (queues + shows `offlineOperationQueued` message). 5 new l10n keys added (vi + en). |
 | 10 | Flutter release build setup (Fastlane) | Pending | P3 |
 
 **Estimated remaining: ~41 hours**
@@ -391,11 +391,11 @@ Features specified in the Design Plan that are missing or incomplete.
 | Phase A (Critical) | ~22h | Weeks 1-2 | COMPLETED (2026-02-13) |
 | Phase B (High) | ~30h | Weeks 3-4 | COMPLETED (2026-02-13) |
 | Phase C (Quality) | ~40h | Weeks 5-6 | COMPLETED (2026-02-16) |
-| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (8/10 done) |
-| **Total** | **~143h** | **8 weeks** | **Phases A+B+C done, D 80%** |
+| Phase D (Hardening) | ~51h | Weeks 7-8 | **IN PROGRESS** (9/10 done) |
+| **Total** | **~143h** | **8 weeks** | **Phases A+B+C done, D 90%** |
 
 ---
 
 *This analysis supersedes the previous [DESIGN_GAPS_ANALYSIS.md](./DESIGN_GAPS_ANALYSIS.md) (dated 2026-02-05) which focused only on design plan model/field gaps and is marked as "all fixed". This report covers a broader scope including security, bugs, testing, architecture, and deployment.*
 
-*Last updated: 2026-02-18 (Phase D tasks 1-8 complete with review hardening — hash pepper, narrowed exceptions, enum action constants, 5 new retention tests. Remaining: offline sync + Fastlane.)*
+*Last updated: 2026-02-18 (Phase D tasks 1-9 complete. Task 9: offline sync handlers — cache-first reads, SyncManager handlers, offline-aware provider writes. Remaining: Fastlane.)*

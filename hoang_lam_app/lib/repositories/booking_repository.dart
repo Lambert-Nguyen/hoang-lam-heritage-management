@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
+
 import '../core/config/app_constants.dart';
 import '../core/network/api_client.dart';
+import '../core/storage/hive_storage.dart';
 import '../models/booking.dart';
 
 /// Repository for booking management operations
@@ -57,45 +60,70 @@ class BookingRepository {
       queryParams['ordering'] = ordering;
     }
 
-    final response = await _apiClient.get<dynamic>(
-      AppConstants.bookingsEndpoint,
-      queryParameters: queryParams.isNotEmpty ? queryParams : null,
-    );
+    try {
+      final response = await _apiClient.get<dynamic>(
+        AppConstants.bookingsEndpoint,
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      );
 
-    // Ensure response.data exists
-    if (response.data == null) {
-      return [];
-    }
-
-    // Handle both paginated and non-paginated responses
-    if (response.data is Map<String, dynamic>) {
-      final dataMap = response.data as Map<String, dynamic>;
-      if (dataMap.containsKey('results')) {
-        final listResponse = BookingListResponse.fromJson(dataMap);
-        return listResponse.results;
+      // Ensure response.data exists
+      if (response.data == null) {
+        return [];
       }
-    }
 
-    // Non-paginated response (list directly)
-    if (response.data is List) {
-      final list = response.data as List<dynamic>;
-      return list
-          .map((json) => Booking.fromJson(json as Map<String, dynamic>))
-          .toList();
-    }
+      List<Booking> bookings;
 
-    return [];
+      // Handle both paginated and non-paginated responses
+      if (response.data is Map<String, dynamic>) {
+        final dataMap = response.data as Map<String, dynamic>;
+        if (dataMap.containsKey('results')) {
+          final listResponse = BookingListResponse.fromJson(dataMap);
+          bookings = listResponse.results;
+        } else {
+          bookings = [];
+        }
+      } else if (response.data is List) {
+        final list = response.data as List<dynamic>;
+        bookings = list
+            .map((json) => Booking.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } else {
+        bookings = [];
+      }
+
+      // Cache results on success (only for unfiltered default queries)
+      if (queryParams.isEmpty || (queryParams.length == 1 && queryParams.containsKey('ordering'))) {
+        await _cacheBookingList(bookings);
+      }
+      await _cacheBookingsIndividually(bookings);
+
+      return bookings;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        return _getCachedBookingList();
+      }
+      rethrow;
+    }
   }
 
   /// Get a single booking by ID
   Future<Booking> getBooking(int id) async {
-    final response = await _apiClient.get<Map<String, dynamic>>(
-      '${AppConstants.bookingsEndpoint}$id/',
-    );
-    if (response.data == null) {
-      throw Exception('Booking not found');
+    try {
+      final response = await _apiClient.get<Map<String, dynamic>>(
+        '${AppConstants.bookingsEndpoint}$id/',
+      );
+      if (response.data == null) {
+        throw Exception('Booking not found');
+      }
+      final booking = Booking.fromJson(response.data!);
+      await _cacheBooking(booking);
+      return booking;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        return _getCachedBooking(id);
+      }
+      rethrow;
     }
-    return Booking.fromJson(response.data!);
   }
 
   /// Create a new booking
@@ -406,5 +434,61 @@ class BookingRepository {
       BookingStatus.noShow,
       notes: notes,
     );
+  }
+
+  // ==================== Cache Helpers ====================
+
+  bool _isNetworkError(DioException e) {
+    return e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.unknown;
+  }
+
+  Future<void> _cacheBooking(Booking booking) async {
+    final box = await HiveStorage.bookingsBox;
+    await box.put('booking_${booking.id}', booking.toJson());
+  }
+
+  Future<void> _cacheBookingsIndividually(List<Booking> bookings) async {
+    final box = await HiveStorage.bookingsBox;
+    for (final booking in bookings) {
+      await box.put('booking_${booking.id}', booking.toJson());
+    }
+  }
+
+  Future<void> _cacheBookingList(List<Booking> bookings) async {
+    final box = await HiveStorage.bookingsBox;
+    final ids = bookings.map((b) => b.id).toList();
+    await box.put('_list_default', ids);
+  }
+
+  Future<List<Booking>> _getCachedBookingList() async {
+    final box = await HiveStorage.bookingsBox;
+    final ids = box.get('_list_default');
+    if (ids == null || ids is! List) return [];
+
+    final bookings = <Booking>[];
+    for (final id in ids) {
+      final json = box.get('booking_$id');
+      if (json != null && json is Map) {
+        try {
+          bookings.add(Booking.fromJson(Map<String, dynamic>.from(json)));
+        } catch (_) {
+          // Skip corrupted cache entries
+        }
+      }
+    }
+    return bookings;
+  }
+
+  Future<Booking> _getCachedBooking(int id) async {
+    final box = await HiveStorage.bookingsBox;
+    final json = box.get('booking_$id');
+    if (json != null && json is Map) {
+      return Booking.fromJson(Map<String, dynamic>.from(json));
+    }
+    throw Exception('Booking not found in cache');
   }
 }

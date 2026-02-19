@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
+
 import '../core/config/app_constants.dart';
 import '../core/network/api_client.dart';
+import '../core/storage/hive_storage.dart';
 import '../models/guest.dart';
 
 /// Repository for guest management operations
@@ -32,45 +35,70 @@ class GuestRepository {
       queryParams['ordering'] = ordering;
     }
 
-    final response = await _apiClient.get<dynamic>(
-      AppConstants.guestsEndpoint,
-      queryParameters: queryParams.isNotEmpty ? queryParams : null,
-    );
+    try {
+      final response = await _apiClient.get<dynamic>(
+        AppConstants.guestsEndpoint,
+        queryParameters: queryParams.isNotEmpty ? queryParams : null,
+      );
 
-    // Ensure response.data exists
-    if (response.data == null) {
-      return [];
-    }
-
-    // Handle both paginated and non-paginated responses
-    if (response.data is Map<String, dynamic>) {
-      final dataMap = response.data as Map<String, dynamic>;
-      if (dataMap.containsKey('results')) {
-        final listResponse = GuestListResponse.fromJson(dataMap);
-        return listResponse.results;
+      // Ensure response.data exists
+      if (response.data == null) {
+        return [];
       }
-    }
 
-    // Non-paginated response (list directly)
-    if (response.data is List) {
-      final list = response.data as List<dynamic>;
-      return list
-          .map((json) => Guest.fromJson(json as Map<String, dynamic>))
-          .toList();
-    }
+      List<Guest> guests;
 
-    return [];
+      // Handle both paginated and non-paginated responses
+      if (response.data is Map<String, dynamic>) {
+        final dataMap = response.data as Map<String, dynamic>;
+        if (dataMap.containsKey('results')) {
+          final listResponse = GuestListResponse.fromJson(dataMap);
+          guests = listResponse.results;
+        } else {
+          guests = [];
+        }
+      } else if (response.data is List) {
+        final list = response.data as List<dynamic>;
+        guests = list
+            .map((json) => Guest.fromJson(json as Map<String, dynamic>))
+            .toList();
+      } else {
+        guests = [];
+      }
+
+      // Cache results on success (only for unfiltered default queries)
+      if (queryParams.isEmpty || (queryParams.length == 1 && queryParams.containsKey('ordering'))) {
+        await _cacheGuestList(guests);
+      }
+      await _cacheGuestsIndividually(guests);
+
+      return guests;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        return _getCachedGuestList();
+      }
+      rethrow;
+    }
   }
 
   /// Get a single guest by ID
   Future<Guest> getGuest(int id) async {
-    final response = await _apiClient.get<Map<String, dynamic>>(
-      '${AppConstants.guestsEndpoint}$id/',
-    );
-    if (response.data == null) {
-      throw Exception('Guest not found');
+    try {
+      final response = await _apiClient.get<Map<String, dynamic>>(
+        '${AppConstants.guestsEndpoint}$id/',
+      );
+      if (response.data == null) {
+        throw Exception('Guest not found');
+      }
+      final guest = Guest.fromJson(response.data!);
+      await _cacheGuest(guest);
+      return guest;
+    } on DioException catch (e) {
+      if (_isNetworkError(e)) {
+        return _getCachedGuest(id);
+      }
+      rethrow;
     }
-    return Guest.fromJson(response.data!);
   }
 
   /// Create a new guest
@@ -261,5 +289,61 @@ class GuestRepository {
     }
 
     return data;
+  }
+
+  // ==================== Cache Helpers ====================
+
+  bool _isNetworkError(DioException e) {
+    return e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.connectionError ||
+        e.type == DioExceptionType.unknown;
+  }
+
+  Future<void> _cacheGuest(Guest guest) async {
+    final box = await HiveStorage.guestsBox;
+    await box.put('guest_${guest.id}', guest.toJson());
+  }
+
+  Future<void> _cacheGuestsIndividually(List<Guest> guests) async {
+    final box = await HiveStorage.guestsBox;
+    for (final guest in guests) {
+      await box.put('guest_${guest.id}', guest.toJson());
+    }
+  }
+
+  Future<void> _cacheGuestList(List<Guest> guests) async {
+    final box = await HiveStorage.guestsBox;
+    final ids = guests.map((g) => g.id).toList();
+    await box.put('_list_default', ids);
+  }
+
+  Future<List<Guest>> _getCachedGuestList() async {
+    final box = await HiveStorage.guestsBox;
+    final ids = box.get('_list_default');
+    if (ids == null || ids is! List) return [];
+
+    final guests = <Guest>[];
+    for (final id in ids) {
+      final json = box.get('guest_$id');
+      if (json != null && json is Map) {
+        try {
+          guests.add(Guest.fromJson(Map<String, dynamic>.from(json)));
+        } catch (_) {
+          // Skip corrupted cache entries
+        }
+      }
+    }
+    return guests;
+  }
+
+  Future<Guest> _getCachedGuest(int id) async {
+    final box = await HiveStorage.guestsBox;
+    final json = box.get('guest_$id');
+    if (json != null && json is Map) {
+      return Guest.fromJson(Map<String, dynamic>.from(json));
+    }
+    throw Exception('Guest not found in cache');
   }
 }
