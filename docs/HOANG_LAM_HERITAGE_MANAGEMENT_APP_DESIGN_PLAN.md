@@ -2180,6 +2180,72 @@ Android:
 └── Google Play Store (if needed later)
 ```
 
+### Release Pipeline (Fastlane) — Phase D.10
+
+> **Status:** Deferred until closer to release. Development is still ongoing.
+
+#### Fastlane Setup
+
+```
+hoang_lam_app/
+├── ios/
+│   └── fastlane/
+│       ├── Appfile          # Apple ID, team ID, app identifier
+│       ├── Fastfile          # Build lanes (beta, release)
+│       └── Matchfile         # Code signing via Fastlane Match
+├── android/
+│   └── fastlane/
+│       ├── Appfile          # Package name, Play Store JSON key
+│       └── Fastfile          # Build lanes (beta, release)
+└── key.properties            # Android keystore config (gitignored)
+```
+
+#### Build Lanes
+
+```ruby
+# iOS Fastfile (simplified)
+lane :beta do
+  increment_build_number
+  build_app(scheme: "Runner", export_method: "app-store")
+  upload_to_testflight
+end
+
+# Android Fastfile (simplified)
+lane :beta do
+  increment_version_code
+  gradle(task: "assembleRelease")  # or bundleRelease for AAB
+  # Direct APK distribution or Play Store Internal Testing
+end
+```
+
+#### Distribution Strategy
+
+| Target  | Platform | Method                      | Recipient                       |
+|---------|----------|-----------------------------|---------------------------------|
+| Mom     | iOS      | TestFlight beta             | Auto-install via TestFlight app |
+| Brother | Android  | Direct APK or Play Internal | Download link or Play Store     |
+
+#### CI Integration
+
+```yaml
+# .github/workflows/release.yml (triggered on version tags)
+- name: Build & distribute iOS beta
+  run: cd hoang_lam_app/ios && fastlane beta
+- name: Build & distribute Android APK
+  run: cd hoang_lam_app/android && fastlane beta
+```
+
+#### Release Checklist
+
+1. Update version in `pubspec.yaml`
+2. Run full test suite (`flutter test`)
+3. Run `dart analyze` — zero issues
+4. Build with obfuscation (`--obfuscate --split-debug-info`)
+5. Smoke test on physical device (iOS + Android)
+6. Tag release in git (`git tag v1.x.x`)
+7. CI triggers Fastlane lanes automatically
+8. Verify TestFlight/APK distribution
+
 ---
 
 ## Summary & Next Steps

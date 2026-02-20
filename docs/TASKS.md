@@ -742,6 +742,47 @@
 
 ---
 
+## Phase D: Production Hardening
+
+> **Status**: 🔄 IN PROGRESS (9/10 done)
+> **Prerequisite:** Core features (Phase 1-5) substantially complete
+
+### D.1 Security & Data Protection
+
+- [x] **D.1** Implement sensitive data encryption (CCCD, passport) ✅ (Fernet encryption, SHA-256 hash with HASH_PEPPER, `encrypt_guest_data` command, 22 tests)
+- [x] **D.2** Add audit logging for sensitive data access ✅ (SensitiveDataAccessLog model, 8 action types, wired into GuestViewSet, 9 tests)
+- [x] **D.3** Implement data retention policy ✅ (13 model categories, Celery weekly task, `apply_retention_policy` command, 19 tests)
+
+### D.2 Infrastructure & Monitoring
+
+- [x] **D.4** Set up Sentry error tracking ✅ (sentry-sdk, gated by SENTRY_DSN, Django/DRF/Celery integration)
+- [x] **D.5** Configure pgbouncer connection pooling ✅ (CONN_MAX_AGE=600, optional pgbouncer in docker-compose)
+- [x] **D.6** Set up media storage (S3 or nginx) ✅ (Optional S3 via django-storages, nginx in docker-compose)
+- [x] **D.7** Implement real SMS gateway integration ✅ (eSMS.vn HTTP, gated by SMS_ENABLED)
+- [x] **D.8** Add CI coverage reporting ✅ (fail_under=70, Codecov badges, dynamic GitHub Actions badges)
+
+### D.3 Offline & Sync
+
+- [x] **D.9** Implement offline sync handlers ✅ (Cache-first reads in BookingRepository/GuestRepository, SyncManager handlers, offline-aware writes in providers, 5 l10n keys)
+
+### D.4 Release Pipeline
+
+> **🔄 DEFERRED** — Not needed until closer to release. Development is still ongoing.
+
+- [ ] **D.10** Flutter release build setup (Fastlane)
+  - [ ] **D.10.1** Generate iOS signing keys (provisioning profile, certificates via Fastlane Match)
+  - [ ] **D.10.2** Generate Android keystore and configure `key.properties`
+  - [ ] **D.10.3** Create `Fastfile` with `beta` and `release` lanes for iOS (TestFlight) and Android (APK/Play Internal)
+  - [ ] **D.10.4** Configure `Appfile` (app identifier, Apple ID, Play Store JSON key)
+  - [ ] **D.10.5** Set up build number auto-increment (using git commit count or CI build number)
+  - [ ] **D.10.6** Configure environment-specific build flavors (dev/staging/prod API URLs)
+  - [ ] **D.10.7** Enable code obfuscation (`--obfuscate --split-debug-info`) for release builds
+  - [ ] **D.10.8** Add `fastlane` lane to GitHub Actions CI for automated beta distribution
+  - [ ] **D.10.9** Document release process in DEPLOYMENT.md (versioning, changelog, distribution)
+  - [ ] **D.10.10** Write smoke test checklist for release verification
+
+---
+
 ## Phase 6: OTA Integration
 
 ### 6.1 iCal Sync (Backend)
