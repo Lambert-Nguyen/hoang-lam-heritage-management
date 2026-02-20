@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/widgets/finance/record_deposit_dialog.dart';
 
 void main() {
@@ -11,6 +13,14 @@ void main() {
       String? guestName,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: Builder(
             builder: (context) {
@@ -36,6 +46,7 @@ void main() {
 
     testWidgets('displays dialog title', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       // Open dialog
       await tester.tap(find.text('Open Dialog'));
@@ -46,6 +57,7 @@ void main() {
 
     testWidgets('displays room number when provided', (tester) async {
       await tester.pumpWidget(buildTestWidget(roomNumber: '101'));
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -55,6 +67,7 @@ void main() {
 
     testWidgets('displays guest name when provided', (tester) async {
       await tester.pumpWidget(buildTestWidget(guestName: 'Nguyễn Văn A'));
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -67,6 +80,7 @@ void main() {
         roomNumber: '102',
         guestName: 'Trần Văn B',
       ));
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -77,6 +91,7 @@ void main() {
 
     testWidgets('pre-fills suggested amount', (tester) async {
       await tester.pumpWidget(buildTestWidget(suggestedAmount: 500000));
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -86,6 +101,7 @@ void main() {
 
     testWidgets('displays amount field', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -95,6 +111,7 @@ void main() {
 
     testWidgets('displays payment method options', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -104,6 +121,7 @@ void main() {
 
     testWidgets('displays notes field', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -113,6 +131,7 @@ void main() {
 
     testWidgets('displays cancel button', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -122,6 +141,7 @@ void main() {
 
     testWidgets('displays submit button', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -131,6 +151,7 @@ void main() {
 
     testWidgets('closes dialog when cancel pressed', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -143,6 +164,7 @@ void main() {
 
     testWidgets('validates empty amount', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -157,6 +179,7 @@ void main() {
 
     testWidgets('allows entering amount', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -171,6 +194,7 @@ void main() {
 
     testWidgets('allows entering notes', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -185,6 +209,7 @@ void main() {
 
     testWidgets('can select different payment method', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -201,6 +226,7 @@ void main() {
 
     testWidgets('does not pre-fill when suggestedAmount is null', (tester) async {
       await tester.pumpWidget(buildTestWidget(suggestedAmount: null));
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();
@@ -211,6 +237,7 @@ void main() {
 
     testWidgets('does not pre-fill when suggestedAmount is zero', (tester) async {
       await tester.pumpWidget(buildTestWidget(suggestedAmount: 0));
+      await tester.pumpAndSettle();
       
       await tester.tap(find.text('Open Dialog'));
       await tester.pumpAndSettle();

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/widgets/finance/currency_selector.dart';
 
 void main() {
@@ -11,6 +13,14 @@ void main() {
     bool enabled = true,
   }) {
     return MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('vi'),
       home: Scaffold(
         body: Center(
           child: CurrencySelector(
@@ -79,18 +89,21 @@ void main() {
   group('CurrencySelector', () {
     testWidgets('displays selected currency', (tester) async {
       await tester.pumpWidget(buildTestWidget(selectedCurrency: 'VND'));
+      await tester.pumpAndSettle();
       
       expect(find.text('VND'), findsOneWidget);
     });
 
     testWidgets('displays default label', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       expect(find.text('Loại tiền'), findsOneWidget);
     });
 
     testWidgets('displays custom label when provided', (tester) async {
       await tester.pumpWidget(buildTestWidget(labelText: 'Select Currency'));
+      await tester.pumpAndSettle();
       
       expect(find.text('Select Currency'), findsOneWidget);
     });
@@ -102,6 +115,7 @@ void main() {
         selectedCurrency: 'VND',
         onChanged: (value) => selectedValue = value,
       ));
+      await tester.pumpAndSettle();
       
       // Tap to open dropdown
       await tester.tap(find.byType(DropdownButtonFormField<String>));
@@ -122,6 +136,7 @@ void main() {
         onChanged: (value) => selectedValue = value,
         enabled: false,
       ));
+      await tester.pumpAndSettle();
       
       // Try to tap dropdown
       await tester.tap(find.byType(DropdownButtonFormField<String>));
@@ -134,6 +149,7 @@ void main() {
 
     testWidgets('displays currency symbol in dropdown items', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
       
       // Open dropdown
       await tester.tap(find.byType(DropdownButtonFormField<String>));
@@ -153,6 +169,7 @@ void main() {
         selectedCurrency: 'AAA',
         currencies: customCurrencies,
       ));
+      await tester.pumpAndSettle();
       
       expect(find.text('AAA'), findsOneWidget);
       
@@ -188,12 +205,14 @@ void main() {
 
     testWidgets('displays selected currency code', (tester) async {
       await tester.pumpWidget(buildCompactTestWidget(selectedCurrency: 'VND'));
+      await tester.pumpAndSettle();
       
       expect(find.text('VND'), findsOneWidget);
     });
 
     testWidgets('displays different currency when selected', (tester) async {
       await tester.pumpWidget(buildCompactTestWidget(selectedCurrency: 'USD'));
+      await tester.pumpAndSettle();
       
       expect(find.text('USD'), findsOneWidget);
     });
@@ -203,6 +222,7 @@ void main() {
         selectedCurrency: 'VND',
         onChanged: (_) {},
       ));
+      await tester.pumpAndSettle();
       
       expect(find.byType(PopupMenuButton<String>), findsOneWidget);
     });
@@ -213,6 +233,7 @@ void main() {
         onChanged: (_) {},
         enabled: true,
       ));
+      await tester.pumpAndSettle();
       
       expect(find.byIcon(Icons.arrow_drop_down), findsOneWidget);
     });
@@ -245,6 +266,7 @@ void main() {
         toCurrency: 'VND',
         rate: 24500,
       ));
+      await tester.pumpAndSettle();
       
       expect(find.textContaining('1 USD'), findsOneWidget);
       expect(find.textContaining('VND'), findsWidgets);
@@ -256,6 +278,7 @@ void main() {
         toCurrency: 'VND',
         rate: 26000,
       ));
+      await tester.pumpAndSettle();
       
       expect(find.textContaining('26,000'), findsOneWidget);
     });
@@ -266,6 +289,7 @@ void main() {
         toCurrency: 'VND',
         rate: 24500,
       ));
+      await tester.pumpAndSettle();
       
       expect(find.byIcon(Icons.currency_exchange), findsOneWidget);
     });
@@ -280,6 +304,14 @@ void main() {
       double? rate,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: Center(
             child: ConvertedAmountDisplay(
@@ -301,6 +333,7 @@ void main() {
         convertedAmount: 2450000,
         toCurrency: 'VND',
       ));
+      await tester.pumpAndSettle();
       
       // Should show 2,450,000
       expect(find.textContaining('2,450,000'), findsOneWidget);
@@ -313,6 +346,7 @@ void main() {
         convertedAmount: 2450000,
         toCurrency: 'VND',
       ));
+      await tester.pumpAndSettle();
       
       expect(find.text('100'), findsOneWidget);
       expect(find.text('USD'), findsOneWidget);
@@ -325,6 +359,7 @@ void main() {
         convertedAmount: 1300000,
         toCurrency: 'VND',
       ));
+      await tester.pumpAndSettle();
       
       expect(find.text('EUR'), findsOneWidget);
       expect(find.text('VND'), findsOneWidget);
@@ -338,6 +373,7 @@ void main() {
         toCurrency: 'VND',
         rate: 24500,
       ));
+      await tester.pumpAndSettle();
       
       expect(find.textContaining('Tỷ giá:'), findsOneWidget);
     });

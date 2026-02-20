@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/finance.dart';
 import 'package:hoang_lam_app/widgets/folio/folio_summary_widget.dart';
 
@@ -63,6 +65,14 @@ void main() {
 
     Widget buildWidget({BookingFolioSummary? summary}) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: SingleChildScrollView(
             child: FolioSummaryWidget(
@@ -76,18 +86,21 @@ void main() {
 
     testWidgets('displays guest name correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Nguyễn Văn A'), findsOneWidget);
     });
 
     testWidgets('displays room number correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Phòng 101'), findsOneWidget);
     });
 
     testWidgets('displays settled status when balance is zero', (tester) async {
       await tester.pumpWidget(buildWidget(summary: settledSummary));
+      await tester.pumpAndSettle();
 
       expect(find.text('Đã thanh toán'), findsAtLeastNWidgets(1));
     });
@@ -95,12 +108,14 @@ void main() {
     testWidgets('displays unsettled status when balance is positive',
         (tester) async {
       await tester.pumpWidget(buildWidget(summary: unsettledSummary));
+      await tester.pumpAndSettle();
 
       expect(find.text('Còn nợ'), findsOneWidget);
     });
 
     testWidgets('displays room charges correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Room charges: 1,000,000
       expect(find.textContaining('1.000.000'), findsAtLeastNWidgets(1));
@@ -108,6 +123,7 @@ void main() {
 
     testWidgets('displays additional charges correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Additional charges: 50,000
       expect(find.textContaining('50.000'), findsAtLeastNWidgets(1));
@@ -115,6 +131,7 @@ void main() {
 
     testWidgets('displays total charges correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Total: 1,050,000
       expect(find.textContaining('1.050.000'), findsAtLeastNWidgets(1));
@@ -122,6 +139,7 @@ void main() {
 
     testWidgets('displays total payments correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Payments: 1,050,000
       expect(find.textContaining('1.050.000'), findsAtLeastNWidgets(1));
@@ -129,6 +147,7 @@ void main() {
 
     testWidgets('displays balance correctly for unsettled', (tester) async {
       await tester.pumpWidget(buildWidget(summary: unsettledSummary));
+      await tester.pumpAndSettle();
 
       // Balance: 400,000
       expect(find.textContaining('400.000'), findsAtLeastNWidgets(1));
@@ -136,24 +155,28 @@ void main() {
 
     testWidgets('shows person icon in header', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.person), findsOneWidget);
     });
 
     testWidgets('shows room icon in header', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.meeting_room), findsOneWidget);
     });
 
     testWidgets('renders as a Card widget', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(Card), findsOneWidget);
     });
 
     testWidgets('balance badge has correct color for settled', (tester) async {
       await tester.pumpWidget(buildWidget(summary: settledSummary));
+      await tester.pumpAndSettle();
 
       // Find the container with the status text
       final statusFinder = find.text('Đã thanh toán');
@@ -163,6 +186,7 @@ void main() {
     testWidgets('balance badge has correct color for unsettled',
         (tester) async {
       await tester.pumpWidget(buildWidget(summary: unsettledSummary));
+      await tester.pumpAndSettle();
 
       // Find the container with the status text
       final statusFinder = find.text('Còn nợ');
@@ -172,6 +196,7 @@ void main() {
     testWidgets('displays different guest info for different summary',
         (tester) async {
       await tester.pumpWidget(buildWidget(summary: unsettledSummary));
+      await tester.pumpAndSettle();
 
       expect(find.text('Trần Thị B'), findsOneWidget);
       expect(find.text('Phòng 102'), findsOneWidget);

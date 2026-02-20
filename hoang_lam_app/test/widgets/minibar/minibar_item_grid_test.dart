@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/minibar.dart';
 import 'package:hoang_lam_app/widgets/minibar/minibar_item_card.dart';
 import 'package:hoang_lam_app/widgets/minibar/minibar_item_grid.dart';
@@ -59,6 +61,14 @@ void main() {
       void Function(MinibarItem)? onItemTap,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: SizedBox(
             width: 600,
@@ -74,6 +84,7 @@ void main() {
 
     testWidgets('displays all items in grid', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Should find all item names
       expect(find.text('Coca Cola'), findsOneWidget);
@@ -84,6 +95,7 @@ void main() {
 
     testWidgets('renders correct number of MinibarItemCards', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(MinibarItemCard), findsNWidgets(4));
     });
@@ -94,6 +106,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onItemTap: (item) => tappedItem = item,
       ));
+      await tester.pumpAndSettle();
 
       // Tap on the first item (Coca Cola)
       await tester.tap(find.text('Coca Cola'));
@@ -106,12 +119,14 @@ void main() {
 
     testWidgets('renders as GridView with scrolling', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(GridView), findsOneWidget);
     });
 
     testWidgets('displays empty grid when no items', (tester) async {
       await tester.pumpWidget(buildWidget(items: []));
+      await tester.pumpAndSettle();
 
       expect(find.byType(MinibarItemCard), findsNothing);
     });
@@ -121,6 +136,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onItemTap: (item) => tappedItem = item,
       ));
+      await tester.pumpAndSettle();
 
       // Tap on inactive item (Beer)
       await tester.tap(find.text('Beer'));
@@ -132,6 +148,7 @@ void main() {
 
     testWidgets('shows different categories correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Should display category text for each item
       expect(find.text('beverage'), findsNWidgets(2));
@@ -141,6 +158,7 @@ void main() {
 
     testWidgets('grid has proper layout with 3 columns', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Find the GridView and check its delegate
       final gridView = tester.widget<GridView>(find.byType(GridView));

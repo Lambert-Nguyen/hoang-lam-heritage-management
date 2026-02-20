@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/finance.dart';
 import 'package:hoang_lam_app/widgets/folio/folio_item_list_widget.dart';
 
@@ -81,6 +83,14 @@ void main() {
       bool includeVoided = false,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: SingleChildScrollView(
             child: FolioItemListWidget(
@@ -96,6 +106,7 @@ void main() {
 
     testWidgets('displays empty state when no items', (tester) async {
       await tester.pumpWidget(buildWidget(items: []));
+      await tester.pumpAndSettle();
 
       expect(find.text('Chưa có phí nào'), findsOneWidget);
       expect(find.byIcon(Icons.receipt_long_outlined), findsOneWidget);
@@ -103,6 +114,7 @@ void main() {
 
     testWidgets('displays all folio items', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Phí phòng Standard'), findsOneWidget);
       expect(find.text('Coca Cola'), findsOneWidget);
@@ -111,6 +123,7 @@ void main() {
 
     testWidgets('groups items by type', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Should show type headers
       expect(find.text(FolioItemType.room.displayName), findsOneWidget);
@@ -120,6 +133,7 @@ void main() {
 
     testWidgets('displays item count per type', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Each type has 1 item, so should see "1 mục" for each
       expect(find.text('1 mục'), findsNWidgets(3));
@@ -127,6 +141,7 @@ void main() {
 
     testWidgets('displays formatted prices correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Room charge total: 1,000,000
       expect(find.textContaining('1.000.000'), findsAtLeastNWidgets(1));
@@ -138,6 +153,7 @@ void main() {
 
     testWidgets('shows type icons', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Each type should have its icon (may appear multiple times)
       expect(find.byIcon(FolioItemType.room.icon), findsAtLeastNWidgets(1));
@@ -169,6 +185,7 @@ void main() {
         items: [voidedItem],
         includeVoided: true,
       ));
+      await tester.pumpAndSettle();
 
       // Should show voided indicator
       expect(find.text('Item hủy'), findsOneWidget);
@@ -180,6 +197,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onVoid: (item) => voidCalled = true,
       ));
+      await tester.pumpAndSettle();
 
       // The widget may or may not show void buttons depending on implementation
       // Just verify the widget renders without error
@@ -189,12 +207,14 @@ void main() {
 
     testWidgets('renders as scrollable list', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(ListView), findsAtLeastNWidgets(1));
     });
 
     testWidgets('displays item quantity and unit price', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Should show quantity x unit price format
       expect(find.textContaining('2 x'), findsAtLeastNWidgets(1));

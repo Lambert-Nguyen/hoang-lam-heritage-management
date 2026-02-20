@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 
-import '../../../lib/models/booking.dart';
-import '../../../lib/widgets/bookings/booking_source_selector.dart';
+import 'package:hoang_lam_app/models/booking.dart';
+import 'package:hoang_lam_app/widgets/bookings/booking_source_selector.dart';
 
 void main() {
   group('BookingSourceSelector Widget Tests', () {
@@ -11,6 +13,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: selectedSource,
@@ -21,6 +31,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Tap dropdown to open
       await tester.tap(find.byType(DropdownButtonFormField<BookingSource>));
@@ -37,6 +48,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: selectedSource,
@@ -47,6 +66,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Tap dropdown to open
       await tester.tap(find.byType(DropdownButtonFormField<BookingSource>));
@@ -62,6 +82,14 @@ void main() {
     testWidgets('displays selected source with correct icon', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: BookingSource.agoda,
@@ -70,6 +98,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Verify Agoda icon is displayed (InputDecoration prefixIcon)
       final icons = tester.widgetList<Icon>(
@@ -81,6 +110,14 @@ void main() {
     testWidgets('shows label when showLabel is true', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: null,
@@ -90,6 +127,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Nguồn đặt phòng'), findsOneWidget);
     });
@@ -97,6 +135,14 @@ void main() {
     testWidgets('hides label when showLabel is false', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: null,
@@ -106,6 +152,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Nguồn đặt phòng'), findsNothing);
     });
@@ -113,6 +160,14 @@ void main() {
     testWidgets('displays custom hint text', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: null,
@@ -122,6 +177,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Chọn nguồn'), findsOneWidget);
     });
@@ -129,6 +185,14 @@ void main() {
     testWidgets('is disabled when enabled is false', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: null,
@@ -138,6 +202,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final dropdown = tester.widget<DropdownButtonFormField<BookingSource>>(
         find.byType(DropdownButtonFormField<BookingSource>),
@@ -149,6 +214,14 @@ void main() {
     testWidgets('each source has correct icon and color', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceSelector(
               value: BookingSource.walkIn,
@@ -157,6 +230,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Tap to open dropdown
       await tester.tap(find.byType(DropdownButtonFormField<BookingSource>));
@@ -171,7 +245,15 @@ void main() {
   group('BookingSourceChip Widget Tests', () {
     testWidgets('displays source name and icon', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceChip(
               source: BookingSource.bookingCom,
@@ -179,6 +261,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Booking.com'), findsOneWidget);
       expect(find.byIcon(BookingSource.bookingCom.icon), findsOneWidget);
@@ -186,7 +269,15 @@ void main() {
 
     testWidgets('shows selected state correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceChip(
               source: BookingSource.agoda,
@@ -195,6 +286,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final chip = tester.widget<FilterChip>(find.byType(FilterChip));
       expect(chip.selected, true);
@@ -205,6 +297,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceChip(
               source: BookingSource.phone,
@@ -215,6 +315,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(FilterChip));
       expect(tapped, true);
@@ -222,7 +323,15 @@ void main() {
 
     testWidgets('icon color changes when selected', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: Column(
               children: [
@@ -239,6 +348,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final icons = tester.widgetList<Icon>(find.byType(Icon));
       final unselectedIcon = icons.first;
@@ -253,6 +363,14 @@ void main() {
     testWidgets('displays all booking sources in grid', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: null,
@@ -261,6 +379,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Verify all sources are displayed
       for (final source in BookingSource.values) {
@@ -271,6 +390,14 @@ void main() {
     testWidgets('displays grid title', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: null,
@@ -279,6 +406,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Nguồn đặt phòng'), findsOneWidget);
     });
@@ -286,6 +414,14 @@ void main() {
     testWidgets('highlights selected source', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: BookingSource.traveloka,
@@ -294,6 +430,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Find the container for Traveloka
       final travelokaContainer = find.ancestor(
@@ -309,6 +446,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: null,
@@ -319,6 +464,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Tap on Airbnb
       await tester.tap(find.text('Airbnb'));
@@ -330,6 +476,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: null,
@@ -341,6 +495,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Try to tap on Phone
       await tester.tap(find.text('Điện thoại'));
@@ -350,6 +505,14 @@ void main() {
     testWidgets('uses 3-column grid layout', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: null,
@@ -358,6 +521,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final gridView = tester.widget<GridView>(find.byType(GridView));
       final delegate =
@@ -369,6 +533,14 @@ void main() {
     testWidgets('each source has icon and name', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: null,
@@ -377,6 +549,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Verify icons exist for each source
       expect(
@@ -393,6 +566,14 @@ void main() {
     testWidgets('selected source has border highlight', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingSourceGrid(
               value: BookingSource.website,
@@ -401,6 +582,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Find the container for the selected website source
       final containers = tester.widgetList<Container>(

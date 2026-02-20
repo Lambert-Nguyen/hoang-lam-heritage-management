@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/housekeeping.dart';
 import 'package:hoang_lam_app/providers/housekeeping_provider.dart';
 import 'package:hoang_lam_app/widgets/housekeeping/maintenance_filter_sheet.dart';
@@ -12,6 +14,14 @@ void main() {
       required void Function(MaintenanceRequestFilter) onApply,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
@@ -36,6 +46,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (_) {},
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -49,6 +60,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (_) {},
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -66,6 +78,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (_) {},
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -83,6 +96,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (_) {},
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -100,6 +114,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (filter) => appliedFilter = filter,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -120,6 +135,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (filter) => appliedFilter = filter,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -140,6 +156,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (filter) => appliedFilter = filter,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -166,6 +183,7 @@ void main() {
         ),
         onApply: (filter) => appliedFilter = filter,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
@@ -188,6 +206,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onApply: (filter) => appliedFilter = filter,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();

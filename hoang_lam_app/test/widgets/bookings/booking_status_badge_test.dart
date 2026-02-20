@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 
-import '../../../lib/models/booking.dart';
-import '../../../lib/widgets/bookings/booking_status_badge.dart';
+import 'package:hoang_lam_app/core/theme/app_colors.dart';
+import 'package:hoang_lam_app/models/booking.dart';
+import 'package:hoang_lam_app/widgets/bookings/booking_status_badge.dart';
 
 void main() {
   group('BookingStatusBadge Widget Tests', () {
     testWidgets('displays pending status correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.pending,
@@ -16,6 +27,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Chờ xác nhận'), findsOneWidget);
       expect(find.byIcon(Icons.schedule), findsOneWidget);
@@ -23,7 +35,15 @@ void main() {
 
     testWidgets('displays confirmed status correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.confirmed,
@@ -31,6 +51,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Đã xác nhận'), findsOneWidget);
       expect(find.byIcon(Icons.check_circle), findsOneWidget);
@@ -38,7 +59,15 @@ void main() {
 
     testWidgets('displays checked-in status correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.checkedIn,
@@ -46,14 +75,23 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      expect(find.text('Đang ở'), findsOneWidget);
+      expect(find.text('Đã nhận phòng'), findsOneWidget);
       expect(find.byIcon(Icons.hotel), findsOneWidget);
     });
 
     testWidgets('displays checked-out status correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.checkedOut,
@@ -61,6 +99,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Đã trả phòng'), findsOneWidget);
       expect(find.byIcon(Icons.done_all), findsOneWidget);
@@ -68,7 +107,15 @@ void main() {
 
     testWidgets('displays cancelled status correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.cancelled,
@@ -76,6 +123,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Đã hủy'), findsOneWidget);
       expect(find.byIcon(Icons.cancel), findsOneWidget);
@@ -83,7 +131,15 @@ void main() {
 
     testWidgets('displays no-show status correctly', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.noShow,
@@ -91,6 +147,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Không đến'), findsOneWidget);
       expect(find.byIcon(Icons.person_off), findsOneWidget);
@@ -98,7 +155,15 @@ void main() {
 
     testWidgets('compact mode hides label text', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.confirmed,
@@ -107,6 +172,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // In compact mode, text should not be visible
       expect(find.text('Đã xác nhận'), findsNothing);
@@ -117,7 +183,15 @@ void main() {
 
     testWidgets('normal mode shows both icon and label', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.confirmed,
@@ -126,6 +200,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Both text and icon should be visible
       expect(find.text('Đã xác nhận'), findsOneWidget);
@@ -134,17 +209,25 @@ void main() {
 
     testWidgets('has proper color coding for each status', (tester) async {
       final statusColors = {
-        BookingStatus.pending: Colors.orange,
-        BookingStatus.confirmed: Colors.blue,
-        BookingStatus.checkedIn: Colors.green,
-        BookingStatus.checkedOut: Colors.grey,
-        BookingStatus.cancelled: Colors.red,
-        BookingStatus.noShow: Colors.red[900],
+        BookingStatus.pending: AppColors.warning,
+        BookingStatus.confirmed: AppColors.statusBlue,
+        BookingStatus.checkedIn: AppColors.success,
+        BookingStatus.checkedOut: AppColors.mutedAccent,
+        BookingStatus.cancelled: AppColors.error,
+        BookingStatus.noShow: AppColors.error,
       };
 
       for (final entry in statusColors.entries) {
         await tester.pumpWidget(
           MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
             home: Scaffold(
               body: BookingStatusBadge(
                 status: entry.key,
@@ -152,6 +235,7 @@ void main() {
             ),
           ),
         );
+      await tester.pumpAndSettle();
 
         final container = tester.widget<Container>(
           find.descendant(
@@ -167,7 +251,15 @@ void main() {
 
     testWidgets('has rounded corners', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.confirmed,
@@ -175,6 +267,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final container = tester.widget<Container>(
         find.descendant(
@@ -193,7 +286,15 @@ void main() {
 
     testWidgets('compact mode has smaller padding', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: Column(
               children: [
@@ -210,6 +311,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final containers = tester.widgetList<Container>(
         find.descendant(
@@ -230,7 +332,15 @@ void main() {
 
     testWidgets('icon and text are white colored', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingStatusBadge(
               status: BookingStatus.confirmed,
@@ -238,6 +348,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final icon = tester.widget<Icon>(find.byType(Icon));
       expect(icon.color, Colors.white);
@@ -250,7 +361,15 @@ void main() {
 
     testWidgets('compact mode has smaller icon size', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
+        MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: Column(
               children: [
@@ -267,6 +386,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final icons = tester.widgetList<Icon>(find.byType(Icon));
 

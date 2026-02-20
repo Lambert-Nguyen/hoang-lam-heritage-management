@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/dashboard.dart';
 import 'package:hoang_lam_app/widgets/dashboard/dashboard_occupancy_widget.dart';
 
@@ -28,6 +30,14 @@ void main() {
     testWidgets('displays occupancy rate correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -36,6 +46,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Tỷ lệ lấp đầy'), findsOneWidget);
       expect(find.text('75.5%'), findsOneWidget);
@@ -45,6 +56,14 @@ void main() {
     testWidgets('displays room status breakdown', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -53,6 +72,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Trống'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
@@ -63,6 +83,14 @@ void main() {
     testWidgets('displays circular progress indicator', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -71,6 +99,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(CircularProgressIndicator), findsWidgets);
     });
@@ -93,6 +122,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: fullOccupancy,
@@ -101,6 +138,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('100.0%'), findsOneWidget);
       expect(find.text('8/8'), findsOneWidget);
@@ -125,6 +163,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: emptyOccupancy,
@@ -133,6 +179,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('0.0%'), findsOneWidget);
       expect(find.text('0/8'), findsOneWidget);
@@ -151,6 +198,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -159,8 +214,9 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      expect(find.text('Dọn dẹp'), findsOneWidget);
+      expect(find.text('Đang dọn'), findsOneWidget);
       expect(find.text('2'), findsNWidgets(2)); // Available and Cleaning both = 2
     });
 
@@ -176,6 +232,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -184,6 +248,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Bảo trì'), findsOneWidget);
       expect(find.text('Khóa'), findsOneWidget);
@@ -192,6 +257,14 @@ void main() {
     testWidgets('displays pie chart icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -200,6 +273,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.pie_chart), findsOneWidget);
     });
@@ -213,6 +287,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: decimalOccupancy,
@@ -221,6 +303,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('66.7%'), findsOneWidget);
     });

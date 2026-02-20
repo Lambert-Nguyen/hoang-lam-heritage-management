@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/minibar.dart';
 import 'package:hoang_lam_app/models/booking.dart';
 import 'package:hoang_lam_app/providers/minibar_provider.dart';
@@ -51,6 +53,14 @@ void main() {
       void Function(int, int)? onUpdateQuantity,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: SizedBox(
             width: 400,
@@ -70,6 +80,7 @@ void main() {
 
     testWidgets('displays cart header with count', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
+      await tester.pumpAndSettle();
 
       // Should show "Giỏ hàng" with item count
       expect(find.textContaining('Giỏ hàng'), findsOneWidget);
@@ -77,6 +88,7 @@ void main() {
 
     testWidgets('displays empty state when cart is empty', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: emptyCartState));
+      await tester.pumpAndSettle();
 
       // Should show empty cart message
       expect(find.text('Giỏ hàng trống'), findsOneWidget);
@@ -84,6 +96,7 @@ void main() {
 
     testWidgets('displays cart items when not empty', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
+      await tester.pumpAndSettle();
 
       // Should show item name
       expect(find.text('Coca Cola'), findsOneWidget);
@@ -91,6 +104,7 @@ void main() {
 
     testWidgets('displays item quantity correctly', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
+      await tester.pumpAndSettle();
 
       // Should show quantity (2)
       expect(find.text('2'), findsOneWidget);
@@ -98,6 +112,7 @@ void main() {
 
     testWidgets('displays total amount', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
+      await tester.pumpAndSettle();
 
       // Total should be 25000 * 2 = 50000
       expect(find.textContaining('50.000'), findsAtLeastNWidgets(1));
@@ -105,6 +120,7 @@ void main() {
 
     testWidgets('shows clear button when cart has items', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
+      await tester.pumpAndSettle();
 
       // Should find delete/clear button
       expect(find.byIcon(Icons.delete_sweep), findsOneWidget);
@@ -116,6 +132,7 @@ void main() {
         cartState: filledCartState,
         onClear: () => cleared = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.delete_sweep));
       await tester.pump();
@@ -125,6 +142,7 @@ void main() {
 
     testWidgets('shows checkout button when cart has items', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
+      await tester.pumpAndSettle();
 
       // Should find checkout/thanh toán button
       expect(find.textContaining('Thanh toán'), findsOneWidget);
@@ -148,6 +166,7 @@ void main() {
         booking: mockBooking,
         onCheckout: () => checkedOut = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.textContaining('Thanh toán'));
       await tester.pump();
@@ -158,6 +177,7 @@ void main() {
     testWidgets('checkout button is disabled when no booking',
         (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
+      await tester.pumpAndSettle();
 
       // Checkout button should exist but be disabled
       expect(find.textContaining('Thanh toán'), findsOneWidget);
@@ -182,6 +202,7 @@ void main() {
         cartState: filledCartState,
         booking: mockBooking,
       ));
+      await tester.pumpAndSettle();
 
       // Should show room number combined with guest name
       expect(find.textContaining('P.101'), findsOneWidget);
@@ -198,6 +219,7 @@ void main() {
           updatedQuantity = qty;
         },
       ));
+      await tester.pumpAndSettle();
 
       // Find and tap increment button (add icon)
       await tester.tap(find.byIcon(Icons.add).first);
@@ -218,6 +240,7 @@ void main() {
           updatedQuantity = qty;
         },
       ));
+      await tester.pumpAndSettle();
 
       // Find and tap decrement button (remove icon)
       await tester.tap(find.byIcon(Icons.remove).first);
@@ -242,6 +265,7 @@ void main() {
         cartState: singleItemState,
         onRemoveItem: (id) => removedItemId = id,
       ));
+      await tester.pumpAndSettle();
 
       // Tap remove button (which triggers remove when qty is 1)
       await tester.tap(find.byIcon(Icons.remove).first);

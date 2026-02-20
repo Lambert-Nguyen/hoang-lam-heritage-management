@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import '../../../lib/models/booking.dart';
-import '../../../lib/widgets/bookings/booking_card.dart';
-import '../../../lib/widgets/bookings/booking_status_badge.dart';
+import 'package:hoang_lam_app/models/booking.dart';
+import 'package:hoang_lam_app/widgets/bookings/booking_card.dart';
+import 'package:hoang_lam_app/widgets/bookings/booking_status_badge.dart';
 
 void main() {
   group('BookingCard Widget Tests', () {
@@ -44,6 +46,14 @@ void main() {
     testWidgets('renders without crashing', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -51,6 +61,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(BookingCard), findsOneWidget);
       expect(find.byType(BookingStatusBadge), findsOneWidget);
@@ -59,6 +70,14 @@ void main() {
     testWidgets('displays room number when showRoom is true', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -67,6 +86,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('101'), findsOneWidget);
     });
@@ -74,6 +94,14 @@ void main() {
     testWidgets('displays guest name when showGuest is true', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -82,6 +110,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Nguyễn Văn A'), findsOneWidget);
     });
@@ -89,6 +118,14 @@ void main() {
     testWidgets('shows status badge', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -96,6 +133,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       final badge = tester.widget<BookingStatusBadge>(
         find.byType(BookingStatusBadge),
@@ -106,6 +144,14 @@ void main() {
     testWidgets('displays booking dates', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -113,6 +159,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Dates are formatted as dd/MM
       expect(find.textContaining('15/01'), findsOneWidget);
@@ -122,6 +169,14 @@ void main() {
     testWidgets('displays nights count', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -129,6 +184,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('đêm'), findsOneWidget);
     });
@@ -136,6 +192,14 @@ void main() {
     testWidgets('displays total amount', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -143,6 +207,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Amount is formatted with Vietnamese locale
       expect(find.textContaining('5'), findsWidgets);
@@ -153,6 +218,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -163,6 +236,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(InkWell));
       expect(tapped, true);
@@ -171,6 +245,14 @@ void main() {
     testWidgets('compact mode renders correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -179,6 +261,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Compact mode should still render the card
       expect(find.byType(BookingCard), findsOneWidget);
@@ -190,6 +273,14 @@ void main() {
     testWidgets('hides room when showRoom is false', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -199,6 +290,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Room number should not be displayed, but guest name should
       expect(find.text('101'), findsNothing);
@@ -219,11 +311,20 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
             home: Scaffold(
               body: BookingCard(booking: booking),
             ),
           ),
         );
+      await tester.pumpAndSettle();
 
         final badge = tester.widget<BookingStatusBadge>(
           find.byType(BookingStatusBadge),
@@ -239,6 +340,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: bookingNoRoomNumber,
@@ -247,6 +356,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Should fall back to room ID
       expect(find.textContaining('Phòng 101'), findsOneWidget);
@@ -259,6 +369,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: bookingNoGuest,
@@ -267,6 +385,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Should show fallback guest ID
       expect(find.textContaining('Khách #1'), findsOneWidget);
@@ -280,6 +399,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: pendingBooking,
@@ -288,6 +415,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('Đặt cọc'), findsOneWidget);
     });
@@ -300,6 +428,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: checkedInBooking,
@@ -308,6 +444,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('Check-in'), findsOneWidget);
     });
@@ -315,6 +452,14 @@ void main() {
     testWidgets('shows chevron icon when onTap is provided', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -323,6 +468,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     });
@@ -330,6 +476,14 @@ void main() {
     testWidgets('wraps in Card widget', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -337,6 +491,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byType(Card), findsOneWidget);
     });

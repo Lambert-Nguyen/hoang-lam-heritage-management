@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/minibar.dart';
 import 'package:hoang_lam_app/widgets/minibar/minibar_item_card.dart';
 
@@ -26,6 +28,14 @@ void main() {
       VoidCallback? onTap,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: SizedBox(
             width: 200,
@@ -41,12 +51,14 @@ void main() {
 
     testWidgets('displays item name correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Coca Cola'), findsOneWidget);
     });
 
     testWidgets('displays formatted price correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Price should be formatted in Vietnamese currency
       expect(find.textContaining('25.000'), findsOneWidget);
@@ -54,6 +66,7 @@ void main() {
 
     testWidgets('displays category correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('beverage'), findsOneWidget);
     });
@@ -63,6 +76,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onTap: () => tapped = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(MinibarItemCard));
       await tester.pump();
@@ -88,6 +102,7 @@ void main() {
         item: inactiveItem,
         onTap: () => tapped = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(MinibarItemCard));
       await tester.pump();
@@ -97,6 +112,7 @@ void main() {
 
     testWidgets('shows beverage icon for beverage category', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // Beverage category should show local_bar icon
       expect(find.byIcon(Icons.local_bar), findsOneWidget);
@@ -115,6 +131,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildWidget(item: snackItem));
+      await tester.pumpAndSettle();
 
       // Snack category should show bakery_dining icon
       expect(find.byIcon(Icons.bakery_dining), findsOneWidget);
@@ -133,6 +150,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildWidget(item: inactiveItem));
+      await tester.pumpAndSettle();
 
       // Should show "Ngừng bán" text for inactive items
       expect(find.text('Ngừng bán'), findsOneWidget);
@@ -152,6 +170,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildWidget(item: alcoholItem));
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.wine_bar), findsOneWidget);
     });

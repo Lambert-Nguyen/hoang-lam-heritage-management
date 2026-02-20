@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/finance.dart';
 import 'package:hoang_lam_app/widgets/finance/deposit_status.dart';
 
@@ -12,6 +14,14 @@ void main() {
       VoidCallback? onTap,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: Center(
             child: DepositStatusIndicator(
@@ -30,6 +40,7 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 500000,
       ));
+      await tester.pumpAndSettle();
 
       // 500000 / 1000000 = 50%
       expect(find.text('50%'), findsOneWidget);
@@ -40,6 +51,7 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 1000000,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('100%'), findsOneWidget);
     });
@@ -49,6 +61,7 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 0,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('0%'), findsOneWidget);
     });
@@ -58,6 +71,7 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 1000000,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.check_circle), findsOneWidget);
     });
@@ -67,6 +81,7 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 500000,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.warning), findsOneWidget);
     });
@@ -77,8 +92,9 @@ void main() {
         paidDeposit: 1000000,
         showLabel: true,
       ));
+      await tester.pumpAndSettle();
 
-      expect(find.text('Đã đủ cọc'), findsOneWidget);
+      expect(find.text('Đã đặt cọc'), findsOneWidget);
     });
 
     testWidgets('displays "Thiếu cọc" when partially paid', (tester) async {
@@ -87,6 +103,7 @@ void main() {
         paidDeposit: 500000,
         showLabel: true,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Thiếu cọc'), findsOneWidget);
     });
@@ -97,6 +114,7 @@ void main() {
         paidDeposit: 0,
         showLabel: true,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Chưa cọc'), findsOneWidget);
     });
@@ -107,6 +125,7 @@ void main() {
         paidDeposit: 500000,
         showLabel: false,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Thiếu cọc'), findsNothing);
     });
@@ -116,9 +135,10 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 500000,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('Đã cọc:'), findsOneWidget);
-      expect(find.textContaining('500,000'), findsOneWidget);
+      expect(find.textContaining('500.000'), findsOneWidget);
     });
 
     testWidgets('displays required amount', (tester) async {
@@ -126,13 +146,15 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 500000,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('Yêu cầu:'), findsOneWidget);
-      expect(find.textContaining('1,000,000'), findsOneWidget);
+      expect(find.textContaining('1.000.000'), findsOneWidget);
     });
 
     testWidgets('displays progress bar', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
     });
@@ -143,6 +165,7 @@ void main() {
       await tester.pumpWidget(buildTestWidget(
         onTap: () => tapped = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(InkWell));
       await tester.pumpAndSettle();
@@ -155,6 +178,7 @@ void main() {
         requiredDeposit: 0,
         paidDeposit: 0,
       ));
+      await tester.pumpAndSettle();
 
       // Should show 0% and not crash
       expect(find.text('0%'), findsOneWidget);
@@ -165,6 +189,7 @@ void main() {
         requiredDeposit: 1000000,
         paidDeposit: 1500000, // Overpaid
       ));
+      await tester.pumpAndSettle();
 
       // Should still show 100%, not 150%
       expect(find.text('100%'), findsOneWidget);
@@ -178,6 +203,14 @@ void main() {
       VoidCallback? onRecordDeposit,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: Center(
             child: OutstandingDepositCard(
@@ -203,12 +236,14 @@ void main() {
 
     testWidgets('displays guest name', (tester) async {
       await tester.pumpWidget(buildTestWidget(deposit: testDeposit));
+      await tester.pumpAndSettle();
 
       expect(find.text('Nguyễn Văn A'), findsOneWidget);
     });
 
     testWidgets('displays room number', (tester) async {
       await tester.pumpWidget(buildTestWidget(deposit: testDeposit));
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('101'), findsOneWidget);
     });
@@ -218,9 +253,10 @@ void main() {
         deposit: testDeposit,
         onRecordDeposit: () {}, // Required for outstanding to show
       ));
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('Còn thiếu:'), findsOneWidget);
-      expect(find.textContaining('700,000'), findsOneWidget);
+      expect(find.textContaining('700.000'), findsOneWidget);
     });
 
     testWidgets('displays record deposit button', (tester) async {
@@ -228,6 +264,7 @@ void main() {
         deposit: testDeposit,
         onRecordDeposit: () {},
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Ghi cọc'), findsOneWidget);
     });
@@ -239,6 +276,7 @@ void main() {
         deposit: testDeposit,
         onRecordDeposit: () => buttonTapped = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Ghi cọc'));
       await tester.pumpAndSettle();
@@ -248,6 +286,7 @@ void main() {
 
     testWidgets('displays deposit progress indicator', (tester) async {
       await tester.pumpWidget(buildTestWidget(deposit: testDeposit));
+      await tester.pumpAndSettle();
 
       // Should show the deposit status (30% progress)
       expect(find.text('30%'), findsOneWidget);
@@ -261,6 +300,14 @@ void main() {
       bool isLoading = false,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: OutstandingDepositsList(
             deposits: deposits,
@@ -301,6 +348,7 @@ void main() {
         deposits: [],
         isLoading: true,
       ));
+      await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
@@ -310,12 +358,14 @@ void main() {
         deposits: [],
         isLoading: false,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('Không có'), findsOneWidget);
     });
 
     testWidgets('displays all deposit cards', (tester) async {
       await tester.pumpWidget(buildTestWidget(deposits: testDeposits));
+      await tester.pumpAndSettle();
 
       expect(find.text('Guest 1'), findsOneWidget);
       expect(find.text('Guest 2'), findsOneWidget);
@@ -328,6 +378,7 @@ void main() {
         deposits: testDeposits,
         onRecordDeposit: (deposit) => selectedDeposit = deposit,
       ));
+      await tester.pumpAndSettle();
 
       // Tap the first "Ghi cọc" button
       await tester.tap(find.text('Ghi cọc').first);
@@ -338,6 +389,7 @@ void main() {
 
     testWidgets('displays header with count', (tester) async {
       await tester.pumpWidget(buildTestWidget(deposits: testDeposits));
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('2'), findsWidgets); // Should show count
     });

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/core/utils/currency_formatter.dart';
 import 'package:hoang_lam_app/models/dashboard.dart';
 import 'package:hoang_lam_app/widgets/dashboard/dashboard_revenue_card.dart';
@@ -21,6 +23,14 @@ void main() {
     testWidgets('displays revenue correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -30,11 +40,12 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Doanh thu hôm nay'), findsOneWidget);
       expect(find.text(CurrencyFormatter.formatVND(5000000)), findsOneWidget);
       expect(
-        find.text('Chi: ${CurrencyFormatter.formatVND(1000000)}'),
+        find.text('Chi phí: ${CurrencyFormatter.formatVND(1000000)}'),
         findsOneWidget,
       );
     });
@@ -42,6 +53,14 @@ void main() {
     testWidgets('calculates net profit correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -51,6 +70,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Net = 4,000,000
       expect(
@@ -62,6 +82,14 @@ void main() {
     testWidgets('handles zero revenue', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -71,6 +99,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text(CurrencyFormatter.formatVND(0)), findsOneWidget);
     });
@@ -78,6 +107,14 @@ void main() {
     testWidgets('handles null revenue and expense', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -85,6 +122,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text(CurrencyFormatter.formatVND(0)), findsOneWidget);
     });
@@ -92,6 +130,14 @@ void main() {
     testWidgets('displays negative net correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -101,6 +147,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       // Net = -1,000,000
       expect(
@@ -112,6 +159,14 @@ void main() {
     testWidgets('shows trending up icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -120,6 +175,7 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.trending_up), findsOneWidget);
     });
@@ -127,6 +183,14 @@ void main() {
     testWidgets('does not show expense text when expense is zero', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -136,13 +200,22 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      expect(find.textContaining('Chi:'), findsNothing);
+      expect(find.textContaining('Chi phí:'), findsNothing);
     });
 
     testWidgets('formats large numbers correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -152,10 +225,11 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text(CurrencyFormatter.formatVND(125000000)), findsOneWidget);
       expect(
-        find.text('Chi: ${CurrencyFormatter.formatVND(25000000)}'),
+        find.text('Chi phí: ${CurrencyFormatter.formatVND(25000000)}'),
         findsOneWidget,
       );
     });

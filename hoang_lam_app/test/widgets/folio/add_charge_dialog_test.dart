@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/widgets/folio/add_charge_dialog.dart';
 
 void main() {
@@ -12,6 +14,14 @@ void main() {
     }) {
       return ProviderScope(
         child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
@@ -39,6 +49,7 @@ void main() {
 
     testWidgets('displays dialog title', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       expect(find.text('Thêm phí'), findsAtLeastNWidgets(1));
@@ -46,6 +57,7 @@ void main() {
 
     testWidgets('displays type selector', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       expect(find.text('Loại phí'), findsOneWidget);
@@ -53,6 +65,7 @@ void main() {
 
     testWidgets('displays description field', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       expect(find.text('Mô tả *'), findsOneWidget);
@@ -60,6 +73,7 @@ void main() {
 
     testWidgets('displays quantity field', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       expect(find.text('Số lượng *'), findsOneWidget);
@@ -67,6 +81,7 @@ void main() {
 
     testWidgets('displays unit price field', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       expect(find.text('Đơn giá *'), findsOneWidget);
@@ -74,6 +89,7 @@ void main() {
 
     testWidgets('displays cancel button', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       expect(find.text('Hủy'), findsOneWidget);
@@ -81,6 +97,7 @@ void main() {
 
     testWidgets('displays add button', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       // Button text is "Thêm phí"
@@ -89,6 +106,7 @@ void main() {
 
     testWidgets('cancel button closes dialog', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       await tester.tap(find.text('Hủy'));
@@ -100,6 +118,7 @@ void main() {
 
     testWidgets('quantity field has default value of 1', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       // Find the quantity text field
@@ -110,6 +129,7 @@ void main() {
     testWidgets('shows validation error when description is empty',
         (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       // Enter valid values except description
@@ -131,6 +151,7 @@ void main() {
 
     testWidgets('displays all folio item types', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       // Check that type chips are displayed
@@ -140,6 +161,7 @@ void main() {
 
     testWidgets('can enter description text', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       await tester.enterText(
@@ -153,6 +175,7 @@ void main() {
 
     testWidgets('can change quantity', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       // Clear and enter new quantity
@@ -168,6 +191,7 @@ void main() {
 
     testWidgets('renders in AlertDialog', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       expect(find.byType(AlertDialog), findsOneWidget);
@@ -175,6 +199,7 @@ void main() {
 
     testWidgets('shows date picker button', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       // Should have a date field or picker
@@ -183,6 +208,7 @@ void main() {
 
     testWidgets('total updates when quantity or price changes', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await openDialog(tester);
 
       // Enter unit price

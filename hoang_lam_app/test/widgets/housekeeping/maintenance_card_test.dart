@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/housekeeping.dart';
 import 'package:hoang_lam_app/widgets/housekeeping/maintenance_card.dart';
 
@@ -37,6 +39,14 @@ void main() {
       VoidCallback? onComplete,
     }) {
       return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: MaintenanceCard(
             request: request ?? mockRequest,
@@ -50,18 +60,21 @@ void main() {
 
     testWidgets('displays room number correctly', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('P.201'), findsOneWidget);
     });
 
     testWidgets('displays request title', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Vòi nước bị rỉ'), findsOneWidget);
     });
 
     testWidgets('displays priority using displayName', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(
         find.text(MaintenancePriority.medium.displayName),
@@ -71,6 +84,7 @@ void main() {
 
     testWidgets('displays pending status using displayName', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(
         find.text(MaintenanceStatus.pending.displayName),
@@ -80,6 +94,7 @@ void main() {
 
     testWidgets('displays category icon', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       // plumbing category has water_drop icon
       expect(find.byIcon(Icons.water_drop), findsOneWidget);
@@ -87,6 +102,7 @@ void main() {
 
     testWidgets('displays description', (tester) async {
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('Vòi trong phòng tắm bị rỉ nước'), findsOneWidget);
     });
@@ -96,6 +112,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onTap: () => tapped = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(MaintenanceCard));
       await tester.pump();
@@ -109,6 +126,7 @@ void main() {
       await tester.pumpWidget(buildWidget(
         onAssign: () => assignCalled = true,
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Phân công'), findsOneWidget);
 
@@ -145,6 +163,7 @@ void main() {
         request: inProgressRequest,
         onComplete: () => completeCalled = true,
       ));
+      await tester.pumpAndSettle();
 
       // The complete button shows text "Hoàn thành"
       expect(find.text('Hoàn thành'), findsOneWidget);
@@ -181,6 +200,7 @@ void main() {
         request: completedRequest,
         onComplete: () {},
       ));
+      await tester.pumpAndSettle();
 
       // Status badge shows "Hoàn thành" but the TextButton should not exist
       expect(find.widgetWithText(TextButton, 'Hoàn thành'), findsNothing);
@@ -208,6 +228,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildWidget(request: urgentRequest));
+      await tester.pumpAndSettle();
 
       expect(
         find.text(MaintenancePriority.urgent.displayName),
@@ -238,6 +259,7 @@ void main() {
         );
 
         await tester.pumpWidget(buildWidget(request: request));
+      await tester.pumpAndSettle();
 
         expect(find.text(priority.displayName), findsOneWidget);
       }
@@ -268,6 +290,7 @@ void main() {
         );
 
         await tester.pumpWidget(buildWidget(request: request));
+      await tester.pumpAndSettle();
 
         expect(find.text(status.displayName), findsOneWidget);
       }
@@ -295,6 +318,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildWidget(request: assignedRequest));
+      await tester.pumpAndSettle();
 
       expect(find.text('Kỹ thuật viên A'), findsOneWidget);
     });

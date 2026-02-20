@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/room.dart';
 import 'package:hoang_lam_app/widgets/rooms/room_status_card.dart';
 
@@ -20,6 +22,14 @@ void main() {
     VoidCallback? onLongPress,
   }) {
     return MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
       home: Scaffold(
         body: Center(
           child: RoomStatusCard(
@@ -35,12 +45,14 @@ void main() {
   group('RoomStatusCard', () {
     testWidgets('displays room number', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.text('101'), findsOneWidget);
     });
 
     testWidgets('displays status icon for available room', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.check_circle), findsOneWidget);
     });
@@ -54,6 +66,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildTestWidget(room: occupiedRoom));
+      await tester.pumpAndSettle();
 
       expect(find.text('102'), findsOneWidget);
       expect(find.byIcon(Icons.person), findsOneWidget);
@@ -68,6 +81,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildTestWidget(room: cleaningRoom));
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.cleaning_services), findsOneWidget);
     });
@@ -81,6 +95,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildTestWidget(room: maintenanceRoom));
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.build), findsOneWidget);
     });
@@ -94,6 +109,7 @@ void main() {
       );
 
       await tester.pumpWidget(buildTestWidget(room: blockedRoom));
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.block), findsOneWidget);
     });
@@ -104,6 +120,7 @@ void main() {
       await tester.pumpWidget(buildTestWidget(
         onTap: () => tapped = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(RoomStatusCard));
       await tester.pump();
@@ -117,6 +134,7 @@ void main() {
       await tester.pumpWidget(buildTestWidget(
         onLongPress: () => longPressed = true,
       ));
+      await tester.pumpAndSettle();
 
       await tester.longPress(find.byType(RoomStatusCard));
       await tester.pump();
@@ -126,6 +144,7 @@ void main() {
 
     testWidgets('has correct size (80x80)', (tester) async {
       await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
 
       final sizedBox = tester.widget<SizedBox>(find.byType(SizedBox).first);
       expect(sizedBox.width, 80);
@@ -136,50 +155,95 @@ void main() {
   group('RoomDetailCard', () {
     testWidgets('displays room number', (tester) async {
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(room: testRoom),
         ),
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('101'), findsOneWidget);
     });
 
     testWidgets('displays room type name', (tester) async {
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(room: testRoom),
         ),
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Phòng đơn'), findsOneWidget);
     });
 
     testWidgets('displays status', (tester) async {
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(room: testRoom),
         ),
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Trống'), findsOneWidget);
     });
 
     testWidgets('displays floor info', (tester) async {
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(room: testRoom),
         ),
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('Tầng 1'), findsOneWidget);
     });
 
     testWidgets('displays formatted rate', (tester) async {
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(room: testRoom),
         ),
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('300.000đ'), findsOneWidget);
     });
@@ -193,10 +257,19 @@ void main() {
       );
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(room: roomWithNotes),
         ),
       ));
+      await tester.pumpAndSettle();
 
       expect(find.text('VIP guest room'), findsOneWidget);
     });
@@ -205,6 +278,14 @@ void main() {
       var tapped = false;
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(
             room: testRoom,
@@ -212,6 +293,7 @@ void main() {
           ),
         ),
       ));
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(RoomDetailCard));
       await tester.pump();
@@ -223,6 +305,14 @@ void main() {
       var statusTapped = false;
 
       await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('vi'),
         home: Scaffold(
           body: RoomDetailCard(
             room: testRoom,
@@ -230,6 +320,7 @@ void main() {
           ),
         ),
       ));
+      await tester.pumpAndSettle();
 
       // Find and tap the status container
       await tester.tap(find.text('Trống'));
