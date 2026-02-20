@@ -47,10 +47,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _tryBiometricLogin() async {
-    final biometricState = await ref.read(biometricNotifierProvider.future);
+    try {
+      final biometricState = await ref.read(biometricNotifierProvider.future);
 
-    if (biometricState.canUseBiometric) {
-      await _handleBiometricLogin();
+      if (biometricState.canUseBiometric) {
+        await _handleBiometricLogin();
+      }
+    } catch (e) {
+      // Biometric check failed - silently continue (user can still login manually)
+      debugPrint('[LoginScreen] Biometric auto-login check failed: $e');
     }
   }
 

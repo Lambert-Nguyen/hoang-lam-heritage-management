@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -113,11 +115,11 @@ void main() {
 
       test('should set unauthenticated when isAuthenticated times out',
           () async {
+        // Use a Completer that never completes to simulate a hanging call.
+        // The implementation's 5-second timeout will fire and treat it as false.
+        final neverCompletes = Completer<bool>();
         when(mockRepository.isAuthenticated())
-            .thenAnswer((_) async => Future.delayed(
-                  const Duration(seconds: 10),
-                  () => true,
-                ));
+            .thenAnswer((_) => neverCompletes.future);
 
         final notifier = container.read(authStateProvider.notifier);
         await notifier.checkAuthStatus();
@@ -125,6 +127,9 @@ void main() {
         // Should have timed out and returned false
         final state = container.read(authStateProvider);
         expect(state, isA<AuthStateUnauthenticated>());
+
+        // Complete the future to avoid dangling in the test runner
+        neverCompletes.complete(true);
       });
 
       test('should fetch from server when no cached user', () async {
@@ -406,17 +411,23 @@ void main() {
     });
 
     test('isAuthLoadingProvider returns true during loading', () async {
-      // While login hasn't completed
+      // Use a Completer so we control when login resolves (no dangling timer)
+      final loginCompleter = Completer<LoginResponse>();
       when(mockRepository.login(any)).thenAnswer(
-          (_) async => Future.delayed(const Duration(seconds: 5), () => testLoginResponse));
+          (_) => loginCompleter.future);
 
       final notifier = container.read(authStateProvider.notifier);
+      // ignore: unawaited_futures
       notifier.login('testuser', 'password123'); // Don't await
 
-      // After calling login, state transitions through loading
-      // But since it's async, we need to check immediately
+      // Allow microtasks to process so state transitions to loading
+      await Future.microtask(() {});
+
       // The state should be loading now
       expect(container.read(isAuthLoadingProvider), true);
+
+      // Complete the future to avoid dangling in the test runner
+      loginCompleter.complete(testLoginResponse);
     });
   });
 }

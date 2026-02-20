@@ -2,15 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hoang_lam_app/screens/auth/login_screen.dart';
+import 'package:hoang_lam_app/providers/biometric_provider.dart';
 import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+/// Fake biometric notifier that doesn't hit platform channels
+class _FakeBiometricNotifier extends BiometricNotifier {
+  @override
+  Future<BiometricState> build() async {
+    return const BiometricState(
+      isSupported: false,
+      isEnabled: false,
+      biometricTypes: [],
+    );
+  }
+}
 
 void main() {
   group('LoginScreen', () {
     late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer();
+      container = ProviderContainer(
+        overrides: [
+          // Prevent real biometric platform channel calls
+          biometricNotifierProvider.overrideWith(() => _FakeBiometricNotifier()),
+        ],
+      );
     });
 
     tearDown(() {
