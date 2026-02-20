@@ -2039,29 +2039,29 @@ class OfflineBanner extends StatelessWidget {
 
 ---
 
-### Phase 2: Financial Tracking + Phase 1 Deferrals
+### Phase 2: Financial Tracking + Phase 1 Deferrals ✅ COMPLETE
 
-#### Backend Tasks
+#### Backend Tasks ✅
 - [x] Implement FinancialCategory model
 - [x] Implement FinancialEntry model
 - [x] API for income/expense CRUD
 - [x] API for financial summaries
-- [ ] Multi-currency support
-- [ ] ID Scanning backend support
-- [ ] Night Audit model and API
-- [ ] Declaration export (CSV/Excel)
+- [x] Multi-currency support (ExchangeRate model, convert endpoint, 8 currencies)
+- [ ] ID Scanning backend support (deferred — manual entry sufficient for 7-room hotel)
+- [x] Night Audit model and API (NightAudit model, auto-calculation, close/recalculate/today/latest endpoints)
+- [x] Declaration export (CSV/Excel) (ĐD10 + NA17 forms, openpyxl)
 
-#### Frontend Tasks
-- [ ] Finance tab with summary cards
-- [ ] Transaction list with filters
-- [ ] Add income screen
-- [ ] Add expense screen
-- [ ] Daily/monthly summary view
-- [ ] ID Scanning with OCR
-- [ ] Night Audit screen
-- [ ] Declaration export screen
-- [ ] Offline sync support
-- [ ] Language/Theme settings
+#### Frontend Tasks ✅
+- [x] Finance tab with summary cards
+- [x] Transaction list with filters
+- [x] Add income screen
+- [x] Add expense screen
+- [x] Daily/monthly summary view
+- [ ] ID Scanning with OCR (deferred — no OCR integration planned for MVP)
+- [x] Night Audit screen
+- [x] Declaration export screen
+- [x] Offline sync support (infrastructure complete via Phase D.9, UI widgets pending)
+- [x] Language/Theme settings
 
 #### Deliverables
 - Record income (room payments, extras)
