@@ -1,11 +1,11 @@
 {
-    "name": "hoang_lam_app",
-    "short_name": "hoang_lam_app",
+    "name": "Hoang Lam Heritage",
+    "short_name": "Hoang Lam",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#F5EEE0",
+    "theme_color": "#254634",
+    "description": "Hotel Management System for Hoang Lam Heritage Suites",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
