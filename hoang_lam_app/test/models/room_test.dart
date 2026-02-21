@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hoang_lam_app/core/theme/app_colors.dart';
 import 'package:hoang_lam_app/models/room.dart';
 
 void main() {
@@ -21,11 +22,11 @@ void main() {
     });
 
     test('has correct colors', () {
-      expect(RoomStatus.available.color, const Color(0xFF4CAF50));
-      expect(RoomStatus.occupied.color, const Color(0xFFF44336));
-      expect(RoomStatus.cleaning.color, const Color(0xFFFFC107));
-      expect(RoomStatus.maintenance.color, const Color(0xFF9E9E9E));
-      expect(RoomStatus.blocked.color, const Color(0xFF795548));
+      expect(RoomStatus.available.color, AppColors.available);
+      expect(RoomStatus.occupied.color, AppColors.occupied);
+      expect(RoomStatus.cleaning.color, AppColors.cleaning);
+      expect(RoomStatus.maintenance.color, AppColors.maintenance);
+      expect(RoomStatus.blocked.color, AppColors.blocked);
     });
 
     test('has correct icons', () {

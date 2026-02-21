@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import '../config/app_constants.dart';
@@ -10,8 +11,12 @@ class HiveStorage {
   static Future<void> init() async {
     if (_initialized) return;
 
-    final appDir = await getApplicationDocumentsDirectory();
-    await Hive.initFlutter(appDir.path);
+    if (kIsWeb) {
+      await Hive.initFlutter();
+    } else {
+      final appDir = await getApplicationDocumentsDirectory();
+      await Hive.initFlutter(appDir.path);
+    }
 
     // Note: Models use Freezed (not Hive codegen), so no TypeAdapters needed.
     // Boxes are opened as dynamic and store JSON maps directly.
