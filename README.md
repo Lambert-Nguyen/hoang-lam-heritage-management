@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/License-Private-red" alt="License" />
 </p>
 
-A mobile-first hotel management application designed for small family-run hotels in Vietnam. Built with **Flutter** for cross-platform mobile support (iOS + Android) and **Django REST Framework** for a robust backend API.
+A mobile-first hotel management application designed for small family-run hotels in Vietnam. Built with **Flutter** for cross-platform support (iOS, Android, and Web) and **Django REST Framework** for a robust backend API.
 
 ---
 
@@ -46,13 +46,18 @@ A mobile-first hotel management application designed for small family-run hotels
 
 ### Current Status (February 2026)
 
-| Phase | Status | Tests |
-|-------|--------|-------|
+| Phase | Status | Description |
+|-------|--------|-------------|
+| **Phase 0: Project Setup** | ✅ Complete | Backend, frontend, CI/CD setup |
 | **Phase 1: Core MVP** | ✅ Complete | Authentication, Rooms, Bookings, Guests, Dashboard |
 | **Phase 2: Financial Tracking** | ✅ Complete | Payments, Deposits, Multi-currency, Receipts |
 | **Phase 3: Operations** | ✅ Complete | Housekeeping, Maintenance, Minibar, Inspections |
 | **Phase 4: Reports** | ✅ Complete | Occupancy, Revenue, KPI, Demographics |
 | **Phase 5: Notifications & Messaging** | ✅ Complete | Push Notifications, Guest Messaging, Rate Plans |
+| **Phase D: Production Hardening** | 🔧 In Progress | Error handling, performance, security audit |
+| **Web Support** | ✅ Enabled | PC login via Chrome for staff |
+
+**Overall Progress:** 311/384 tasks (81%) | **Tests:** 652 Flutter + 145 backend
 
 ---
 
@@ -383,7 +388,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 
 | Component | Technology | Purpose |
 |-----------|------------|---------|
-| **Framework** | Flutter 3.x | Cross-platform iOS + Android |
+| **Framework** | Flutter 3.x | Cross-platform iOS + Android + Web |
 | **State Management** | Riverpod 2.x + riverpod_generator | Reactive, type-safe state |
 | **Data Models** | Freezed + json_serializable | Immutable models, JSON parsing |
 | **HTTP Client** | Dio 5.x | REST API with interceptors |
@@ -427,9 +432,10 @@ hoang-lam-heritage-management/
 │   │   ├── router/             # GoRouter navigation
 │   │   ├── l10n/               # Internationalization (Vietnamese/English)
 │   │   └── main.dart
-│   ├── test/                   # 484 tests
+│   ├── test/                   # 652 tests
 │   ├── android/                # Android config
 │   ├── ios/                    # iOS config
+│   ├── web/                    # Web config (Chrome)
 │   └── pubspec.yaml
 │
 ├── hoang_lam_backend/          # 🐍 Django REST API
@@ -591,7 +597,7 @@ See [API_REFERENCE.md](docs/API_REFERENCE.md) for complete documentation.
 
 ## 🧪 Testing
 
-### Backend (38 tests)
+### Backend (145 tests)
 
 ```bash
 cd hoang_lam_backend
@@ -600,11 +606,21 @@ DJANGO_SETTINGS_MODULE=backend.settings.development \
   python manage.py test hotel_api
 ```
 
-### Frontend (484 tests)
+### Frontend (652 tests)
 
 ```bash
 cd hoang_lam_app
 flutter test
+```
+
+### Web Build
+
+```bash
+cd hoang_lam_app
+flutter build web
+
+# Run in Chrome for development
+flutter run -d chrome
 ```
 
 ---
