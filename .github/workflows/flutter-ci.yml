@@ -22,7 +22,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.x'
+        flutter-version: '3.29.x'
         channel: 'stable'
         cache: true
     
@@ -48,7 +48,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.x'
+        flutter-version: '3.29.x'
         channel: 'stable'
         cache: true
     
@@ -87,7 +87,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.x'
+        flutter-version: '3.29.x'
         channel: 'stable'
         cache: true
     
@@ -116,7 +116,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.x'
+        flutter-version: '3.29.x'
         channel: 'stable'
         cache: true
     
@@ -127,3 +127,26 @@ jobs:
     - name: Build iOS (no codesign)
       working-directory: ./hoang_lam_app
       run: flutter build ios --debug --no-codesign
+
+  build-web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    needs: [analyze, test]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.29.x'
+        channel: 'stable'
+        cache: true
+
+    - name: Get dependencies
+      working-directory: ./hoang_lam_app
+      run: flutter pub get
+
+    - name: Build Web
+      working-directory: ./hoang_lam_app
+      run: flutter build web
