@@ -427,7 +427,7 @@
 - [x] **1.12.4** Create day summary widget ✅
 - [x] **1.12.5** Create pending payments list ✅
 - [x] **1.12.6** Create close day confirmation ✅
-- [ ] **1.12.7** Write night audit widget tests
+- [x] **1.12.7** Write night audit widget tests ✅
 
 ### 1.13 Temporary Residence Declaration (Backend)
 
@@ -448,7 +448,7 @@
 - [x] **1.14.2** Create date range selector ✅
 - [x] **1.14.3** Create export format selector ✅
 - [x] **1.14.4** Implement file download/share ✅
-- [ ] **1.14.5** Write declaration widget tests
+- [x] **1.14.5** Write declaration widget tests ✅
 
 ### 1.15 Offline Support (Frontend)
 
@@ -621,7 +621,7 @@
 
 - [x] **3.2.1** Create task CRUD endpoints — ✅ HousekeepingTaskViewSet with list, create, retrieve, update, delete
 - [x] **3.2.2** Create maintenance request endpoints — ✅ MaintenanceRequestViewSet with full CRUD
-- [ ] **3.2.3** Create auto-task creation on checkout — 🔄 Deferred to Phase 3.3
+- [x] **3.2.3** Create auto-task creation on checkout — ✅ Already implemented in BookingViewSet.check_out() (creates CHECKOUT_CLEAN task)
 - [x] **3.2.4** Create task assignment endpoint — ✅ `/assign/` action on both ViewSets
 - [x] **3.2.5** Create task completion endpoint — ✅ `/complete/` action on both ViewSets
 - [x] **3.2.6** Create task list by room/date — ✅ Filter params: room, status, task_type, assigned_to, scheduled_date, priority
