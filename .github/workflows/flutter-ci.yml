@@ -29,11 +29,15 @@ jobs:
     - name: Get dependencies
       working-directory: ./hoang_lam_app
       run: flutter pub get
-    
+
+    - name: Generate code (Freezed, json_serializable)
+      working-directory: ./hoang_lam_app
+      run: dart run build_runner build --delete-conflicting-outputs
+
     - name: Verify formatting
       working-directory: ./hoang_lam_app
       run: dart format --output=none --set-exit-if-changed .
-    
+
     - name: Analyze project source
       working-directory: ./hoang_lam_app
       run: flutter analyze --fatal-infos --fatal-warnings
@@ -55,7 +59,11 @@ jobs:
     - name: Get dependencies
       working-directory: ./hoang_lam_app
       run: flutter pub get
-    
+
+    - name: Generate code (Freezed, json_serializable)
+      working-directory: ./hoang_lam_app
+      run: dart run build_runner build --delete-conflicting-outputs
+
     - name: Run tests
       working-directory: ./hoang_lam_app
       run: flutter test --coverage
@@ -94,7 +102,11 @@ jobs:
     - name: Get dependencies
       working-directory: ./hoang_lam_app
       run: flutter pub get
-    
+
+    - name: Generate code (Freezed, json_serializable)
+      working-directory: ./hoang_lam_app
+      run: dart run build_runner build --delete-conflicting-outputs
+
     - name: Build APK
       working-directory: ./hoang_lam_app
       run: flutter build apk --debug
@@ -123,7 +135,11 @@ jobs:
     - name: Get dependencies
       working-directory: ./hoang_lam_app
       run: flutter pub get
-    
+
+    - name: Generate code (Freezed, json_serializable)
+      working-directory: ./hoang_lam_app
+      run: dart run build_runner build --delete-conflicting-outputs
+
     - name: Build iOS (no codesign)
       working-directory: ./hoang_lam_app
       run: flutter build ios --debug --no-codesign
@@ -146,6 +162,10 @@ jobs:
     - name: Get dependencies
       working-directory: ./hoang_lam_app
       run: flutter pub get
+
+    - name: Generate code (Freezed, json_serializable)
+      working-directory: ./hoang_lam_app
+      run: dart run build_runner build --delete-conflicting-outputs
 
     - name: Build Web
       working-directory: ./hoang_lam_app
