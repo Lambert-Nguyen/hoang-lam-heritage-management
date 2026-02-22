@@ -49,12 +49,13 @@ class _DeclarationExportScreenState
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.exportSuccess),
-              action: file_saver.isWebPlatform
-                  ? null
-                  : SnackBarAction(
-                      label: l10n.open,
-                      onPressed: () => _openFile(filePath),
-                    ),
+              action:
+                  file_saver.isWebPlatform
+                      ? null
+                      : SnackBarAction(
+                        label: l10n.open,
+                        onPressed: () => _openFile(filePath),
+                      ),
               duration: const Duration(seconds: 5),
             ),
           );

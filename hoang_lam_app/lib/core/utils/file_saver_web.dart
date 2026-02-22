@@ -10,10 +10,9 @@ Future<String> saveFileFromBytes({
   required String filename,
   String? mimeType,
 }) async {
-  final blob = html.Blob(
-    [Uint8List.fromList(bytes)],
-    mimeType ?? 'application/octet-stream',
-  );
+  final blob = html.Blob([
+    Uint8List.fromList(bytes),
+  ], mimeType ?? 'application/octet-stream');
   final url = html.Url.createObjectUrlFromBlob(blob);
   html.AnchorElement(href: url)
     ..setAttribute('download', filename)
