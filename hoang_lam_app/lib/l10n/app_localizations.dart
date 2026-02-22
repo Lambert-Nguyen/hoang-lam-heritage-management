@@ -1197,6 +1197,7 @@ class AppLocalizations {
       translate('bookings_marked_as_declared');
   String get openFileBtn => translate('open_file_btn');
   String get shareFileBtn => translate('share_file_btn');
+  String get fileDownloadedByBrowser => translate('file_downloaded_by_browser');
   String get fileFormatLabel => translate('file_format_label');
   String get last7DaysLabel => translate('last_7_days_label');
   String get last30DaysLabel => translate('last_30_days_label');
@@ -2886,6 +2887,7 @@ const Map<String, String> _viTranslations = {
   'bookings_marked_as_declared': 'Các đặt phòng đã được đánh dấu "Đã khai báo"',
   'open_file_btn': 'Mở',
   'share_file_btn': 'Chia sẻ',
+  'file_downloaded_by_browser': 'File đã được tải xuống qua trình duyệt',
   'file_format_label': 'Định dạng file',
   'last_7_days_label': '7 ngày qua',
   'last_30_days_label': '30 ngày qua',
@@ -4529,6 +4531,7 @@ const Map<String, String> _enTranslations = {
   'bookings_marked_as_declared': 'Bookings have been marked as "Declared"',
   'open_file_btn': 'Open',
   'share_file_btn': 'Share',
+  'file_downloaded_by_browser': 'File has been downloaded by your browser',
   'file_format_label': 'File format',
   'last_7_days_label': 'Last 7 days',
   'last_30_days_label': 'Last 30 days',

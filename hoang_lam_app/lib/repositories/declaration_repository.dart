@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:path_provider/path_provider.dart';
 
 import '../core/network/api_client.dart';
+import '../core/utils/file_saver.dart' as file_saver;
 import '../models/declaration.dart';
 
 /// Repository for handling temporary residence declaration exports.
@@ -18,7 +16,9 @@ class DeclarationRepository {
     : _apiClient = apiClient ?? ApiClient();
 
   /// Export declaration data and save to file.
-  /// Returns the file path of the downloaded file.
+  ///
+  /// On mobile/desktop: saves to application documents directory and returns the file path.
+  /// On web: triggers a browser download and returns the filename.
   Future<String> exportDeclaration({
     required DateTime dateFrom,
     required DateTime dateTo,
@@ -35,15 +35,12 @@ class DeclarationRepository {
       'form_type': formType.apiValue,
     };
 
-    // Get the download directory
-    final directory = await getApplicationDocumentsDirectory();
     final formSuffix =
         formType == DeclarationFormType.all ? '' : '_${formType.apiValue}';
     final filename =
         'khai_bao_luu_tru${formSuffix}_${dateFromStr}_$dateToStr.${format.fileExtension}';
-    final filePath = '${directory.path}/$filename';
 
-    // Download the file
+    // Download the file bytes from API
     final response = await _apiClient.dio.get<List<int>>(
       '/guests/declaration-export/',
       queryParameters: queryParams,
@@ -53,11 +50,12 @@ class DeclarationRepository {
       ),
     );
 
-    // Save to file
-    final file = File(filePath);
-    await file.writeAsBytes(response.data!);
-
-    return filePath;
+    // Save using platform-aware saver (browser download on web, file on mobile)
+    return await file_saver.saveFileFromBytes(
+      bytes: response.data!,
+      filename: filename,
+      mimeType: format.mimeType,
+    );
   }
 
   /// Format date to YYYY-MM-DD string

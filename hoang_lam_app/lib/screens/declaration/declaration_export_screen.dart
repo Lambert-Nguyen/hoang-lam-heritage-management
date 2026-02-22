@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart' show ShareParams, SharePlus, XFile;
 
 import '../../l10n/app_localizations.dart';
 
+import '../../core/utils/file_saver.dart' as file_saver;
 import '../../models/declaration.dart';
 import '../../providers/declaration_provider.dart';
 import '../../core/theme/app_colors.dart';
@@ -48,10 +49,12 @@ class _DeclarationExportScreenState
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.exportSuccess),
-              action: SnackBarAction(
-                label: l10n.open,
-                onPressed: () => _openFile(filePath),
-              ),
+              action: file_saver.isWebPlatform
+                  ? null
+                  : SnackBarAction(
+                      label: l10n.open,
+                      onPressed: () => _openFile(filePath),
+                    ),
               duration: const Duration(seconds: 5),
             ),
           );
@@ -297,6 +300,7 @@ class _DeclarationExportScreenState
             if (exportState is DeclarationExportSuccess)
               _ExportedFileCard(
                 filePath: exportState.filePath,
+                isWeb: file_saver.isWebPlatform,
                 onOpen: () => _openFile(exportState.filePath),
                 onShare: () => _shareFile(exportState.filePath),
               ),
@@ -460,11 +464,13 @@ class _FormatCard extends StatelessWidget {
 /// Card showing exported file info
 class _ExportedFileCard extends StatelessWidget {
   final String filePath;
+  final bool isWeb;
   final VoidCallback onOpen;
   final VoidCallback onShare;
 
   const _ExportedFileCard({
     required this.filePath,
+    this.isWeb = false,
     required this.onOpen,
     required this.onShare,
   });
@@ -510,25 +516,36 @@ class _ExportedFileCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onOpen,
-                    icon: const Icon(Icons.open_in_new, size: 18),
-                    label: Text(l10n.openFileBtn),
+            if (!isWeb)
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onOpen,
+                      icon: const Icon(Icons.open_in_new, size: 18),
+                      label: Text(l10n.openFileBtn),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onShare,
+                      icon: const Icon(Icons.share, size: 18),
+                      label: Text(l10n.shareFileBtn),
+                    ),
+                  ),
+                ],
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  l10n.fileDownloadedByBrowser,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: onShare,
-                    icon: const Icon(Icons.share, size: 18),
-                    label: Text(l10n.shareFileBtn),
-                  ),
-                ),
-              ],
-            ),
+              ),
           ],
         ),
       ),
