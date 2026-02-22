@@ -9,12 +9,7 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from hotel_api.messaging_service import (
-    EmailService,
-    GuestMessagingService,
-    SMSService,
-    ZaloService,
-)
+from hotel_api.messaging_service import EmailService, GuestMessagingService, SMSService, ZaloService
 from hotel_api.models import (
     Booking,
     Guest,

@@ -2563,11 +2563,7 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
 
 # Import NightAudit model and serializers
 from .models import NightAudit
-from .serializers import (
-    NightAuditCreateSerializer,
-    NightAuditListSerializer,
-    NightAuditSerializer,
-)
+from .serializers import NightAuditCreateSerializer, NightAuditListSerializer, NightAuditSerializer
 
 
 @extend_schema_view(
@@ -2881,11 +2877,7 @@ class PaymentViewSet(viewsets.ModelViewSet):
         return queryset
 
     def get_serializer_class(self):
-        from .serializers import (
-            PaymentCreateSerializer,
-            PaymentListSerializer,
-            PaymentSerializer,
-        )
+        from .serializers import PaymentCreateSerializer, PaymentListSerializer, PaymentSerializer
 
         if self.action == "list":
             return PaymentListSerializer

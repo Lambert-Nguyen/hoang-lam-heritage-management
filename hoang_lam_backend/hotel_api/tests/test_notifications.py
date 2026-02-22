@@ -11,15 +11,7 @@ import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from hotel_api.models import (
-    Booking,
-    DeviceToken,
-    Guest,
-    HotelUser,
-    Notification,
-    Room,
-    RoomType,
-)
+from hotel_api.models import Booking, DeviceToken, Guest, HotelUser, Notification, Room, RoomType
 from hotel_api.services import PushNotificationService
 
 # ===== Fixtures =====
