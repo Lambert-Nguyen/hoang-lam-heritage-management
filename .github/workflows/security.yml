@@ -32,29 +32,32 @@ jobs:
       working-directory: ./hoang_lam_backend
       run: |
         bandit -r . -f json -o bandit-report.json || true
-        bandit -r . -f txt
+        bandit -r . -f txt || true
       continue-on-error: true
-    
+
     - name: Run Safety (dependency vulnerabilities)
       working-directory: ./hoang_lam_backend
       run: |
-        safety check --json --output safety-report.json || true
-        safety check
+        pip install -r requirements.txt 2>/dev/null || true
+        safety scan --output json 2>&1 | tee safety-report.json || true
+        safety scan --output text || true
       continue-on-error: true
-    
+
     - name: Upload Bandit results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: bandit-security-report
         path: hoang_lam_backend/bandit-report.json
-    
+        if-no-files-found: ignore
+
     - name: Upload Safety results
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: safety-security-report
         path: hoang_lam_backend/safety-report.json
+        if-no-files-found: warn
 
   # Dependency scanning with GitHub's Dependency Review
   dependency-review:
@@ -89,16 +92,16 @@ jobs:
     - uses: actions/checkout@v4
     
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@v4
       with:
         languages: ${{ matrix.language }}
         queries: security-and-quality
     
     - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+      uses: github/codeql-action/autobuild@v4
     
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@v4
       with:
         category: "/language:${{ matrix.language }}"
 
