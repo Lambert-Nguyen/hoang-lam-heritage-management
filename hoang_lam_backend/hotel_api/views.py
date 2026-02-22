@@ -7,6 +7,7 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
+
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     OpenApiParameter,
@@ -18,10 +19,9 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from rest_framework.throttling import ScopedRateThrottle
 
 from .models import (
     Booking,
@@ -48,15 +48,25 @@ from .models import (
     RoomType,
 )
 from .permissions import IsManager, IsStaff, IsStaffOrManager
-from .serializers import (
+from .serializers import (  # Phase 3: Room Inspection serializers; Phase 4: Report serializers; RatePlan and DateRateOverride serializers; Phase 5: Notification serializers; Phase 5.3: Guest Messaging serializers
     BookingListSerializer,
     BookingSerializer,
     BookingStatusUpdateSerializer,
+    ChannelPerformanceRequestSerializer,
     CheckInSerializer,
     CheckOutSerializer,
+    ComparativeReportRequestSerializer,
     CurrencyConversionSerializer,
+    DateRateOverrideBulkCreateSerializer,
+    DateRateOverrideCreateSerializer,
+    DateRateOverrideListSerializer,
+    DateRateOverrideSerializer,
+    DateRateOverrideUpdateSerializer,
     DepositRecordSerializer,
+    DeviceTokenSerializer,
     ExchangeRateSerializer,
+    ExpenseReportRequestSerializer,
+    ExportReportRequestSerializer,
     FinancialCategoryListSerializer,
     FinancialCategorySerializer,
     FinancialEntryListSerializer,
@@ -66,13 +76,20 @@ from .serializers import (
     GroupBookingListSerializer,
     GroupBookingSerializer,
     GroupBookingUpdateSerializer,
+    GuestDemographicsRequestSerializer,
     GuestListSerializer,
+    GuestMessageListSerializer,
+    GuestMessageSerializer,
     GuestSearchSerializer,
     GuestSerializer,
     HousekeepingTaskCreateSerializer,
     HousekeepingTaskListSerializer,
     HousekeepingTaskSerializer,
     HousekeepingTaskUpdateSerializer,
+    InspectionTemplateCreateSerializer,
+    InspectionTemplateListSerializer,
+    InspectionTemplateSerializer,
+    KPIReportRequestSerializer,
     LoginSerializer,
     LostAndFoundClaimSerializer,
     LostAndFoundCreateSerializer,
@@ -84,6 +101,8 @@ from .serializers import (
     MaintenanceRequestListSerializer,
     MaintenanceRequestSerializer,
     MaintenanceRequestUpdateSerializer,
+    MessageTemplateListSerializer,
+    MessageTemplateSerializer,
     MinibarItemCreateSerializer,
     MinibarItemListSerializer,
     MinibarItemSerializer,
@@ -96,60 +115,36 @@ from .serializers import (
     NightAuditCreateSerializer,
     NightAuditListSerializer,
     NightAuditSerializer,
+    NotificationListSerializer,
+    NotificationPreferencesSerializer,
+    NotificationSerializer,
+    OccupancyReportRequestSerializer,
     OutstandingDepositSerializer,
     PasswordChangeSerializer,
     PaymentListSerializer,
     PaymentSerializer,
+    PreviewMessageSerializer,
+    RatePlanCreateSerializer,
+    RatePlanListSerializer,
+    RatePlanSerializer,
+    RatePlanUpdateSerializer,
     ReceiptDataSerializer,
     ReceiptGenerateSerializer,
+    RevenueReportRequestSerializer,
     RoomAvailabilitySerializer,
+    RoomInspectionCompleteSerializer,
+    RoomInspectionCreateSerializer,
+    RoomInspectionListSerializer,
+    RoomInspectionSerializer,
+    RoomInspectionStatisticsSerializer,
+    RoomInspectionUpdateSerializer,
     RoomListSerializer,
     RoomSerializer,
     RoomStatusUpdateSerializer,
     RoomTypeListSerializer,
     RoomTypeSerializer,
-    UserProfileSerializer,
-    # Phase 3: Room Inspection serializers
-    InspectionTemplateSerializer,
-    InspectionTemplateListSerializer,
-    InspectionTemplateCreateSerializer,
-    RoomInspectionSerializer,
-    RoomInspectionListSerializer,
-    RoomInspectionCreateSerializer,
-    RoomInspectionUpdateSerializer,
-    RoomInspectionCompleteSerializer,
-    RoomInspectionStatisticsSerializer,
-    # Phase 4: Report serializers
-    OccupancyReportRequestSerializer,
-    RevenueReportRequestSerializer,
-    KPIReportRequestSerializer,
-    ExpenseReportRequestSerializer,
-    ChannelPerformanceRequestSerializer,
-    GuestDemographicsRequestSerializer,
-    ComparativeReportRequestSerializer,
-    ExportReportRequestSerializer,
-    # RatePlan and DateRateOverride serializers
-    RatePlanSerializer,
-    RatePlanListSerializer,
-    RatePlanCreateSerializer,
-    RatePlanUpdateSerializer,
-    DateRateOverrideSerializer,
-    DateRateOverrideListSerializer,
-    DateRateOverrideCreateSerializer,
-    DateRateOverrideUpdateSerializer,
-    DateRateOverrideBulkCreateSerializer,
-    # Phase 5: Notification serializers
-    NotificationSerializer,
-    NotificationListSerializer,
-    DeviceTokenSerializer,
-    NotificationPreferencesSerializer,
-    # Phase 5.3: Guest Messaging serializers
-    MessageTemplateSerializer,
-    MessageTemplateListSerializer,
-    GuestMessageSerializer,
-    GuestMessageListSerializer,
     SendMessageSerializer,
-    PreviewMessageSerializer,
+    UserProfileSerializer,
 )
 
 User = get_user_model()
@@ -804,8 +799,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         query = serializer.validated_data["query"]
-        from hotel_api.encryption import hash_value
         from hotel_api.audit import log_sensitive_access
+        from hotel_api.encryption import hash_value
         from hotel_api.models import SensitiveDataAccessLog
 
         id_hash = hash_value(query)
@@ -932,6 +927,7 @@ class GuestViewSet(viewsets.ModelViewSet):
 
         from django.http import HttpResponse
         from django.utils import timezone as tz
+
         from hotel_api.audit import log_sensitive_access
         from hotel_api.models import SensitiveDataAccessLog
 
@@ -3216,11 +3212,11 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], url_path="latest")
     def latest_rates(self, request):
         """Get latest exchange rates."""
-        from .models import ExchangeRate
-        from .serializers import ExchangeRateSerializer
-
         # Get latest rate for each currency pair
         from django.db.models import Max
+
+        from .models import ExchangeRate
+        from .serializers import ExchangeRateSerializer
 
         latest_dates = ExchangeRate.objects.values("from_currency", "to_currency").annotate(
             latest_date=Max("date")
@@ -3344,7 +3340,9 @@ class ReceiptViewSet(viewsets.ViewSet):
     def _get_receipt_data(self, booking, payment=None, include_folio=True):
         """Generate receipt data for a booking."""
         from django.utils import timezone
+
         from hotel_api.encryption import decrypt
+
         from .models import FolioItem
 
         # Generate receipt number
@@ -3475,10 +3473,11 @@ class ReceiptViewSet(viewsets.ViewSet):
 
         # Try to generate PDF
         try:
-            from reportlab.lib.pagesizes import A4
-            from reportlab.pdfgen import canvas
-            from reportlab.lib.units import cm
             from io import BytesIO
+
+            from reportlab.lib.pagesizes import A4
+            from reportlab.lib.units import cm
+            from reportlab.pdfgen import canvas
 
             buffer = BytesIO()
             p = canvas.Canvas(buffer, pagesize=A4)
@@ -4769,8 +4768,9 @@ class OccupancyReportView(APIView):
     )
     def get(self, request):
         from datetime import timedelta
-        from django.db.models import Count, Sum, Q
-        from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
+
+        from django.db.models import Count, Q, Sum
+        from django.db.models.functions import TruncDate, TruncMonth, TruncWeek
 
         serializer = OccupancyReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -4941,8 +4941,9 @@ class RevenueReportView(APIView):
         tags=["Reports"],
     )
     def get(self, request):
-        from datetime import timedelta
         from collections import defaultdict
+        from datetime import timedelta
+
         from django.db.models import Sum
 
         serializer = RevenueReportRequestSerializer(data=request.query_params)
@@ -5151,7 +5152,8 @@ class KPIReportView(APIView):
     )
     def get(self, request):
         from datetime import timedelta
-        from django.db.models import Sum, Count
+
+        from django.db.models import Count, Sum
 
         serializer = KPIReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -5306,7 +5308,7 @@ class ExpenseReportView(APIView):
         tags=["Reports"],
     )
     def get(self, request):
-        from django.db.models import Sum, Count
+        from django.db.models import Count, Sum
 
         serializer = ExpenseReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -5384,7 +5386,7 @@ class ChannelPerformanceView(APIView):
         tags=["Reports"],
     )
     def get(self, request):
-        from django.db.models import Sum, Count, Avg, F
+        from django.db.models import Avg, Count, F, Sum
 
         serializer = ChannelPerformanceRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -5478,7 +5480,7 @@ class GuestDemographicsView(APIView):
         tags=["Reports"],
     )
     def get(self, request):
-        from django.db.models import Sum, Count, Avg
+        from django.db.models import Avg, Count, Sum
 
         serializer = GuestDemographicsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -5579,8 +5581,10 @@ class ComparativeReportView(APIView):
     )
     def get(self, request):
         from datetime import timedelta
+
+        from django.db.models import Count, Sum
+
         from dateutil.relativedelta import relativedelta
-        from django.db.models import Sum, Count
 
         serializer = ComparativeReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -5741,6 +5745,7 @@ class ExportReportView(APIView):
     def get(self, request):
         import csv
         import io
+
         from django.http import HttpResponse
 
         serializer = ExportReportRequestSerializer(data=request.query_params)

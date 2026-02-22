@@ -15,9 +15,10 @@ Phase C Task 6 — Integration tests for critical flows.
 from datetime import date, timedelta
 from decimal import Decimal
 
-import pytest
 from django.contrib.auth.models import User
 from django.utils import timezone
+
+import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -33,7 +34,6 @@ from hotel_api.models import (
     Room,
     RoomType,
 )
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

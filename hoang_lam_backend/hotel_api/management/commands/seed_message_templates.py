@@ -9,7 +9,6 @@ from django.core.management.base import BaseCommand
 
 from hotel_api.models import MessageTemplate
 
-
 DEFAULT_TEMPLATES = [
     {
         "name": "Xác nhận đặt phòng (SMS)",

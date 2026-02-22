@@ -2,13 +2,15 @@
 Tests for Room Management endpoints.
 """
 
-import pytest
 from decimal import Decimal
-from django.contrib.auth.models import User
-from rest_framework.test import APIClient
-from rest_framework import status
 
-from hotel_api.models import Room, RoomType, HotelUser
+from django.contrib.auth.models import User
+
+import pytest
+from rest_framework import status
+from rest_framework.test import APIClient
+
+from hotel_api.models import HotelUser, Room, RoomType
 
 
 @pytest.fixture

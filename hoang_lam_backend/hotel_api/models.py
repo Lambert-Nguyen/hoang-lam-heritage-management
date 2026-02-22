@@ -1325,7 +1325,7 @@ class NightAudit(models.Model):
 
     def calculate_statistics(self):
         """Calculate all statistics for this audit date"""
-        from django.db.models import Count, Sum, Q
+        from django.db.models import Count, Q, Sum
         from django.utils import timezone
 
         audit_date = self.audit_date

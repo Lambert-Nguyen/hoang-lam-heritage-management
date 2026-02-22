@@ -5,9 +5,10 @@ Tests for Night Audit endpoints.
 from datetime import date, timedelta
 from decimal import Decimal
 
-import pytest
 from django.contrib.auth.models import User
 from django.utils import timezone
+
+import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 

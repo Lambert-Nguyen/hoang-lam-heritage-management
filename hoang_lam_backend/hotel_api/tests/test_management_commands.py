@@ -13,7 +13,6 @@ from django.test import TestCase
 
 from hotel_api.models import Guest
 
-
 # ─────────────────────────────────────────────
 # apply_retention_policy command
 # ─────────────────────────────────────────────

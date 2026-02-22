@@ -1,53 +1,51 @@
 """URL configuration for hotel_api."""
 
 from django.urls import include, path
+
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import (
+from .views import (  # Phase 4: Reports; Phase 5: Notifications; Phase 5.3: Guest Messaging
     BookingViewSet,
+    ChannelPerformanceView,
+    ComparativeReportView,
     DashboardView,
     DateRateOverrideViewSet,
+    DeviceTokenView,
     ExchangeRateViewSet,
+    ExpenseReportView,
+    ExportReportView,
     FinancialCategoryViewSet,
     FinancialEntryViewSet,
     FolioItemViewSet,
     GroupBookingViewSet,
+    GuestDemographicsView,
+    GuestMessageViewSet,
     GuestViewSet,
     HousekeepingTaskViewSet,
     InspectionTemplateViewSet,
+    KPIReportView,
     LoginView,
     LogoutView,
     LostAndFoundViewSet,
     MaintenanceRequestViewSet,
+    MessageTemplateViewSet,
     MinibarItemViewSet,
     MinibarSaleViewSet,
     NightAuditViewSet,
+    NotificationPreferencesView,
+    NotificationViewSet,
+    OccupancyReportView,
     PasswordChangeView,
-    StaffListView,
     PaymentViewSet,
     RatePlanViewSet,
     ReceiptViewSet,
+    RevenueReportView,
     RoomInspectionViewSet,
     RoomTypeViewSet,
     RoomViewSet,
+    StaffListView,
     UserProfileView,
-    # Phase 4: Reports
-    OccupancyReportView,
-    RevenueReportView,
-    KPIReportView,
-    ExpenseReportView,
-    ChannelPerformanceView,
-    GuestDemographicsView,
-    ComparativeReportView,
-    ExportReportView,
-    # Phase 5: Notifications
-    NotificationViewSet,
-    DeviceTokenView,
-    NotificationPreferencesView,
-    # Phase 5.3: Guest Messaging
-    MessageTemplateViewSet,
-    GuestMessageViewSet,
 )
 
 # Register ViewSets

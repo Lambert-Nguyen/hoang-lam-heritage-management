@@ -235,7 +235,8 @@ class RatePricingService:
         from datetime import timedelta
         from decimal import Decimal
 
-        from .models import DateRateOverride, RatePlan as RatePlanModel
+        from .models import DateRateOverride
+        from .models import RatePlan as RatePlanModel
 
         nights = (check_out_date - check_in_date).days
         if nights <= 0:

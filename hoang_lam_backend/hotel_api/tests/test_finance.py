@@ -5,8 +5,9 @@ Tests for Financial Management endpoints.
 from datetime import date, timedelta
 from decimal import Decimal
 
-import pytest
 from django.contrib.auth.models import User
+
+import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 

@@ -9,16 +9,16 @@ Tests cover:
 - Balance and nights calculations
 """
 
-import pytest
 from datetime import date, timedelta
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from rest_framework.test import APIClient
+
+import pytest
 from rest_framework import status
+from rest_framework.test import APIClient
 
 from hotel_api.models import GroupBooking, HotelUser, Room, RoomType
-
 
 # ===== Fixtures =====
 

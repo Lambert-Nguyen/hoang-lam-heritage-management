@@ -12,8 +12,9 @@ Encryption is controlled by the FIELD_ENCRYPTION_KEY setting:
 import hashlib
 import logging
 
-from cryptography.fernet import Fernet, InvalidToken
 from django.conf import settings
+
+from cryptography.fernet import Fernet, InvalidToken
 
 logger = logging.getLogger("hotel_api")
 

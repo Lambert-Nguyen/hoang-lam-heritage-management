@@ -6,9 +6,10 @@ Phase 5.3: Guest Communication
 
 import logging
 
-import requests
 from django.conf import settings
 from django.utils import timezone
+
+import requests
 
 logger = logging.getLogger("hotel_api")
 

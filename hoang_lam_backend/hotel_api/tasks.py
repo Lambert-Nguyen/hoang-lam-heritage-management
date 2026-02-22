@@ -99,8 +99,9 @@ def cleanup_expired_tokens():
 
     Scheduled daily at 2:00 AM via Celery Beat.
     """
-    from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
     from django.utils import timezone
+
+    from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
     expired_count = OutstandingToken.objects.filter(expires_at__lt=timezone.now()).count()
 

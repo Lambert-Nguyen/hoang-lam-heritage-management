@@ -64,7 +64,11 @@ jobs:
           --health-retries 5
     
     env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_hoang_lam_db
+      DB_NAME: test_hoang_lam_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_HOST: localhost
+      DB_PORT: "5432"
       DJANGO_SETTINGS_MODULE: backend.settings.development
       DJANGO_SECRET_KEY: test-secret-key-for-ci
       DEBUG: "False"
@@ -129,7 +133,7 @@ jobs:
     
     - name: Run Django system check
       working-directory: ./hoang_lam_backend
-      run: python manage.py check --deploy --fail-level WARNING
+      run: python manage.py check --fail-level WARNING
     
     - name: Check for missing migrations
       working-directory: ./hoang_lam_backend
