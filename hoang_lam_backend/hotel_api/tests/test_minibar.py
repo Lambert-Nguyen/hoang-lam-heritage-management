@@ -1,10 +1,9 @@
 """Tests for minibar endpoints."""
 
-from datetime import date, timedelta
+from datetime import date
 from decimal import Decimal
 
 from django.contrib.auth.models import User
-from django.utils import timezone
 
 import pytest
 from rest_framework import status

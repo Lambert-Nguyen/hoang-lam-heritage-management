@@ -16,12 +16,13 @@ from .models import (
     Booking,
     DateRateOverride,
     DeviceToken,
+    ExchangeRate,
     FinancialCategory,
     FinancialEntry,
+    FolioItem,
     GroupBooking,
     Guest,
     GuestMessage,
-    HotelUser,
     HousekeepingTask,
     InspectionTemplate,
     LostAndFound,
@@ -31,6 +32,7 @@ from .models import (
     MinibarSale,
     NightAudit,
     Notification,
+    Payment,
     RatePlan,
     Room,
     RoomInspection,
@@ -493,14 +495,6 @@ class BookingSerializer(serializers.ModelSerializer):
     balance_due = serializers.ReadOnlyField()
     is_hourly = serializers.ReadOnlyField()
 
-    @extend_schema_field(serializers.IntegerField)
-    def nights(self, obj):
-        return obj.nights
-
-    @extend_schema_field(serializers.DecimalField)
-    def balance_due(self, obj):
-        return obj.balance_due
-
     class Meta:
         model = Booking
         fields = [
@@ -935,10 +929,6 @@ class FinancialSummarySerializer(serializers.Serializer):
     expense_by_category = serializers.ListField(child=serializers.DictField())
 
 
-# Import NightAudit model for serializer
-from .models import NightAudit
-
-
 class NightAuditSerializer(serializers.ModelSerializer):
     """Full serializer for night audit."""
 
@@ -1068,8 +1058,6 @@ class NightAuditCreateSerializer(serializers.Serializer):
 # ============================================================
 # Payment Serializers (Phase 2.1.3)
 # ============================================================
-
-from .models import ExchangeRate, FolioItem, Payment
 
 
 class PaymentSerializer(serializers.ModelSerializer):

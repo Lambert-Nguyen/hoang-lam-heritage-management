@@ -1,6 +1,5 @@
 """Tests for maintenance request endpoints."""
 
-from datetime import date
 from decimal import Decimal
 
 from django.contrib.auth.models import User

@@ -795,7 +795,7 @@ class TestRoomStatusConsistency:
         api_client.force_authenticate(user=staff_user)
 
         # Create first booking — check in
-        booking1 = Booking.objects.create(
+        Booking.objects.create(
             room=room,
             guest=guest,
             check_in_date=date.today(),

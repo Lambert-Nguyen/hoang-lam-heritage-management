@@ -1,11 +1,8 @@
 """Tests for field-level encryption utilities and Guest model encryption."""
 
-from unittest.mock import patch
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 
-import pytest
 from rest_framework import status
 from rest_framework.test import APIClient
 

@@ -123,7 +123,7 @@ class Command(BaseCommand):
 
         # Summary
         self.stdout.write("\n" + "=" * 60)
-        self.stdout.write(self.style.SUCCESS(f"✓ Admin user creation complete!"))
+        self.stdout.write(self.style.SUCCESS("✓ Admin user creation complete!"))
         self.stdout.write(f"  - Created: {users_created}")
         self.stdout.write(f"  - Skipped: {users_skipped}")
 

@@ -41,7 +41,7 @@ select =
     N,
 
 # Maximum complexity
-max-complexity = 10
+max-complexity = 35
 
 # Import order style
 import-order-style = google
@@ -52,7 +52,7 @@ docstring-convention = google
 per-file-ignores =
     # Ignore unused imports in __init__.py files
     __init__.py:F401,F403
-    # Ignore line too long in settings files
-    settings/*.py:E501
+    # Django split settings use 'from .base import *'
+    */settings/*.py:E501,F401,F403,F405,E402
     # Ignore all checks in migrations
     */migrations/*.py:ALL

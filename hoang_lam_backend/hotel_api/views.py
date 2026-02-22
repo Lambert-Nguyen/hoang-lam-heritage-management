@@ -2472,7 +2472,6 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
         from datetime import date
 
         from django.db.models import Sum
-        from django.db.models.functions import TruncDate
 
         # Get year and month parameters
         year = request.query_params.get("year")
@@ -2559,11 +2558,6 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
-
-
-# Import NightAudit model and serializers
-from .models import NightAudit
-from .serializers import NightAuditCreateSerializer, NightAuditListSerializer, NightAuditSerializer
 
 
 @extend_schema_view(
@@ -4761,9 +4755,6 @@ class OccupancyReportView(APIView):
     def get(self, request):
         from datetime import timedelta
 
-        from django.db.models import Count, Q, Sum
-        from django.db.models.functions import TruncDate, TruncMonth, TruncWeek
-
         serializer = OccupancyReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
@@ -5145,7 +5136,7 @@ class KPIReportView(APIView):
     def get(self, request):
         from datetime import timedelta
 
-        from django.db.models import Count, Sum
+        from django.db.models import Sum
 
         serializer = KPIReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -5378,7 +5369,7 @@ class ChannelPerformanceView(APIView):
         tags=["Reports"],
     )
     def get(self, request):
-        from django.db.models import Avg, Count, F, Sum
+        from django.db.models import Count, Sum
 
         serializer = ChannelPerformanceRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
@@ -5472,8 +5463,6 @@ class GuestDemographicsView(APIView):
         tags=["Reports"],
     )
     def get(self, request):
-        from django.db.models import Avg, Count, Sum
-
         serializer = GuestDemographicsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
 
@@ -5574,7 +5563,7 @@ class ComparativeReportView(APIView):
     def get(self, request):
         from datetime import timedelta
 
-        from django.db.models import Count, Sum
+        from django.db.models import Sum
 
         from dateutil.relativedelta import relativedelta
 

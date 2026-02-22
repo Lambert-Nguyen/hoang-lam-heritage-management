@@ -2,8 +2,7 @@
 Tests for Phase 4: Reports & Analytics endpoints.
 """
 
-from datetime import date, timedelta
-from decimal import Decimal
+from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.urls import reverse
@@ -75,7 +74,7 @@ def guests(db):
     for i, nat in enumerate(nationalities):
         guests.append(
             Guest.objects.create(
-                full_name=f"Guest {i+1}",
+                full_name=f"Guest {i + 1}",
                 phone=f"090000000{i}",
                 nationality=nat,
             )
