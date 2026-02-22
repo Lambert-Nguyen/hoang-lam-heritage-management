@@ -273,9 +273,7 @@ class GuestAPITestCase(TestCase):
     def test_update_nonexistent_guest(self):
         """Test updating a guest that does not exist."""
         self.client.force_authenticate(user=self.manager_user)
-        response = self.client.patch(
-            "/api/v1/guests/99999/", {"full_name": "Test"}, format="json"
-        )
+        response = self.client.patch("/api/v1/guests/99999/", {"full_name": "Test"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_nonexistent_guest(self):
@@ -297,17 +295,18 @@ class GuestAPITestCase(TestCase):
         }
         response = self.client.post("/api/v1/guests/", data, format="json")
         # Email uniqueness - should be 400 if enforced, 201 if not unique
-        self.assertIn(response.status_code, [
-            status.HTTP_400_BAD_REQUEST,
-            status.HTTP_201_CREATED,
-        ])
+        self.assertIn(
+            response.status_code,
+            [
+                status.HTTP_400_BAD_REQUEST,
+                status.HTTP_201_CREATED,
+            ],
+        )
 
     def test_guest_search_empty_query(self):
         """Test search action with empty query."""
         self.client.force_authenticate(user=self.staff_user)
-        response = self.client.post(
-            "/api/v1/guests/search/", {"query": ""}, format="json"
-        )
+        response = self.client.post("/api/v1/guests/search/", {"query": ""}, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_guest_search_missing_query(self):

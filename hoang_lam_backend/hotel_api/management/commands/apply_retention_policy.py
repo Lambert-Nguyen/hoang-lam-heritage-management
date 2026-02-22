@@ -51,12 +51,7 @@ class Command(BaseCommand):
                 retention = DATA_RETENTION_DAYS[model_name]
                 action = "Would delete" if dry_run else "Deleted"
                 self.stdout.write(
-                    f"  {action} {count} {model_name} record(s) "
-                    f"(retention: {retention} days)"
+                    f"  {action} {count} {model_name} record(s) " f"(retention: {retention} days)"
                 )
 
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"{prefix}Done. Total: {total} record(s) affected."
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f"{prefix}Done. Total: {total} record(s) affected."))

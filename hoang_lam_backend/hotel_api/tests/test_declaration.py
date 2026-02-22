@@ -184,12 +184,16 @@ class TestDeclarationExportAuth:
 
     def test_staff_can_export(self, api_client, staff_user, booking_vn_checked_in):
         _authenticate(api_client, staff_user)
-        response = api_client.get("/api/v1/guests/declaration-export/?export_format=csv&form_type=dd10")
+        response = api_client.get(
+            "/api/v1/guests/declaration-export/?export_format=csv&form_type=dd10"
+        )
         assert response.status_code == status.HTTP_200_OK
 
     def test_manager_can_export(self, api_client, manager_user, booking_vn_checked_in):
         _authenticate(api_client, manager_user)
-        response = api_client.get("/api/v1/guests/declaration-export/?export_format=csv&form_type=dd10")
+        response = api_client.get(
+            "/api/v1/guests/declaration-export/?export_format=csv&form_type=dd10"
+        )
         assert response.status_code == status.HTTP_200_OK
 
 
@@ -221,7 +225,9 @@ class TestDeclarationExportValidation:
 
     def test_default_dates_to_today(self, api_client, manager_user, booking_vn_checked_in):
         _authenticate(api_client, manager_user)
-        response = api_client.get("/api/v1/guests/declaration-export/?export_format=csv&form_type=dd10")
+        response = api_client.get(
+            "/api/v1/guests/declaration-export/?export_format=csv&form_type=dd10"
+        )
         assert response.status_code == status.HTTP_200_OK
         today_str = date.today().isoformat()
         assert today_str in response["Content-Disposition"]
@@ -270,9 +276,7 @@ class TestDD10Export:
         assert "Địa chỉ:" in content
         assert "Điện thoại:" in content
 
-    def test_dd10_csv_contains_form_title(
-        self, api_client, manager_user, booking_vn_checked_in
-    ):
+    def test_dd10_csv_contains_form_title(self, api_client, manager_user, booking_vn_checked_in):
         """ĐD10 CSV contains the official form title."""
         _authenticate(api_client, manager_user)
         response = api_client.get(
@@ -556,9 +560,7 @@ class TestDeclarationMarking:
         assert booking_vn_checked_in.declaration_submitted is True
         assert booking_vn_checked_in.declaration_submitted_at is not None
 
-    def test_already_declared_not_updated(
-        self, api_client, manager_user, booking_vn_checked_in
-    ):
+    def test_already_declared_not_updated(self, api_client, manager_user, booking_vn_checked_in):
         """Already-declared bookings don't get their timestamp updated."""
         _authenticate(api_client, manager_user)
 
@@ -587,9 +589,7 @@ class TestGuestForeignDetection:
         assert guest_foreign.is_foreign_guest is True
 
     def test_vietnam_alias_vn(self, db):
-        g = Guest.objects.create(
-            full_name="Test VN", phone="+849000001", nationality="VN"
-        )
+        g = Guest.objects.create(full_name="Test VN", phone="+849000001", nationality="VN")
         assert g.is_foreign_guest is False
 
     def test_vietnam_alias_english(self, db):
@@ -599,9 +599,7 @@ class TestGuestForeignDetection:
         assert g.is_foreign_guest is False
 
     def test_empty_nationality_treated_as_vietnamese(self, db):
-        g = Guest.objects.create(
-            full_name="Test Empty", phone="+849000003", nationality=""
-        )
+        g = Guest.objects.create(full_name="Test Empty", phone="+849000003", nationality="")
         assert g.is_foreign_guest is False
 
     def test_na17_fields_on_foreign_guest(self, guest_foreign):

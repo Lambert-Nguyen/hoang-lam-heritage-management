@@ -87,9 +87,9 @@ def bookings(db, rooms, guests, user):
     today = timezone.now().date()
     bookings = []
     sources = ["walk_in", "booking_com", "agoda", "phone", "walk_in"]
-    
+
     for i, (room, guest, source) in enumerate(zip(rooms[:5], guests, sources)):
-        check_in = today - timedelta(days=5-i)
+        check_in = today - timedelta(days=5 - i)
         check_out = check_in + timedelta(days=2)
         booking = Booking.objects.create(
             room=room,
@@ -141,7 +141,7 @@ def expense_categories(db):
 def financial_entries(db, income_category, expense_categories, bookings, user):
     today = timezone.now().date()
     entries = []
-    
+
     # Income entries linked to bookings
     for booking in bookings[:3]:
         entries.append(
@@ -155,7 +155,7 @@ def financial_entries(db, income_category, expense_categories, bookings, user):
                 created_by=user,
             )
         )
-    
+
     # Expense entries
     for i, cat in enumerate(expense_categories):
         entries.append(
@@ -168,7 +168,7 @@ def financial_entries(db, income_category, expense_categories, bookings, user):
                 created_by=user,
             )
         )
-    
+
     return entries
 
 
@@ -215,90 +215,105 @@ def minibar_sales(db, minibar_items, bookings, user):
 @pytest.mark.django_db
 class TestOccupancyReport:
     """Tests for occupancy report endpoint."""
-    
+
     def test_occupancy_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_occupancy")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
+
     def test_occupancy_report_missing_dates(self, authenticated_client):
         """Test that missing date parameters return error."""
         url = reverse("report_occupancy")
         response = authenticated_client.get(url)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-    
+
     def test_occupancy_report_invalid_dates(self, authenticated_client):
         """Test that end_date before start_date returns error."""
         url = reverse("report_occupancy")
-        response = authenticated_client.get(url, {
-            "start_date": "2024-01-10",
-            "end_date": "2024-01-05",
-        })
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": "2024-01-10",
+                "end_date": "2024-01-05",
+            },
+        )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-    
+
     def test_occupancy_report_daily(self, authenticated_client, rooms, bookings):
         """Test daily occupancy report."""
         today = timezone.now().date()
         url = reverse("report_occupancy")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=5)).isoformat(),
-            "end_date": today.isoformat(),
-            "group_by": "day",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=5)).isoformat(),
+                "end_date": today.isoformat(),
+                "group_by": "day",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "summary" in data
         assert "data" in data
         assert data["summary"]["total_rooms"] == 7
         assert len(data["data"]) == 6  # 6 days
-    
+
     def test_occupancy_report_weekly(self, authenticated_client, rooms, bookings):
         """Test weekly grouped occupancy report."""
         today = timezone.now().date()
         url = reverse("report_occupancy")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=14)).isoformat(),
-            "end_date": today.isoformat(),
-            "group_by": "week",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=14)).isoformat(),
+                "end_date": today.isoformat(),
+                "group_by": "week",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "summary" in data
         assert "data" in data
         # Weekly grouping should have fewer entries
         assert len(data["data"]) <= 3
-    
+
     def test_occupancy_report_monthly(self, authenticated_client, rooms, bookings):
         """Test monthly grouped occupancy report."""
         today = timezone.now().date()
         url = reverse("report_occupancy")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=60)).isoformat(),
-            "end_date": today.isoformat(),
-            "group_by": "month",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=60)).isoformat(),
+                "end_date": today.isoformat(),
+                "group_by": "month",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "summary" in data
         assert "data" in data
         assert len(data["data"]) <= 3  # Max 3 months
-    
+
     def test_occupancy_report_no_rooms(self, authenticated_client):
         """Test occupancy report with no rooms."""
         today = timezone.now().date()
         url = reverse("report_occupancy")
-        response = authenticated_client.get(url, {
-            "start_date": today.isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": today.isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["summary"]["total_rooms"] == 0
@@ -312,58 +327,69 @@ class TestOccupancyReport:
 @pytest.mark.django_db
 class TestRevenueReport:
     """Tests for revenue report endpoint."""
-    
+
     def test_revenue_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_revenue")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
+
     def test_revenue_report_daily(self, authenticated_client, financial_entries, minibar_sales):
         """Test daily revenue report."""
         today = timezone.now().date()
         url = reverse("report_revenue")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-            "group_by": "day",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+                "group_by": "day",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "summary" in data
         assert "data" in data
         assert data["summary"]["total_revenue"] >= 0
         assert data["summary"]["total_expenses"] >= 0
-    
-    def test_revenue_report_includes_minibar(self, authenticated_client, financial_entries, minibar_sales):
+
+    def test_revenue_report_includes_minibar(
+        self, authenticated_client, financial_entries, minibar_sales
+    ):
         """Test that revenue report includes minibar sales."""
         today = timezone.now().date()
         url = reverse("report_revenue")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         # Should have minibar revenue
         assert data["summary"]["minibar_revenue"] > 0
-    
+
     def test_revenue_report_profit_margin(self, authenticated_client, financial_entries):
         """Test that profit margin is calculated correctly."""
         today = timezone.now().date()
         url = reverse("report_revenue")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         # Verify profit margin calculation
         total = data["summary"]["total_revenue"]
         net = data["summary"]["net_profit"]
@@ -380,62 +406,73 @@ class TestRevenueReport:
 @pytest.mark.django_db
 class TestKPIReport:
     """Tests for KPI report endpoint."""
-    
+
     def test_kpi_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_kpi")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
+
     def test_kpi_report_basic(self, authenticated_client, rooms, bookings, financial_entries):
         """Test basic KPI report."""
         today = timezone.now().date()
         url = reverse("report_kpi")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "current" in data
         current = data["current"]
         assert "revpar" in current
         assert "adr" in current
         assert "occupancy_rate" in current
         assert "total_room_nights_available" in current
-    
-    def test_kpi_report_with_comparison(self, authenticated_client, rooms, bookings, financial_entries):
+
+    def test_kpi_report_with_comparison(
+        self, authenticated_client, rooms, bookings, financial_entries
+    ):
         """Test KPI report with previous period comparison."""
         today = timezone.now().date()
         url = reverse("report_kpi")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-            "compare_previous": "true",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+                "compare_previous": "true",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "current" in data
         assert "previous" in data
         assert "changes" in data
-    
+
     def test_kpi_revpar_calculation(self, authenticated_client, rooms, bookings, financial_entries):
         """Test RevPAR is calculated correctly."""
         today = timezone.now().date()
         url = reverse("report_kpi")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-            "compare_previous": "false",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+                "compare_previous": "false",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         current = data["current"]
         # RevPAR = Room Revenue / Available Room Nights
         # Verify the calculation makes sense
@@ -451,42 +488,50 @@ class TestKPIReport:
 @pytest.mark.django_db
 class TestExpenseReport:
     """Tests for expense breakdown report endpoint."""
-    
+
     def test_expense_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_expenses")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
-    def test_expense_report_by_category(self, authenticated_client, financial_entries, expense_categories):
+
+    def test_expense_report_by_category(
+        self, authenticated_client, financial_entries, expense_categories
+    ):
         """Test expense breakdown by category."""
         today = timezone.now().date()
         url = reverse("report_expenses")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "summary" in data
         assert "data" in data
         assert data["summary"]["total_expenses"] == 600000  # 100k + 200k + 300k
         assert len(data["data"]) == 3  # 3 expense categories
-    
+
     def test_expense_report_percentages(self, authenticated_client, financial_entries):
         """Test that category percentages sum to 100."""
         today = timezone.now().date()
         url = reverse("report_expenses")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=7)).isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=7)).isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         if data["data"]:
             total_percentage = sum(item["percentage"] for item in data["data"])
             assert abs(total_percentage - 100) < 0.1  # Allow for rounding
@@ -500,41 +545,47 @@ class TestExpenseReport:
 @pytest.mark.django_db
 class TestChannelPerformance:
     """Tests for channel performance report endpoint."""
-    
+
     def test_channel_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_channels")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
+
     def test_channel_performance_report(self, authenticated_client, bookings):
         """Test channel performance report."""
         today = timezone.now().date()
         url = reverse("report_channels")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=10)).isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=10)).isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "summary" in data
         assert "data" in data
         assert data["summary"]["total_bookings"] > 0
-    
+
     def test_channel_performance_by_source(self, authenticated_client, bookings):
         """Test channel data is grouped by source."""
         today = timezone.now().date()
         url = reverse("report_channels")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=10)).isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=10)).isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         # Should have multiple sources
         sources = [item["source"] for item in data["data"]]
         assert "walk_in" in sources or "booking_com" in sources
@@ -548,43 +599,49 @@ class TestChannelPerformance:
 @pytest.mark.django_db
 class TestGuestDemographics:
     """Tests for guest demographics report endpoint."""
-    
+
     def test_demographics_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_demographics")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
+
     def test_demographics_by_nationality(self, authenticated_client, bookings, guests):
         """Test demographics grouped by nationality."""
         today = timezone.now().date()
         url = reverse("report_demographics")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=10)).isoformat(),
-            "end_date": today.isoformat(),
-            "group_by": "nationality",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=10)).isoformat(),
+                "end_date": today.isoformat(),
+                "group_by": "nationality",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "summary" in data
         assert "data" in data
         assert data["summary"]["total_guests"] > 0
-    
+
     def test_demographics_nationalities(self, authenticated_client, bookings, guests):
         """Test that nationalities are properly grouped."""
         today = timezone.now().date()
         url = reverse("report_demographics")
-        response = authenticated_client.get(url, {
-            "start_date": (today - timedelta(days=10)).isoformat(),
-            "end_date": today.isoformat(),
-            "group_by": "nationality",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "start_date": (today - timedelta(days=10)).isoformat(),
+                "end_date": today.isoformat(),
+                "group_by": "nationality",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         nationalities = [item["nationality"] for item in data["data"]]
         # Should have multiple nationalities from our test data
         assert len(nationalities) > 1
@@ -598,42 +655,48 @@ class TestGuestDemographics:
 @pytest.mark.django_db
 class TestComparativeReport:
     """Tests for comparative report endpoint."""
-    
+
     def test_comparative_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_comparative")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
+
     def test_comparative_previous_period(self, authenticated_client, bookings, financial_entries):
         """Test comparative report with previous period."""
         today = timezone.now().date()
         url = reverse("report_comparative")
-        response = authenticated_client.get(url, {
-            "current_start": (today - timedelta(days=7)).isoformat(),
-            "current_end": today.isoformat(),
-            "comparison_type": "previous_period",
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "current_start": (today - timedelta(days=7)).isoformat(),
+                "current_end": today.isoformat(),
+                "comparison_type": "previous_period",
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         assert "current_period" in data
         assert "previous_period" in data
         assert "comparisons" in data
-    
+
     def test_comparative_metrics(self, authenticated_client, bookings, financial_entries):
         """Test that all metrics are included in comparison."""
         today = timezone.now().date()
         url = reverse("report_comparative")
-        response = authenticated_client.get(url, {
-            "current_start": (today - timedelta(days=7)).isoformat(),
-            "current_end": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "current_start": (today - timedelta(days=7)).isoformat(),
+                "current_end": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        
+
         metric_keys = [item["metric_key"] for item in data["comparisons"]]
         assert "revenue" in metric_keys
         assert "expenses" in metric_keys
@@ -649,21 +712,24 @@ class TestComparativeReport:
 @pytest.mark.django_db
 class TestExportReport:
     """Tests for export report endpoint."""
-    
+
     def test_export_report_unauthenticated(self, api_client):
         """Test that unauthenticated requests are rejected."""
         url = reverse("report_export")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    
+
     def test_export_invalid_report_type(self, authenticated_client):
         """Test that invalid report type returns error."""
         today = timezone.now().date()
         url = reverse("report_export")
-        response = authenticated_client.get(url, {
-            "report_type": "invalid",
-            "start_date": today.isoformat(),
-            "end_date": today.isoformat(),
-        })
-        
+        response = authenticated_client.get(
+            url,
+            {
+                "report_type": "invalid",
+                "start_date": today.isoformat(),
+                "end_date": today.isoformat(),
+            },
+        )
+
         assert response.status_code == status.HTTP_400_BAD_REQUEST

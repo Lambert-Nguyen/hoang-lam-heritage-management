@@ -18,6 +18,7 @@ from hotel_api.models import Guest
 # apply_retention_policy command
 # ─────────────────────────────────────────────
 
+
 class TestApplyRetentionPolicyCommand(TestCase):
     """Tests for the apply_retention_policy management command wrapper."""
 
@@ -59,6 +60,7 @@ class TestApplyRetentionPolicyCommand(TestCase):
 # ─────────────────────────────────────────────
 # encrypt_guest_data command
 # ─────────────────────────────────────────────
+
 
 class TestEncryptGuestDataCommand(TestCase):
     """Tests for the encrypt_guest_data management command."""

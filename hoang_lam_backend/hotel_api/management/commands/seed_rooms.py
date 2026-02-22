@@ -22,9 +22,7 @@ class Command(BaseCommand):
             vip = RoomType.objects.get(name="Phòng VIP")
         except RoomType.DoesNotExist:
             self.stdout.write(
-                self.style.ERROR(
-                    "Error: Room types not found. Please run 'seed_room_types' first."
-                )
+                self.style.ERROR("Error: Room types not found. Please run 'seed_room_types' first.")
             )
             return
 
@@ -99,9 +97,7 @@ class Command(BaseCommand):
         updated_count = 0
 
         for data in rooms_data:
-            room, created = Room.objects.update_or_create(
-                number=data["number"], defaults=data
-            )
+            room, created = Room.objects.update_or_create(number=data["number"], defaults=data)
 
             if created:
                 created_count += 1
@@ -119,11 +115,7 @@ class Command(BaseCommand):
                 )
 
         self.stdout.write("\n" + "=" * 60)
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Completed! Total rooms: {Room.objects.count()}"
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f"Completed! Total rooms: {Room.objects.count()}"))
         self.stdout.write(f"Created: {created_count}, Updated: {updated_count}")
         self.stdout.write("=" * 60)
 

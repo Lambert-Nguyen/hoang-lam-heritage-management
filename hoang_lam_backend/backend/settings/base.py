@@ -284,9 +284,7 @@ if MEDIA_STORAGE_BACKEND == "s3":
 # Get your DSN from https://sentry.io → Project Settings → Client Keys
 # Leave empty to disable Sentry (dev/test mode)
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
-SENTRY_ENVIRONMENT = os.getenv(
-    "SENTRY_ENVIRONMENT", os.getenv("DJANGO_ENVIRONMENT", "development")
-)
+SENTRY_ENVIRONMENT = os.getenv("SENTRY_ENVIRONMENT", os.getenv("DJANGO_ENVIRONMENT", "development"))
 SENTRY_TRACES_SAMPLE_RATE = float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0"))
 
 if SENTRY_DSN:

@@ -209,7 +209,9 @@ class TestRecordEarlyCheckIn:
         data = response.json()
         assert int(data["early_check_in_fee"]) == 75000
 
-    def test_record_early_checkin_creates_folio_item(self, authenticated_client, checked_in_booking):
+    def test_record_early_checkin_creates_folio_item(
+        self, authenticated_client, checked_in_booking
+    ):
         """Should create a FolioItem when create_folio_item=True."""
         response = authenticated_client.post(
             f"/api/v1/bookings/{checked_in_booking.id}/record-early-checkin/",
@@ -329,7 +331,9 @@ class TestRecordLateCheckOut:
         checked_in_booking.refresh_from_db()
         assert checked_in_booking.late_check_out_fee == Decimal("150000")
 
-    def test_record_late_checkout_creates_folio_item(self, authenticated_client, checked_in_booking):
+    def test_record_late_checkout_creates_folio_item(
+        self, authenticated_client, checked_in_booking
+    ):
         """Should create a FolioItem for late check-out."""
         response = authenticated_client.post(
             f"/api/v1/bookings/{checked_in_booking.id}/record-late-checkout/",

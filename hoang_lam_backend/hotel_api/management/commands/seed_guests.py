@@ -185,28 +185,18 @@ class Command(BaseCommand):
             if created:
                 created_count += 1
                 self.stdout.write(
-                    self.style.SUCCESS(
-                        f"✓ Created guest: {guest.full_name} ({guest.nationality})"
-                    )
+                    self.style.SUCCESS(f"✓ Created guest: {guest.full_name} ({guest.nationality})")
                 )
             else:
-                self.stdout.write(
-                    self.style.WARNING(f"- Guest already exists: {guest.full_name}")
-                )
+                self.stdout.write(self.style.WARNING(f"- Guest already exists: {guest.full_name}"))
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"\n{'=' * 50}\nSuccessfully created {created_count} guests!"
-            )
+            self.style.SUCCESS(f"\n{'=' * 50}\nSuccessfully created {created_count} guests!")
         )
-        self.stdout.write(
-            self.style.SUCCESS(f"Total guests in database: {Guest.objects.count()}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Total guests in database: {Guest.objects.count()}"))
 
         # Show VIP statistics
         vip_count = Guest.objects.filter(is_vip=True).count()
         self.stdout.write(self.style.SUCCESS(f"VIP guests: {vip_count}"))
         returning_count = Guest.objects.filter(total_stays__gt=0).count()
-        self.stdout.write(
-            self.style.SUCCESS(f"Returning guests: {returning_count}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Returning guests: {returning_count}"))

@@ -23,9 +23,7 @@ def create_user(db):
 
     def _create_user(username, role="staff"):
         user = User.objects.create_user(username=username, password="testpass123")
-        HotelUser.objects.create(
-            user=user, role=role, phone=f"+84{username[-6:]}"
-        )
+        HotelUser.objects.create(user=user, role=role, phone=f"+84{username[-6:]}")
         return user
 
     return _create_user
@@ -250,24 +248,18 @@ class TestMaintenanceRequestViewSet:
             "priority": "urgent",
             "notes": "Guest complaint",
         }
-        response = api_client.patch(
-            f"/api/v1/maintenance-requests/{maintenance_request.id}/", data
-        )
+        response = api_client.patch(f"/api/v1/maintenance-requests/{maintenance_request.id}/", data)
         assert response.status_code == status.HTTP_200_OK
         assert response.data["priority"] == "urgent"
 
     def test_delete_request(self, api_client, manager_user, maintenance_request):
         """Can delete a request."""
         api_client.force_authenticate(user=manager_user)
-        response = api_client.delete(
-            f"/api/v1/maintenance-requests/{maintenance_request.id}/"
-        )
+        response = api_client.delete(f"/api/v1/maintenance-requests/{maintenance_request.id}/")
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert not MaintenanceRequest.objects.filter(id=maintenance_request.id).exists()
 
-    def test_assign_request(
-        self, api_client, manager_user, maintenance_request, maintenance_staff
-    ):
+    def test_assign_request(self, api_client, manager_user, maintenance_request, maintenance_staff):
         """Can assign a request to staff."""
         api_client.force_authenticate(user=manager_user)
         data = {
@@ -282,9 +274,7 @@ class TestMaintenanceRequestViewSet:
         assert response.data["status"] == "assigned"
         assert Decimal(response.data["estimated_cost"]) == Decimal("100.00")
 
-    def test_assign_request_without_user_id(
-        self, api_client, manager_user, maintenance_request
-    ):
+    def test_assign_request_without_user_id(self, api_client, manager_user, maintenance_request):
         """Assign without user ID returns error."""
         api_client.force_authenticate(user=manager_user)
         response = api_client.post(
@@ -292,9 +282,7 @@ class TestMaintenanceRequestViewSet:
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    def test_assign_request_user_not_found(
-        self, api_client, manager_user, maintenance_request
-    ):
+    def test_assign_request_user_not_found(self, api_client, manager_user, maintenance_request):
         """Assign to non-existent user returns error."""
         api_client.force_authenticate(user=manager_user)
         data = {"assigned_to": 99999}
@@ -303,9 +291,7 @@ class TestMaintenanceRequestViewSet:
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_complete_request(
-        self, api_client, maintenance_staff, assigned_request
-    ):
+    def test_complete_request(self, api_client, maintenance_staff, assigned_request):
         """Can complete a request."""
         api_client.force_authenticate(user=maintenance_staff)
         data = {
@@ -320,9 +306,7 @@ class TestMaintenanceRequestViewSet:
         assert response.data["completed_by"] == maintenance_staff.id
         assert Decimal(response.data["actual_cost"]) == Decimal("45.00")
 
-    def test_complete_pending_request_fails(
-        self, api_client, staff_user, maintenance_request
-    ):
+    def test_complete_pending_request_fails(self, api_client, staff_user, maintenance_request):
         """Cannot complete a pending request."""
         api_client.force_authenticate(user=staff_user)
         response = api_client.post(
@@ -340,16 +324,12 @@ class TestMaintenanceRequestViewSet:
         assert response.status_code == status.HTTP_200_OK
         assert response.data["status"] == "on_hold"
 
-    def test_hold_completed_request_fails(
-        self, api_client, manager_user, assigned_request
-    ):
+    def test_hold_completed_request_fails(self, api_client, manager_user, assigned_request):
         """Cannot hold a completed request."""
         api_client.force_authenticate(user=manager_user)
         assigned_request.status = "completed"
         assigned_request.save()
-        response = api_client.post(
-            f"/api/v1/maintenance-requests/{assigned_request.id}/hold/", {}
-        )
+        response = api_client.post(f"/api/v1/maintenance-requests/{assigned_request.id}/hold/", {})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_resume_request(self, api_client, manager_user, assigned_request):
@@ -363,9 +343,7 @@ class TestMaintenanceRequestViewSet:
         assert response.status_code == status.HTTP_200_OK
         assert response.data["status"] in ["assigned", "in_progress"]
 
-    def test_resume_non_held_request_fails(
-        self, api_client, manager_user, maintenance_request
-    ):
+    def test_resume_non_held_request_fails(self, api_client, manager_user, maintenance_request):
         """Cannot resume a request that is not on hold."""
         api_client.force_authenticate(user=manager_user)
         response = api_client.post(
@@ -383,9 +361,7 @@ class TestMaintenanceRequestViewSet:
         assert response.status_code == status.HTTP_200_OK
         assert response.data["status"] == "cancelled"
 
-    def test_cancel_completed_request_fails(
-        self, api_client, manager_user, assigned_request
-    ):
+    def test_cancel_completed_request_fails(self, api_client, manager_user, assigned_request):
         """Cannot cancel a completed request."""
         api_client.force_authenticate(user=manager_user)
         assigned_request.status = "completed"
@@ -395,9 +371,7 @@ class TestMaintenanceRequestViewSet:
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    def test_urgent_requests(
-        self, api_client, staff_user, maintenance_request, urgent_request
-    ):
+    def test_urgent_requests(self, api_client, staff_user, maintenance_request, urgent_request):
         """Can get urgent and high priority requests."""
         api_client.force_authenticate(user=staff_user)
         response = api_client.get("/api/v1/maintenance-requests/urgent/")

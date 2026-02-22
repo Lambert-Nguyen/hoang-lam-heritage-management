@@ -48,9 +48,7 @@ class SMSService:
         sms_enabled = getattr(settings, "SMS_ENABLED", False)
 
         if not sms_enabled:
-            logger.info(
-                f"SMS disabled. Would send to {phone_number}: {message[:50]}..."
-            )
+            logger.info(f"SMS disabled. Would send to {phone_number}: {message[:50]}...")
             return {
                 "success": True,
                 "message_id": f"mock-sms-{timezone.now().timestamp():.0f}",
@@ -78,8 +76,10 @@ class SMSService:
             return {
                 "success": success,
                 "message_id": data.get("SMSID", ""),
-                "error": "" if success else data.get(
-                    "ErrorMessage", f"eSMS error code: {data.get('CodeResult')}"
+                "error": (
+                    ""
+                    if success
+                    else data.get("ErrorMessage", f"eSMS error code: {data.get('CodeResult')}")
                 ),
             }
         except requests.Timeout:
@@ -139,9 +139,7 @@ class EmailService:
                 subject=subject,
                 message=body,
                 html_message=html_body or None,
-                from_email=getattr(
-                    settings, "DEFAULT_FROM_EMAIL", "noreply@hoanglam.vn"
-                ),
+                from_email=getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@hoanglam.vn"),
                 recipient_list=[to_email],
                 fail_silently=False,
             )
@@ -191,9 +189,7 @@ class ZaloService:
         zalo_enabled = getattr(settings, "ZALO_ENABLED", False)
 
         if not zalo_enabled:
-            logger.info(
-                f"Zalo disabled. Would send to {phone_number}: {message[:50]}..."
-            )
+            logger.info(f"Zalo disabled. Would send to {phone_number}: {message[:50]}...")
             return {
                 "success": True,
                 "message_id": f"mock-zalo-{timezone.now().timestamp():.0f}",
@@ -274,25 +270,31 @@ class GuestMessagingService:
                 {
                     "room_number": str(booking.room.number) if booking.room else "",
                     "room_type": (
-                        booking.room.room_type.name if booking.room and booking.room.room_type else ""
+                        booking.room.room_type.name
+                        if booking.room and booking.room.room_type
+                        else ""
                     ),
                     "check_in_date": (
-                        booking.check_in_date.strftime("%d/%m/%Y")
-                        if booking.check_in_date
-                        else ""
+                        booking.check_in_date.strftime("%d/%m/%Y") if booking.check_in_date else ""
                     ),
                     "check_out_date": (
                         booking.check_out_date.strftime("%d/%m/%Y")
                         if booking.check_out_date
                         else ""
                     ),
-                    "total_amount": f"{booking.total_amount:,.0f}đ" if booking.total_amount else "0đ",
+                    "total_amount": (
+                        f"{booking.total_amount:,.0f}đ" if booking.total_amount else "0đ"
+                    ),
                     "nights": str(
                         (booking.check_out_date - booking.check_in_date).days
                         if booking.check_in_date and booking.check_out_date
                         else 0
                     ),
-                    "booking_source": booking.get_source_display() if hasattr(booking, "get_source_display") else "",
+                    "booking_source": (
+                        booking.get_source_display()
+                        if hasattr(booking, "get_source_display")
+                        else ""
+                    ),
                 }
             )
 
@@ -326,9 +328,7 @@ class GuestMessagingService:
 
         if not recipient:
             guest_message.status = "failed"
-            guest_message.send_error = (
-                "Không có thông tin liên hệ phù hợp cho kênh này"
-            )
+            guest_message.send_error = "Không có thông tin liên hệ phù hợp cho kênh này"
             guest_message.save(update_fields=["status", "send_error", "recipient_address"])
             return False
 

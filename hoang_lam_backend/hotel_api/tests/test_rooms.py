@@ -23,9 +23,7 @@ def create_user(db):
 
     def _create_user(username, role="staff"):
         user = User.objects.create_user(username=username, password="testpass123")
-        HotelUser.objects.create(
-            user=user, role=role, phone=f"+84{username[-6:]}"
-        )
+        HotelUser.objects.create(user=user, role=role, phone=f"+84{username[-6:]}")
         return user
 
     return _create_user
@@ -229,7 +227,9 @@ class TestRoomViewSet:
         assert len(response.data["results"]) == 1
         assert response.data["results"][0]["number"] == "101"
 
-    def test_list_rooms_filter_by_room_type(self, authenticated_client, room_101, room_102, room_type_single):
+    def test_list_rooms_filter_by_room_type(
+        self, authenticated_client, room_101, room_102, room_type_single
+    ):
         """Test filtering rooms by room type."""
         response = authenticated_client.get(f"/api/v1/rooms/?room_type={room_type_single.id}")
         assert response.status_code == status.HTTP_200_OK
@@ -335,7 +335,9 @@ class TestRoomViewSet:
             "check_in": "2026-02-01",
             "check_out": "2026-02-03",
         }
-        response = authenticated_client.post("/api/v1/rooms/check-availability/", data, format="json")
+        response = authenticated_client.post(
+            "/api/v1/rooms/check-availability/", data, format="json"
+        )
         assert response.status_code == status.HTTP_200_OK
         assert "available_rooms" in response.data
         assert len(response.data["available_rooms"]) >= 1  # At least room_101 is available
@@ -349,7 +351,9 @@ class TestRoomViewSet:
             "check_out": "2026-02-03",
             "room_type": room_type_single.id,
         }
-        response = authenticated_client.post("/api/v1/rooms/check-availability/", data, format="json")
+        response = authenticated_client.post(
+            "/api/v1/rooms/check-availability/", data, format="json"
+        )
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data["available_rooms"]) >= 1
         assert response.data["room_type"] == room_type_single.id
@@ -360,7 +364,9 @@ class TestRoomViewSet:
             "check_in": "2026-02-03",
             "check_out": "2026-02-01",  # Before check_in
         }
-        response = authenticated_client.post("/api/v1/rooms/check-availability/", data, format="json")
+        response = authenticated_client.post(
+            "/api/v1/rooms/check-availability/", data, format="json"
+        )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -468,9 +474,7 @@ class TestRoomErrorCases:
 
     def test_check_availability_missing_dates(self, authenticated_client):
         """Test checking availability without required dates."""
-        response = authenticated_client.post(
-            "/api/v1/rooms/check-availability/", {}, format="json"
-        )
+        response = authenticated_client.post("/api/v1/rooms/check-availability/", {}, format="json")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_check_availability_invalid_date_format(self, authenticated_client):

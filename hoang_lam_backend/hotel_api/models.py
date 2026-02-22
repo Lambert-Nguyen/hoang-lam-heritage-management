@@ -29,12 +29,17 @@ def validate_image_file(value):
     allowed_types = [".jpg", ".jpeg", ".png", ".gif", ".webp"]
 
     if value.size > max_size:
-        raise ValidationError(f"File quá lớn. Kích thước tối đa: 5MB (hiện tại: {value.size / 1024 / 1024:.1f}MB).")
+        raise ValidationError(
+            f"File quá lớn. Kích thước tối đa: 5MB (hiện tại: {value.size / 1024 / 1024:.1f}MB)."
+        )
 
     import os
+
     ext = os.path.splitext(value.name)[1].lower()
     if ext not in allowed_types:
-        raise ValidationError(f"Loại file không hợp lệ ({ext}). Chỉ chấp nhận: {', '.join(allowed_types)}.")
+        raise ValidationError(
+            f"Loại file không hợp lệ ({ext}). Chỉ chấp nhận: {', '.join(allowed_types)}."
+        )
 
 
 class RoomType(models.Model):
@@ -135,7 +140,9 @@ class Guest(models.Model):
 
     # Personal information
     full_name = models.CharField(max_length=100, verbose_name="Họ và tên")
-    phone = models.CharField(max_length=20, unique=True, db_index=True, verbose_name="Số điện thoại")
+    phone = models.CharField(
+        max_length=20, unique=True, db_index=True, verbose_name="Số điện thoại"
+    )
     email = models.EmailField(blank=True, verbose_name="Email")
 
     # ID information
@@ -146,13 +153,20 @@ class Guest(models.Model):
         max_length=200, blank=True, null=True, verbose_name="Số CCCD/Passport"
     )
     id_number_hash = models.CharField(
-        max_length=64, blank=True, null=True, unique=True, db_index=True,
+        max_length=64,
+        blank=True,
+        null=True,
+        unique=True,
+        db_index=True,
         verbose_name="Hash CCCD/Passport",
     )
     id_issue_date = models.DateField(null=True, blank=True, verbose_name="Ngày cấp")
     id_issue_place = models.CharField(max_length=100, blank=True, verbose_name="Nơi cấp")
     id_image = models.ImageField(
-        upload_to="guest_ids/", null=True, blank=True, verbose_name="Ảnh CCCD/Passport",
+        upload_to="guest_ids/",
+        null=True,
+        blank=True,
+        verbose_name="Ảnh CCCD/Passport",
         validators=[validate_image_file],
     )
 
@@ -200,30 +214,46 @@ class Guest(models.Model):
         help_text="Thị thực, thẻ tạm trú, giấy miễn thị thực, thẻ ABTC",
     )
     visa_number = models.CharField(
-        max_length=200, blank=True, verbose_name="Số thị thực/thẻ tạm trú",
+        max_length=200,
+        blank=True,
+        verbose_name="Số thị thực/thẻ tạm trú",
     )
     visa_number_hash = models.CharField(
-        max_length=64, blank=True, db_index=True,
+        max_length=64,
+        blank=True,
+        db_index=True,
         verbose_name="Hash thị thực",
     )
     visa_issue_date = models.DateField(
-        null=True, blank=True, verbose_name="Ngày cấp thị thực",
+        null=True,
+        blank=True,
+        verbose_name="Ngày cấp thị thực",
     )
     visa_expiry_date = models.DateField(
-        null=True, blank=True, verbose_name="Thời hạn thị thực",
+        null=True,
+        blank=True,
+        verbose_name="Thời hạn thị thực",
     )
     visa_issuing_authority = models.CharField(
-        max_length=200, blank=True, verbose_name="Cơ quan cấp thị thực",
+        max_length=200,
+        blank=True,
+        verbose_name="Cơ quan cấp thị thực",
     )
     entry_date = models.DateField(
-        null=True, blank=True, verbose_name="Ngày nhập cảnh",
+        null=True,
+        blank=True,
+        verbose_name="Ngày nhập cảnh",
     )
     entry_port = models.CharField(
-        max_length=100, blank=True, verbose_name="Cửa khẩu nhập cảnh",
+        max_length=100,
+        blank=True,
+        verbose_name="Cửa khẩu nhập cảnh",
         help_text="Ví dụ: Sân bay Tân Sơn Nhất, Sân bay Nội Bài...",
     )
     entry_purpose = models.CharField(
-        max_length=200, blank=True, verbose_name="Mục đích nhập cảnh",
+        max_length=200,
+        blank=True,
+        verbose_name="Mục đích nhập cảnh",
         help_text="Ví dụ: Du lịch, Công tác, Thăm thân...",
     )
 
@@ -487,9 +517,7 @@ class Booking(models.Model):
         validators=[MinValueValidator(Decimal("0"))],
         verbose_name="Giảm giá",
     )
-    discount_reason = models.CharField(
-        max_length=100, blank=True, verbose_name="Lý do giảm giá"
-    )
+    discount_reason = models.CharField(max_length=100, blank=True, verbose_name="Lý do giảm giá")
 
     # OTA tracking (Design Plan Section 5)
     ota_commission = models.DecimalField(
@@ -501,9 +529,7 @@ class Booking(models.Model):
     )
 
     # Temporary residence declaration (Vietnamese legal requirement)
-    declaration_submitted = models.BooleanField(
-        default=False, verbose_name="Đã khai báo tạm trú"
-    )
+    declaration_submitted = models.BooleanField(default=False, verbose_name="Đã khai báo tạm trú")
     declaration_submitted_at = models.DateTimeField(
         null=True, blank=True, verbose_name="Thời gian khai báo"
     )
@@ -512,7 +538,8 @@ class Booking(models.Model):
     notes = models.TextField(blank=True, verbose_name="Ghi chú")
     special_requests = models.TextField(blank=True, verbose_name="Yêu cầu đặc biệt")
     internal_notes = models.TextField(
-        blank=True, verbose_name="Ghi chú nội bộ",
+        blank=True,
+        verbose_name="Ghi chú nội bộ",
         help_text="Ghi chú chỉ nhân viên thấy",
     )
 
@@ -632,7 +659,10 @@ class FinancialEntry(models.Model):
     )
     receipt_number = models.CharField(max_length=50, blank=True, verbose_name="Số hóa đơn")
     attachment = models.ImageField(
-        upload_to="receipts/", null=True, blank=True, verbose_name="Ảnh hóa đơn",
+        upload_to="receipts/",
+        null=True,
+        blank=True,
+        verbose_name="Ảnh hóa đơn",
         validators=[validate_image_file],
     )
 
@@ -691,7 +721,10 @@ class Payment(models.Model):
 
     # Payment details
     payment_type = models.CharField(
-        max_length=20, choices=PaymentType.choices, default=PaymentType.ROOM_CHARGE, verbose_name="Loại"
+        max_length=20,
+        choices=PaymentType.choices,
+        default=PaymentType.ROOM_CHARGE,
+        verbose_name="Loại",
     )
     amount = models.DecimalField(
         max_digits=12,
@@ -757,9 +790,7 @@ class Payment(models.Model):
             from django.utils import timezone
 
             date_str = timezone.now().strftime("%Y%m%d")
-            count = Payment.objects.filter(
-                created_at__date=timezone.now().date()
-            ).count() + 1
+            count = Payment.objects.filter(created_at__date=timezone.now().date()).count() + 1
             self.receipt_number = f"PMT-{date_str}-{count:04d}"
         super().save(*args, **kwargs)
 
@@ -843,11 +874,12 @@ class FolioItem(models.Model):
         if not self.is_voided:
             from django.db.models import Sum
 
-            total = self.booking.folio_items.filter(
-                is_voided=False, is_paid=False
-            ).exclude(item_type=self.ItemType.ROOM).aggregate(
-                total=Sum("total_price")
-            )["total"] or 0
+            total = (
+                self.booking.folio_items.filter(is_voided=False, is_paid=False)
+                .exclude(item_type=self.ItemType.ROOM)
+                .aggregate(total=Sum("total_price"))["total"]
+                or 0
+            )
             Booking.objects.filter(pk=self.booking_id).update(additional_charges=total)
 
 
@@ -1323,10 +1355,16 @@ class NightAudit(models.Model):
             | Q(check_out_date=audit_date)
             | Q(created_at__date=audit_date)
         ).aggregate(
-            check_ins=Count("id", filter=Q(check_in_date=audit_date, status=Booking.Status.CHECKED_IN)),
-            check_outs=Count("id", filter=Q(check_out_date=audit_date, status=Booking.Status.CHECKED_OUT)),
+            check_ins=Count(
+                "id", filter=Q(check_in_date=audit_date, status=Booking.Status.CHECKED_IN)
+            ),
+            check_outs=Count(
+                "id", filter=Q(check_out_date=audit_date, status=Booking.Status.CHECKED_OUT)
+            ),
             no_shows=Count("id", filter=Q(check_in_date=audit_date, status=Booking.Status.NO_SHOW)),
-            cancellations=Count("id", filter=Q(status=Booking.Status.CANCELLED, updated_at__date=audit_date)),
+            cancellations=Count(
+                "id", filter=Q(status=Booking.Status.CANCELLED, updated_at__date=audit_date)
+            ),
             new_bookings=Count("id", filter=Q(created_at__date=audit_date)),
         )
         self.check_ins_today = booking_stats["check_ins"] or 0
@@ -1366,7 +1404,12 @@ class NightAudit(models.Model):
         self.cash_collected = financial_stats["cash"] or 0
         self.bank_transfer_collected = financial_stats["bank_transfer"] or 0
         self.momo_collected = financial_stats["momo"] or 0
-        self.other_payments = self.total_income - self.cash_collected - self.bank_transfer_collected - self.momo_collected
+        self.other_payments = (
+            self.total_income
+            - self.cash_collected
+            - self.bank_transfer_collected
+            - self.momo_collected
+        )
 
         # Room revenue from bookings checked out today
         room_revenue = Booking.objects.filter(
@@ -1670,7 +1713,8 @@ class RoomInspection(models.Model):
         self.passed_items = sum(1 for item in self.checklist_items if item.get("passed", False))
         self.issues_found = self.total_items - self.passed_items
         self.critical_issues = sum(
-            1 for item in self.checklist_items
+            1
+            for item in self.checklist_items
             if not item.get("passed", False) and item.get("critical", False)
         )
 
@@ -1775,7 +1819,9 @@ class GroupBooking(models.Model):
     # Room allocation
     room_count = models.PositiveIntegerField(verbose_name="Số phòng")
     guest_count = models.PositiveIntegerField(verbose_name="Số khách")
-    rooms = models.ManyToManyField(Room, related_name="group_bookings", blank=True, verbose_name="Phòng")
+    rooms = models.ManyToManyField(
+        Room, related_name="group_bookings", blank=True, verbose_name="Phòng"
+    )
 
     # Pricing
     total_amount = models.DecimalField(
@@ -1887,9 +1933,7 @@ class RatePlan(models.Model):
 
     # Rate rules
     min_stay = models.PositiveIntegerField(default=1, verbose_name="Số đêm tối thiểu")
-    max_stay = models.PositiveIntegerField(
-        null=True, blank=True, verbose_name="Số đêm tối đa"
-    )
+    max_stay = models.PositiveIntegerField(null=True, blank=True, verbose_name="Số đêm tối đa")
     advance_booking_days = models.PositiveIntegerField(
         null=True,
         blank=True,
@@ -1904,12 +1948,8 @@ class RatePlan(models.Model):
     )
 
     # Date restrictions
-    valid_from = models.DateField(
-        null=True, blank=True, verbose_name="Có hiệu lực từ"
-    )
-    valid_to = models.DateField(
-        null=True, blank=True, verbose_name="Có hiệu lực đến"
-    )
+    valid_from = models.DateField(null=True, blank=True, verbose_name="Có hiệu lực từ")
+    valid_to = models.DateField(null=True, blank=True, verbose_name="Có hiệu lực đến")
     blackout_dates = models.JSONField(
         default=list,
         blank=True,
@@ -1927,9 +1967,7 @@ class RatePlan(models.Model):
 
     # Description
     description = models.TextField(blank=True, verbose_name="Mô tả")
-    includes_breakfast = models.BooleanField(
-        default=False, verbose_name="Bao gồm bữa sáng"
-    )
+    includes_breakfast = models.BooleanField(default=False, verbose_name="Bao gồm bữa sáng")
 
     # Audit
     created_at = models.DateTimeField(auto_now_add=True)
@@ -2304,27 +2342,13 @@ class SensitiveDataAccessLog(models.Model):
         related_name="sensitive_data_access_logs",
         verbose_name="Người truy cập",
     )
-    action = models.CharField(
-        max_length=30, choices=Action.choices, verbose_name="Hành động"
-    )
-    resource_type = models.CharField(
-        max_length=30, default="guest", verbose_name="Loại dữ liệu"
-    )
-    resource_id = models.IntegerField(
-        null=True, blank=True, verbose_name="ID đối tượng"
-    )
-    fields_accessed = models.JSONField(
-        default=list, verbose_name="Trường dữ liệu đã truy cập"
-    )
-    ip_address = models.GenericIPAddressField(
-        null=True, blank=True, verbose_name="Địa chỉ IP"
-    )
-    user_agent = models.CharField(
-        max_length=500, blank=True, verbose_name="User Agent"
-    )
-    details = models.JSONField(
-        default=dict, blank=True, verbose_name="Chi tiết bổ sung"
-    )
+    action = models.CharField(max_length=30, choices=Action.choices, verbose_name="Hành động")
+    resource_type = models.CharField(max_length=30, default="guest", verbose_name="Loại dữ liệu")
+    resource_id = models.IntegerField(null=True, blank=True, verbose_name="ID đối tượng")
+    fields_accessed = models.JSONField(default=list, verbose_name="Trường dữ liệu đã truy cập")
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="Địa chỉ IP")
+    user_agent = models.CharField(max_length=500, blank=True, verbose_name="User Agent")
+    details = models.JSONField(default=dict, blank=True, verbose_name="Chi tiết bổ sung")
     timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Thời gian")
 
     class Meta:

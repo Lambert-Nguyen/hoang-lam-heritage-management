@@ -41,11 +41,7 @@ class Command(BaseCommand):
         for nationality in NATIONALITIES:
             self.stdout.write(f"  - {nationality}")
 
+        self.stdout.write(self.style.SUCCESS(f"\nTotal: {len(NATIONALITIES)} nationalities"))
         self.stdout.write(
-            self.style.SUCCESS(f"\nTotal: {len(NATIONALITIES)} nationalities")
-        )
-        self.stdout.write(
-            self.style.WARNING(
-                "\nNote: These nationalities are used for reference and validation."
-            )
+            self.style.WARNING("\nNote: These nationalities are used for reference and validation.")
         )

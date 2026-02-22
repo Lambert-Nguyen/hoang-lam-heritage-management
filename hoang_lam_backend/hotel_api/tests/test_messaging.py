@@ -36,9 +36,7 @@ def api_client():
 @pytest.fixture
 def owner_user(db):
     user = User.objects.create_user(username="owner", password="testpass123")
-    HotelUser.objects.create(
-        user=user, role=HotelUser.Role.OWNER, receive_notifications=True
-    )
+    HotelUser.objects.create(user=user, role=HotelUser.Role.OWNER, receive_notifications=True)
     return user
 
 
@@ -247,16 +245,12 @@ class TestGuestMessagingService:
         assert address == "0901234567"
 
     def test_render_template_with_booking(self, sms_template, guest, booking):
-        subject, body = GuestMessagingService.render_template(
-            sms_template, guest, booking
-        )
+        subject, body = GuestMessagingService.render_template(sms_template, guest, booking)
         assert "Nguyễn Văn A" in body
         assert "101" in body
 
     def test_render_template_without_booking(self, sms_template, guest):
-        subject, body = GuestMessagingService.render_template(
-            sms_template, guest, None
-        )
+        subject, body = GuestMessagingService.render_template(sms_template, guest, None)
         assert "Nguyễn Văn A" in body
 
     def test_send_message_sms(self, db, guest, owner_user, settings):
@@ -337,9 +331,7 @@ class TestMessageTemplateAPI:
         assert response.json()["name"] == "New Template"
 
     def test_retrieve_template(self, authenticated_client, sms_template):
-        response = authenticated_client.get(
-            f"/api/v1/message-templates/{sms_template.pk}/"
-        )
+        response = authenticated_client.get(f"/api/v1/message-templates/{sms_template.pk}/")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["name"] == sms_template.name
@@ -355,9 +347,7 @@ class TestMessageTemplateAPI:
         assert response.json()["name"] == "Updated Name"
 
     def test_delete_template(self, authenticated_client, sms_template):
-        response = authenticated_client.delete(
-            f"/api/v1/message-templates/{sms_template.pk}/"
-        )
+        response = authenticated_client.delete(f"/api/v1/message-templates/{sms_template.pk}/")
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert not MessageTemplate.objects.filter(pk=sms_template.pk).exists()
 
@@ -373,9 +363,7 @@ class TestMessageTemplateAPI:
             assert t["template_type"] == "booking_confirmation"
 
     def test_filter_by_channel(self, authenticated_client, sms_template, email_template):
-        response = authenticated_client.get(
-            "/api/v1/message-templates/?channel=email"
-        )
+        response = authenticated_client.get("/api/v1/message-templates/?channel=email")
         assert response.status_code == status.HTTP_200_OK
 
     def test_preview_template(self, authenticated_client, sms_template, guest, booking):
@@ -446,9 +434,7 @@ class TestGuestMessageAPI:
         assert data["guest_name"] == "Nguyễn Văn A"
         assert data["recipient_address"] == "0901234567"
 
-    def test_send_message_with_booking(
-        self, authenticated_client, guest, booking, settings
-    ):
+    def test_send_message_with_booking(self, authenticated_client, guest, booking, settings):
         settings.SMS_ENABLED = False
         response = authenticated_client.post(
             "/api/v1/guest-messages/send/",
@@ -464,9 +450,7 @@ class TestGuestMessageAPI:
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["booking"] == booking.pk
 
-    def test_send_message_with_template(
-        self, authenticated_client, guest, sms_template, settings
-    ):
+    def test_send_message_with_template(self, authenticated_client, guest, sms_template, settings):
         settings.SMS_ENABLED = False
         response = authenticated_client.post(
             "/api/v1/guest-messages/send/",
@@ -518,9 +502,7 @@ class TestGuestMessageAPI:
             body="Test",
             sent_by=owner_user,
         )
-        response = authenticated_client.get(
-            f"/api/v1/guest-messages/?guest={guest.pk}"
-        )
+        response = authenticated_client.get(f"/api/v1/guest-messages/?guest={guest.pk}")
         assert response.status_code == status.HTTP_200_OK
 
     def test_filter_messages_by_status(self, authenticated_client, guest, owner_user):
@@ -546,9 +528,7 @@ class TestGuestMessageAPI:
             recipient_address="0901234567",
             sent_by=owner_user,
         )
-        response = authenticated_client.post(
-            f"/api/v1/guest-messages/{message.pk}/resend/"
-        )
+        response = authenticated_client.post(f"/api/v1/guest-messages/{message.pk}/resend/")
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["status"] == "sent"
 
@@ -561,9 +541,7 @@ class TestGuestMessageAPI:
             status=GuestMessage.Status.SENT,
             sent_by=owner_user,
         )
-        response = authenticated_client.post(
-            f"/api/v1/guest-messages/{message.pk}/resend/"
-        )
+        response = authenticated_client.post(f"/api/v1/guest-messages/{message.pk}/resend/")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_unauthenticated_access(self, api_client):

@@ -38,9 +38,7 @@ class RetentionTestBase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="testuser", password="testpass123")
         self.room_type = RoomType.objects.create(name="Standard", base_rate=500000)
-        self.room = Room.objects.create(
-            room_type=self.room_type, number="101", floor=1
-        )
+        self.room = Room.objects.create(room_type=self.room_type, number="101", floor=1)
         self.guest = Guest.objects.create(
             full_name="Test Guest",
             phone="0900000001",
@@ -87,9 +85,7 @@ class TestDeviceTokenRetention(RetentionTestBase):
 
     def test_inactive_device_tokens_deleted(self):
         """Inactive device tokens older than 30 days are deleted."""
-        token = DeviceToken.objects.create(
-            user=self.user, token="old_token_123", is_active=False
-        )
+        token = DeviceToken.objects.create(user=self.user, token="old_token_123", is_active=False)
         DeviceToken.objects.filter(pk=token.pk).update(
             updated_at=timezone.now() - timedelta(days=31)
         )
@@ -100,9 +96,7 @@ class TestDeviceTokenRetention(RetentionTestBase):
 
     def test_active_device_tokens_kept(self):
         """Active device tokens are preserved regardless of age."""
-        token = DeviceToken.objects.create(
-            user=self.user, token="active_token_123", is_active=True
-        )
+        token = DeviceToken.objects.create(user=self.user, token="active_token_123", is_active=True)
         DeviceToken.objects.filter(pk=token.pk).update(
             updated_at=timezone.now() - timedelta(days=60)
         )

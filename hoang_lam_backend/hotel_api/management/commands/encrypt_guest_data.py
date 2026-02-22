@@ -41,7 +41,9 @@ class Command(BaseCommand):
                     guest.id_number = encrypt(guest.id_number)
                     changed = True
                 else:
-                    self.stdout.write(f"  Would encrypt id_number for guest {guest.id} ({guest.full_name})")
+                    self.stdout.write(
+                        f"  Would encrypt id_number for guest {guest.id} ({guest.full_name})"
+                    )
             elif guest.id_number:
                 skipped_count += 1
 
@@ -51,7 +53,9 @@ class Command(BaseCommand):
                     guest.visa_number = encrypt(guest.visa_number)
                     changed = True
                 else:
-                    self.stdout.write(f"  Would encrypt visa_number for guest {guest.id} ({guest.full_name})")
+                    self.stdout.write(
+                        f"  Would encrypt visa_number for guest {guest.id} ({guest.full_name})"
+                    )
 
             if changed:
                 # Use update_fields to avoid triggering save() encryption again

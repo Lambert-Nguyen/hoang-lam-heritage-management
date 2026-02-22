@@ -28,9 +28,7 @@ class BookingAPITestCase(TestCase):
         )
 
         # Create room type and rooms
-        self.room_type = RoomType.objects.create(
-            name="Deluxe", base_rate=1000000, max_guests=2
-        )
+        self.room_type = RoomType.objects.create(name="Deluxe", base_rate=1000000, max_guests=2)
         self.room1 = Room.objects.create(
             room_type=self.room_type, number="101", floor=1, status=Room.Status.AVAILABLE
         )
@@ -174,9 +172,7 @@ class BookingAPITestCase(TestCase):
         self.client.force_authenticate(user=self.staff_user)
         data = {"deposit_amount": 2000000}
 
-        response = self.client.patch(
-            f"/api/v1/bookings/{self.booking1.id}/", data, format="json"
-        )
+        response = self.client.patch(f"/api/v1/bookings/{self.booking1.id}/", data, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.booking1.refresh_from_db()
@@ -409,9 +405,7 @@ class BookingAPITestCase(TestCase):
     def test_update_nonexistent_booking(self):
         """Test updating a booking that does not exist."""
         self.client.force_authenticate(user=self.staff_user)
-        response = self.client.patch(
-            "/api/v1/bookings/99999/", {"notes": "test"}, format="json"
-        )
+        response = self.client.patch("/api/v1/bookings/99999/", {"notes": "test"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_delete_nonexistent_booking(self):
@@ -532,9 +526,7 @@ class BookingAPITestCase(TestCase):
             "check_in_date": str(today + timedelta(days=8)),
             "check_out_date": str(today + timedelta(days=11)),
         }
-        response = self.client.patch(
-            f"/api/v1/bookings/{self.booking2.id}/", data, format="json"
-        )
+        response = self.client.patch(f"/api/v1/bookings/{self.booking2.id}/", data, format="json")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_check_in_nonexistent_booking(self):

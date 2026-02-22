@@ -82,9 +82,7 @@ class PushNotificationService:
         from .models import DeviceToken
 
         if not cls._init_firebase():
-            logger.debug(
-                f"FCM not available. Notification {notification.id} stored in DB only."
-            )
+            logger.debug(f"FCM not available. Notification {notification.id} stored in DB only.")
             return True
 
         try:
@@ -98,9 +96,7 @@ class PushNotificationService:
             )
 
             if not tokens:
-                logger.info(
-                    f"No active device tokens for user {notification.recipient.username}"
-                )
+                logger.info(f"No active device tokens for user {notification.recipient.username}")
                 return True
 
             message = messaging.MulticastMessage(
@@ -110,9 +106,7 @@ class PushNotificationService:
                     body=notification.body,
                 ),
                 data=(
-                    {k: str(v) for k, v in notification.data.items()}
-                    if notification.data
-                    else {}
+                    {k: str(v) for k, v in notification.data.items()} if notification.data else {}
                 ),
                 android=messaging.AndroidConfig(
                     priority="high",
@@ -138,9 +132,7 @@ class PushNotificationService:
                     if send_response.exception:
                         error_code = getattr(send_response.exception, "code", "")
                         if error_code in ["NOT_FOUND", "UNREGISTERED", "INVALID_ARGUMENT"]:
-                            DeviceToken.objects.filter(token=tokens[i]).update(
-                                is_active=False
-                            )
+                            DeviceToken.objects.filter(token=tokens[i]).update(is_active=False)
                             logger.info(f"Deactivated invalid token: {tokens[i][:20]}...")
 
             notification.is_sent = True
@@ -269,10 +261,14 @@ class RatePricingService:
             base_rate = rate_plan.base_rate
         else:
             # Try to find an active rate plan for this room type
-            active_plan = RatePlanModel.objects.filter(
-                room_type=room_type,
-                is_active=True,
-            ).order_by("-created_at").first()
+            active_plan = (
+                RatePlanModel.objects.filter(
+                    room_type=room_type,
+                    is_active=True,
+                )
+                .order_by("-created_at")
+                .first()
+            )
 
             if active_plan:
                 today = timezone.now().date()
@@ -296,11 +292,13 @@ class RatePricingService:
             else:
                 rate = base_rate
                 source = "rate_plan" if rate_plan else "room_type"
-            breakdown.append({
-                "date": current_date.isoformat(),
-                "rate": rate,
-                "source": source,
-            })
+            breakdown.append(
+                {
+                    "date": current_date.isoformat(),
+                    "rate": rate,
+                    "source": source,
+                }
+            )
             total += rate
             current_date += timedelta(days=1)
 

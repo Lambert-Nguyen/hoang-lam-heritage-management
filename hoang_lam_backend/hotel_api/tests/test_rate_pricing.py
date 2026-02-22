@@ -46,6 +46,7 @@ class TestRatePricingServiceBase(TestCase):
 # nights <= 0  (L250)
 # ─────────────────────────────────────────────
 
+
 class TestZeroNights(TestRatePricingServiceBase):
     """calculate_nightly_rates returns zeros when the stay is 0 or negative."""
 
@@ -71,6 +72,7 @@ class TestZeroNights(TestRatePricingServiceBase):
 # ─────────────────────────────────────────────
 # No rate_plan provided — fallback chain
 # ─────────────────────────────────────────────
+
 
 class TestNoRatePlanFallback(TestRatePricingServiceBase):
     """When no rate_plan is passed, falls back through DB lookup then room_type."""
@@ -105,6 +107,7 @@ class TestNoRatePlanFallback(TestRatePricingServiceBase):
 # ─────────────────────────────────────────────
 # rate_plan provided but is_active=False  (L268)
 # ─────────────────────────────────────────────
+
 
 class TestInactiveRatePlanArg(TestRatePricingServiceBase):
     """Passing an inactive rate_plan falls back to the DB lookup chain."""
@@ -150,6 +153,7 @@ class TestInactiveRatePlanArg(TestRatePricingServiceBase):
 # ─────────────────────────────────────────────
 # valid_from / valid_to validity checks  (L278-284)
 # ─────────────────────────────────────────────
+
 
 class TestRatePlanValidityDates(TestRatePricingServiceBase):
     """Active RatePlans outside their validity window fall back to room_type rate."""
@@ -205,6 +209,7 @@ class TestRatePlanValidityDates(TestRatePricingServiceBase):
 # ─────────────────────────────────────────────
 # DateRateOverride  (L294-295)
 # ─────────────────────────────────────────────
+
 
 class TestDateRateOverride(TestRatePricingServiceBase):
     """DateRateOverride takes priority over RatePlan and RoomType rates."""

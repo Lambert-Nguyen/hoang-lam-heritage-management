@@ -47,10 +47,7 @@ def room_type(db):
 
 @pytest.fixture
 def rooms(db, room_type):
-    return [
-        Room.objects.create(number=f"G-{i}", floor=1, room_type=room_type)
-        for i in range(1, 4)
-    ]
+    return [Room.objects.create(number=f"G-{i}", floor=1, room_type=room_type) for i in range(1, 4)]
 
 
 @pytest.fixture
@@ -160,9 +157,7 @@ class TestGroupBookingAPI:
         assert gb.status == GroupBooking.Status.TENTATIVE
 
     def test_retrieve(self, authenticated_client, group_booking):
-        response = authenticated_client.get(
-            f"/api/v1/group-bookings/{group_booking.id}/"
-        )
+        response = authenticated_client.get(f"/api/v1/group-bookings/{group_booking.id}/")
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         assert data["name"] == "Tour ABC"
@@ -180,9 +175,7 @@ class TestGroupBookingAPI:
         assert data["guest_count"] == 8
 
     def test_delete(self, authenticated_client, group_booking):
-        response = authenticated_client.delete(
-            f"/api/v1/group-bookings/{group_booking.id}/"
-        )
+        response = authenticated_client.delete(f"/api/v1/group-bookings/{group_booking.id}/")
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert not GroupBooking.objects.filter(id=group_booking.id).exists()
 
@@ -193,9 +186,7 @@ class TestGroupBookingAPI:
 @pytest.mark.django_db
 class TestGroupBookingStatusTransitions:
     def test_confirm(self, authenticated_client, group_booking):
-        response = authenticated_client.post(
-            f"/api/v1/group-bookings/{group_booking.id}/confirm/"
-        )
+        response = authenticated_client.post(f"/api/v1/group-bookings/{group_booking.id}/confirm/")
         assert response.status_code == status.HTTP_200_OK
         group_booking.refresh_from_db()
         assert group_booking.status == GroupBooking.Status.CONFIRMED
@@ -205,9 +196,7 @@ class TestGroupBookingStatusTransitions:
         group_booking.status = GroupBooking.Status.CONFIRMED
         group_booking.save()
 
-        response = authenticated_client.post(
-            f"/api/v1/group-bookings/{group_booking.id}/check-in/"
-        )
+        response = authenticated_client.post(f"/api/v1/group-bookings/{group_booking.id}/check-in/")
         assert response.status_code == status.HTTP_200_OK
         group_booking.refresh_from_db()
         assert group_booking.status == GroupBooking.Status.CHECKED_IN
@@ -226,9 +215,7 @@ class TestGroupBookingStatusTransitions:
         assert group_booking.actual_check_out is not None
 
     def test_cancel(self, authenticated_client, group_booking):
-        response = authenticated_client.post(
-            f"/api/v1/group-bookings/{group_booking.id}/cancel/"
-        )
+        response = authenticated_client.post(f"/api/v1/group-bookings/{group_booking.id}/cancel/")
         assert response.status_code == status.HTTP_200_OK
         group_booking.refresh_from_db()
         assert group_booking.status == GroupBooking.Status.CANCELLED
@@ -237,16 +224,12 @@ class TestGroupBookingStatusTransitions:
         group_booking.status = GroupBooking.Status.CONFIRMED
         group_booking.save()
 
-        response = authenticated_client.post(
-            f"/api/v1/group-bookings/{group_booking.id}/confirm/"
-        )
+        response = authenticated_client.post(f"/api/v1/group-bookings/{group_booking.id}/confirm/")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_check_in_tentative_allowed(self, authenticated_client, group_booking):
         """Group bookings can check-in from tentative status."""
-        response = authenticated_client.post(
-            f"/api/v1/group-bookings/{group_booking.id}/check-in/"
-        )
+        response = authenticated_client.post(f"/api/v1/group-bookings/{group_booking.id}/check-in/")
         assert response.status_code == status.HTTP_200_OK
         group_booking.refresh_from_db()
         assert group_booking.status == GroupBooking.Status.CHECKED_IN
@@ -255,9 +238,7 @@ class TestGroupBookingStatusTransitions:
         """Cannot check-in a checked-out group booking."""
         group_booking.status = GroupBooking.Status.CHECKED_OUT
         group_booking.save()
-        response = authenticated_client.post(
-            f"/api/v1/group-bookings/{group_booking.id}/check-in/"
-        )
+        response = authenticated_client.post(f"/api/v1/group-bookings/{group_booking.id}/check-in/")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
@@ -297,18 +278,14 @@ class TestGroupBookingRoomAssignment:
 @pytest.mark.django_db
 class TestGroupBookingFiltering:
     def test_filter_by_status(self, authenticated_client, group_booking):
-        response = authenticated_client.get(
-            "/api/v1/group-bookings/", {"status": "tentative"}
-        )
+        response = authenticated_client.get("/api/v1/group-bookings/", {"status": "tentative"})
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         results = data.get("results", data) if isinstance(data, dict) else data
         assert all(r["status"] == "tentative" for r in results)
 
     def test_search_by_name(self, authenticated_client, group_booking):
-        response = authenticated_client.get(
-            "/api/v1/group-bookings/", {"search": "Tour ABC"}
-        )
+        response = authenticated_client.get("/api/v1/group-bookings/", {"search": "Tour ABC"})
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
         results = data.get("results", data) if isinstance(data, dict) else data

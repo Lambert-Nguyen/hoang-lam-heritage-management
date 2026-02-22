@@ -103,7 +103,11 @@ urlpatterns = [
     path("reports/export/", ExportReportView.as_view(), name="report_export"),
     # Phase 5: Notifications
     path("devices/token/", DeviceTokenView.as_view(), name="device_token"),
-    path("notifications/preferences/", NotificationPreferencesView.as_view(), name="notification_preferences"),
+    path(
+        "notifications/preferences/",
+        NotificationPreferencesView.as_view(),
+        name="notification_preferences",
+    ),
     # API endpoints
     path("", include(router.urls)),
 ]

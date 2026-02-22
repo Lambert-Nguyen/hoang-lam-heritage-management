@@ -53,6 +53,7 @@ class BookingAdmin(admin.ModelAdmin):
     def get_guest_name(self, obj):
         """Display guest full name from Guest FK."""
         return obj.guest.full_name if obj.guest else "N/A"
+
     get_guest_name.short_description = "Guest"
     get_guest_name.admin_order_field = "guest__full_name"
 
@@ -132,8 +133,15 @@ class SensitiveDataAccessLogAdmin(admin.ModelAdmin):
     search_fields = ["user__username", "ip_address"]
     date_hierarchy = "timestamp"
     readonly_fields = [
-        "user", "action", "resource_type", "resource_id",
-        "fields_accessed", "ip_address", "user_agent", "details", "timestamp",
+        "user",
+        "action",
+        "resource_type",
+        "resource_id",
+        "fields_accessed",
+        "ip_address",
+        "user_agent",
+        "details",
+        "timestamp",
     ]
 
     def has_add_permission(self, request):

@@ -33,27 +33,21 @@ def api_client():
 @pytest.fixture
 def owner_user(db):
     user = User.objects.create_user(username="owner", password="testpass123")
-    HotelUser.objects.create(
-        user=user, role=HotelUser.Role.OWNER, receive_notifications=True
-    )
+    HotelUser.objects.create(user=user, role=HotelUser.Role.OWNER, receive_notifications=True)
     return user
 
 
 @pytest.fixture
 def manager_user(db):
     user = User.objects.create_user(username="manager", password="testpass123")
-    HotelUser.objects.create(
-        user=user, role=HotelUser.Role.MANAGER, receive_notifications=True
-    )
+    HotelUser.objects.create(user=user, role=HotelUser.Role.MANAGER, receive_notifications=True)
     return user
 
 
 @pytest.fixture
 def staff_user(db):
     user = User.objects.create_user(username="staff", password="testpass123")
-    HotelUser.objects.create(
-        user=user, role=HotelUser.Role.STAFF, receive_notifications=True
-    )
+    HotelUser.objects.create(user=user, role=HotelUser.Role.STAFF, receive_notifications=True)
     return user
 
 
@@ -225,12 +219,8 @@ class TestPushNotificationService:
 class TestNotificationAPI:
     def setup_method(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(
-            username="apiuser", password="testpass123"
-        )
-        HotelUser.objects.create(
-            user=self.user, role=HotelUser.Role.STAFF
-        )
+        self.user = User.objects.create_user(username="apiuser", password="testpass123")
+        HotelUser.objects.create(user=self.user, role=HotelUser.Role.STAFF)
         self.notif1 = Notification.objects.create(
             recipient=self.user,
             notification_type=Notification.NotificationType.BOOKING_CREATED,
@@ -303,12 +293,8 @@ class TestNotificationAPI:
 class TestDeviceTokenAPI:
     def setup_method(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(
-            username="tokenuser", password="testpass123"
-        )
-        HotelUser.objects.create(
-            user=self.user, role=HotelUser.Role.STAFF
-        )
+        self.user = User.objects.create_user(username="tokenuser", password="testpass123")
+        HotelUser.objects.create(user=self.user, role=HotelUser.Role.STAFF)
 
     def test_register_device_token(self):
         self.client.force_authenticate(user=self.user)
@@ -361,9 +347,7 @@ class TestDeviceTokenAPI:
 class TestNotificationPreferencesAPI:
     def setup_method(self):
         self.client = APIClient()
-        self.user = User.objects.create_user(
-            username="prefuser", password="testpass123"
-        )
+        self.user = User.objects.create_user(username="prefuser", password="testpass123")
         self.profile = HotelUser.objects.create(
             user=self.user,
             role=HotelUser.Role.STAFF,
@@ -408,9 +392,7 @@ class TestBookingNotificationIntegration:
             receive_notifications=True,
         )
 
-        self.brother = User.objects.create_user(
-            username="brother", password="testpass123"
-        )
+        self.brother = User.objects.create_user(username="brother", password="testpass123")
         HotelUser.objects.create(
             user=self.brother,
             role=HotelUser.Role.MANAGER,
@@ -479,8 +461,7 @@ class TestBookingNotificationIntegration:
         mom_notifs = Notification.objects.filter(recipient=self.mom)
         assert mom_notifs.exists()
         assert (
-            mom_notifs.first().notification_type
-            == Notification.NotificationType.CHECKOUT_COMPLETED
+            mom_notifs.first().notification_type == Notification.NotificationType.CHECKOUT_COMPLETED
         )
 
 

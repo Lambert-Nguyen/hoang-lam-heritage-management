@@ -114,7 +114,8 @@ class TestGuestModelEncryption(TestCase):
     def test_guest_save_encrypts_visa_number(self):
         """Guest.save() encrypts visa_number when key is set."""
         guest = Guest.objects.create(
-            full_name="Foreign Guest", phone="0900000002",
+            full_name="Foreign Guest",
+            phone="0900000002",
             visa_number="V123456",
         )
         guest.refresh_from_db()
@@ -139,7 +140,9 @@ class TestGuestModelEncryption(TestCase):
     def test_guest_null_id_number(self):
         """Guest with null id_number has null hash."""
         guest = Guest.objects.create(
-            full_name="No ID", phone="0900000004", id_number=None,
+            full_name="No ID",
+            phone="0900000004",
+            id_number=None,
         )
         self.assertIsNone(guest.id_number_hash)
 

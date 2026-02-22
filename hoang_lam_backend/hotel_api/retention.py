@@ -110,9 +110,7 @@ def apply_retention_policy(dry_run=False, model_filter=None):
         ),
         (
             "guest_message",
-            GuestMessage.objects.filter(
-                created_at__lt=_cutoff(days["guest_message"])
-            ),
+            GuestMessage.objects.filter(created_at__lt=_cutoff(days["guest_message"])),
         ),
         (
             "housekeeping_task",
@@ -175,15 +173,11 @@ def apply_retention_policy(dry_run=False, model_filter=None):
         ),
         (
             "exchange_rate",
-            ExchangeRate.objects.filter(
-                date__lt=_cutoff(days["exchange_rate"]).date()
-            ),
+            ExchangeRate.objects.filter(date__lt=_cutoff(days["exchange_rate"]).date()),
         ),
         (
             "date_rate_override",
-            DateRateOverride.objects.filter(
-                date__lt=_cutoff(days["date_rate_override"]).date()
-            ),
+            DateRateOverride.objects.filter(date__lt=_cutoff(days["date_rate_override"]).date()),
         ),
         (
             "sensitive_data_access_log",

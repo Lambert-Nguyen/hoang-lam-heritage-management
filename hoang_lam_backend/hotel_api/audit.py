@@ -23,8 +23,9 @@ def get_client_ip(request):
     return request.META.get("REMOTE_ADDR")
 
 
-def log_sensitive_access(request, action, resource_type="guest", resource_id=None,
-                         fields=None, details=None):
+def log_sensitive_access(
+    request, action, resource_type="guest", resource_id=None, fields=None, details=None
+):
     """
     Create an audit log entry for sensitive data access.
 
@@ -53,5 +54,10 @@ def log_sensitive_access(request, action, resource_type="guest", resource_id=Non
     username = user.username if user else "anonymous"
     logger.info(
         "SENSITIVE_DATA_ACCESS: user=%s action=%s resource=%s:%s ip=%s fields=%s",
-        username, action, resource_type, resource_id, ip, fields,
+        username,
+        action,
+        resource_type,
+        resource_id,
+        ip,
+        fields,
     )

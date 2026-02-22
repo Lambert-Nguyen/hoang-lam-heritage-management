@@ -49,6 +49,7 @@ class TaskTestBase(TestCase):
 # send_checkin_reminders
 # ─────────────────────────────────────────────
 
+
 class TestSendCheckinReminders(TaskTestBase):
     """Tests for the send_checkin_reminders Celery task."""
 
@@ -135,6 +136,7 @@ class TestSendCheckinReminders(TaskTestBase):
 # send_checkout_reminders
 # ─────────────────────────────────────────────
 
+
 class TestSendCheckoutReminders(TaskTestBase):
     """Tests for the send_checkout_reminders Celery task."""
 
@@ -178,6 +180,7 @@ class TestSendCheckoutReminders(TaskTestBase):
 # ─────────────────────────────────────────────
 # cleanup_expired_tokens
 # ─────────────────────────────────────────────
+
 
 class TestCleanupExpiredTokens(TestCase):
     """Tests for the cleanup_expired_tokens Celery task."""
@@ -234,6 +237,7 @@ class TestCleanupExpiredTokens(TestCase):
 # ─────────────────────────────────────────────
 # apply_data_retention_policy
 # ─────────────────────────────────────────────
+
 
 class TestApplyDataRetentionPolicy(TestCase):
     """Tests for the apply_data_retention_policy Celery task."""

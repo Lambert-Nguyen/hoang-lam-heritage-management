@@ -24,9 +24,7 @@ def create_user(db):
 
     def _create_user(username, role="staff"):
         user = User.objects.create_user(username=username, password="testpass123")
-        HotelUser.objects.create(
-            user=user, role=role, phone=f"+84{username[-6:]}"
-        )
+        HotelUser.objects.create(user=user, role=role, phone=f"+84{username[-6:]}")
         return user
 
     return _create_user
@@ -257,9 +255,7 @@ class TestHousekeepingTaskViewSet:
         """Can complete a task."""
         api_client.force_authenticate(user=staff_user)
         data = {"notes": "All clean"}
-        response = api_client.post(
-            f"/api/v1/housekeeping-tasks/{assigned_task.id}/complete/", data
-        )
+        response = api_client.post(f"/api/v1/housekeeping-tasks/{assigned_task.id}/complete/", data)
         assert response.status_code == status.HTTP_200_OK
         assert response.data["status"] == "completed"
         assert response.data["completed_at"] is not None
@@ -279,9 +275,7 @@ class TestHousekeepingTaskViewSet:
         assigned_task.status = HousekeepingTask.Status.COMPLETED
         assigned_task.save()
         # Now verify it
-        response = api_client.post(
-            f"/api/v1/housekeeping-tasks/{assigned_task.id}/verify/", {}
-        )
+        response = api_client.post(f"/api/v1/housekeeping-tasks/{assigned_task.id}/verify/", {})
         assert response.status_code == status.HTTP_200_OK
         assert response.data["status"] == "verified"
 
@@ -298,11 +292,12 @@ class TestHousekeepingTaskViewSet:
         response = api_client.get("/api/v1/housekeeping-tasks/my_tasks/")
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data) == 1
-        assert response.data[0]["assigned_to_name"] == staff_user.get_full_name() or len(response.data) == 1
+        assert (
+            response.data[0]["assigned_to_name"] == staff_user.get_full_name()
+            or len(response.data) == 1
+        )
 
-    def test_my_tasks_excludes_other_users(
-        self, api_client, staff_user2, assigned_task
-    ):
+    def test_my_tasks_excludes_other_users(self, api_client, staff_user2, assigned_task):
         """My tasks only shows tasks assigned to the current user."""
         api_client.force_authenticate(user=staff_user2)
         response = api_client.get("/api/v1/housekeeping-tasks/my_tasks/")
@@ -420,24 +415,18 @@ class TestHousekeepingErrorCases:
     def test_verify_non_completed_task(self, api_client, manager_user, housekeeping_task):
         """Test verifying a task that is not yet completed."""
         api_client.force_authenticate(user=manager_user)
-        response = api_client.post(
-            f"/api/v1/housekeeping-tasks/{housekeeping_task.id}/verify/", {}
-        )
+        response = api_client.post(f"/api/v1/housekeeping-tasks/{housekeeping_task.id}/verify/", {})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_assign_nonexistent_task(self, api_client, manager_user, staff_user):
         """Test assigning a non-existent task."""
         api_client.force_authenticate(user=manager_user)
         data = {"assigned_to": staff_user.id}
-        response = api_client.post(
-            "/api/v1/housekeeping-tasks/99999/assign/", data
-        )
+        response = api_client.post("/api/v1/housekeeping-tasks/99999/assign/", data)
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_complete_nonexistent_task(self, api_client, staff_user):
         """Test completing a non-existent task."""
         api_client.force_authenticate(user=staff_user)
-        response = api_client.post(
-            "/api/v1/housekeeping-tasks/99999/complete/", {}
-        )
+        response = api_client.post("/api/v1/housekeeping-tasks/99999/complete/", {})
         assert response.status_code == status.HTTP_404_NOT_FOUND

@@ -103,9 +103,7 @@ class Command(BaseCommand):
         updated_count = 0
 
         for data in room_types_data:
-            room_type, created = RoomType.objects.update_or_create(
-                name=data["name"], defaults=data
-            )
+            room_type, created = RoomType.objects.update_or_create(name=data["name"], defaults=data)
 
             if created:
                 created_count += 1
@@ -120,8 +118,6 @@ class Command(BaseCommand):
 
         self.stdout.write("\n" + "=" * 60)
         self.stdout.write(
-            self.style.SUCCESS(
-                f"Completed! Created: {created_count}, Updated: {updated_count}"
-            )
+            self.style.SUCCESS(f"Completed! Created: {created_count}, Updated: {updated_count}")
         )
         self.stdout.write("=" * 60)

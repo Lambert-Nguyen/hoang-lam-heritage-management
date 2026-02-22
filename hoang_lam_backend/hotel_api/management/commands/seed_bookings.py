@@ -42,9 +42,7 @@ class Command(BaseCommand):
 
         if len(guests) < 5 or len(rooms) < 3:
             self.stdout.write(
-                self.style.ERROR(
-                    "Not enough guests or rooms! Need at least 5 guests and 3 rooms."
-                )
+                self.style.ERROR("Not enough guests or rooms! Need at least 5 guests and 3 rooms.")
             )
             return
 
@@ -233,14 +231,10 @@ class Command(BaseCommand):
                 )
 
         self.stdout.write(
-            self.style.SUCCESS(
-                f"\n{'=' * 50}\nSuccessfully created {created_count} bookings!"
-            )
+            self.style.SUCCESS(f"\n{'=' * 50}\nSuccessfully created {created_count} bookings!")
         )
         self.stdout.write(
-            self.style.SUCCESS(
-                f"Total bookings in database: {Booking.objects.count()}"
-            )
+            self.style.SUCCESS(f"Total bookings in database: {Booking.objects.count()}")
         )
 
         # Show status statistics
@@ -253,9 +247,7 @@ class Command(BaseCommand):
         # Show today's activity
         today_checkins = Booking.objects.filter(check_in_date=today).count()
         today_checkouts = Booking.objects.filter(check_out_date=today).count()
-        currently_checked_in = Booking.objects.filter(
-            status=Booking.Status.CHECKED_IN
-        ).count()
+        currently_checked_in = Booking.objects.filter(status=Booking.Status.CHECKED_IN).count()
 
         self.stdout.write("\nToday's activity:")
         self.stdout.write(f"  Check-ins today: {today_checkins}")

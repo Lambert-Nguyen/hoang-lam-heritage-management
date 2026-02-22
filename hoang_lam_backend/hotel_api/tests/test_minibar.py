@@ -24,9 +24,7 @@ def create_user(db):
 
     def _create_user(username, role="staff"):
         user = User.objects.create_user(username=username, password="testpass123")
-        HotelUser.objects.create(
-            user=user, role=role, phone=f"+84{username[-9:]}"
-        )
+        HotelUser.objects.create(user=user, role=role, phone=f"+84{username[-9:]}")
         return user
 
     return _create_user
@@ -83,6 +81,7 @@ def guest(db):
 def booking(db, room, guest, manager_user):
     """Create a booking."""
     from datetime import date, timedelta
+
     today = date.today()
     return Booking.objects.create(
         room=room,
@@ -380,7 +379,9 @@ class TestMinibarSaleCreate:
         assert response.data["quantity"] == 2
         assert Decimal(response.data["total"]) == minibar_item.price * 2
 
-    def test_create_sale_invalid_booking_status(self, api_client, staff_user, booking, minibar_item):
+    def test_create_sale_invalid_booking_status(
+        self, api_client, staff_user, booking, minibar_item
+    ):
         """Cannot create sale for cancelled booking."""
         booking.status = "cancelled"
         booking.save()
@@ -427,7 +428,9 @@ class TestMinibarSaleCreate:
 class TestMinibarSaleBulkCreate:
     """Tests for bulk creating minibar sales."""
 
-    def test_bulk_create_success(self, api_client, staff_user, booking, minibar_item, minibar_item2):
+    def test_bulk_create_success(
+        self, api_client, staff_user, booking, minibar_item, minibar_item2
+    ):
         """Can bulk create multiple sales."""
         api_client.force_authenticate(user=staff_user)
         data = {

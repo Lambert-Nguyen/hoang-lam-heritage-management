@@ -11,7 +11,30 @@ from django.db import models
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, Guest, GroupBooking, GuestMessage, HotelUser, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MessageTemplate, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
+from .models import (
+    Booking,
+    DateRateOverride,
+    DeviceToken,
+    FinancialCategory,
+    FinancialEntry,
+    Guest,
+    GroupBooking,
+    GuestMessage,
+    HotelUser,
+    HousekeepingTask,
+    InspectionTemplate,
+    LostAndFound,
+    MaintenanceRequest,
+    MessageTemplate,
+    MinibarItem,
+    MinibarSale,
+    NightAudit,
+    Notification,
+    RatePlan,
+    Room,
+    RoomInspection,
+    RoomType,
+)
 
 
 class LoginSerializer(serializers.Serializer):
@@ -291,7 +314,9 @@ class RoomAvailabilitySerializer(serializers.Serializer):
     def validate(self, attrs):
         """Validate date range."""
         if attrs["check_out"] <= attrs["check_in"]:
-            raise serializers.ValidationError({"check_out": "Ngày trả phòng phải sau ngày nhận phòng."})
+            raise serializers.ValidationError(
+                {"check_out": "Ngày trả phòng phải sau ngày nhận phòng."}
+            )
         return attrs
 
 
@@ -355,22 +380,26 @@ class GuestSerializer(serializers.ModelSerializer):
     def validate_phone(self, value):
         """Validate phone number format and uniqueness, normalize input."""
         import re
-        
+
         if not value:
             raise serializers.ValidationError("Phone number is required.")
-        
+
         # Normalize: remove all non-digit characters
         cleaned = re.sub(r"\D", "", value)
-        
+
         # Validate length (Vietnamese phone numbers: 10-11 digits)
         if len(cleaned) < 10 or len(cleaned) > 11:
             raise serializers.ValidationError("Phone number must be 10-11 digits.")
-        
+
         # Check for uniqueness
         instance = self.instance
-        if Guest.objects.filter(phone=cleaned).exclude(pk=instance.pk if instance else None).exists():
+        if (
+            Guest.objects.filter(phone=cleaned)
+            .exclude(pk=instance.pk if instance else None)
+            .exists()
+        ):
             raise serializers.ValidationError("This phone number already exists.")
-        
+
         return cleaned
 
     def validate_id_number(self, value):
@@ -380,7 +409,11 @@ class GuestSerializer(serializers.ModelSerializer):
 
             id_hash = hash_value(value)
             instance = self.instance
-            if Guest.objects.filter(id_number_hash=id_hash).exclude(pk=instance.pk if instance else None).exists():
+            if (
+                Guest.objects.filter(id_number_hash=id_hash)
+                .exclude(pk=instance.pk if instance else None)
+                .exists()
+            ):
                 raise serializers.ValidationError("This ID number already exists.")
         return value
 
@@ -462,7 +495,7 @@ class BookingSerializer(serializers.ModelSerializer):
     @extend_schema_field(serializers.IntegerField)
     def nights(self, obj):
         return obj.nights
-    
+
     @extend_schema_field(serializers.DecimalField)
     def balance_due(self, obj):
         return obj.balance_due
@@ -521,6 +554,7 @@ class BookingSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         """Validate booking data."""
         from datetime import date
+
         check_in = attrs.get("check_in_date")
         check_out = attrs.get("check_out_date")
         room = attrs.get("room")
@@ -532,22 +566,29 @@ class BookingSerializer(serializers.ModelSerializer):
         if check_in and check_out:
             # Validate check-out is after check-in
             if check_out <= check_in:
-                raise serializers.ValidationError({"check_out_date": "Check-out date must be after check-in date."})
-            
+                raise serializers.ValidationError(
+                    {"check_out_date": "Check-out date must be after check-in date."}
+                )
+
             # Validate check-in is not too far in the past (for new bookings only)
             # Allow up to 7 days in the past for retroactive booking by staff
             from datetime import timedelta
+
             if not self.instance and check_in < (date.today() - timedelta(days=7)):
-                raise serializers.ValidationError({"check_in_date": "Check-in date cannot be more than 7 days in the past."})
-        
+                raise serializers.ValidationError(
+                    {"check_in_date": "Check-in date cannot be more than 7 days in the past."}
+                )
+
         # Validate guest count does not exceed room capacity
         if room and guest_count:
             max_guests = room.room_type.max_guests
             if guest_count > max_guests:
                 raise serializers.ValidationError(
-                    {"guest_count": f"Guest count ({guest_count}) exceeds room capacity ({max_guests})."}
+                    {
+                        "guest_count": f"Guest count ({guest_count}) exceeds room capacity ({max_guests})."
+                    }
                 )
-        
+
         # Validate deposit does not exceed total amount
         if deposit_amount and total_amount and deposit_amount > total_amount:
             raise serializers.ValidationError(
@@ -557,10 +598,14 @@ class BookingSerializer(serializers.ModelSerializer):
         # Check for overlapping bookings with row-level locking to prevent race conditions
         if room and check_in and check_out:
             # Use select_for_update() within a transaction to lock the room
-            overlapping = Booking.objects.select_for_update().filter(
-                room=room,
-                status__in=[Booking.Status.CONFIRMED, Booking.Status.CHECKED_IN],
-            ).exclude(pk=self.instance.pk if self.instance else None)
+            overlapping = (
+                Booking.objects.select_for_update()
+                .filter(
+                    room=room,
+                    status__in=[Booking.Status.CONFIRMED, Booking.Status.CHECKED_IN],
+                )
+                .exclude(pk=self.instance.pk if self.instance else None)
+            )
 
             # Check if new booking overlaps with existing ones
             for booking in overlapping:
@@ -854,7 +899,9 @@ class FinancialEntryListSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category.name", read_only=True)
     category_icon = serializers.CharField(source="category.icon", read_only=True)
     category_color = serializers.CharField(source="category.color", read_only=True)
-    room_number = serializers.CharField(source="booking.room.number", read_only=True, allow_null=True)
+    room_number = serializers.CharField(
+        source="booking.room.number", read_only=True, allow_null=True
+    )
 
     class Meta:
         model = FinancialEntry
@@ -1011,6 +1058,7 @@ class NightAuditCreateSerializer(serializers.Serializer):
     def validate_audit_date(self, value):
         """Validate that audit date is not in the future."""
         from datetime import date
+
         if value > date.today():
             raise serializers.ValidationError("Không thể tạo kiểm toán cho ngày trong tương lai.")
         return value
@@ -1028,7 +1076,9 @@ class PaymentSerializer(serializers.ModelSerializer):
 
     payment_type_display = serializers.CharField(source="get_payment_type_display", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
-    payment_method_display = serializers.CharField(source="get_payment_method_display", read_only=True)
+    payment_method_display = serializers.CharField(
+        source="get_payment_method_display", read_only=True
+    )
     created_by_name = serializers.SerializerMethodField()
     booking_room = serializers.SerializerMethodField()
     booking_guest = serializers.SerializerMethodField()
@@ -1093,7 +1143,9 @@ class PaymentListSerializer(serializers.ModelSerializer):
 
     payment_type_display = serializers.CharField(source="get_payment_type_display", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
-    payment_method_display = serializers.CharField(source="get_payment_method_display", read_only=True)
+    payment_method_display = serializers.CharField(
+        source="get_payment_method_display", read_only=True
+    )
     booking_room = serializers.SerializerMethodField()
 
     class Meta:
@@ -1145,11 +1197,14 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
 
         # Validate deposit doesn't exceed total
         if booking and payment_type == Payment.PaymentType.DEPOSIT:
-            existing_deposits = Payment.objects.filter(
-                booking=booking,
-                payment_type=Payment.PaymentType.DEPOSIT,
-                status=Payment.Status.COMPLETED,
-            ).aggregate(total=models.Sum("amount"))["total"] or 0
+            existing_deposits = (
+                Payment.objects.filter(
+                    booking=booking,
+                    payment_type=Payment.PaymentType.DEPOSIT,
+                    status=Payment.Status.COMPLETED,
+                ).aggregate(total=models.Sum("amount"))["total"]
+                or 0
+            )
             if existing_deposits + amount > booking.total_amount:
                 raise serializers.ValidationError(
                     {"amount": "Tổng tiền cọc không thể vượt quá tổng tiền đặt phòng."}
@@ -1168,13 +1223,18 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
             # Update booking deposit status if deposit payment
             if payment.booking and payment.payment_type == Payment.PaymentType.DEPOSIT:
                 booking = payment.booking
-                total_deposits = Payment.objects.filter(
-                    booking=booking,
-                    payment_type=Payment.PaymentType.DEPOSIT,
-                    status=Payment.Status.COMPLETED,
-                ).aggregate(total=models.Sum("amount"))["total"] or 0
+                total_deposits = (
+                    Payment.objects.filter(
+                        booking=booking,
+                        payment_type=Payment.PaymentType.DEPOSIT,
+                        status=Payment.Status.COMPLETED,
+                    ).aggregate(total=models.Sum("amount"))["total"]
+                    or 0
+                )
                 booking.deposit_amount = total_deposits
-                booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")  # 30% threshold
+                booking.deposit_paid = total_deposits >= booking.total_amount * Decimal(
+                    "0.3"
+                )  # 30% threshold
                 booking.save(update_fields=["deposit_amount", "deposit_paid"])
 
         return payment
@@ -1293,9 +1353,7 @@ class ExchangeRateCreateSerializer(serializers.ModelSerializer):
             to_currency=to_currency,
             date=date,
         ).exists():
-            raise serializers.ValidationError(
-                "Tỷ giá cho cặp tiền tệ này vào ngày này đã tồn tại."
-            )
+            raise serializers.ValidationError("Tỷ giá cho cặp tiền tệ này vào ngày này đã tồn tại.")
 
         return attrs
 
@@ -1383,13 +1441,13 @@ class ReceiptGenerateSerializer(serializers.Serializer):
     booking_id = serializers.IntegerField(required=False)
     payment_id = serializers.IntegerField(required=False)
     include_folio = serializers.BooleanField(default=True)
-    language = serializers.ChoiceField(choices=[("vi", "Vietnamese"), ("en", "English")], default="vi")
+    language = serializers.ChoiceField(
+        choices=[("vi", "Vietnamese"), ("en", "English")], default="vi"
+    )
 
     def validate(self, attrs):
         if not attrs.get("booking_id") and not attrs.get("payment_id"):
-            raise serializers.ValidationError(
-                "Phải cung cấp booking_id hoặc payment_id."
-            )
+            raise serializers.ValidationError("Phải cung cấp booking_id hoặc payment_id.")
         return attrs
 
 
@@ -1530,9 +1588,15 @@ class MaintenanceRequestSerializer(serializers.ModelSerializer):
     """Full maintenance request serializer."""
 
     room_number = serializers.CharField(source="room.number", read_only=True, allow_null=True)
-    assigned_to_name = serializers.CharField(source="assigned_to.get_full_name", read_only=True, allow_null=True)
-    reported_by_name = serializers.CharField(source="reported_by.get_full_name", read_only=True, allow_null=True)
-    completed_by_name = serializers.CharField(source="completed_by.get_full_name", read_only=True, allow_null=True)
+    assigned_to_name = serializers.CharField(
+        source="assigned_to.get_full_name", read_only=True, allow_null=True
+    )
+    reported_by_name = serializers.CharField(
+        source="reported_by.get_full_name", read_only=True, allow_null=True
+    )
+    completed_by_name = serializers.CharField(
+        source="completed_by.get_full_name", read_only=True, allow_null=True
+    )
     priority_display = serializers.CharField(source="get_priority_display", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     category_display = serializers.CharField(source="get_category_display", read_only=True)
@@ -1566,7 +1630,15 @@ class MaintenanceRequestSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "created_at", "updated_at", "reported_by", "assigned_at", "completed_at", "completed_by"]
+        read_only_fields = [
+            "id",
+            "created_at",
+            "updated_at",
+            "reported_by",
+            "assigned_at",
+            "completed_at",
+            "completed_by",
+        ]
 
 
 class MaintenanceRequestCreateSerializer(serializers.ModelSerializer):
@@ -1587,9 +1659,7 @@ class MaintenanceRequestCreateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         # Require either room or location_description
         if not attrs.get("room") and not attrs.get("location_description"):
-            raise serializers.ValidationError(
-                "Vui lòng chọn phòng hoặc nhập vị trí cụ thể."
-            )
+            raise serializers.ValidationError("Vui lòng chọn phòng hoặc nhập vị trí cụ thể.")
         return attrs
 
     def create(self, validated_data):
@@ -1846,9 +1916,7 @@ class MinibarSaleBulkCreateSerializer(serializers.Serializer):
     def validate_items(self, value):
         for item_data in value:
             if "item_id" not in item_data or "quantity" not in item_data:
-                raise serializers.ValidationError(
-                    "Mỗi mục phải có item_id và quantity."
-                )
+                raise serializers.ValidationError("Mỗi mục phải có item_id và quantity.")
             if item_data["quantity"] < 1:
                 raise serializers.ValidationError("Số lượng phải lớn hơn 0.")
             try:
@@ -1895,7 +1963,7 @@ class MinibarSaleBulkCreateSerializer(serializers.Serializer):
 
 class OccupancyReportSerializer(serializers.Serializer):
     """Occupancy report data serializer."""
-    
+
     date = serializers.DateField()
     total_rooms = serializers.IntegerField()
     occupied_rooms = serializers.IntegerField()
@@ -1906,7 +1974,7 @@ class OccupancyReportSerializer(serializers.Serializer):
 
 class OccupancyReportRequestSerializer(serializers.Serializer):
     """Request parameters for occupancy report."""
-    
+
     start_date = serializers.DateField(required=True)
     end_date = serializers.DateField(required=True)
     group_by = serializers.ChoiceField(
@@ -1915,18 +1983,16 @@ class OccupancyReportRequestSerializer(serializers.Serializer):
         required=False,
     )
     room_type = serializers.IntegerField(required=False, allow_null=True)
-    
+
     def validate(self, attrs):
         if attrs["start_date"] > attrs["end_date"]:
-            raise serializers.ValidationError({
-                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
 class RevenueReportSerializer(serializers.Serializer):
     """Revenue report data serializer."""
-    
+
     date = serializers.DateField(required=False)
     period = serializers.CharField(required=False)  # For week/month grouping
     room_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
@@ -1940,7 +2006,7 @@ class RevenueReportSerializer(serializers.Serializer):
 
 class RevenueReportRequestSerializer(serializers.Serializer):
     """Request parameters for revenue report."""
-    
+
     start_date = serializers.DateField(required=True)
     end_date = serializers.DateField(required=True)
     group_by = serializers.ChoiceField(
@@ -1949,26 +2015,28 @@ class RevenueReportRequestSerializer(serializers.Serializer):
         required=False,
     )
     category = serializers.IntegerField(required=False, allow_null=True)
-    
+
     def validate(self, attrs):
         if attrs["start_date"] > attrs["end_date"]:
-            raise serializers.ValidationError({
-                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
 class KPIReportSerializer(serializers.Serializer):
     """KPI metrics serializer (RevPAR, ADR, etc.)."""
-    
+
     period_start = serializers.DateField()
     period_end = serializers.DateField()
-    
+
     # Key metrics
-    revpar = serializers.DecimalField(max_digits=15, decimal_places=0, help_text="Revenue Per Available Room")
+    revpar = serializers.DecimalField(
+        max_digits=15, decimal_places=0, help_text="Revenue Per Available Room"
+    )
     adr = serializers.DecimalField(max_digits=15, decimal_places=0, help_text="Average Daily Rate")
-    occupancy_rate = serializers.DecimalField(max_digits=5, decimal_places=2, help_text="Occupancy percentage")
-    
+    occupancy_rate = serializers.DecimalField(
+        max_digits=5, decimal_places=2, help_text="Occupancy percentage"
+    )
+
     # Totals
     total_room_nights_available = serializers.IntegerField()
     total_room_nights_sold = serializers.IntegerField()
@@ -1976,7 +2044,7 @@ class KPIReportSerializer(serializers.Serializer):
     total_revenue = serializers.DecimalField(max_digits=15, decimal_places=0)
     total_expenses = serializers.DecimalField(max_digits=15, decimal_places=0)
     net_profit = serializers.DecimalField(max_digits=15, decimal_places=0)
-    
+
     # Comparisons (vs previous period)
     revpar_change = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
     adr_change = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
@@ -1986,22 +2054,20 @@ class KPIReportSerializer(serializers.Serializer):
 
 class KPIReportRequestSerializer(serializers.Serializer):
     """Request parameters for KPI report."""
-    
+
     start_date = serializers.DateField(required=True)
     end_date = serializers.DateField(required=True)
     compare_previous = serializers.BooleanField(default=True, required=False)
-    
+
     def validate(self, attrs):
         if attrs["start_date"] > attrs["end_date"]:
-            raise serializers.ValidationError({
-                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
 class ExpenseReportSerializer(serializers.Serializer):
     """Expense report by category."""
-    
+
     category_id = serializers.IntegerField()
     category_name = serializers.CharField()
     category_icon = serializers.CharField()
@@ -2013,21 +2079,19 @@ class ExpenseReportSerializer(serializers.Serializer):
 
 class ExpenseReportRequestSerializer(serializers.Serializer):
     """Request parameters for expense report."""
-    
+
     start_date = serializers.DateField(required=True)
     end_date = serializers.DateField(required=True)
-    
+
     def validate(self, attrs):
         if attrs["start_date"] > attrs["end_date"]:
-            raise serializers.ValidationError({
-                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
 class ChannelPerformanceSerializer(serializers.Serializer):
     """Channel (booking source) performance data."""
-    
+
     source = serializers.CharField()
     source_display = serializers.CharField()
     booking_count = serializers.IntegerField()
@@ -2041,21 +2105,19 @@ class ChannelPerformanceSerializer(serializers.Serializer):
 
 class ChannelPerformanceRequestSerializer(serializers.Serializer):
     """Request parameters for channel performance report."""
-    
+
     start_date = serializers.DateField(required=True)
     end_date = serializers.DateField(required=True)
-    
+
     def validate(self, attrs):
         if attrs["start_date"] > attrs["end_date"]:
-            raise serializers.ValidationError({
-                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
 class GuestDemographicsSerializer(serializers.Serializer):
     """Guest demographics data."""
-    
+
     nationality = serializers.CharField()
     guest_count = serializers.IntegerField()
     booking_count = serializers.IntegerField()
@@ -2067,7 +2129,7 @@ class GuestDemographicsSerializer(serializers.Serializer):
 
 class GuestDemographicsRequestSerializer(serializers.Serializer):
     """Request parameters for guest demographics report."""
-    
+
     start_date = serializers.DateField(required=True)
     end_date = serializers.DateField(required=True)
     group_by = serializers.ChoiceField(
@@ -2075,28 +2137,28 @@ class GuestDemographicsRequestSerializer(serializers.Serializer):
         default="nationality",
         required=False,
     )
-    
+
     def validate(self, attrs):
         if attrs["start_date"] > attrs["end_date"]:
-            raise serializers.ValidationError({
-                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
 class ComparativeReportSerializer(serializers.Serializer):
     """Comparative report (period over period)."""
-    
+
     metric = serializers.CharField()
     current_period_value = serializers.DecimalField(max_digits=15, decimal_places=2)
-    previous_period_value = serializers.DecimalField(max_digits=15, decimal_places=2, allow_null=True)
+    previous_period_value = serializers.DecimalField(
+        max_digits=15, decimal_places=2, allow_null=True
+    )
     change_amount = serializers.DecimalField(max_digits=15, decimal_places=2, allow_null=True)
     change_percentage = serializers.DecimalField(max_digits=10, decimal_places=2, allow_null=True)
 
 
 class ComparativeReportRequestSerializer(serializers.Serializer):
     """Request parameters for comparative report."""
-    
+
     current_start = serializers.DateField(required=True)
     current_end = serializers.DateField(required=True)
     previous_start = serializers.DateField(required=False, allow_null=True)
@@ -2106,23 +2168,23 @@ class ComparativeReportRequestSerializer(serializers.Serializer):
         default="previous_period",
         required=False,
     )
-    
+
     def validate(self, attrs):
         if attrs["current_start"] > attrs["current_end"]:
-            raise serializers.ValidationError({
-                "current_end": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError(
+                {"current_end": "Ngày kết thúc phải sau ngày bắt đầu."}
+            )
         if attrs.get("comparison_type") == "custom":
             if not attrs.get("previous_start") or not attrs.get("previous_end"):
-                raise serializers.ValidationError({
-                    "previous_start": "Phải cung cấp khoảng thời gian trước khi so sánh custom."
-                })
+                raise serializers.ValidationError(
+                    {"previous_start": "Phải cung cấp khoảng thời gian trước khi so sánh custom."}
+                )
         return attrs
 
 
 class ExportReportRequestSerializer(serializers.Serializer):
     """Request parameters for report export."""
-    
+
     report_type = serializers.ChoiceField(
         choices=["occupancy", "revenue", "expenses", "kpi", "channels", "demographics"],
         required=True,
@@ -2134,12 +2196,10 @@ class ExportReportRequestSerializer(serializers.Serializer):
         default="xlsx",
         required=False,
     )
-    
+
     def validate(self, attrs):
         if attrs["start_date"] > attrs["end_date"]:
-            raise serializers.ValidationError({
-                "end_date": "Ngày kết thúc phải sau ngày bắt đầu."
-            })
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
@@ -2480,9 +2540,9 @@ class GroupBookingCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         if attrs["check_in_date"] >= attrs["check_out_date"]:
-            raise serializers.ValidationError({
-                "check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."
-            })
+            raise serializers.ValidationError(
+                {"check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."}
+            )
         return attrs
 
     def create(self, validated_data):
@@ -2521,9 +2581,9 @@ class GroupBookingUpdateSerializer(serializers.ModelSerializer):
         check_in = attrs.get("check_in_date", self.instance.check_in_date)
         check_out = attrs.get("check_out_date", self.instance.check_out_date)
         if check_in >= check_out:
-            raise serializers.ValidationError({
-                "check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."
-            })
+            raise serializers.ValidationError(
+                {"check_out_date": "Ngày trả phòng phải sau ngày nhận phòng."}
+            )
         return attrs
 
 
@@ -2538,9 +2598,7 @@ class InspectionTemplateSerializer(serializers.ModelSerializer):
     inspection_type_display = serializers.CharField(
         source="get_inspection_type_display", read_only=True
     )
-    room_type_name = serializers.CharField(
-        source="room_type.name", read_only=True, allow_null=True
-    )
+    room_type_name = serializers.CharField(source="room_type.name", read_only=True, allow_null=True)
     item_count = serializers.SerializerMethodField()
     created_by_name = serializers.CharField(
         source="created_by.get_full_name", read_only=True, allow_null=True
@@ -2577,9 +2635,7 @@ class InspectionTemplateListSerializer(serializers.ModelSerializer):
     inspection_type_display = serializers.CharField(
         source="get_inspection_type_display", read_only=True
     )
-    room_type_name = serializers.CharField(
-        source="room_type.name", read_only=True, allow_null=True
-    )
+    room_type_name = serializers.CharField(source="room_type.name", read_only=True, allow_null=True)
     item_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -2639,15 +2695,11 @@ class RoomInspectionSerializer(serializers.ModelSerializer):
     """Full serializer for Room Inspections."""
 
     room_number = serializers.CharField(source="room.number", read_only=True)
-    room_type_name = serializers.CharField(
-        source="room.room_type.name", read_only=True
-    )
+    room_type_name = serializers.CharField(source="room.room_type.name", read_only=True)
     inspection_type_display = serializers.CharField(
         source="get_inspection_type_display", read_only=True
     )
-    status_display = serializers.CharField(
-        source="get_status_display", read_only=True
-    )
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
     inspector_name = serializers.CharField(
         source="inspector.get_full_name", read_only=True, allow_null=True
     )
@@ -2712,9 +2764,7 @@ class RoomInspectionListSerializer(serializers.ModelSerializer):
     inspection_type_display = serializers.CharField(
         source="get_inspection_type_display", read_only=True
     )
-    status_display = serializers.CharField(
-        source="get_status_display", read_only=True
-    )
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
     inspector_name = serializers.CharField(
         source="inspector.get_full_name", read_only=True, allow_null=True
     )
@@ -2924,9 +2974,7 @@ class RatePlanCreateSerializer(serializers.ModelSerializer):
         valid_from = attrs.get("valid_from")
         valid_to = attrs.get("valid_to")
         if valid_from and valid_to and valid_from > valid_to:
-            raise serializers.ValidationError(
-                {"valid_to": "Ngày kết thúc phải sau ngày bắt đầu."}
-            )
+            raise serializers.ValidationError({"valid_to": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
@@ -2957,9 +3005,7 @@ class RatePlanUpdateSerializer(serializers.ModelSerializer):
         valid_from = attrs.get("valid_from", self.instance.valid_from if self.instance else None)
         valid_to = attrs.get("valid_to", self.instance.valid_to if self.instance else None)
         if valid_from and valid_to and valid_from > valid_to:
-            raise serializers.ValidationError(
-                {"valid_to": "Ngày kết thúc phải sau ngày bắt đầu."}
-            )
+            raise serializers.ValidationError({"valid_to": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
@@ -3057,9 +3103,7 @@ class DateRateOverrideBulkCreateSerializer(serializers.Serializer):
         start_date = attrs.get("start_date")
         end_date = attrs.get("end_date")
         if start_date > end_date:
-            raise serializers.ValidationError(
-                {"end_date": "Ngày kết thúc phải sau ngày bắt đầu."}
-            )
+            raise serializers.ValidationError({"end_date": "Ngày kết thúc phải sau ngày bắt đầu."})
         return attrs
 
 
@@ -3160,9 +3204,7 @@ class MessageTemplateSerializer(serializers.ModelSerializer):
     template_type_display = serializers.CharField(
         source="get_template_type_display", read_only=True
     )
-    channel_display = serializers.CharField(
-        source="get_channel_display", read_only=True
-    )
+    channel_display = serializers.CharField(source="get_channel_display", read_only=True)
     available_variables = serializers.SerializerMethodField()
 
     class Meta:
@@ -3193,9 +3235,7 @@ class MessageTemplateListSerializer(serializers.ModelSerializer):
     template_type_display = serializers.CharField(
         source="get_template_type_display", read_only=True
     )
-    channel_display = serializers.CharField(
-        source="get_channel_display", read_only=True
-    )
+    channel_display = serializers.CharField(source="get_channel_display", read_only=True)
 
     class Meta:
         model = MessageTemplate
@@ -3215,15 +3255,9 @@ class GuestMessageSerializer(serializers.ModelSerializer):
 
     guest_name = serializers.CharField(source="guest.full_name", read_only=True)
     booking_display = serializers.SerializerMethodField()
-    template_name = serializers.CharField(
-        source="template.name", read_only=True, default=None
-    )
-    channel_display = serializers.CharField(
-        source="get_channel_display", read_only=True
-    )
-    status_display = serializers.CharField(
-        source="get_status_display", read_only=True
-    )
+    template_name = serializers.CharField(source="template.name", read_only=True, default=None)
+    channel_display = serializers.CharField(source="get_channel_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
     sent_by_name = serializers.CharField(
         source="sent_by.get_full_name", read_only=True, default=None
     )
@@ -3271,12 +3305,8 @@ class GuestMessageListSerializer(serializers.ModelSerializer):
     """Lightweight guest message serializer for listing."""
 
     guest_name = serializers.CharField(source="guest.full_name", read_only=True)
-    channel_display = serializers.CharField(
-        source="get_channel_display", read_only=True
-    )
-    status_display = serializers.CharField(
-        source="get_status_display", read_only=True
-    )
+    channel_display = serializers.CharField(source="get_channel_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
 
     class Meta:
         model = GuestMessage
@@ -3312,5 +3342,3 @@ class PreviewMessageSerializer(serializers.Serializer):
     template = serializers.IntegerField()
     guest = serializers.IntegerField()
     booking = serializers.IntegerField(required=False, allow_null=True)
-
-

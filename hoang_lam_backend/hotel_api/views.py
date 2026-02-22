@@ -8,7 +8,12 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Q
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema, extend_schema_view
+from drf_spectacular.utils import (
+    OpenApiParameter,
+    OpenApiResponse,
+    extend_schema,
+    extend_schema_view,
+)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -18,7 +23,30 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from rest_framework.throttling import ScopedRateThrottle
 
-from .models import Booking, DateRateOverride, DeviceToken, FinancialCategory, FinancialEntry, FolioItem, GroupBooking, Guest, GuestMessage, HousekeepingTask, InspectionTemplate, LostAndFound, MaintenanceRequest, MessageTemplate, MinibarItem, MinibarSale, NightAudit, Notification, RatePlan, Room, RoomInspection, RoomType
+from .models import (
+    Booking,
+    DateRateOverride,
+    DeviceToken,
+    FinancialCategory,
+    FinancialEntry,
+    FolioItem,
+    GroupBooking,
+    Guest,
+    GuestMessage,
+    HousekeepingTask,
+    InspectionTemplate,
+    LostAndFound,
+    MaintenanceRequest,
+    MessageTemplate,
+    MinibarItem,
+    MinibarSale,
+    NightAudit,
+    Notification,
+    RatePlan,
+    Room,
+    RoomInspection,
+    RoomType,
+)
 from .permissions import IsManager, IsStaff, IsStaffOrManager
 from .serializers import (
     BookingListSerializer,
@@ -390,7 +418,9 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
         # Check if any rooms exist for this type
         if instance.rooms.exists():
             return Response(
-                {"detail": "Không thể xóa loại phòng đã có phòng. Hãy xóa hoặc chuyển phòng trước."},
+                {
+                    "detail": "Không thể xóa loại phòng đã có phòng. Hãy xóa hoặc chuyển phòng trước."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -402,13 +432,19 @@ class RoomTypeViewSet(viewsets.ModelViewSet):
         summary="List rooms",
         description="Get list of all rooms with filtering options.",
         parameters=[
-            OpenApiParameter(name="status", type=str, description="Filter by status", required=False),
+            OpenApiParameter(
+                name="status", type=str, description="Filter by status", required=False
+            ),
             OpenApiParameter(
                 name="room_type", type=int, description="Filter by room type ID", required=False
             ),
             OpenApiParameter(name="floor", type=int, description="Filter by floor", required=False),
-            OpenApiParameter(name="is_active", type=bool, description="Filter by active status", required=False),
-            OpenApiParameter(name="search", type=str, description="Search by room number or name", required=False),
+            OpenApiParameter(
+                name="is_active", type=bool, description="Filter by active status", required=False
+            ),
+            OpenApiParameter(
+                name="search", type=str, description="Search by room number or name", required=False
+            ),
         ],
         responses={200: RoomListSerializer(many=True)},
         tags=["Room Management"],
@@ -495,7 +531,9 @@ class RoomViewSet(viewsets.ModelViewSet):
         # Search by room number or name
         search_param = self.request.query_params.get("search")
         if search_param:
-            queryset = queryset.filter(Q(number__icontains=search_param) | Q(name__icontains=search_param))
+            queryset = queryset.filter(
+                Q(number__icontains=search_param) | Q(name__icontains=search_param)
+            )
 
         return queryset
 
@@ -535,8 +573,14 @@ class RoomViewSet(viewsets.ModelViewSet):
                 response={
                     "type": "object",
                     "properties": {
-                        "available_rooms": {"type": "array", "items": {"$ref": "#/components/schemas/RoomList"}},
-                        "total_available": {"type": "integer", "description": "Total number of available rooms"},
+                        "available_rooms": {
+                            "type": "array",
+                            "items": {"$ref": "#/components/schemas/RoomList"},
+                        },
+                        "total_available": {
+                            "type": "integer",
+                            "description": "Total number of available rooms",
+                        },
                         "check_in": {"type": "string", "format": "date"},
                         "check_out": {"type": "string", "format": "date"},
                         "room_type": {"type": "integer", "nullable": True},
@@ -656,7 +700,7 @@ class GuestViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """Get queryset with optional filtering and optimized annotations."""
         from django.db.models import Count
-        
+
         queryset = Guest.objects.annotate(booking_count=Count("bookings")).all()
 
         # Filter by VIP status
@@ -703,7 +747,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, SensitiveDataAccessLog.Action.VIEW_GUEST,
+            request,
+            SensitiveDataAccessLog.Action.VIEW_GUEST,
             resource_id=int(kwargs["pk"]),
         )
         return response
@@ -714,7 +759,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, SensitiveDataAccessLog.Action.LIST_GUESTS,
+            request,
+            SensitiveDataAccessLog.Action.LIST_GUESTS,
             details={"query_params": dict(request.query_params)},
         )
         return response
@@ -726,7 +772,8 @@ class GuestViewSet(viewsets.ModelViewSet):
 
         if response.status_code == 201:
             log_sensitive_access(
-                request, SensitiveDataAccessLog.Action.CREATE_GUEST,
+                request,
+                SensitiveDataAccessLog.Action.CREATE_GUEST,
                 resource_id=response.data.get("id"),
             )
         return response
@@ -737,7 +784,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, SensitiveDataAccessLog.Action.UPDATE_GUEST,
+            request,
+            SensitiveDataAccessLog.Action.UPDATE_GUEST,
             resource_id=int(kwargs["pk"]),
         )
         return response
@@ -766,7 +814,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         )
 
         log_sensitive_access(
-            request, SensitiveDataAccessLog.Action.SEARCH_GUEST,
+            request,
+            SensitiveDataAccessLog.Action.SEARCH_GUEST,
             details={"query": query, "results_count": guests.count()},
         )
 
@@ -785,7 +834,10 @@ class GuestViewSet(viewsets.ModelViewSet):
                     "type": "object",
                     "properties": {
                         "guest": {"$ref": "#/components/schemas/Guest"},
-                        "bookings": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
+                        "bookings": {
+                            "type": "array",
+                            "items": {"$ref": "#/components/schemas/BookingList"},
+                        },
                         "total_bookings": {"type": "integer"},
                         "total_stays": {"type": "integer"},
                     },
@@ -798,15 +850,18 @@ class GuestViewSet(viewsets.ModelViewSet):
     def history(self, request, pk=None):
         """Get booking history for a guest."""
         guest = self.get_object()
-        bookings = Booking.objects.filter(guest=guest).select_related("room", "room__room_type").order_by(
-            "-check_in_date"
+        bookings = (
+            Booking.objects.filter(guest=guest)
+            .select_related("room", "room__room_type")
+            .order_by("-check_in_date")
         )
 
         from hotel_api.audit import log_sensitive_access
         from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, SensitiveDataAccessLog.Action.VIEW_HISTORY,
+            request,
+            SensitiveDataAccessLog.Action.VIEW_HISTORY,
             resource_id=int(pk),
         )
 
@@ -881,7 +936,8 @@ class GuestViewSet(viewsets.ModelViewSet):
         from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, SensitiveDataAccessLog.Action.EXPORT_DECLARATION,
+            request,
+            SensitiveDataAccessLog.Action.EXPORT_DECLARATION,
             details={"query_params": dict(request.query_params)},
         )
 
@@ -946,10 +1002,18 @@ class GuestViewSet(viewsets.ModelViewSet):
 
         # ── Helper: nationality display (Vietnamese name for official forms) ──
         nationality_map = {
-            "vietnam": "Việt Nam", "united states": "Mỹ", "usa": "Mỹ",
-            "china": "Trung Quốc", "south korea": "Hàn Quốc", "japan": "Nhật Bản",
-            "france": "Pháp", "uk": "Anh", "australia": "Úc", "germany": "Đức",
-            "russia": "Nga", "thailand": "Thái Lan",
+            "vietnam": "Việt Nam",
+            "united states": "Mỹ",
+            "usa": "Mỹ",
+            "china": "Trung Quốc",
+            "south korea": "Hàn Quốc",
+            "japan": "Nhật Bản",
+            "france": "Pháp",
+            "uk": "Anh",
+            "australia": "Úc",
+            "germany": "Đức",
+            "russia": "Nga",
+            "thailand": "Thái Lan",
         }
 
         def fmt_nationality(nat):
@@ -959,9 +1023,17 @@ class GuestViewSet(viewsets.ModelViewSet):
         # Build ĐD10 rows (Vietnamese guests - Nghị định 144/2021)
         # ═══════════════════════════════════════════════════════════
         DD10_HEADERS = [
-            "STT", "Họ và tên", "Ngày sinh", "Giới tính", "Quốc tịch",
-            "Số CMND/CCCD/Hộ chiếu", "Địa chỉ thường trú",
-            "Ngày đến", "Ngày đi", "Số phòng", "Ghi chú",
+            "STT",
+            "Họ và tên",
+            "Ngày sinh",
+            "Giới tính",
+            "Quốc tịch",
+            "Số CMND/CCCD/Hộ chiếu",
+            "Địa chỉ thường trú",
+            "Ngày đến",
+            "Ngày đi",
+            "Số phòng",
+            "Ghi chú",
         ]
 
         def build_dd10_rows(bkings):
@@ -970,32 +1042,44 @@ class GuestViewSet(viewsets.ModelViewSet):
             rows = []
             for i, bk in enumerate(bkings, 1):
                 g = bk.guest
-                rows.append([
-                    i,
-                    g.full_name,
-                    fmt_date(g.date_of_birth),
-                    fmt_gender(g.gender),
-                    fmt_nationality(g.nationality),
-                    decrypt(g.id_number) or "",
-                    g.address or "",
-                    fmt_date(bk.check_in_date),
-                    fmt_date(bk.check_out_date),
-                    bk.room.number,
-                    bk.notes or "",
-                ])
+                rows.append(
+                    [
+                        i,
+                        g.full_name,
+                        fmt_date(g.date_of_birth),
+                        fmt_gender(g.gender),
+                        fmt_nationality(g.nationality),
+                        decrypt(g.id_number) or "",
+                        g.address or "",
+                        fmt_date(bk.check_in_date),
+                        fmt_date(bk.check_out_date),
+                        bk.room.number,
+                        bk.notes or "",
+                    ]
+                )
             return rows
 
         # ═══════════════════════════════════════════════════════════
         # Build NA17 rows (Foreign guests - Thông tư 04/2015/TT-BCA)
         # ═══════════════════════════════════════════════════════════
         NA17_HEADERS = [
-            "STT", "Họ tên", "Giới tính", "Ngày tháng năm sinh",
-            "Quốc tịch", "Số hộ chiếu", "Loại hộ chiếu",
-            "Loại giấy tờ nhập cảnh", "Số giấy tờ", "Thời hạn",
-            "Ngày cấp", "Cơ quan cấp",
-            "Ngày nhập cảnh", "Cửa khẩu nhập cảnh",
+            "STT",
+            "Họ tên",
+            "Giới tính",
+            "Ngày tháng năm sinh",
+            "Quốc tịch",
+            "Số hộ chiếu",
+            "Loại hộ chiếu",
+            "Loại giấy tờ nhập cảnh",
+            "Số giấy tờ",
+            "Thời hạn",
+            "Ngày cấp",
+            "Cơ quan cấp",
+            "Ngày nhập cảnh",
+            "Cửa khẩu nhập cảnh",
             "Mục đích nhập cảnh",
-            "Tạm trú từ ngày", "Tạm trú đến ngày",
+            "Tạm trú từ ngày",
+            "Tạm trú đến ngày",
             "Số phòng",
         ]
 
@@ -1005,26 +1089,28 @@ class GuestViewSet(viewsets.ModelViewSet):
             rows = []
             for i, bk in enumerate(bkings, 1):
                 g = bk.guest
-                rows.append([
-                    i,
-                    g.full_name,
-                    fmt_gender(g.gender),
-                    fmt_date(g.date_of_birth),
-                    fmt_nationality(g.nationality),
-                    decrypt(g.id_number) or "",
-                    g.get_passport_type_display() if g.passport_type else "",
-                    g.get_visa_type_display() if g.visa_type else "",
-                    decrypt(g.visa_number) or "",
-                    fmt_date(g.visa_expiry_date),
-                    fmt_date(g.visa_issue_date),
-                    g.visa_issuing_authority or "",
-                    fmt_date(g.entry_date),
-                    g.entry_port or "",
-                    g.entry_purpose or "",
-                    fmt_date(bk.check_in_date),
-                    fmt_date(bk.check_out_date),
-                    bk.room.number,
-                ])
+                rows.append(
+                    [
+                        i,
+                        g.full_name,
+                        fmt_gender(g.gender),
+                        fmt_date(g.date_of_birth),
+                        fmt_nationality(g.nationality),
+                        decrypt(g.id_number) or "",
+                        g.get_passport_type_display() if g.passport_type else "",
+                        g.get_visa_type_display() if g.visa_type else "",
+                        decrypt(g.visa_number) or "",
+                        fmt_date(g.visa_expiry_date),
+                        fmt_date(g.visa_issue_date),
+                        g.visa_issuing_authority or "",
+                        fmt_date(g.entry_date),
+                        g.entry_port or "",
+                        g.entry_purpose or "",
+                        fmt_date(bk.check_in_date),
+                        fmt_date(bk.check_out_date),
+                        bk.room.number,
+                    ]
+                )
             return rows
 
         # ── Mark bookings as declared ──
@@ -1096,7 +1182,9 @@ class GuestViewSet(viewsets.ModelViewSet):
                     for row_data in rows:
                         if col_idx - 1 < len(row_data):
                             max_len = max(max_len, len(str(row_data[col_idx - 1])))
-                    ws.column_dimensions[openpyxl.utils.get_column_letter(col_idx)].width = min(max_len + 4, 40)
+                    ws.column_dimensions[openpyxl.utils.get_column_letter(col_idx)].width = min(
+                        max_len + 4, 40
+                    )
 
             establishment_info = [HOTEL_NAME, HOTEL_ADDRESS, HOTEL_PHONE]
 
@@ -1368,10 +1456,14 @@ class BookingViewSet(viewsets.ModelViewSet):
                 # Only revert room if it was occupied by this booking
                 if old_status == Booking.Status.CHECKED_IN and room.status == Room.Status.OCCUPIED:
                     # Check if another active booking occupies this room
-                    other_active = Booking.objects.filter(
-                        room=room,
-                        status=Booking.Status.CHECKED_IN,
-                    ).exclude(pk=booking.pk).exists()
+                    other_active = (
+                        Booking.objects.filter(
+                            room=room,
+                            status=Booking.Status.CHECKED_IN,
+                        )
+                        .exclude(pk=booking.pk)
+                        .exists()
+                    )
                     if not other_active:
                         room.status = Room.Status.AVAILABLE
                         room.save()
@@ -1444,7 +1536,9 @@ class BookingViewSet(viewsets.ModelViewSet):
         # Use atomic transaction to ensure consistency
         with transaction.atomic():
             booking.status = Booking.Status.CHECKED_IN
-            booking.actual_check_in = serializer.validated_data.get("actual_check_in", timezone.now())
+            booking.actual_check_in = serializer.validated_data.get(
+                "actual_check_in", timezone.now()
+            )
             booking.notes = serializer.validated_data.get("notes", booking.notes or "")
             booking.save()
 
@@ -1507,11 +1601,15 @@ class BookingViewSet(viewsets.ModelViewSet):
         # Use atomic transaction to ensure consistency
         with transaction.atomic():
             booking.status = Booking.Status.CHECKED_OUT
-            booking.actual_check_out = serializer.validated_data.get("actual_check_out", timezone.now())
+            booking.actual_check_out = serializer.validated_data.get(
+                "actual_check_out", timezone.now()
+            )
             # Append to existing notes if provided
             additional_notes = serializer.validated_data.get("notes", "")
             if additional_notes:
-                booking.notes = f"{booking.notes}\n{additional_notes}" if booking.notes else additional_notes
+                booking.notes = (
+                    f"{booking.notes}\n{additional_notes}" if booking.notes else additional_notes
+                )
             # Store additional charges
             booking.additional_charges = serializer.validated_data.get("additional_charges", 0)
             booking.save()
@@ -1551,7 +1649,12 @@ class BookingViewSet(viewsets.ModelViewSet):
                 ).first()
 
             if room_income_category:
-                total_revenue = booking.total_amount + booking.additional_charges + booking.early_check_in_fee + booking.late_check_out_fee
+                total_revenue = (
+                    booking.total_amount
+                    + booking.additional_charges
+                    + booking.early_check_in_fee
+                    + booking.late_check_out_fee
+                )
                 FinancialEntry.objects.create(
                     entry_type=FinancialEntry.EntryType.INCOME,
                     category=room_income_category,
@@ -1612,16 +1715,25 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking.early_check_in_hours = hours
             booking.early_check_in_fee = fee
             if notes:
-                booking.notes = f"{booking.notes}\n[Nhận sớm] {notes}" if booking.notes else f"[Nhận sớm] {notes}"
-            booking.save(update_fields=[
-                "early_check_in_hours", "early_check_in_fee", "notes",
-            ])
+                booking.notes = (
+                    f"{booking.notes}\n[Nhận sớm] {notes}"
+                    if booking.notes
+                    else f"[Nhận sớm] {notes}"
+                )
+            booking.save(
+                update_fields=[
+                    "early_check_in_hours",
+                    "early_check_in_fee",
+                    "notes",
+                ]
+            )
 
             # Optionally create a FolioItem for tracking
             # Mark as is_paid=True to prevent double-counting in additional_charges
             # (fees are already tracked via dedicated fields in balance_due)
             if create_folio and fee > 0:
                 from datetime import date as date_today
+
                 FolioItem.objects.get_or_create(
                     booking=booking,
                     item_type="early_checkin",
@@ -1668,15 +1780,24 @@ class BookingViewSet(viewsets.ModelViewSet):
             booking.late_check_out_hours = hours
             booking.late_check_out_fee = fee
             if notes:
-                booking.notes = f"{booking.notes}\n[Trả muộn] {notes}" if booking.notes else f"[Trả muộn] {notes}"
-            booking.save(update_fields=[
-                "late_check_out_hours", "late_check_out_fee", "notes",
-            ])
+                booking.notes = (
+                    f"{booking.notes}\n[Trả muộn] {notes}"
+                    if booking.notes
+                    else f"[Trả muộn] {notes}"
+                )
+            booking.save(
+                update_fields=[
+                    "late_check_out_hours",
+                    "late_check_out_fee",
+                    "notes",
+                ]
+            )
 
             # Optionally create a FolioItem for tracking
             # Mark as is_paid=True to prevent double-counting in additional_charges
             if create_folio and fee > 0:
                 from datetime import date as date_today
+
                 FolioItem.objects.get_or_create(
                     booking=booking,
                     item_type="late_checkout",
@@ -1705,8 +1826,14 @@ class BookingViewSet(viewsets.ModelViewSet):
                 response={
                     "type": "object",
                     "properties": {
-                        "check_ins": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
-                        "check_outs": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
+                        "check_ins": {
+                            "type": "array",
+                            "items": {"$ref": "#/components/schemas/BookingList"},
+                        },
+                        "check_outs": {
+                            "type": "array",
+                            "items": {"$ref": "#/components/schemas/BookingList"},
+                        },
                         "total_check_ins": {"type": "integer"},
                         "total_check_outs": {"type": "integer"},
                     },
@@ -1767,7 +1894,10 @@ class BookingViewSet(viewsets.ModelViewSet):
                 response={
                     "type": "object",
                     "properties": {
-                        "bookings": {"type": "array", "items": {"$ref": "#/components/schemas/BookingList"}},
+                        "bookings": {
+                            "type": "array",
+                            "items": {"$ref": "#/components/schemas/BookingList"},
+                        },
                         "total": {"type": "integer"},
                         "start_date": {"type": "string", "format": "date"},
                         "end_date": {"type": "string", "format": "date"},
@@ -1802,7 +1932,8 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         bookings = (
             Booking.objects.filter(
-                Q(check_in_date__range=[start_date, end_date]) | Q(check_out_date__range=[start_date, end_date])
+                Q(check_in_date__range=[start_date, end_date])
+                | Q(check_out_date__range=[start_date, end_date])
             )
             .select_related("guest", "room", "room__room_type")
             .order_by("check_in_date")
@@ -1891,9 +2022,7 @@ class DashboardView(APIView):
 
         # Room status summary
         room_status = (
-            Room.objects.filter(is_active=True)
-            .values("status")
-            .annotate(count=Count("id"))
+            Room.objects.filter(is_active=True).values("status").annotate(count=Count("id"))
         )
         room_status_dict = {item["status"]: item["count"] for item in room_status}
         total_rooms = Room.objects.filter(is_active=True).count()
@@ -2167,8 +2296,10 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Filter queryset based on query parameters."""
-        queryset = super().get_queryset().select_related(
-            "category", "booking", "booking__room", "booking__guest", "created_by"
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related("category", "booking", "booking__room", "booking__guest", "created_by")
         )
 
         # Filter by entry type
@@ -2255,16 +2386,16 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
         entries = FinancialEntry.objects.filter(date=summary_date)
 
         total_income = (
-            entries.filter(entry_type=FinancialEntry.EntryType.INCOME).aggregate(total=Sum("amount"))[
-                "total"
-            ]
+            entries.filter(entry_type=FinancialEntry.EntryType.INCOME).aggregate(
+                total=Sum("amount")
+            )["total"]
             or 0
         )
 
         total_expense = (
-            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).aggregate(total=Sum("amount"))[
-                "total"
-            ]
+            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).aggregate(
+                total=Sum("amount")
+            )["total"]
             or 0
         )
 
@@ -2289,8 +2420,12 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
                 "total_income": total_income,
                 "total_expense": total_expense,
                 "net_profit": total_income - total_expense,
-                "income_entries": entries.filter(entry_type=FinancialEntry.EntryType.INCOME).count(),
-                "expense_entries": entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).count(),
+                "income_entries": entries.filter(
+                    entry_type=FinancialEntry.EntryType.INCOME
+                ).count(),
+                "expense_entries": entries.filter(
+                    entry_type=FinancialEntry.EntryType.EXPENSE
+                ).count(),
                 "income_by_category": income_by_category,
                 "expense_by_category": expense_by_category,
             },
@@ -2367,16 +2502,16 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
         entries = FinancialEntry.objects.filter(date__year=year, date__month=month)
 
         total_income = (
-            entries.filter(entry_type=FinancialEntry.EntryType.INCOME).aggregate(total=Sum("amount"))[
-                "total"
-            ]
+            entries.filter(entry_type=FinancialEntry.EntryType.INCOME).aggregate(
+                total=Sum("amount")
+            )["total"]
             or 0
         )
 
         total_expense = (
-            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).aggregate(total=Sum("amount"))[
-                "total"
-            ]
+            entries.filter(entry_type=FinancialEntry.EntryType.EXPENSE).aggregate(
+                total=Sum("amount")
+            )["total"]
             or 0
         )
 
@@ -2767,7 +2902,11 @@ class PaymentViewSet(viewsets.ModelViewSet):
         description="Get a list of payments with optional filtering.",
         parameters=[
             OpenApiParameter("booking", OpenApiTypes.INT, description="Filter by booking ID"),
-            OpenApiParameter("payment_type", OpenApiTypes.STR, description="Filter by type (deposit, room_charge, etc.)"),
+            OpenApiParameter(
+                "payment_type",
+                OpenApiTypes.STR,
+                description="Filter by type (deposit, room_charge, etc.)",
+            ),
             OpenApiParameter("status", OpenApiTypes.STR, description="Filter by status"),
             OpenApiParameter("date_from", OpenApiTypes.DATE, description="Filter by date from"),
             OpenApiParameter("date_to", OpenApiTypes.DATE, description="Filter by date to"),
@@ -2820,11 +2959,14 @@ class PaymentViewSet(viewsets.ModelViewSet):
             # Update booking deposit amount
             from django.db.models import Sum
 
-            total_deposits = Payment.objects.filter(
-                booking=booking,
-                payment_type=Payment.PaymentType.DEPOSIT,
-                status=Payment.Status.COMPLETED,
-            ).aggregate(total=Sum("amount"))["total"] or 0
+            total_deposits = (
+                Payment.objects.filter(
+                    booking=booking,
+                    payment_type=Payment.PaymentType.DEPOSIT,
+                    status=Payment.Status.COMPLETED,
+                ).aggregate(total=Sum("amount"))["total"]
+                or 0
+            )
 
             booking.deposit_amount = total_deposits
             booking.deposit_paid = total_deposits >= booking.total_amount * Decimal("0.3")
@@ -2866,13 +3008,17 @@ class PaymentViewSet(viewsets.ModelViewSet):
         """Get bookings with outstanding deposits."""
         from .serializers import OutstandingDepositSerializer
 
-        bookings = Booking.objects.filter(
-            deposit_paid=False,
-            status__in=[
-                Booking.Status.CONFIRMED,
-                Booking.Status.CHECKED_IN,
-            ],
-        ).select_related("room__room_type", "guest").order_by("check_in_date")
+        bookings = (
+            Booking.objects.filter(
+                deposit_paid=False,
+                status__in=[
+                    Booking.Status.CONFIRMED,
+                    Booking.Status.CHECKED_IN,
+                ],
+            )
+            .select_related("room__room_type", "guest")
+            .order_by("check_in_date")
+        )
 
         serializer = OutstandingDepositSerializer(bookings, many=True)
         return Response(serializer.data)
@@ -3004,14 +3150,16 @@ class FolioItemViewSet(viewsets.ModelViewSet):
             unpaid=Sum("total_price", filter=models.Q(is_paid=False)),
         )
 
-        return Response({
-            "items": serializer.data,
-            "summary": {
-                "total": summary["total"] or 0,
-                "paid": summary["paid"] or 0,
-                "unpaid": summary["unpaid"] or 0,
-            },
-        })
+        return Response(
+            {
+                "items": serializer.data,
+                "summary": {
+                    "total": summary["total"] or 0,
+                    "paid": summary["paid"] or 0,
+                    "unpaid": summary["unpaid"] or 0,
+                },
+            }
+        )
 
 
 # ============================================================
@@ -3074,9 +3222,9 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
         # Get latest rate for each currency pair
         from django.db.models import Max
 
-        latest_dates = ExchangeRate.objects.values(
-            "from_currency", "to_currency"
-        ).annotate(latest_date=Max("date"))
+        latest_dates = ExchangeRate.objects.values("from_currency", "to_currency").annotate(
+            latest_date=Max("date")
+        )
 
         rates = []
         for item in latest_dates:
@@ -3096,14 +3244,17 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
         description="Convert an amount from one currency to another.",
         request=CurrencyConversionSerializer,
         responses={
-            200: {"type": "object", "properties": {
-                "original_amount": {"type": "number"},
-                "from_currency": {"type": "string"},
-                "converted_amount": {"type": "number"},
-                "to_currency": {"type": "string"},
-                "rate": {"type": "number"},
-                "date": {"type": "string", "format": "date"},
-            }},
+            200: {
+                "type": "object",
+                "properties": {
+                    "original_amount": {"type": "number"},
+                    "from_currency": {"type": "string"},
+                    "converted_amount": {"type": "number"},
+                    "to_currency": {"type": "string"},
+                    "rate": {"type": "number"},
+                    "date": {"type": "string", "format": "date"},
+                },
+            },
         },
         tags=["Exchange Rates"],
     )
@@ -3123,14 +3274,16 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
 
         # If same currency, no conversion needed
         if from_currency == to_currency:
-            return Response({
-                "original_amount": amount,
-                "from_currency": from_currency,
-                "converted_amount": amount,
-                "to_currency": to_currency,
-                "rate": 1,
-                "date": date or "N/A",
-            })
+            return Response(
+                {
+                    "original_amount": amount,
+                    "from_currency": from_currency,
+                    "converted_amount": amount,
+                    "to_currency": to_currency,
+                    "rate": 1,
+                    "date": date or "N/A",
+                }
+            )
 
         # Find exchange rate
         if date:
@@ -3141,10 +3294,14 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
             ).first()
         else:
             # Get latest rate
-            rate = ExchangeRate.objects.filter(
-                from_currency=from_currency,
-                to_currency=to_currency,
-            ).order_by("-date").first()
+            rate = (
+                ExchangeRate.objects.filter(
+                    from_currency=from_currency,
+                    to_currency=to_currency,
+                )
+                .order_by("-date")
+                .first()
+            )
 
         if not rate:
             return Response(
@@ -3154,14 +3311,16 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
 
         converted_amount = amount * rate.rate
 
-        return Response({
-            "original_amount": amount,
-            "from_currency": from_currency,
-            "converted_amount": converted_amount,
-            "to_currency": to_currency,
-            "rate": rate.rate,
-            "date": rate.date,
-        })
+        return Response(
+            {
+                "original_amount": amount,
+                "from_currency": from_currency,
+                "converted_amount": converted_amount,
+                "to_currency": to_currency,
+                "rate": rate.rate,
+                "date": rate.date,
+            }
+        )
 
 
 # ============================================================
@@ -3190,9 +3349,12 @@ class ReceiptViewSet(viewsets.ViewSet):
 
         # Generate receipt number
         date_str = timezone.now().strftime("%Y%m%d")
-        receipt_count = booking.payments.filter(
-            receipt_generated=True,
-        ).count() + 1
+        receipt_count = (
+            booking.payments.filter(
+                receipt_generated=True,
+            ).count()
+            + 1
+        )
         receipt_number = f"INV-{booking.room.number}-{date_str}-{receipt_count:03d}"
 
         # Get folio items
@@ -3277,7 +3439,8 @@ class ReceiptViewSet(viewsets.ViewSet):
         from hotel_api.models import SensitiveDataAccessLog
 
         log_sensitive_access(
-            request, SensitiveDataAccessLog.Action.EXPORT_RECEIPT,
+            request,
+            SensitiveDataAccessLog.Action.EXPORT_RECEIPT,
             resource_id=booking.guest.id,
             details={"booking_id": booking.id},
         )
@@ -3347,9 +3510,15 @@ class ReceiptViewSet(viewsets.ViewSet):
 
             # Booking info
             y -= 0.5 * cm
-            p.drawString(2 * cm, y, f"Phòng: {receipt_data['room_number']} - {receipt_data['room_type']}")
+            p.drawString(
+                2 * cm, y, f"Phòng: {receipt_data['room_number']} - {receipt_data['room_type']}"
+            )
             y -= 0.5 * cm
-            p.drawString(2 * cm, y, f"Ngày: {receipt_data['check_in_date']} - {receipt_data['check_out_date']} ({receipt_data['nights']} đêm)")
+            p.drawString(
+                2 * cm,
+                y,
+                f"Ngày: {receipt_data['check_in_date']} - {receipt_data['check_out_date']} ({receipt_data['nights']} đêm)",
+            )
             y -= cm
 
             # Financial
@@ -3361,7 +3530,9 @@ class ReceiptViewSet(viewsets.ViewSet):
             p.drawString(2 * cm, y, f"Tiền phòng: {receipt_data['room_total']:,.0f} VND")
             y -= 0.5 * cm
             if receipt_data["additional_charges"] > 0:
-                p.drawString(2 * cm, y, f"Chi phí phát sinh: {receipt_data['additional_charges']:,.0f} VND")
+                p.drawString(
+                    2 * cm, y, f"Chi phí phát sinh: {receipt_data['additional_charges']:,.0f} VND"
+                )
                 y -= 0.5 * cm
             p.drawString(2 * cm, y, f"Tổng cộng: {receipt_data['total_amount']:,.0f} VND")
             y -= 0.5 * cm
@@ -3385,10 +3556,12 @@ class ReceiptViewSet(viewsets.ViewSet):
 
         except ImportError:
             # reportlab not installed, return JSON data instead
-            return Response({
-                "detail": "PDF generation not available. Returning JSON data.",
-                "data": receipt_data,
-            })
+            return Response(
+                {
+                    "detail": "PDF generation not available. Returning JSON data.",
+                    "data": receipt_data,
+                }
+            )
 
 
 @extend_schema_view(
@@ -3634,7 +3807,11 @@ class HousekeepingTaskViewSet(viewsets.ModelViewSet):
 
         task.status = "verified"
         if request.data.get("notes"):
-            task.notes = f"{task.notes}\nVerified: {request.data.get('notes')}" if task.notes else f"Verified: {request.data.get('notes')}"
+            task.notes = (
+                f"{task.notes}\nVerified: {request.data.get('notes')}"
+                if task.notes
+                else f"Verified: {request.data.get('notes')}"
+            )
         task.save()
 
         serializer = HousekeepingTaskSerializer(task)
@@ -3918,7 +4095,11 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
 
         maintenance_request.status = "on_hold"
         if request.data.get("reason"):
-            maintenance_request.resolution_notes = f"{maintenance_request.resolution_notes}\nOn hold: {request.data.get('reason')}" if maintenance_request.resolution_notes else f"On hold: {request.data.get('reason')}"
+            maintenance_request.resolution_notes = (
+                f"{maintenance_request.resolution_notes}\nOn hold: {request.data.get('reason')}"
+                if maintenance_request.resolution_notes
+                else f"On hold: {request.data.get('reason')}"
+            )
         maintenance_request.save()
 
         serializer = MaintenanceRequestSerializer(maintenance_request)
@@ -3944,7 +4125,9 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        maintenance_request.status = "in_progress" if maintenance_request.assigned_to else "assigned"
+        maintenance_request.status = (
+            "in_progress" if maintenance_request.assigned_to else "assigned"
+        )
         maintenance_request.save()
 
         serializer = MaintenanceRequestSerializer(maintenance_request)
@@ -3981,7 +4164,11 @@ class MaintenanceRequestViewSet(viewsets.ModelViewSet):
 
         maintenance_request.status = "cancelled"
         if request.data.get("reason"):
-            maintenance_request.resolution_notes = f"{maintenance_request.resolution_notes}\nCancelled: {request.data.get('reason')}" if maintenance_request.resolution_notes else f"Cancelled: {request.data.get('reason')}"
+            maintenance_request.resolution_notes = (
+                f"{maintenance_request.resolution_notes}\nCancelled: {request.data.get('reason')}"
+                if maintenance_request.resolution_notes
+                else f"Cancelled: {request.data.get('reason')}"
+            )
         maintenance_request.save()
 
         serializer = MaintenanceRequestSerializer(maintenance_request)
@@ -4323,7 +4510,9 @@ class MinibarSaleViewSet(viewsets.ModelViewSet):
     )
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = MinibarSaleUpdateSerializer(instance, data=request.data, context={"request": request})
+        serializer = MinibarSaleUpdateSerializer(
+            instance, data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         response_serializer = MinibarSaleSerializer(instance)
@@ -4338,7 +4527,9 @@ class MinibarSaleViewSet(viewsets.ModelViewSet):
     )
     def partial_update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = MinibarSaleUpdateSerializer(instance, data=request.data, partial=True, context={"request": request})
+        serializer = MinibarSaleUpdateSerializer(
+            instance, data=request.data, partial=True, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
         response_serializer = MinibarSaleSerializer(instance)
@@ -4435,9 +4626,9 @@ class MinibarSaleViewSet(viewsets.ModelViewSet):
                 {"detail": "booking parameter is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        queryset = MinibarSale.objects.filter(
-            booking_id=booking_id, is_charged=False
-        ).order_by("-date")
+        queryset = MinibarSale.objects.filter(booking_id=booking_id, is_charged=False).order_by(
+            "-date"
+        )
         serializer = MinibarSaleListSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -4550,9 +4741,9 @@ class OccupancyReportView(APIView):
     Occupancy report endpoint.
     Returns daily/weekly/monthly occupancy data with revenue.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Get occupancy report",
         description="Get occupancy statistics for a date range with optional grouping.",
@@ -4580,37 +4771,39 @@ class OccupancyReportView(APIView):
         from datetime import timedelta
         from django.db.models import Count, Sum, Q
         from django.db.models.functions import TruncDate, TruncWeek, TruncMonth
-        
+
         serializer = OccupancyReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
         group_by = serializer.validated_data.get("group_by", "day")
         room_type_id = serializer.validated_data.get("room_type")
-        
+
         # Get total active rooms (optionally filtered by room type)
         rooms_query = Room.objects.filter(is_active=True)
         if room_type_id:
             rooms_query = rooms_query.filter(room_type_id=room_type_id)
         total_rooms = rooms_query.count()
-        
+
         if total_rooms == 0:
-            return Response({
-                "summary": {
-                    "total_rooms": 0,
-                    "total_room_nights": 0,
-                    "occupied_nights": 0,
-                    "average_occupancy": 0,
-                    "total_revenue": 0,
-                },
-                "data": [],
-            })
-        
+            return Response(
+                {
+                    "summary": {
+                        "total_rooms": 0,
+                        "total_room_nights": 0,
+                        "occupied_nights": 0,
+                        "average_occupancy": 0,
+                        "total_revenue": 0,
+                    },
+                    "data": [],
+                }
+            )
+
         # Calculate occupancy for each day in range
         data = []
         current_date = start_date
-        
+
         # Get all bookings that overlap with date range
         bookings_query = Booking.objects.filter(
             status__in=["confirmed", "checked_in", "checked_out"],
@@ -4619,7 +4812,7 @@ class OccupancyReportView(APIView):
         )
         if room_type_id:
             bookings_query = bookings_query.filter(room__room_type_id=room_type_id)
-        
+
         daily_data = {}
         while current_date <= end_date:
             # Count rooms occupied on this date
@@ -4627,86 +4820,104 @@ class OccupancyReportView(APIView):
                 check_in_date__lte=current_date,
                 check_out_date__gt=current_date,
             ).count()
-            
+
             # Get revenue for this date (from bookings that include this night)
             day_bookings = bookings_query.filter(
                 check_in_date__lte=current_date,
                 check_out_date__gt=current_date,
             )
             day_revenue = sum(b.nightly_rate for b in day_bookings)
-            
+
             daily_data[current_date] = {
                 "date": current_date,
                 "total_rooms": total_rooms,
                 "occupied_rooms": occupied,
                 "available_rooms": total_rooms - occupied,
-                "occupancy_rate": round((occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0,
+                "occupancy_rate": (
+                    round((occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0
+                ),
                 "revenue": day_revenue,
             }
             current_date += timedelta(days=1)
-        
+
         # Group data if needed
         if group_by == "day":
             data = list(daily_data.values())
         elif group_by == "week":
             from collections import defaultdict
+
             weekly = defaultdict(lambda: {"occupied_sum": 0, "revenue_sum": 0, "days": 0})
             for date, day_data in daily_data.items():
                 week_start = date - timedelta(days=date.weekday())
                 weekly[week_start]["occupied_sum"] += day_data["occupied_rooms"]
                 weekly[week_start]["revenue_sum"] += day_data["revenue"]
                 weekly[week_start]["days"] += 1
-            
+
             for week_start, week_data in sorted(weekly.items()):
                 avg_occupied = week_data["occupied_sum"] / week_data["days"]
-                data.append({
-                    "period": f"Week of {week_start.isoformat()}",
-                    "date": week_start,
-                    "total_rooms": total_rooms,
-                    "occupied_rooms": round(avg_occupied, 1),
-                    "available_rooms": round(total_rooms - avg_occupied, 1),
-                    "occupancy_rate": round((avg_occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0,
-                    "revenue": week_data["revenue_sum"],
-                })
+                data.append(
+                    {
+                        "period": f"Week of {week_start.isoformat()}",
+                        "date": week_start,
+                        "total_rooms": total_rooms,
+                        "occupied_rooms": round(avg_occupied, 1),
+                        "available_rooms": round(total_rooms - avg_occupied, 1),
+                        "occupancy_rate": (
+                            round((avg_occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0
+                        ),
+                        "revenue": week_data["revenue_sum"],
+                    }
+                )
         elif group_by == "month":
             from collections import defaultdict
+
             monthly = defaultdict(lambda: {"occupied_sum": 0, "revenue_sum": 0, "days": 0})
             for date, day_data in daily_data.items():
                 month_key = date.replace(day=1)
                 monthly[month_key]["occupied_sum"] += day_data["occupied_rooms"]
                 monthly[month_key]["revenue_sum"] += day_data["revenue"]
                 monthly[month_key]["days"] += 1
-            
+
             for month_start, month_data in sorted(monthly.items()):
                 avg_occupied = month_data["occupied_sum"] / month_data["days"]
-                data.append({
-                    "period": month_start.strftime("%Y-%m"),
-                    "date": month_start,
-                    "total_rooms": total_rooms,
-                    "occupied_rooms": round(avg_occupied, 1),
-                    "available_rooms": round(total_rooms - avg_occupied, 1),
-                    "occupancy_rate": round((avg_occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0,
-                    "revenue": month_data["revenue_sum"],
-                })
-        
+                data.append(
+                    {
+                        "period": month_start.strftime("%Y-%m"),
+                        "date": month_start,
+                        "total_rooms": total_rooms,
+                        "occupied_rooms": round(avg_occupied, 1),
+                        "available_rooms": round(total_rooms - avg_occupied, 1),
+                        "occupancy_rate": (
+                            round((avg_occupied / total_rooms) * 100, 2) if total_rooms > 0 else 0
+                        ),
+                        "revenue": month_data["revenue_sum"],
+                    }
+                )
+
         # Calculate summary
         total_days = (end_date - start_date).days + 1
         total_room_nights = total_rooms * total_days
         occupied_nights = sum(d["occupied_rooms"] for d in daily_data.values())
         total_revenue = sum(d["revenue"] for d in daily_data.values())
-        
+
         summary = {
             "total_rooms": total_rooms,
             "total_room_nights": total_room_nights,
             "occupied_nights": round(occupied_nights),
-            "average_occupancy": round((occupied_nights / total_room_nights) * 100, 2) if total_room_nights > 0 else 0,
+            "average_occupancy": (
+                round((occupied_nights / total_room_nights) * 100, 2)
+                if total_room_nights > 0
+                else 0
+            ),
             "total_revenue": total_revenue,
         }
-        
-        return Response({
-            "summary": summary,
-            "data": data,
-        })
+
+        return Response(
+            {
+                "summary": summary,
+                "data": data,
+            }
+        )
 
 
 class RevenueReportView(APIView):
@@ -4714,9 +4925,9 @@ class RevenueReportView(APIView):
     Revenue report endpoint.
     Returns revenue breakdown by source with expenses and profit.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Get revenue report",
         description="Get revenue and expense data for a date range.",
@@ -4733,15 +4944,15 @@ class RevenueReportView(APIView):
         from datetime import timedelta
         from collections import defaultdict
         from django.db.models import Sum
-        
+
         serializer = RevenueReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
         group_by = serializer.validated_data.get("group_by", "day")
         category_id = serializer.validated_data.get("category")
-        
+
         # Get financial entries
         income_query = FinancialEntry.objects.filter(
             entry_type="income",
@@ -4753,47 +4964,57 @@ class RevenueReportView(APIView):
             date__gte=start_date,
             date__lte=end_date,
         )
-        
+
         if category_id:
             income_query = income_query.filter(category_id=category_id)
             expense_query = expense_query.filter(category_id=category_id)
-        
+
         # Get minibar sales
         minibar_query = MinibarSale.objects.filter(
             date__gte=start_date,
             date__lte=end_date,
         )
-        
+
         # Build daily data
         daily_data = {}
         current_date = start_date
-        
+
         while current_date <= end_date:
             # Room revenue (from financial entries linked to bookings)
-            day_room_revenue = income_query.filter(
-                date=current_date,
-                booking__isnull=False,
-            ).aggregate(total=Sum("amount"))["total"] or 0
-            
+            day_room_revenue = (
+                income_query.filter(
+                    date=current_date,
+                    booking__isnull=False,
+                ).aggregate(
+                    total=Sum("amount")
+                )["total"]
+                or 0
+            )
+
             # Additional revenue (income not linked to bookings)
-            day_additional = income_query.filter(
-                date=current_date,
-                booking__isnull=True,
-            ).aggregate(total=Sum("amount"))["total"] or 0
-            
+            day_additional = (
+                income_query.filter(
+                    date=current_date,
+                    booking__isnull=True,
+                ).aggregate(
+                    total=Sum("amount")
+                )["total"]
+                or 0
+            )
+
             # Minibar revenue
-            day_minibar = minibar_query.filter(date=current_date).aggregate(
-                total=Sum("total")
-            )["total"] or 0
-            
+            day_minibar = (
+                minibar_query.filter(date=current_date).aggregate(total=Sum("total"))["total"] or 0
+            )
+
             # Expenses
-            day_expenses = expense_query.filter(date=current_date).aggregate(
-                total=Sum("amount")
-            )["total"] or 0
-            
+            day_expenses = (
+                expense_query.filter(date=current_date).aggregate(total=Sum("amount"))["total"] or 0
+            )
+
             total_revenue = day_room_revenue + day_additional + day_minibar
             net_profit = total_revenue - day_expenses
-            
+
             daily_data[current_date] = {
                 "date": current_date,
                 "room_revenue": day_room_revenue,
@@ -4802,68 +5023,90 @@ class RevenueReportView(APIView):
                 "total_revenue": total_revenue,
                 "total_expenses": day_expenses,
                 "net_profit": net_profit,
-                "profit_margin": round((net_profit / total_revenue) * 100, 2) if total_revenue > 0 else 0,
+                "profit_margin": (
+                    round((net_profit / total_revenue) * 100, 2) if total_revenue > 0 else 0
+                ),
             }
             current_date += timedelta(days=1)
-        
+
         # Group data
         if group_by == "day":
             data = list(daily_data.values())
         elif group_by == "week":
-            weekly = defaultdict(lambda: {
-                "room_revenue": 0, "additional_revenue": 0, "minibar_revenue": 0,
-                "total_expenses": 0,
-            })
+            weekly = defaultdict(
+                lambda: {
+                    "room_revenue": 0,
+                    "additional_revenue": 0,
+                    "minibar_revenue": 0,
+                    "total_expenses": 0,
+                }
+            )
             for date, day_data in daily_data.items():
                 week_start = date - timedelta(days=date.weekday())
                 weekly[week_start]["room_revenue"] += day_data["room_revenue"]
                 weekly[week_start]["additional_revenue"] += day_data["additional_revenue"]
                 weekly[week_start]["minibar_revenue"] += day_data["minibar_revenue"]
                 weekly[week_start]["total_expenses"] += day_data["total_expenses"]
-            
+
             data = []
             for week_start, week_data in sorted(weekly.items()):
-                total_rev = week_data["room_revenue"] + week_data["additional_revenue"] + week_data["minibar_revenue"]
+                total_rev = (
+                    week_data["room_revenue"]
+                    + week_data["additional_revenue"]
+                    + week_data["minibar_revenue"]
+                )
                 net = total_rev - week_data["total_expenses"]
-                data.append({
-                    "period": f"Week of {week_start.isoformat()}",
-                    "date": week_start,
-                    "room_revenue": week_data["room_revenue"],
-                    "additional_revenue": week_data["additional_revenue"],
-                    "minibar_revenue": week_data["minibar_revenue"],
-                    "total_revenue": total_rev,
-                    "total_expenses": week_data["total_expenses"],
-                    "net_profit": net,
-                    "profit_margin": round((net / total_rev) * 100, 2) if total_rev > 0 else 0,
-                })
+                data.append(
+                    {
+                        "period": f"Week of {week_start.isoformat()}",
+                        "date": week_start,
+                        "room_revenue": week_data["room_revenue"],
+                        "additional_revenue": week_data["additional_revenue"],
+                        "minibar_revenue": week_data["minibar_revenue"],
+                        "total_revenue": total_rev,
+                        "total_expenses": week_data["total_expenses"],
+                        "net_profit": net,
+                        "profit_margin": round((net / total_rev) * 100, 2) if total_rev > 0 else 0,
+                    }
+                )
         elif group_by == "month":
-            monthly = defaultdict(lambda: {
-                "room_revenue": 0, "additional_revenue": 0, "minibar_revenue": 0,
-                "total_expenses": 0,
-            })
+            monthly = defaultdict(
+                lambda: {
+                    "room_revenue": 0,
+                    "additional_revenue": 0,
+                    "minibar_revenue": 0,
+                    "total_expenses": 0,
+                }
+            )
             for date, day_data in daily_data.items():
                 month_key = date.replace(day=1)
                 monthly[month_key]["room_revenue"] += day_data["room_revenue"]
                 monthly[month_key]["additional_revenue"] += day_data["additional_revenue"]
                 monthly[month_key]["minibar_revenue"] += day_data["minibar_revenue"]
                 monthly[month_key]["total_expenses"] += day_data["total_expenses"]
-            
+
             data = []
             for month_start, month_data in sorted(monthly.items()):
-                total_rev = month_data["room_revenue"] + month_data["additional_revenue"] + month_data["minibar_revenue"]
+                total_rev = (
+                    month_data["room_revenue"]
+                    + month_data["additional_revenue"]
+                    + month_data["minibar_revenue"]
+                )
                 net = total_rev - month_data["total_expenses"]
-                data.append({
-                    "period": month_start.strftime("%Y-%m"),
-                    "date": month_start,
-                    "room_revenue": month_data["room_revenue"],
-                    "additional_revenue": month_data["additional_revenue"],
-                    "minibar_revenue": month_data["minibar_revenue"],
-                    "total_revenue": total_rev,
-                    "total_expenses": month_data["total_expenses"],
-                    "net_profit": net,
-                    "profit_margin": round((net / total_rev) * 100, 2) if total_rev > 0 else 0,
-                })
-        
+                data.append(
+                    {
+                        "period": month_start.strftime("%Y-%m"),
+                        "date": month_start,
+                        "room_revenue": month_data["room_revenue"],
+                        "additional_revenue": month_data["additional_revenue"],
+                        "minibar_revenue": month_data["minibar_revenue"],
+                        "total_revenue": total_rev,
+                        "total_expenses": month_data["total_expenses"],
+                        "net_profit": net,
+                        "profit_margin": round((net / total_rev) * 100, 2) if total_rev > 0 else 0,
+                    }
+                )
+
         # Calculate summary
         summary = {
             "room_revenue": sum(d["room_revenue"] for d in daily_data.values()),
@@ -4873,14 +5116,18 @@ class RevenueReportView(APIView):
             "total_expenses": sum(d["total_expenses"] for d in daily_data.values()),
             "net_profit": sum(d["net_profit"] for d in daily_data.values()),
         }
-        summary["profit_margin"] = round(
-            (summary["net_profit"] / summary["total_revenue"]) * 100, 2
-        ) if summary["total_revenue"] > 0 else 0
-        
-        return Response({
-            "summary": summary,
-            "data": data,
-        })
+        summary["profit_margin"] = (
+            round((summary["net_profit"] / summary["total_revenue"]) * 100, 2)
+            if summary["total_revenue"] > 0
+            else 0
+        )
+
+        return Response(
+            {
+                "summary": summary,
+                "data": data,
+            }
+        )
 
 
 class KPIReportView(APIView):
@@ -4888,9 +5135,9 @@ class KPIReportView(APIView):
     KPI report endpoint (RevPAR, ADR, etc.).
     Returns key performance indicators for the hotel.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Get KPI report",
         description="Get key performance indicators including RevPAR and ADR.",
@@ -4905,29 +5152,29 @@ class KPIReportView(APIView):
     def get(self, request):
         from datetime import timedelta
         from django.db.models import Sum, Count
-        
+
         serializer = KPIReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
         compare_previous = serializer.validated_data.get("compare_previous", True)
-        
+
         def calculate_kpis(start, end):
             total_days = (end - start).days + 1
             total_rooms = Room.objects.filter(is_active=True).count()
             total_room_nights = total_rooms * total_days
-            
+
             if total_room_nights == 0:
                 return None
-            
+
             # Get completed bookings in range
             bookings = Booking.objects.filter(
                 status__in=["checked_out", "checked_in", "confirmed"],
                 check_in_date__lte=end,
                 check_out_date__gt=start,
             )
-            
+
             # Calculate room nights sold
             room_nights_sold = 0
             room_revenue = 0
@@ -4939,33 +5186,46 @@ class KPIReportView(APIView):
                 if nights > 0:
                     room_nights_sold += nights
                     room_revenue += booking.nightly_rate * nights
-            
+
             # Get total revenue and expenses from financial entries
-            total_revenue = FinancialEntry.objects.filter(
-                entry_type="income",
-                date__gte=start,
-                date__lte=end,
-            ).aggregate(total=Sum("amount"))["total"] or 0
-            
-            total_expenses = FinancialEntry.objects.filter(
-                entry_type="expense",
-                date__gte=start,
-                date__lte=end,
-            ).aggregate(total=Sum("amount"))["total"] or 0
-            
+            total_revenue = (
+                FinancialEntry.objects.filter(
+                    entry_type="income",
+                    date__gte=start,
+                    date__lte=end,
+                ).aggregate(total=Sum("amount"))["total"]
+                or 0
+            )
+
+            total_expenses = (
+                FinancialEntry.objects.filter(
+                    entry_type="expense",
+                    date__gte=start,
+                    date__lte=end,
+                ).aggregate(total=Sum("amount"))["total"]
+                or 0
+            )
+
             # Add minibar revenue
-            minibar_revenue = MinibarSale.objects.filter(
-                date__gte=start,
-                date__lte=end,
-            ).aggregate(total=Sum("total"))["total"] or 0
-            
+            minibar_revenue = (
+                MinibarSale.objects.filter(
+                    date__gte=start,
+                    date__lte=end,
+                ).aggregate(
+                    total=Sum("total")
+                )["total"]
+                or 0
+            )
+
             total_revenue += minibar_revenue
-            
+
             # Calculate KPIs
-            occupancy_rate = (room_nights_sold / total_room_nights) * 100 if total_room_nights > 0 else 0
+            occupancy_rate = (
+                (room_nights_sold / total_room_nights) * 100 if total_room_nights > 0 else 0
+            )
             adr = room_revenue / room_nights_sold if room_nights_sold > 0 else 0
             revpar = room_revenue / total_room_nights if total_room_nights > 0 else 0
-            
+
             return {
                 "period_start": start,
                 "period_end": end,
@@ -4979,53 +5239,62 @@ class KPIReportView(APIView):
                 "total_expenses": total_expenses,
                 "net_profit": total_revenue - total_expenses,
             }
-        
+
         current_kpis = calculate_kpis(start_date, end_date)
-        
+
         if current_kpis is None:
-            return Response({
-                "current": None,
-                "previous": None,
-                "changes": None,
-            })
-        
+            return Response(
+                {
+                    "current": None,
+                    "previous": None,
+                    "changes": None,
+                }
+            )
+
         # Calculate previous period for comparison
         previous_kpis = None
         changes = None
-        
+
         if compare_previous:
             period_length = (end_date - start_date).days + 1
             previous_end = start_date - timedelta(days=1)
             previous_start = previous_end - timedelta(days=period_length - 1)
             previous_kpis = calculate_kpis(previous_start, previous_end)
-            
+
             if previous_kpis:
+
                 def calc_change(current, previous):
                     if previous == 0:
                         return None
                     return round(((current - previous) / previous) * 100, 2)
-                
+
                 changes = {
                     "revpar_change": calc_change(current_kpis["revpar"], previous_kpis["revpar"]),
                     "adr_change": calc_change(current_kpis["adr"], previous_kpis["adr"]),
-                    "occupancy_change": calc_change(current_kpis["occupancy_rate"], previous_kpis["occupancy_rate"]),
-                    "revenue_change": calc_change(current_kpis["total_revenue"], previous_kpis["total_revenue"]),
+                    "occupancy_change": calc_change(
+                        current_kpis["occupancy_rate"], previous_kpis["occupancy_rate"]
+                    ),
+                    "revenue_change": calc_change(
+                        current_kpis["total_revenue"], previous_kpis["total_revenue"]
+                    ),
                 }
-        
-        return Response({
-            "current": current_kpis,
-            "previous": previous_kpis,
-            "changes": changes,
-        })
+
+        return Response(
+            {
+                "current": current_kpis,
+                "previous": previous_kpis,
+                "changes": changes,
+            }
+        )
 
 
 class ExpenseReportView(APIView):
     """
     Expense breakdown report by category.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Get expense breakdown report",
         description="Get expenses grouped by category for a date range.",
@@ -5038,59 +5307,72 @@ class ExpenseReportView(APIView):
     )
     def get(self, request):
         from django.db.models import Sum, Count
-        
+
         serializer = ExpenseReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
-        
+
         # Get expenses grouped by category
-        expenses = FinancialEntry.objects.filter(
-            entry_type="expense",
-            date__gte=start_date,
-            date__lte=end_date,
-        ).values(
-            "category__id",
-            "category__name",
-            "category__icon",
-            "category__color",
-        ).annotate(
-            total_amount=Sum("amount"),
-            transaction_count=Count("id"),
-        ).order_by("-total_amount")
-        
+        expenses = (
+            FinancialEntry.objects.filter(
+                entry_type="expense",
+                date__gte=start_date,
+                date__lte=end_date,
+            )
+            .values(
+                "category__id",
+                "category__name",
+                "category__icon",
+                "category__color",
+            )
+            .annotate(
+                total_amount=Sum("amount"),
+                transaction_count=Count("id"),
+            )
+            .order_by("-total_amount")
+        )
+
         total_expenses = sum(e["total_amount"] for e in expenses)
-        
+
         data = []
         for expense in expenses:
-            data.append({
-                "category_id": expense["category__id"],
-                "category_name": expense["category__name"],
-                "category_icon": expense["category__icon"],
-                "category_color": expense["category__color"],
-                "total_amount": expense["total_amount"],
-                "transaction_count": expense["transaction_count"],
-                "percentage": round((expense["total_amount"] / total_expenses) * 100, 2) if total_expenses > 0 else 0,
-            })
-        
-        return Response({
-            "summary": {
-                "total_expenses": total_expenses,
-                "category_count": len(data),
-                "transaction_count": sum(e["transaction_count"] for e in data),
-            },
-            "data": data,
-        })
+            data.append(
+                {
+                    "category_id": expense["category__id"],
+                    "category_name": expense["category__name"],
+                    "category_icon": expense["category__icon"],
+                    "category_color": expense["category__color"],
+                    "total_amount": expense["total_amount"],
+                    "transaction_count": expense["transaction_count"],
+                    "percentage": (
+                        round((expense["total_amount"] / total_expenses) * 100, 2)
+                        if total_expenses > 0
+                        else 0
+                    ),
+                }
+            )
+
+        return Response(
+            {
+                "summary": {
+                    "total_expenses": total_expenses,
+                    "category_count": len(data),
+                    "transaction_count": sum(e["transaction_count"] for e in data),
+                },
+                "data": data,
+            }
+        )
 
 
 class ChannelPerformanceView(APIView):
     """
     Channel (booking source) performance report.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Get channel performance report",
         description="Get booking performance by source/channel.",
@@ -5103,101 +5385,117 @@ class ChannelPerformanceView(APIView):
     )
     def get(self, request):
         from django.db.models import Sum, Count, Avg, F
-        
+
         serializer = ChannelPerformanceRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
-        
+
         # Get bookings in range
         all_bookings = Booking.objects.filter(
             check_in_date__lte=end_date,
             check_out_date__gt=start_date,
         )
-        
+
         # Group by source
-        source_data = all_bookings.values("source").annotate(
-            booking_count=Count("id"),
-            total_revenue=Sum("total_amount"),
-            cancelled_count=Count("id", filter=models.Q(status="cancelled")),
-        ).order_by("-total_revenue")
-        
+        source_data = (
+            all_bookings.values("source")
+            .annotate(
+                booking_count=Count("id"),
+                total_revenue=Sum("total_amount"),
+                cancelled_count=Count("id", filter=models.Q(status="cancelled")),
+            )
+            .order_by("-total_revenue")
+        )
+
         total_revenue = sum(s["total_revenue"] or 0 for s in source_data)
-        
+
         data = []
         for source in source_data:
             source_code = source["source"]
             source_display = dict(Booking.Source.choices).get(source_code, source_code)
-            
+
             # Calculate total nights for this source
             source_bookings = all_bookings.filter(source=source_code)
             total_nights = sum(b.nights for b in source_bookings)
-            
+
             booking_count = source["booking_count"]
             cancelled_count = source["cancelled_count"]
             revenue = source["total_revenue"] or 0
-            
-            data.append({
-                "source": source_code,
-                "source_display": source_display,
-                "booking_count": booking_count,
-                "total_nights": total_nights,
-                "total_revenue": revenue,
-                "average_rate": round(revenue / total_nights) if total_nights > 0 else 0,
-                "cancellation_count": cancelled_count,
-                "cancellation_rate": round((cancelled_count / booking_count) * 100, 2) if booking_count > 0 else 0,
-                "percentage_of_revenue": round((revenue / total_revenue) * 100, 2) if total_revenue > 0 else 0,
-            })
-        
-        return Response({
-            "summary": {
-                "total_bookings": sum(s["booking_count"] for s in data),
-                "total_revenue": total_revenue,
-                "total_nights": sum(s["total_nights"] for s in data),
-                "total_cancellations": sum(s["cancellation_count"] for s in data),
-            },
-            "data": data,
-        })
+
+            data.append(
+                {
+                    "source": source_code,
+                    "source_display": source_display,
+                    "booking_count": booking_count,
+                    "total_nights": total_nights,
+                    "total_revenue": revenue,
+                    "average_rate": round(revenue / total_nights) if total_nights > 0 else 0,
+                    "cancellation_count": cancelled_count,
+                    "cancellation_rate": (
+                        round((cancelled_count / booking_count) * 100, 2)
+                        if booking_count > 0
+                        else 0
+                    ),
+                    "percentage_of_revenue": (
+                        round((revenue / total_revenue) * 100, 2) if total_revenue > 0 else 0
+                    ),
+                }
+            )
+
+        return Response(
+            {
+                "summary": {
+                    "total_bookings": sum(s["booking_count"] for s in data),
+                    "total_revenue": total_revenue,
+                    "total_nights": sum(s["total_nights"] for s in data),
+                    "total_cancellations": sum(s["cancellation_count"] for s in data),
+                },
+                "data": data,
+            }
+        )
 
 
 class GuestDemographicsView(APIView):
     """
     Guest demographics report.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Get guest demographics report",
         description="Get guest statistics by nationality or other criteria.",
         parameters=[
             OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
             OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
-            OpenApiParameter("group_by", OpenApiTypes.STR, enum=["nationality", "source", "room_type"]),
+            OpenApiParameter(
+                "group_by", OpenApiTypes.STR, enum=["nationality", "source", "room_type"]
+            ),
         ],
         responses={200: OpenApiResponse(description="Guest demographics data")},
         tags=["Reports"],
     )
     def get(self, request):
         from django.db.models import Sum, Count, Avg
-        
+
         serializer = GuestDemographicsRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
         group_by = serializer.validated_data.get("group_by", "nationality")
-        
+
         # Get bookings in range
         bookings = Booking.objects.filter(
             status__in=["confirmed", "checked_in", "checked_out"],
             check_in_date__lte=end_date,
             check_out_date__gt=start_date,
         ).select_related("guest", "room__room_type")
-        
+
         total_revenue = sum(b.total_amount for b in bookings)
-        
+
         if group_by == "nationality":
             # Group by guest nationality
             data_dict = {}
@@ -5214,47 +5512,65 @@ class GuestDemographicsView(APIView):
                 data_dict[nationality]["booking_count"] += 1
                 data_dict[nationality]["total_nights"] += booking.nights
                 data_dict[nationality]["total_revenue"] += booking.total_amount
-            
+
             data = []
-            for nationality, stats in sorted(data_dict.items(), key=lambda x: -x[1]["total_revenue"]):
+            for nationality, stats in sorted(
+                data_dict.items(), key=lambda x: -x[1]["total_revenue"]
+            ):
                 guest_count = len(stats["guest_ids"])
-                data.append({
-                    "nationality": nationality,
-                    "guest_count": guest_count,
-                    "booking_count": stats["booking_count"],
-                    "total_nights": stats["total_nights"],
-                    "total_revenue": stats["total_revenue"],
-                    "percentage": round((stats["total_revenue"] / total_revenue) * 100, 2) if total_revenue > 0 else 0,
-                    "average_stay": round(stats["total_nights"] / stats["booking_count"], 2) if stats["booking_count"] > 0 else 0,
-                })
+                data.append(
+                    {
+                        "nationality": nationality,
+                        "guest_count": guest_count,
+                        "booking_count": stats["booking_count"],
+                        "total_nights": stats["total_nights"],
+                        "total_revenue": stats["total_revenue"],
+                        "percentage": (
+                            round((stats["total_revenue"] / total_revenue) * 100, 2)
+                            if total_revenue > 0
+                            else 0
+                        ),
+                        "average_stay": (
+                            round(stats["total_nights"] / stats["booking_count"], 2)
+                            if stats["booking_count"] > 0
+                            else 0
+                        ),
+                    }
+                )
         else:
             # Default to nationality grouping
             data = []
-        
-        return Response({
-            "summary": {
-                "total_guests": len(set(b.guest_id for b in bookings)),
-                "total_bookings": bookings.count(),
-                "total_revenue": total_revenue,
-            },
-            "data": data,
-        })
+
+        return Response(
+            {
+                "summary": {
+                    "total_guests": len(set(b.guest_id for b in bookings)),
+                    "total_bookings": bookings.count(),
+                    "total_revenue": total_revenue,
+                },
+                "data": data,
+            }
+        )
 
 
 class ComparativeReportView(APIView):
     """
     Period-over-period comparative report.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Get comparative report",
         description="Compare metrics between two periods.",
         parameters=[
             OpenApiParameter("current_start", OpenApiTypes.DATE, required=True),
             OpenApiParameter("current_end", OpenApiTypes.DATE, required=True),
-            OpenApiParameter("comparison_type", OpenApiTypes.STR, enum=["previous_period", "previous_year", "custom"]),
+            OpenApiParameter(
+                "comparison_type",
+                OpenApiTypes.STR,
+                enum=["previous_period", "previous_year", "custom"],
+            ),
             OpenApiParameter("previous_start", OpenApiTypes.DATE),
             OpenApiParameter("previous_end", OpenApiTypes.DATE),
         ],
@@ -5265,14 +5581,14 @@ class ComparativeReportView(APIView):
         from datetime import timedelta
         from dateutil.relativedelta import relativedelta
         from django.db.models import Sum, Count
-        
+
         serializer = ComparativeReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         current_start = serializer.validated_data["current_start"]
         current_end = serializer.validated_data["current_end"]
         comparison_type = serializer.validated_data.get("comparison_type", "previous_period")
-        
+
         # Calculate previous period dates
         if comparison_type == "previous_period":
             period_length = (current_end - current_start).days + 1
@@ -5284,26 +5600,32 @@ class ComparativeReportView(APIView):
         else:  # custom
             previous_start = serializer.validated_data.get("previous_start")
             previous_end = serializer.validated_data.get("previous_end")
-        
+
         def get_metrics(start, end):
             total_rooms = Room.objects.filter(is_active=True).count()
             total_days = (end - start).days + 1
             total_room_nights = total_rooms * total_days
-            
+
             # Revenue
-            revenue = FinancialEntry.objects.filter(
-                entry_type="income",
-                date__gte=start,
-                date__lte=end,
-            ).aggregate(total=Sum("amount"))["total"] or 0
-            
+            revenue = (
+                FinancialEntry.objects.filter(
+                    entry_type="income",
+                    date__gte=start,
+                    date__lte=end,
+                ).aggregate(total=Sum("amount"))["total"]
+                or 0
+            )
+
             # Expenses
-            expenses = FinancialEntry.objects.filter(
-                entry_type="expense",
-                date__gte=start,
-                date__lte=end,
-            ).aggregate(total=Sum("amount"))["total"] or 0
-            
+            expenses = (
+                FinancialEntry.objects.filter(
+                    entry_type="expense",
+                    date__gte=start,
+                    date__lte=end,
+                ).aggregate(total=Sum("amount"))["total"]
+                or 0
+            )
+
             # Bookings
             bookings = Booking.objects.filter(
                 status__in=["confirmed", "checked_in", "checked_out"],
@@ -5313,16 +5635,16 @@ class ComparativeReportView(APIView):
             booking_count = bookings.count()
             room_nights_sold = sum(b.nights for b in bookings)
             room_revenue = sum(b.total_amount for b in bookings)
-            
+
             # Occupancy
             occupancy = (room_nights_sold / total_room_nights) * 100 if total_room_nights > 0 else 0
-            
+
             # ADR
             adr = room_revenue / room_nights_sold if room_nights_sold > 0 else 0
-            
+
             # RevPAR
             revpar = room_revenue / total_room_nights if total_room_nights > 0 else 0
-            
+
             return {
                 "revenue": revenue,
                 "expenses": expenses,
@@ -5332,15 +5654,17 @@ class ComparativeReportView(APIView):
                 "adr": round(adr),
                 "revpar": round(revpar),
             }
-        
+
         current_metrics = get_metrics(current_start, current_end)
-        previous_metrics = get_metrics(previous_start, previous_end) if previous_start and previous_end else None
-        
+        previous_metrics = (
+            get_metrics(previous_start, previous_end) if previous_start and previous_end else None
+        )
+
         def calc_change(current, previous):
             if previous is None or previous == 0:
                 return None
             return round(((current - previous) / previous) * 100, 2)
-        
+
         comparisons = []
         metrics_list = [
             ("revenue", "Doanh thu"),
@@ -5351,48 +5675,62 @@ class ComparativeReportView(APIView):
             ("adr", "Giá trung bình/đêm"),
             ("revpar", "RevPAR"),
         ]
-        
+
         for metric_key, metric_name in metrics_list:
             current_val = current_metrics[metric_key]
             previous_val = previous_metrics[metric_key] if previous_metrics else None
-            
-            comparisons.append({
-                "metric": metric_name,
-                "metric_key": metric_key,
-                "current_period_value": current_val,
-                "previous_period_value": previous_val,
-                "change_amount": current_val - previous_val if previous_val is not None else None,
-                "change_percentage": calc_change(current_val, previous_val),
-            })
-        
-        return Response({
-            "current_period": {
-                "start": current_start,
-                "end": current_end,
-                "metrics": current_metrics,
-            },
-            "previous_period": {
-                "start": previous_start,
-                "end": previous_end,
-                "metrics": previous_metrics,
-            } if previous_metrics else None,
-            "comparisons": comparisons,
-        })
+
+            comparisons.append(
+                {
+                    "metric": metric_name,
+                    "metric_key": metric_key,
+                    "current_period_value": current_val,
+                    "previous_period_value": previous_val,
+                    "change_amount": (
+                        current_val - previous_val if previous_val is not None else None
+                    ),
+                    "change_percentage": calc_change(current_val, previous_val),
+                }
+            )
+
+        return Response(
+            {
+                "current_period": {
+                    "start": current_start,
+                    "end": current_end,
+                    "metrics": current_metrics,
+                },
+                "previous_period": (
+                    {
+                        "start": previous_start,
+                        "end": previous_end,
+                        "metrics": previous_metrics,
+                    }
+                    if previous_metrics
+                    else None
+                ),
+                "comparisons": comparisons,
+            }
+        )
 
 
 class ExportReportView(APIView):
     """
     Export reports to Excel/CSV.
     """
-    
+
     permission_classes = [IsAuthenticated]
-    
+
     @extend_schema(
         summary="Export report to file",
         description="Export report data to Excel or CSV format.",
         parameters=[
-            OpenApiParameter("report_type", OpenApiTypes.STR, required=True, 
-                           enum=["occupancy", "revenue", "expenses", "kpi", "channels", "demographics"]),
+            OpenApiParameter(
+                "report_type",
+                OpenApiTypes.STR,
+                required=True,
+                enum=["occupancy", "revenue", "expenses", "kpi", "channels", "demographics"],
+            ),
             OpenApiParameter("start_date", OpenApiTypes.DATE, required=True),
             OpenApiParameter("end_date", OpenApiTypes.DATE, required=True),
             OpenApiParameter("format", OpenApiTypes.STR, enum=["xlsx", "csv"]),
@@ -5404,15 +5742,15 @@ class ExportReportView(APIView):
         import csv
         import io
         from django.http import HttpResponse
-        
+
         serializer = ExportReportRequestSerializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
-        
+
         report_type = serializer.validated_data["report_type"]
         start_date = serializer.validated_data["start_date"]
         end_date = serializer.validated_data["end_date"]
         export_format = serializer.validated_data.get("format", "xlsx")
-        
+
         # Get report data based on type
         if report_type == "occupancy":
             view = OccupancyReportView()
@@ -5420,117 +5758,162 @@ class ExportReportView(APIView):
             response_data = view.get(request).data
             data = response_data.get("data", [])
             headers = ["Date", "Total Rooms", "Occupied", "Available", "Occupancy %", "Revenue"]
-            rows = [[
-                d.get("date") or d.get("period"),
-                d["total_rooms"],
-                d["occupied_rooms"],
-                d["available_rooms"],
-                d["occupancy_rate"],
-                d["revenue"],
-            ] for d in data]
+            rows = [
+                [
+                    d.get("date") or d.get("period"),
+                    d["total_rooms"],
+                    d["occupied_rooms"],
+                    d["available_rooms"],
+                    d["occupancy_rate"],
+                    d["revenue"],
+                ]
+                for d in data
+            ]
         elif report_type == "revenue":
             view = RevenueReportView()
             view.request = request
             response_data = view.get(request).data
             data = response_data.get("data", [])
-            headers = ["Date", "Room Revenue", "Additional", "Minibar", "Total Revenue", "Expenses", "Net Profit", "Margin %"]
-            rows = [[
-                d.get("date") or d.get("period"),
-                d["room_revenue"],
-                d["additional_revenue"],
-                d["minibar_revenue"],
-                d["total_revenue"],
-                d["total_expenses"],
-                d["net_profit"],
-                d["profit_margin"],
-            ] for d in data]
+            headers = [
+                "Date",
+                "Room Revenue",
+                "Additional",
+                "Minibar",
+                "Total Revenue",
+                "Expenses",
+                "Net Profit",
+                "Margin %",
+            ]
+            rows = [
+                [
+                    d.get("date") or d.get("period"),
+                    d["room_revenue"],
+                    d["additional_revenue"],
+                    d["minibar_revenue"],
+                    d["total_revenue"],
+                    d["total_expenses"],
+                    d["net_profit"],
+                    d["profit_margin"],
+                ]
+                for d in data
+            ]
         elif report_type == "expenses":
             view = ExpenseReportView()
             view.request = request
             response_data = view.get(request).data
             data = response_data.get("data", [])
             headers = ["Category", "Amount", "Transactions", "Percentage"]
-            rows = [[
-                d["category_name"],
-                d["total_amount"],
-                d["transaction_count"],
-                d["percentage"],
-            ] for d in data]
+            rows = [
+                [
+                    d["category_name"],
+                    d["total_amount"],
+                    d["transaction_count"],
+                    d["percentage"],
+                ]
+                for d in data
+            ]
         elif report_type == "channels":
             view = ChannelPerformanceView()
             view.request = request
             response_data = view.get(request).data
             data = response_data.get("data", [])
-            headers = ["Channel", "Bookings", "Nights", "Revenue", "Avg Rate", "Cancellations", "Cancel %", "Revenue %"]
-            rows = [[
-                d["source_display"],
-                d["booking_count"],
-                d["total_nights"],
-                d["total_revenue"],
-                d["average_rate"],
-                d["cancellation_count"],
-                d["cancellation_rate"],
-                d["percentage_of_revenue"],
-            ] for d in data]
+            headers = [
+                "Channel",
+                "Bookings",
+                "Nights",
+                "Revenue",
+                "Avg Rate",
+                "Cancellations",
+                "Cancel %",
+                "Revenue %",
+            ]
+            rows = [
+                [
+                    d["source_display"],
+                    d["booking_count"],
+                    d["total_nights"],
+                    d["total_revenue"],
+                    d["average_rate"],
+                    d["cancellation_count"],
+                    d["cancellation_rate"],
+                    d["percentage_of_revenue"],
+                ]
+                for d in data
+            ]
         elif report_type == "demographics":
             view = GuestDemographicsView()
             view.request = request
             response_data = view.get(request).data
             data = response_data.get("data", [])
-            headers = ["Nationality", "Guests", "Bookings", "Nights", "Revenue", "Percentage", "Avg Stay"]
-            rows = [[
-                d["nationality"],
-                d["guest_count"],
-                d["booking_count"],
-                d["total_nights"],
-                d["total_revenue"],
-                d["percentage"],
-                d["average_stay"],
-            ] for d in data]
+            headers = [
+                "Nationality",
+                "Guests",
+                "Bookings",
+                "Nights",
+                "Revenue",
+                "Percentage",
+                "Avg Stay",
+            ]
+            rows = [
+                [
+                    d["nationality"],
+                    d["guest_count"],
+                    d["booking_count"],
+                    d["total_nights"],
+                    d["total_revenue"],
+                    d["percentage"],
+                    d["average_stay"],
+                ]
+                for d in data
+            ]
         else:
             return Response({"detail": "Invalid report type"}, status=400)
-        
+
         # Generate file
         if export_format == "csv":
             output = io.StringIO()
             writer = csv.writer(output)
             writer.writerow(headers)
             writer.writerows(rows)
-            
+
             response = HttpResponse(output.getvalue(), content_type="text/csv")
-            response["Content-Disposition"] = f'attachment; filename="{report_type}_report_{start_date}_{end_date}.csv"'
+            response["Content-Disposition"] = (
+                f'attachment; filename="{report_type}_report_{start_date}_{end_date}.csv"'
+            )
             return response
         else:  # xlsx
             try:
                 import openpyxl
                 from openpyxl.utils import get_column_letter
-                
+
                 wb = openpyxl.Workbook()
                 ws = wb.active
                 ws.title = report_type.title()
-                
+
                 # Headers
                 for col, header in enumerate(headers, 1):
                     ws.cell(row=1, column=col, value=header)
-                
+
                 # Data
                 for row_idx, row in enumerate(rows, 2):
                     for col_idx, value in enumerate(row, 1):
                         ws.cell(row=row_idx, column=col_idx, value=value)
-                
+
                 # Auto-width columns
                 for col_idx in range(1, len(headers) + 1):
                     ws.column_dimensions[get_column_letter(col_idx)].width = 15
-                
+
                 output = io.BytesIO()
                 wb.save(output)
                 output.seek(0)
-                
+
                 response = HttpResponse(
                     output.getvalue(),
-                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 )
-                response["Content-Disposition"] = f'attachment; filename="{report_type}_report_{start_date}_{end_date}.xlsx"'
+                response["Content-Disposition"] = (
+                    f'attachment; filename="{report_type}_report_{start_date}_{end_date}.xlsx"'
+                )
                 return response
             except ImportError:
                 # Fallback to CSV if openpyxl not installed
@@ -5538,9 +5921,11 @@ class ExportReportView(APIView):
                 writer = csv.writer(output)
                 writer.writerow(headers)
                 writer.writerows(rows)
-                
+
                 response = HttpResponse(output.getvalue(), content_type="text/csv")
-                response["Content-Disposition"] = f'attachment; filename="{report_type}_report_{start_date}_{end_date}.csv"'
+                response["Content-Disposition"] = (
+                    f'attachment; filename="{report_type}_report_{start_date}_{end_date}.csv"'
+                )
                 return response
 
 
@@ -5554,13 +5939,23 @@ class ExportReportView(APIView):
         summary="List lost and found items",
         description="Get list of all lost and found items with optional filtering.",
         parameters=[
-            OpenApiParameter("status", OpenApiTypes.STR, description="Filter by status (found/stored/claimed/donated/disposed)"),
+            OpenApiParameter(
+                "status",
+                OpenApiTypes.STR,
+                description="Filter by status (found/stored/claimed/donated/disposed)",
+            ),
             OpenApiParameter("category", OpenApiTypes.STR, description="Filter by category"),
             OpenApiParameter("room", OpenApiTypes.INT, description="Filter by room ID"),
             OpenApiParameter("guest", OpenApiTypes.INT, description="Filter by guest ID"),
-            OpenApiParameter("found_date_from", OpenApiTypes.DATE, description="Filter by found date (from)"),
-            OpenApiParameter("found_date_to", OpenApiTypes.DATE, description="Filter by found date (to)"),
-            OpenApiParameter("search", OpenApiTypes.STR, description="Search in item name and description"),
+            OpenApiParameter(
+                "found_date_from", OpenApiTypes.DATE, description="Filter by found date (from)"
+            ),
+            OpenApiParameter(
+                "found_date_to", OpenApiTypes.DATE, description="Filter by found date (to)"
+            ),
+            OpenApiParameter(
+                "search", OpenApiTypes.STR, description="Search in item name and description"
+            ),
         ],
         tags=["Lost & Found"],
     ),
@@ -5718,7 +6113,11 @@ class LostAndFoundViewSet(viewsets.ModelViewSet):
         """Mark item as stored."""
         item = self.get_object()
 
-        if item.status in [LostAndFound.Status.CLAIMED, LostAndFound.Status.DISPOSED, LostAndFound.Status.DONATED]:
+        if item.status in [
+            LostAndFound.Status.CLAIMED,
+            LostAndFound.Status.DISPOSED,
+            LostAndFound.Status.DONATED,
+        ]:
             return Response(
                 {"detail": "Không thể lưu giữ vật phẩm đã được xử lý."},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -5772,22 +6171,27 @@ class LostAndFoundViewSet(viewsets.ModelViewSet):
         )
 
         # Unclaimed value
-        unclaimed = LostAndFound.objects.filter(
-            status__in=[LostAndFound.Status.FOUND, LostAndFound.Status.STORED]
-        ).aggregate(total=Sum("estimated_value"))["total"] or 0
+        unclaimed = (
+            LostAndFound.objects.filter(
+                status__in=[LostAndFound.Status.FOUND, LostAndFound.Status.STORED]
+            ).aggregate(total=Sum("estimated_value"))["total"]
+            or 0
+        )
 
         # Recent items
         recent = LostAndFoundListSerializer(
             LostAndFound.objects.order_by("-created_at")[:5], many=True
         ).data
 
-        return Response({
-            "total_items": total,
-            "by_status": by_status,
-            "by_category": by_category,
-            "unclaimed_value": unclaimed,
-            "recent_items": recent,
-        })
+        return Response(
+            {
+                "total_items": total,
+                "by_status": by_status,
+                "by_category": by_category,
+                "unclaimed_value": unclaimed,
+                "recent_items": recent,
+            }
+        )
 
 
 # ============================================================
@@ -5801,9 +6205,15 @@ class LostAndFoundViewSet(viewsets.ModelViewSet):
         description="Get list of all group bookings with optional filtering.",
         parameters=[
             OpenApiParameter("status", OpenApiTypes.STR, description="Filter by status"),
-            OpenApiParameter("date_from", OpenApiTypes.DATE, description="Filter by check-in date (from)"),
-            OpenApiParameter("date_to", OpenApiTypes.DATE, description="Filter by check-in date (to)"),
-            OpenApiParameter("search", OpenApiTypes.STR, description="Search in name, contact, company"),
+            OpenApiParameter(
+                "date_from", OpenApiTypes.DATE, description="Filter by check-in date (from)"
+            ),
+            OpenApiParameter(
+                "date_to", OpenApiTypes.DATE, description="Filter by check-in date (to)"
+            ),
+            OpenApiParameter(
+                "search", OpenApiTypes.STR, description="Search in name, contact, company"
+            ),
         ],
         tags=["Group Booking"],
     ),
@@ -5901,7 +6311,9 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
 
         if group.status != GroupBooking.Status.TENTATIVE:
             return Response(
-                {"detail": f"Không thể xác nhận đặt phòng ở trạng thái {group.get_status_display()}."},
+                {
+                    "detail": f"Không thể xác nhận đặt phòng ở trạng thái {group.get_status_display()}."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -5927,7 +6339,9 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
 
         if group.status not in [GroupBooking.Status.TENTATIVE, GroupBooking.Status.CONFIRMED]:
             return Response(
-                {"detail": f"Không thể nhận phòng cho đặt phòng ở trạng thái {group.get_status_display()}."},
+                {
+                    "detail": f"Không thể nhận phòng cho đặt phòng ở trạng thái {group.get_status_display()}."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -5958,7 +6372,9 @@ class GroupBookingViewSet(viewsets.ModelViewSet):
 
         if group.status != GroupBooking.Status.CHECKED_IN:
             return Response(
-                {"detail": f"Không thể trả phòng cho đặt phòng ở trạng thái {group.get_status_display()}."},
+                {
+                    "detail": f"Không thể trả phòng cho đặt phòng ở trạng thái {group.get_status_display()}."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -6124,7 +6540,9 @@ class InspectionTemplateViewSet(viewsets.ModelViewSet):
             OpenApiParameter(name="room", type=int, description="Filter by room ID"),
             OpenApiParameter(name="status", type=str, description="Filter by status"),
             OpenApiParameter(name="inspection_type", type=str, description="Filter by type"),
-            OpenApiParameter(name="from_date", type=str, description="Filter from date (YYYY-MM-DD)"),
+            OpenApiParameter(
+                name="from_date", type=str, description="Filter from date (YYYY-MM-DD)"
+            ),
             OpenApiParameter(name="to_date", type=str, description="Filter to date (YYYY-MM-DD)"),
         ],
         tags=["Room Inspection"],
@@ -6270,9 +6688,12 @@ class RoomInspectionViewSet(viewsets.ModelViewSet):
         requires_action = queryset.filter(status=RoomInspection.Status.REQUIRES_ACTION).count()
 
         # Average score from completed inspections
-        avg_score = queryset.filter(
-            status__in=[RoomInspection.Status.COMPLETED, RoomInspection.Status.REQUIRES_ACTION]
-        ).aggregate(avg=Avg("score"))["avg"] or 0
+        avg_score = (
+            queryset.filter(
+                status__in=[RoomInspection.Status.COMPLETED, RoomInspection.Status.REQUIRES_ACTION]
+            ).aggregate(avg=Avg("score"))["avg"]
+            or 0
+        )
 
         # Total issues
         issue_stats = queryset.aggregate(
@@ -6285,10 +6706,14 @@ class RoomInspectionViewSet(viewsets.ModelViewSet):
         inspections_by_type = {item["inspection_type"]: item["count"] for item in by_type}
 
         # Inspections by room (top 10 with most inspections)
-        by_room = queryset.values("room__number").annotate(
-            count=Count("id"),
-            avg_score=Avg("score"),
-        ).order_by("-count")[:10]
+        by_room = (
+            queryset.values("room__number")
+            .annotate(
+                count=Count("id"),
+                avg_score=Avg("score"),
+            )
+            .order_by("-count")[:10]
+        )
         inspections_by_room = list(by_room)
 
         data = {
@@ -6360,13 +6785,15 @@ class RoomInspectionViewSet(viewsets.ModelViewSet):
                 pass
         else:
             # Try to find default template for room type
-            template = InspectionTemplate.objects.filter(
-                inspection_type=RoomInspection.InspectionType.CHECKOUT,
-                is_default=True,
-                is_active=True,
-            ).filter(
-                Q(room_type=booking.room.room_type) | Q(room_type__isnull=True)
-            ).first()
+            template = (
+                InspectionTemplate.objects.filter(
+                    inspection_type=RoomInspection.InspectionType.CHECKOUT,
+                    is_default=True,
+                    is_active=True,
+                )
+                .filter(Q(room_type=booking.room.room_type) | Q(room_type__isnull=True))
+                .first()
+            )
 
             if template:
                 checklist_items = [
@@ -6500,7 +6927,13 @@ class RatePlanViewSet(viewsets.ModelViewSet):
         summary="Get active rate plans for room type",
         description="Get all active rate plans for a specific room type, including currently valid ones.",
         parameters=[
-            OpenApiParameter("room_type_id", OpenApiTypes.INT, description="Room type ID", required=True, location=OpenApiParameter.PATH),
+            OpenApiParameter(
+                "room_type_id",
+                OpenApiTypes.INT,
+                description="Room type ID",
+                required=True,
+                location=OpenApiParameter.PATH,
+            ),
         ],
         responses={200: RatePlanListSerializer(many=True)},
         tags=["Rate Plans"],
@@ -6511,12 +6944,16 @@ class RatePlanViewSet(viewsets.ModelViewSet):
         from django.utils import timezone
 
         today = timezone.now().date()
-        queryset = self.get_queryset().filter(
-            room_type_id=room_type_id,
-            is_active=True,
-        ).filter(
-            Q(valid_from__isnull=True) | Q(valid_from__lte=today),
-            Q(valid_to__isnull=True) | Q(valid_to__gte=today),
+        queryset = (
+            self.get_queryset()
+            .filter(
+                room_type_id=room_type_id,
+                is_active=True,
+            )
+            .filter(
+                Q(valid_from__isnull=True) | Q(valid_from__lte=today),
+                Q(valid_to__isnull=True) | Q(valid_to__gte=today),
+            )
         )
 
         serializer = RatePlanListSerializer(queryset, many=True)
@@ -6661,8 +7098,16 @@ class DateRateOverrideViewSet(viewsets.ModelViewSet):
         summary="Get overrides for room type",
         description="Get all date rate overrides for a specific room type in a date range.",
         parameters=[
-            OpenApiParameter("room_type_id", OpenApiTypes.INT, description="Room type ID", required=True, location=OpenApiParameter.PATH),
-            OpenApiParameter("start_date", OpenApiTypes.DATE, description="Start date", required=True),
+            OpenApiParameter(
+                "room_type_id",
+                OpenApiTypes.INT,
+                description="Room type ID",
+                required=True,
+                location=OpenApiParameter.PATH,
+            ),
+            OpenApiParameter(
+                "start_date", OpenApiTypes.DATE, description="Start date", required=True
+            ),
             OpenApiParameter("end_date", OpenApiTypes.DATE, description="End date", required=True),
         ],
         responses={200: DateRateOverrideListSerializer(many=True)},
@@ -6701,9 +7146,7 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         """Return notifications for the authenticated user."""
-        return Notification.objects.filter(
-            recipient=self.request.user
-        ).order_by("-created_at")
+        return Notification.objects.filter(recipient=self.request.user).order_by("-created_at")
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -6767,9 +7210,7 @@ class DeviceTokenView(APIView):
     )
     def post(self, request):
         """Register a device token."""
-        serializer = DeviceTokenSerializer(
-            data=request.data, context={"request": request}
-        )
+        serializer = DeviceTokenSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -6787,9 +7228,7 @@ class DeviceTokenView(APIView):
                 {"detail": "Token is required."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        DeviceToken.objects.filter(
-            user=request.user, token=token
-        ).update(is_active=False)
+        DeviceToken.objects.filter(user=request.user, token=token).update(is_active=False)
         return Response({"detail": "Token deactivated."})
 
 
@@ -6806,9 +7245,11 @@ class NotificationPreferencesView(APIView):
     def get(self, request):
         """Get user's notification preferences."""
         profile = request.user.hotel_profile
-        return Response({
-            "receive_notifications": profile.receive_notifications,
-        })
+        return Response(
+            {
+                "receive_notifications": profile.receive_notifications,
+            }
+        )
 
     @extend_schema(
         summary="Update notification preferences",
@@ -6825,9 +7266,11 @@ class NotificationPreferencesView(APIView):
         profile.receive_notifications = serializer.validated_data["receive_notifications"]
         profile.save(update_fields=["receive_notifications"])
 
-        return Response({
-            "receive_notifications": profile.receive_notifications,
-        })
+        return Response(
+            {
+                "receive_notifications": profile.receive_notifications,
+            }
+        )
 
 
 # ===== Phase 5.3: Guest Messaging Views =====
@@ -6915,12 +7358,14 @@ class MessageTemplateViewSet(viewsets.ModelViewSet):
 
         recipient = GuestMessagingService.get_recipient_address(guest, template.channel)
 
-        return Response({
-            "subject": rendered_subject,
-            "body": rendered_body,
-            "recipient_address": recipient,
-            "channel": template.channel,
-        })
+        return Response(
+            {
+                "subject": rendered_subject,
+                "body": rendered_body,
+                "recipient_address": recipient,
+                "channel": template.channel,
+            }
+        )
 
 
 @extend_schema_view(
@@ -7009,9 +7454,7 @@ class GuestMessageViewSet(viewsets.ReadOnlyModelViewSet):
         from .messaging_service import GuestMessagingService
 
         # Get recipient address
-        recipient = GuestMessagingService.get_recipient_address(
-            guest, data["channel"]
-        )
+        recipient = GuestMessagingService.get_recipient_address(guest, data["channel"])
 
         # Create message record
         message = GuestMessage.objects.create(

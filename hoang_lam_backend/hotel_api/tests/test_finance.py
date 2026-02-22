@@ -188,7 +188,9 @@ class TestFinancialCategoryViewSet:
         response = api_client.get("/api/v1/finance/categories/")
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_list_categories_as_staff(self, api_client, staff_user, income_category, expense_category):
+    def test_list_categories_as_staff(
+        self, api_client, staff_user, income_category, expense_category
+    ):
         """Test staff can list categories."""
         api_client.force_authenticate(user=staff_user)
         response = api_client.get("/api/v1/finance/categories/")
@@ -196,7 +198,9 @@ class TestFinancialCategoryViewSet:
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()["results"]) == 2
 
-    def test_filter_categories_by_type(self, api_client, staff_user, income_category, expense_category):
+    def test_filter_categories_by_type(
+        self, api_client, staff_user, income_category, expense_category
+    ):
         """Test filtering categories by type."""
         api_client.force_authenticate(user=staff_user)
         response = api_client.get("/api/v1/finance/categories/?category_type=income")
@@ -417,7 +421,9 @@ class TestFinancialEntryViewSet:
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
-    def test_update_entry_as_manager(self, api_client, manager_user, financial_entries, income_category):
+    def test_update_entry_as_manager(
+        self, api_client, manager_user, financial_entries, income_category
+    ):
         """Test manager can update entries."""
         api_client.force_authenticate(user=manager_user)
         entry = financial_entries[0]
@@ -564,9 +570,7 @@ class TestFinancialEntryErrorCases:
     def test_monthly_summary_invalid_year(self, api_client, staff_user):
         """Test monthly summary with invalid year."""
         api_client.force_authenticate(user=staff_user)
-        response = api_client.get(
-            "/api/v1/finance/entries/monthly-summary/?year=abc&month=1"
-        )
+        response = api_client.get("/api/v1/finance/entries/monthly-summary/?year=abc&month=1")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 

@@ -39,6 +39,7 @@ from hotel_api.models import (
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def api_client():
     """Create API client."""
@@ -191,6 +192,7 @@ def income_category(db):
 # 1. Full Booking Lifecycle
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestFullBookingLifecycle:
     """Test the complete booking lifecycle from creation to checkout."""
@@ -236,9 +238,7 @@ class TestFullBookingLifecycle:
             "amount": str(deposit_amount),
             "payment_method": "cash",
         }
-        resp = api_client.post(
-            "/api/v1/payments/record-deposit/", deposit_data, format="json"
-        )
+        resp = api_client.post("/api/v1/payments/record-deposit/", deposit_data, format="json")
         assert resp.status_code == status.HTTP_201_CREATED, resp.data
 
         # Verify booking deposit tracking updated
@@ -324,19 +324,16 @@ class TestFullBookingLifecycle:
 # 2. Check-In Flow
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestCheckInFlow:
     """Test check-in operations and their side effects."""
 
-    def test_checkin_updates_room_to_occupied(
-        self, api_client, staff_user, confirmed_booking
-    ):
+    def test_checkin_updates_room_to_occupied(self, api_client, staff_user, confirmed_booking):
         """Check-in should set booking to CHECKED_IN and room to OCCUPIED."""
         api_client.force_authenticate(user=staff_user)
 
-        resp = api_client.post(
-            f"/api/v1/bookings/{confirmed_booking.id}/check-in/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{confirmed_booking.id}/check-in/")
         assert resp.status_code == status.HTTP_200_OK
         assert resp.data["status"] == "checked_in"
 
@@ -347,9 +344,7 @@ class TestCheckInFlow:
         confirmed_booking.room.refresh_from_db()
         assert confirmed_booking.room.status == Room.Status.OCCUPIED
 
-    def test_checkin_with_custom_time(
-        self, api_client, staff_user, confirmed_booking
-    ):
+    def test_checkin_with_custom_time(self, api_client, staff_user, confirmed_booking):
         """Check-in with custom actual_check_in time should be recorded."""
         api_client.force_authenticate(user=staff_user)
 
@@ -365,15 +360,11 @@ class TestCheckInFlow:
         # The time should be close to the custom time provided
         assert confirmed_booking.actual_check_in is not None
 
-    def test_cannot_checkin_already_checked_in(
-        self, api_client, staff_user, checked_in_booking
-    ):
+    def test_cannot_checkin_already_checked_in(self, api_client, staff_user, checked_in_booking):
         """Cannot check in a booking that is already checked in."""
         api_client.force_authenticate(user=staff_user)
 
-        resp = api_client.post(
-            f"/api/v1/bookings/{checked_in_booking.id}/check-in/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{checked_in_booking.id}/check-in/")
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_cannot_checkin_checked_out_booking(
@@ -394,9 +385,7 @@ class TestCheckInFlow:
         resp = api_client.post(f"/api/v1/bookings/{booking.id}/check-in/")
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
 
-    def test_checkin_from_pending_status(
-        self, api_client, staff_user, room, guest, room_type
-    ):
+    def test_checkin_from_pending_status(self, api_client, staff_user, room, guest, room_type):
         """Check-in should work from PENDING status (not just CONFIRMED)."""
         api_client.force_authenticate(user=staff_user)
 
@@ -421,6 +410,7 @@ class TestCheckInFlow:
 # 3. Check-Out Flow
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestCheckOutFlow:
     """Test checkout and all its side effects."""
@@ -433,9 +423,7 @@ class TestCheckOutFlow:
 
         initial_tasks = HousekeepingTask.objects.count()
 
-        resp = api_client.post(
-            f"/api/v1/bookings/{checked_in_booking.id}/check-out/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{checked_in_booking.id}/check-out/")
         assert resp.status_code == status.HTTP_200_OK
 
         # One new task should exist
@@ -457,9 +445,7 @@ class TestCheckOutFlow:
         """Checkout should set room status to CLEANING."""
         api_client.force_authenticate(user=staff_user)
 
-        resp = api_client.post(
-            f"/api/v1/bookings/{checked_in_booking.id}/check-out/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{checked_in_booking.id}/check-out/")
         assert resp.status_code == status.HTTP_200_OK
 
         checked_in_booking.room.refresh_from_db()
@@ -473,9 +459,7 @@ class TestCheckOutFlow:
 
         initial_entries = FinancialEntry.objects.count()
 
-        resp = api_client.post(
-            f"/api/v1/bookings/{checked_in_booking.id}/check-out/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{checked_in_booking.id}/check-out/")
         assert resp.status_code == status.HTTP_200_OK
 
         assert FinancialEntry.objects.count() == initial_entries + 1
@@ -498,9 +482,7 @@ class TestCheckOutFlow:
         guest.refresh_from_db()
         initial_stays = guest.total_stays
 
-        resp = api_client.post(
-            f"/api/v1/bookings/{checked_in_booking.id}/check-out/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{checked_in_booking.id}/check-out/")
         assert resp.status_code == status.HTTP_200_OK
 
         guest.refresh_from_db()
@@ -553,15 +535,14 @@ class TestCheckOutFlow:
         """Cannot checkout a booking that hasn't been checked in yet."""
         api_client.force_authenticate(user=staff_user)
 
-        resp = api_client.post(
-            f"/api/v1/bookings/{confirmed_booking.id}/check-out/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{confirmed_booking.id}/check-out/")
         assert resp.status_code == status.HTTP_400_BAD_REQUEST
 
 
 # ---------------------------------------------------------------------------
 # 4. Payment & Deposit Flow
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestPaymentDepositFlow:
@@ -589,9 +570,7 @@ class TestPaymentDepositFlow:
         assert confirmed_booking.deposit_amount == Decimal("100000")
         assert confirmed_booking.deposit_paid is False
 
-    def test_deposit_at_threshold_marks_paid(
-        self, api_client, staff_user, confirmed_booking
-    ):
+    def test_deposit_at_threshold_marks_paid(self, api_client, staff_user, confirmed_booking):
         """Recording a deposit ≥30% of total should set deposit_paid=True."""
         api_client.force_authenticate(user=staff_user)
 
@@ -611,9 +590,7 @@ class TestPaymentDepositFlow:
         assert confirmed_booking.deposit_amount == Decimal("300000")
         assert confirmed_booking.deposit_paid is True
 
-    def test_multiple_deposits_accumulate(
-        self, api_client, staff_user, confirmed_booking
-    ):
+    def test_multiple_deposits_accumulate(self, api_client, staff_user, confirmed_booking):
         """Multiple deposit payments should accumulate on booking.deposit_amount."""
         api_client.force_authenticate(user=staff_user)
 
@@ -673,16 +650,12 @@ class TestPaymentDepositFlow:
         assert resp.status_code == status.HTTP_201_CREATED
 
         # Check in
-        resp = api_client.post(
-            f"/api/v1/bookings/{confirmed_booking.id}/check-in/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{confirmed_booking.id}/check-in/")
         assert resp.status_code == status.HTTP_200_OK
         assert resp.data["status"] == "checked_in"
 
         # Check out
-        resp = api_client.post(
-            f"/api/v1/bookings/{confirmed_booking.id}/check-out/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{confirmed_booking.id}/check-out/")
         assert resp.status_code == status.HTTP_200_OK
         assert resp.data["status"] == "checked_out"
 
@@ -708,6 +681,7 @@ class TestPaymentDepositFlow:
 # ---------------------------------------------------------------------------
 # 5. Cancellation & No-Show Flows
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestCancellationFlow:
@@ -751,9 +725,7 @@ class TestCancellationFlow:
         checked_in_booking.room.refresh_from_db()
         assert checked_in_booking.room.status == Room.Status.AVAILABLE
 
-    def test_no_show_from_confirmed(
-        self, api_client, staff_user, confirmed_booking
-    ):
+    def test_no_show_from_confirmed(self, api_client, staff_user, confirmed_booking):
         """Marking no-show on a confirmed booking should update status."""
         api_client.force_authenticate(user=staff_user)
 
@@ -765,9 +737,7 @@ class TestCancellationFlow:
         assert resp.status_code == status.HTTP_200_OK
         assert resp.data["status"] == "no_show"
 
-    def test_no_show_checked_in_reverts_room(
-        self, api_client, staff_user, checked_in_booking
-    ):
+    def test_no_show_checked_in_reverts_room(self, api_client, staff_user, checked_in_booking):
         """No-show on checked-in booking should revert room to AVAILABLE."""
         api_client.force_authenticate(user=staff_user)
 
@@ -785,6 +755,7 @@ class TestCancellationFlow:
 # ---------------------------------------------------------------------------
 # 6. Room Status Consistency Across Multiple Bookings
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.django_db
 class TestRoomStatusConsistency:
@@ -861,8 +832,7 @@ class TestRoomStatusConsistency:
         assert room.status == Room.Status.OCCUPIED
 
     def test_sequential_bookings_on_same_room(
-        self, api_client, staff_user, room, guest, second_guest, room_type,
-        income_category
+        self, api_client, staff_user, room, guest, second_guest, room_type, income_category
     ):
         """
         Two sequential bookings on the same room:
@@ -933,13 +903,12 @@ class TestRoomStatusConsistency:
 # 7. Folio Items Impact on Booking
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestFolioItemFlow:
     """Test folio item creation and its effect on booking charges."""
 
-    def test_folio_items_track_per_booking(
-        self, api_client, staff_user, checked_in_booking
-    ):
+    def test_folio_items_track_per_booking(self, api_client, staff_user, checked_in_booking):
         """Creating folio items links them to the booking correctly."""
         api_client.force_authenticate(user=staff_user)
 
@@ -964,9 +933,7 @@ class TestFolioItemFlow:
         ]
 
         for item_data in items_data:
-            resp = api_client.post(
-                "/api/v1/folio-items/", item_data, format="json"
-            )
+            resp = api_client.post("/api/v1/folio-items/", item_data, format="json")
             assert resp.status_code == status.HTTP_201_CREATED
 
         # Verify both items are linked to the booking
@@ -985,31 +952,22 @@ class TestFolioItemFlow:
 # 8. Permission Guards on Multi-Step Flows
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.django_db
 class TestPermissionGuards:
     """Test that unauthenticated/unauthorized users can't perform operations."""
 
-    def test_unauthenticated_cannot_checkin(
-        self, api_client, confirmed_booking
-    ):
+    def test_unauthenticated_cannot_checkin(self, api_client, confirmed_booking):
         """Unauthenticated request to check-in should fail."""
-        resp = api_client.post(
-            f"/api/v1/bookings/{confirmed_booking.id}/check-in/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{confirmed_booking.id}/check-in/")
         assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_unauthenticated_cannot_checkout(
-        self, api_client, checked_in_booking
-    ):
+    def test_unauthenticated_cannot_checkout(self, api_client, checked_in_booking):
         """Unauthenticated request to checkout should fail."""
-        resp = api_client.post(
-            f"/api/v1/bookings/{checked_in_booking.id}/check-out/"
-        )
+        resp = api_client.post(f"/api/v1/bookings/{checked_in_booking.id}/check-out/")
         assert resp.status_code == status.HTTP_401_UNAUTHORIZED
 
-    def test_unauthenticated_cannot_record_deposit(
-        self, api_client, confirmed_booking
-    ):
+    def test_unauthenticated_cannot_record_deposit(self, api_client, confirmed_booking):
         """Unauthenticated request to record deposit should fail."""
         resp = api_client.post(
             "/api/v1/payments/record-deposit/",
