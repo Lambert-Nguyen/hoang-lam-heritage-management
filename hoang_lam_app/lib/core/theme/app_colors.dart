@@ -7,12 +7,14 @@ class AppColors {
   AppColors._();
 
   // ==================== Heritage Color Palette ====================
-  
+
   // Primary (Dark Heritage Green) - Main brand color
   static const Color primary = Color(0xFF254634);
   static const Color primaryLight = Color(0xFF3D6B52);
   static const Color primaryDark = Color(0xFF17291E);
-  static const Color onPrimary = Color(0xFFF5EEE0); // Warm cream text on primary
+  static const Color onPrimary = Color(
+    0xFFF5EEE0,
+  ); // Warm cream text on primary
 
   // Secondary / Accent (Gold) - CTA highlights, links
   static const Color secondary = Color(0xFF9F8033);
@@ -22,18 +24,18 @@ class AppColors {
 
   // Deep Accent (Near-black Green) - Body text on light backgrounds
   static const Color deepAccent = Color(0xFF17291E);
-  
+
   // Muted Accent (Sage Gray-Green) - Secondary text, dividers
   static const Color mutedAccent = Color(0xFFA2A698);
-  
+
   // Soft Surface (Sand) - Cards, elevated surfaces
   static const Color sand = Color(0xFFD1C9B0);
-  
+
   // Background (Warm Cream) - App background
   static const Color cream = Color(0xFFF5EEE0);
 
   // ==================== UI Role Mappings ====================
-  
+
   // Room Status Colors (distinguishable)
   static const Color available = Color(0xFF254634); // Heritage green
   static const Color occupied = Color(0xFFC62828); // Red
@@ -69,18 +71,30 @@ class AppColors {
   static const Color infoBackground = Color(0xFFD1C9B0); // Sand
 
   // Status Indicator Colors (for badges, chips, category indicators)
-  static const Color statusBlue = Color(0xFF2196F3);       // Confirmed, info items
-  static const Color statusPurple = Color(0xFF9C27B0);     // Website source, special items
-  static const Color statusBrown = Color(0xFF795548);       // Snack, other categories
-  static const Color statusTeal = Color(0xFF009688);        // Teal category items
-  static const Color statusDeepOrange = Color(0xFFFF5722);  // Urgent notifications
-  static const Color statusAmber = Color(0xFFFFC107);        // Beer, highlight warnings
-  static const Color statusAmberLight = Color(0xFFFFF8E1);  // Amber background (50)
-  static const Color statusAmberBorder = Color(0xFFFFE082); // Amber border (200)
-  static const Color statusAmberDark = Color(0xFFF57F17);   // Amber text (900)
-  static const Color statusAmberIcon = Color(0xFFFFA000);   // Amber icon (700)
-  static const Color statusCyan = Color(0xFF00BCD4);         // Water, coolant items
-  static const Color statusBlueGrey = Color(0xFF607D8B);    // Neutral/inactive items
+  static const Color statusBlue = Color(0xFF2196F3); // Confirmed, info items
+  static const Color statusPurple = Color(
+    0xFF9C27B0,
+  ); // Website source, special items
+  static const Color statusBrown = Color(0xFF795548); // Snack, other categories
+  static const Color statusTeal = Color(0xFF009688); // Teal category items
+  static const Color statusDeepOrange = Color(
+    0xFFFF5722,
+  ); // Urgent notifications
+  static const Color statusAmber = Color(
+    0xFFFFC107,
+  ); // Beer, highlight warnings
+  static const Color statusAmberLight = Color(
+    0xFFFFF8E1,
+  ); // Amber background (50)
+  static const Color statusAmberBorder = Color(
+    0xFFFFE082,
+  ); // Amber border (200)
+  static const Color statusAmberDark = Color(0xFFF57F17); // Amber text (900)
+  static const Color statusAmberIcon = Color(0xFFFFA000); // Amber icon (700)
+  static const Color statusCyan = Color(0xFF00BCD4); // Water, coolant items
+  static const Color statusBlueGrey = Color(
+    0xFF607D8B,
+  ); // Neutral/inactive items
 
   // Brand Colors (external platform brand identity - do not change)
   static const Color brandBookingCom = Color(0xFF003580);
@@ -107,7 +121,7 @@ class AppColors {
   static const Color onOffline = Color(0xFFF5EEE0);
 
   // ==================== Dark Mode Colors ====================
-  
+
   // Dark Background Colors
   static const Color darkBackground = Color(0xFF17291E); // Deep accent
   static const Color darkSurface = Color(0xFF1E3328);

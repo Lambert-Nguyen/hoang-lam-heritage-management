@@ -49,7 +49,10 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
 
   int get _quantity => int.tryParse(_quantityController.text) ?? 1;
   double get _unitPrice =>
-      double.tryParse(_unitPriceController.text.replaceAll(RegExp(r'[^\d]'), '')) ?? 0;
+      double.tryParse(
+        _unitPriceController.text.replaceAll(RegExp(r'[^\d]'), ''),
+      ) ??
+      0;
   double get _totalPrice => _quantity * _unitPrice;
 
   @override
@@ -105,9 +108,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                         border: const OutlineInputBorder(),
                       ),
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => setState(() {}),
                       validator: (value) {
                         final qty = int.tryParse(value ?? '');
@@ -132,9 +133,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                         suffixText: '₫',
                       ),
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       onChanged: (_) => setState(() {}),
                       validator: (value) {
                         final price = double.tryParse(
@@ -161,9 +160,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
                     border: const OutlineInputBorder(),
                     suffixIcon: Icon(Icons.calendar_today),
                   ),
-                  child: Text(
-                    DateFormat('dd/MM/yyyy').format(_selectedDate),
-                  ),
+                  child: Text(DateFormat('dd/MM/yyyy').format(_selectedDate)),
                 ),
               ),
 
@@ -205,13 +202,14 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _submitCharge,
-          child: _isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(context.l10n.addCharge),
+          child:
+              _isLoading
+                  ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : Text(context.l10n.addCharge),
         ),
       ],
     );
@@ -234,32 +232,35 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: commonTypes.map((type) {
-        final isSelected = _selectedType == type;
-        return ChoiceChip(
-          avatar: Icon(
-            type.icon,
-            size: 16,
-            color: isSelected ? Colors.white : type.color,
-          ),
-          label: Text(type.localizedName(context.l10n)),
-          selected: isSelected,
-          selectedColor: type.color,
-          labelStyle: TextStyle(
-            color: isSelected ? Colors.white : null,
-            fontSize: 12,
-          ),
-          onSelected: (_) {
-            setState(() {
-              _selectedType = type;
-              // Auto-fill description based on type
-              if (_descriptionController.text.isEmpty) {
-                _descriptionController.text = type.localizedName(context.l10n);
-              }
-            });
-          },
-        );
-      }).toList(),
+      children:
+          commonTypes.map((type) {
+            final isSelected = _selectedType == type;
+            return ChoiceChip(
+              avatar: Icon(
+                type.icon,
+                size: 16,
+                color: isSelected ? Colors.white : type.color,
+              ),
+              label: Text(type.localizedName(context.l10n)),
+              selected: isSelected,
+              selectedColor: type.color,
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : null,
+                fontSize: 12,
+              ),
+              onSelected: (_) {
+                setState(() {
+                  _selectedType = type;
+                  // Auto-fill description based on type
+                  if (_descriptionController.text.isEmpty) {
+                    _descriptionController.text = type.localizedName(
+                      context.l10n,
+                    );
+                  }
+                });
+              },
+            );
+          }).toList(),
     );
   }
 

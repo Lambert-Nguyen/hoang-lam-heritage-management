@@ -7,7 +7,7 @@ import '../../providers/guest_provider.dart';
 import '../../screens/guests/guest_form_screen.dart';
 
 /// Guest Quick Search Widget
-/// 
+///
 /// Provides inline guest selection with:
 /// - Search autocomplete
 /// - Quick guest creation
@@ -128,50 +128,52 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
     final size = renderBox.size;
 
     return OverlayEntry(
-      builder: (context) => Positioned(
-        width: size.width,
-        child: CompositedTransformFollower(
-          link: _layerLink,
-          showWhenUnlinked: false,
-          offset: Offset(0, size.height + 4),
-          child: Material(
-            elevation: 4.0,
-            borderRadius: BorderRadius.circular(8),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 250),
-              child: _searchResults.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(context.l10n.guestNotFound),
-                    )
-                  : ListView.builder(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      shrinkWrap: true,
-                      itemCount: _searchResults.length,
-                      itemBuilder: (context, index) {
-                        final guest = _searchResults[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            child: Text(guest.initials),
+      builder:
+          (context) => Positioned(
+            width: size.width,
+            child: CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              offset: Offset(0, size.height + 4),
+              child: Material(
+                elevation: 4.0,
+                borderRadius: BorderRadius.circular(8),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 250),
+                  child:
+                      _searchResults.isEmpty
+                          ? Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(context.l10n.guestNotFound),
+                          )
+                          : ListView.builder(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            shrinkWrap: true,
+                            itemCount: _searchResults.length,
+                            itemBuilder: (context, index) {
+                              final guest = _searchResults[index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  child: Text(guest.initials),
+                                ),
+                                title: Text(guest.fullName),
+                                subtitle: Text(guest.phone),
+                                onTap: () {
+                                  _removeOverlay();
+                                  _searchController.clear();
+                                  setState(() {
+                                    _selectedGuest = guest;
+                                    _selectedGuestId = guest.id;
+                                  });
+                                  widget.onGuestSelected(guest);
+                                },
+                              );
+                            },
                           ),
-                          title: Text(guest.fullName),
-                          subtitle: Text(guest.phone),
-                          onTap: () {
-                            _removeOverlay();
-                            _searchController.clear();
-                            setState(() {
-                              _selectedGuest = guest;
-                              _selectedGuestId = guest.id;
-                            });
-                            widget.onGuestSelected(guest);
-                          },
-                        );
-                      },
-                    ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
     );
   }
 
@@ -199,9 +201,7 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
   Widget _buildSelectedGuest() {
     return Card(
       child: ListTile(
-        leading: CircleAvatar(
-          child: Text(_selectedGuest!.initials),
-        ),
+        leading: CircleAvatar(child: Text(_selectedGuest!.initials)),
         title: Text(_selectedGuest!.fullName),
         subtitle: Text(_selectedGuest!.phone),
         trailing: IconButton(
@@ -230,23 +230,24 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
               hintText: context.l10n.min2Characters,
               border: const OutlineInputBorder(),
               prefixIcon: const Icon(Icons.person_search),
-              suffixIcon: _isSearching
-                  ? const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : _searchController.text.isNotEmpty
+              suffixIcon:
+                  _isSearching
+                      ? const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      )
+                      : _searchController.text.isNotEmpty
                       ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            _removeOverlay();
-                          },
-                        )
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          _removeOverlay();
+                        },
+                      )
                       : null,
             ),
           ),

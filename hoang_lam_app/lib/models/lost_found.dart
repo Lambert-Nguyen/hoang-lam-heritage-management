@@ -83,7 +83,6 @@ extension LostFoundStatusX on LostFoundStatus {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case LostFoundStatus.found:
@@ -207,7 +206,6 @@ extension LostFoundCategoryX on LostFoundCategory {
         return Colors.grey;
     }
   }
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {

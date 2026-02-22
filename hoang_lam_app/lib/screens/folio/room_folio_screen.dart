@@ -14,10 +14,7 @@ import '../../core/theme/app_colors.dart';
 class RoomFolioScreen extends ConsumerStatefulWidget {
   final int bookingId;
 
-  const RoomFolioScreen({
-    required this.bookingId,
-    super.key,
-  });
+  const RoomFolioScreen({required this.bookingId, super.key});
 
   @override
   ConsumerState<RoomFolioScreen> createState() => _RoomFolioScreenState();
@@ -62,9 +59,10 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
             onPressed: () {
               ref.read(folioNotifierProvider.notifier).toggleIncludeVoided();
             },
-            tooltip: folioState.includeVoided
-                ? l10n.hideCancelledItems
-                : l10n.showCancelledItems,
+            tooltip:
+                folioState.includeVoided
+                    ? l10n.hideCancelledItems
+                    : l10n.showCancelledItems,
           ),
           // Add charge button
           IconButton(
@@ -88,11 +86,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
+            Icon(Icons.error_outline, size: 64, color: AppColors.error),
             const SizedBox(height: 16),
             Text(
               folioState.error!,
@@ -115,9 +109,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
 
     final summary = folioState.summary;
     if (summary == null) {
-      return Center(
-        child: Text(AppLocalizations.of(context)!.noData),
-      );
+      return Center(child: Text(AppLocalizations.of(context)!.noData));
     }
 
     return RefreshIndicator(
@@ -129,8 +121,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Loading indicator overlay
-            if (folioState.isLoading)
-              const LinearProgressIndicator(),
+            if (folioState.isLoading) const LinearProgressIndicator(),
 
             // Error banner
             if (folioState.error != null && folioState.summary != null)
@@ -216,17 +207,18 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                 avatar: Icon(
                   type.icon,
                   size: 16,
-                  color: folioState.filterType == type
-                      ? Colors.white
-                      : type.color,
+                  color:
+                      folioState.filterType == type ? Colors.white : type.color,
                 ),
                 label: Text('${type.localizedName(context.l10n)} ($count)'),
                 selected: folioState.filterType == type,
                 selectedColor: type.color,
                 onSelected: (_) {
-                  ref.read(folioNotifierProvider.notifier).setFilterType(
-                    folioState.filterType == type ? null : type,
-                  );
+                  ref
+                      .read(folioNotifierProvider.notifier)
+                      .setFilterType(
+                        folioState.filterType == type ? null : type,
+                      );
                 },
               ),
             );
@@ -237,9 +229,8 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
   }
 
   List<FolioItem> _getFilteredItems(FolioState folioState) {
-    final items = folioState.includeVoided
-        ? folioState.items
-        : folioState.activeItems;
+    final items =
+        folioState.includeVoided ? folioState.items : folioState.activeItems;
 
     if (folioState.filterType == null) {
       return items;
@@ -253,12 +244,13 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
   void _showAddChargeDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AddChargeDialog(
-        bookingId: widget.bookingId,
-        onChargeAdded: () {
-          ref.read(folioNotifierProvider.notifier).refresh();
-        },
-      ),
+      builder:
+          (context) => AddChargeDialog(
+            bookingId: widget.bookingId,
+            onChargeAdded: () {
+              ref.read(folioNotifierProvider.notifier).refresh();
+            },
+          ),
     );
   }
 
@@ -268,76 +260,76 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.voidCharge),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${l10n.confirmVoidCharge} "${item.description}"?',
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.voidCharge),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${l10n.confirmVoidCharge} "${item.description}"?'),
+                const SizedBox(height: 16),
+                Text(
+                  '${l10n.chargeAmount}: ${currencyFormat.format(item.totalPrice)}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: reasonController,
+                  decoration: InputDecoration(
+                    labelText: '${l10n.enterVoidReason} *',
+                    hintText: l10n.pleaseEnterVoidReason,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              '${l10n.chargeAmount}: ${currencyFormat.format(item.totalPrice)}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: reasonController,
-              decoration: InputDecoration(
-                labelText: '${l10n.enterVoidReason} *',
-                hintText: l10n.pleaseEnterVoidReason,
-                border: const OutlineInputBorder(),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(l10n.cancel),
               ),
-              maxLines: 2,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.cancel),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () async {
+                  if (reasonController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(l10n.voidReasonRequired),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                    return;
+                  }
+
+                  Navigator.of(context).pop();
+
+                  final success = await ref
+                      .read(folioNotifierProvider.notifier)
+                      .voidItem(item.id, reasonController.text.trim());
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          success
+                              ? l10n.chargeVoidedSuccess
+                              : l10n.cannotVoidCharge,
+                        ),
+                        backgroundColor:
+                            success ? AppColors.success : AppColors.error,
+                      ),
+                    );
+                  }
+                },
+                child: Text(l10n.confirmVoid),
+              ),
+            ],
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () async {
-              if (reasonController.text.trim().isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.voidReasonRequired),
-                    backgroundColor: AppColors.error,
-                  ),
-                );
-                return;
-              }
-
-              Navigator.of(context).pop();
-
-              final success = await ref
-                  .read(folioNotifierProvider.notifier)
-                  .voidItem(item.id, reasonController.text.trim());
-
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      success
-                          ? l10n.chargeVoidedSuccess
-                          : l10n.cannotVoidCharge,
-                    ),
-                    backgroundColor: success ? AppColors.success : AppColors.error,
-                  ),
-                );
-              }
-            },
-            child: Text(l10n.confirmVoid),
-          ),
-        ],
-      ),
     ).then((_) => reasonController.dispose());
   }
 }

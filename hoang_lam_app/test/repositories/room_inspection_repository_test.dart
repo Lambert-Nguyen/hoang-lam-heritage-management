@@ -37,14 +37,18 @@ void main() {
           },
         ];
 
-        when(mockApiClient.get<dynamic>(
-          AppConstants.roomInspectionsEndpoint,
-          queryParameters: anyNamed('queryParameters'),
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 200,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.get<dynamic>(
+            AppConstants.roomInspectionsEndpoint,
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.getInspections();
 
@@ -55,14 +59,18 @@ void main() {
       });
 
       test('returns empty list when no inspections', () async {
-        when(mockApiClient.get<dynamic>(
-          AppConstants.roomInspectionsEndpoint,
-          queryParameters: anyNamed('queryParameters'),
-        )).thenAnswer((_) async => Response(
-              data: [],
-              statusCode: 200,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.get<dynamic>(
+            AppConstants.roomInspectionsEndpoint,
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: [],
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.getInspections();
 
@@ -85,13 +93,17 @@ void main() {
           'action_required': '',
         };
 
-        when(mockApiClient.get<Map<String, dynamic>>(
-          '${AppConstants.roomInspectionsEndpoint}1/',
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 200,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.get<Map<String, dynamic>>(
+            '${AppConstants.roomInspectionsEndpoint}1/',
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.getInspection(1);
 
@@ -121,14 +133,18 @@ void main() {
           'action_required': '',
         };
 
-        when(mockApiClient.post<Map<String, dynamic>>(
-          AppConstants.roomInspectionsEndpoint,
-          data: anyNamed('data'),
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 201,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.post<Map<String, dynamic>>(
+            AppConstants.roomInspectionsEndpoint,
+            data: anyNamed('data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 201,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.createInspection(createData);
 
@@ -153,13 +169,17 @@ void main() {
           'action_required': '',
         };
 
-        when(mockApiClient.post<Map<String, dynamic>>(
-          '${AppConstants.roomInspectionsEndpoint}1/start/',
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 200,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.post<Map<String, dynamic>>(
+            '${AppConstants.roomInspectionsEndpoint}1/start/',
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.startInspection(1);
 
@@ -183,7 +203,13 @@ void main() {
           'scheduled_date': '2024-01-15',
           'status': 'completed',
           'checklist_items': [
-            {'category': 'bedroom', 'item': 'Bed', 'critical': false, 'passed': true, 'notes': ''},
+            {
+              'category': 'bedroom',
+              'item': 'Bed',
+              'critical': false,
+              'passed': true,
+              'notes': '',
+            },
           ],
           'images': [],
           'notes': '',
@@ -191,14 +217,18 @@ void main() {
           'score': 100.0,
         };
 
-        when(mockApiClient.post<Map<String, dynamic>>(
-          '${AppConstants.roomInspectionsEndpoint}1/complete/',
-          data: anyNamed('data'),
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 200,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.post<Map<String, dynamic>>(
+            '${AppConstants.roomInspectionsEndpoint}1/complete/',
+            data: anyNamed('data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.completeInspection(1, completeData);
 
@@ -221,14 +251,18 @@ void main() {
           'inspections_by_room': [],
         };
 
-        when(mockApiClient.get<Map<String, dynamic>>(
-          '${AppConstants.roomInspectionsEndpoint}statistics/',
-          queryParameters: anyNamed('queryParameters'),
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 200,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.get<Map<String, dynamic>>(
+            '${AppConstants.roomInspectionsEndpoint}statistics/',
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.getStatistics();
 
@@ -251,14 +285,18 @@ void main() {
           },
         ];
 
-        when(mockApiClient.get<dynamic>(
-          AppConstants.inspectionTemplatesEndpoint,
-          queryParameters: anyNamed('queryParameters'),
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 200,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.get<dynamic>(
+            AppConstants.inspectionTemplatesEndpoint,
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 200,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.getTemplates();
 
@@ -273,9 +311,7 @@ void main() {
         final createData = InspectionTemplateCreate(
           name: 'New Template',
           inspectionType: InspectionType.routine,
-          items: [
-            TemplateItem(category: 'general', item: 'Check door'),
-          ],
+          items: [TemplateItem(category: 'general', item: 'Check door')],
         );
 
         final mockResponse = {
@@ -290,14 +326,18 @@ void main() {
           'item_count': 1,
         };
 
-        when(mockApiClient.post<Map<String, dynamic>>(
-          AppConstants.inspectionTemplatesEndpoint,
-          data: anyNamed('data'),
-        )).thenAnswer((_) async => Response(
-              data: mockResponse,
-              statusCode: 201,
-              requestOptions: RequestOptions(),
-            ));
+        when(
+          mockApiClient.post<Map<String, dynamic>>(
+            AppConstants.inspectionTemplatesEndpoint,
+            data: anyNamed('data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            data: mockResponse,
+            statusCode: 201,
+            requestOptions: RequestOptions(),
+          ),
+        );
 
         final result = await repository.createTemplate(createData);
 

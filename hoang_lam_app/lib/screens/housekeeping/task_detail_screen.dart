@@ -16,10 +16,7 @@ import '../../widgets/housekeeping/complete_task_dialog.dart';
 class TaskDetailScreen extends ConsumerStatefulWidget {
   final HousekeepingTask task;
 
-  const TaskDetailScreen({
-    super.key,
-    required this.task,
-  });
+  const TaskDetailScreen({super.key, required this.task});
 
   @override
   ConsumerState<TaskDetailScreen> createState() => _TaskDetailScreenState();
@@ -58,18 +55,22 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   break;
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    const Icon(Icons.delete, color: AppColors.error),
-                    const SizedBox(width: 8),
-                    Text(l10n.delete, style: const TextStyle(color: AppColors.error)),
-                  ],
-                ),
-              ),
-            ],
+            itemBuilder:
+                (context) => [
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.delete, color: AppColors.error),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.delete,
+                          style: const TextStyle(color: AppColors.error),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
           ),
         ],
       ),
@@ -112,9 +113,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
       decoration: BoxDecoration(
         color: _task.status.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _task.status.color.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: _task.status.color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -125,11 +124,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
               color: _task.status.color,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              _task.status.icon,
-              color: Colors.white,
-              size: 32,
-            ),
+            child: Icon(_task.status.icon, color: Colors.white, size: 32),
           ),
           AppSpacing.gapHorizontalMd,
           Expanded(
@@ -139,25 +134,21 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 Text(
                   _task.status.localizedName(context.l10n),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: _task.status.color,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: _task.status.color,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 AppSpacing.gapVerticalXs,
                 Text(
                   _task.taskType.localizedName(context.l10n),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
           ),
-          Icon(
-            _task.taskType.icon,
-            color: _task.taskType.color,
-            size: 32,
-          ),
+          Icon(_task.taskType.icon, color: _task.taskType.color, size: 32),
         ],
       ),
     );
@@ -171,9 +162,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         children: [
           Text(
             l10n.taskInfo,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
@@ -213,9 +204,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
             children: [
               Text(
                 l10n.assign,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               if (_task.status.canAssign)
                 TextButton.icon(
@@ -276,15 +267,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         children: [
           Text(
             l10n.notes,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
-          Text(
-            _task.notes!,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text(_task.notes!, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );
@@ -298,9 +286,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         children: [
           Text(
             l10n.historyLabel,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           if (_task.createdAt != null)
@@ -339,16 +327,16 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           Expanded(
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           Text(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -382,13 +370,10 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    color: AppColors.textSecondary,
+                  ),
                 ),
-                Text(
-                  time,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                Text(time, style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
           ),
@@ -452,9 +437,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _task = updatedTask;
         });
         ref.invalidate(housekeepingTasksProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.taskAssigned)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.taskAssigned)));
       }
     }
   }
@@ -468,16 +453,18 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
 
     if (notes != null && mounted) {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final updatedTask =
-          await notifier.completeTask(_task.id, notes: notes.isNotEmpty ? notes : null);
+      final updatedTask = await notifier.completeTask(
+        _task.id,
+        notes: notes.isNotEmpty ? notes : null,
+      );
       if (updatedTask != null && mounted) {
         setState(() {
           _task = updatedTask;
         });
         ref.invalidate(housekeepingTasksProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.taskCompleted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.taskCompleted)));
       }
     }
   }
@@ -486,20 +473,21 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.verifyTask),
-        content: Text(l10n.verifyTaskConfirmation),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.verifyTask),
+            content: Text(l10n.verifyTaskConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.verify),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.verify),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && mounted) {
@@ -510,9 +498,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _task = updatedTask;
         });
         ref.invalidate(housekeepingTasksProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.taskVerified)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.taskVerified)));
       }
     }
   }
@@ -521,23 +509,24 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.deleteTask),
-        content: Text(l10n.deleteTaskConfirmation),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.deleteTask),
+            content: Text(l10n.deleteTaskConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
+                child: Text(l10n.delete),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && mounted) {
@@ -546,9 +535,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
       if (success && mounted) {
         ref.invalidate(housekeepingTasksProvider);
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.taskDeleted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.taskDeleted)));
       }
     }
   }

@@ -13,10 +13,7 @@ void main() {
 
   group('User', () {
     test('creates from constructor with required fields', () {
-      const user = User(
-        id: 1,
-        username: 'testuser',
-      );
+      const user = User(id: 1, username: 'testuser');
 
       expect(user.id, 1);
       expect(user.username, 'testuser');
@@ -100,30 +97,19 @@ void main() {
       });
 
       test('returns first name only when last name is null', () {
-        const user = User(
-          id: 1,
-          username: 'testuser',
-          firstName: 'Test',
-        );
+        const user = User(id: 1, username: 'testuser', firstName: 'Test');
 
         expect(user.displayName, 'Test');
       });
 
       test('returns last name only when first name is null', () {
-        const user = User(
-          id: 1,
-          username: 'testuser',
-          lastName: 'User',
-        );
+        const user = User(id: 1, username: 'testuser', lastName: 'User');
 
         expect(user.displayName, 'User');
       });
 
       test('returns username when no names present', () {
-        const user = User(
-          id: 1,
-          username: 'testuser',
-        );
+        const user = User(id: 1, username: 'testuser');
 
         expect(user.displayName, 'testuser');
       });
@@ -131,31 +117,19 @@ void main() {
 
     group('isAdmin', () {
       test('returns true for owner role', () {
-        const user = User(
-          id: 1,
-          username: 'owner',
-          role: UserRole.owner,
-        );
+        const user = User(id: 1, username: 'owner', role: UserRole.owner);
 
         expect(user.isAdmin, isTrue);
       });
 
       test('returns true for manager role', () {
-        const user = User(
-          id: 1,
-          username: 'manager',
-          role: UserRole.manager,
-        );
+        const user = User(id: 1, username: 'manager', role: UserRole.manager);
 
         expect(user.isAdmin, isTrue);
       });
 
       test('returns false for staff role', () {
-        const user = User(
-          id: 1,
-          username: 'staff',
-          role: UserRole.staff,
-        );
+        const user = User(id: 1, username: 'staff', role: UserRole.staff);
 
         expect(user.isAdmin, isFalse);
       });
@@ -171,21 +145,14 @@ void main() {
       });
 
       test('returns false when role is null', () {
-        const user = User(
-          id: 1,
-          username: 'noRole',
-        );
+        const user = User(id: 1, username: 'noRole');
 
         expect(user.isAdmin, isFalse);
       });
     });
 
     test('supports copyWith', () {
-      const user = User(
-        id: 1,
-        username: 'testuser',
-        firstName: 'Test',
-      );
+      const user = User(id: 1, username: 'testuser', firstName: 'Test');
 
       final updated = user.copyWith(firstName: 'Updated');
       expect(updated.id, 1);

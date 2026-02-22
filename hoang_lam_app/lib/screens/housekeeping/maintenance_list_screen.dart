@@ -66,11 +66,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildUrgentTab(),
-          _buildAllTab(),
-          _buildMyRequestsTab(),
-        ],
+        children: [_buildUrgentTab(), _buildAllTab(), _buildMyRequestsTab()],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _navigateToForm(context),
@@ -101,15 +97,18 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         );
       },
       loading: () => const LoadingIndicator(),
-      error: (error, _) => _buildErrorState(error, () {
-        ref.invalidate(urgentRequestsProvider);
-      }),
+      error:
+          (error, _) => _buildErrorState(error, () {
+            ref.invalidate(urgentRequestsProvider);
+          }),
     );
   }
 
   Widget _buildAllTab() {
     final l10n = AppLocalizations.of(context)!;
-    final requestsAsync = ref.watch(filteredMaintenanceRequestsProvider(_filter));
+    final requestsAsync = ref.watch(
+      filteredMaintenanceRequestsProvider(_filter),
+    );
 
     return requestsAsync.when(
       data: (requests) {
@@ -128,9 +127,10 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         );
       },
       loading: () => const LoadingIndicator(),
-      error: (error, _) => _buildErrorState(error, () {
-        ref.invalidate(filteredMaintenanceRequestsProvider(_filter));
-      }),
+      error:
+          (error, _) => _buildErrorState(error, () {
+            ref.invalidate(filteredMaintenanceRequestsProvider(_filter));
+          }),
     );
   }
 
@@ -155,45 +155,76 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         );
       },
       loading: () => const LoadingIndicator(),
-      error: (error, _) => _buildErrorState(error, () {
-        ref.invalidate(myMaintenanceRequestsProvider);
-      }),
+      error:
+          (error, _) => _buildErrorState(error, () {
+            ref.invalidate(myMaintenanceRequestsProvider);
+          }),
     );
   }
 
   Widget _buildRequestList(List<MaintenanceRequest> requests) {
     final l10n = AppLocalizations.of(context)!;
     // Group requests by status
-    final pending = requests.where((r) => r.status == MaintenanceStatus.pending).toList();
-    final assigned = requests.where((r) => r.status == MaintenanceStatus.assigned).toList();
-    final inProgress = requests.where((r) => r.status == MaintenanceStatus.inProgress).toList();
-    final onHold = requests.where((r) => r.status == MaintenanceStatus.onHold).toList();
-    final completed = requests.where((r) => 
-      r.status == MaintenanceStatus.completed || 
-      r.status == MaintenanceStatus.cancelled
-    ).toList();
+    final pending =
+        requests.where((r) => r.status == MaintenanceStatus.pending).toList();
+    final assigned =
+        requests.where((r) => r.status == MaintenanceStatus.assigned).toList();
+    final inProgress =
+        requests
+            .where((r) => r.status == MaintenanceStatus.inProgress)
+            .toList();
+    final onHold =
+        requests.where((r) => r.status == MaintenanceStatus.onHold).toList();
+    final completed =
+        requests
+            .where(
+              (r) =>
+                  r.status == MaintenanceStatus.completed ||
+                  r.status == MaintenanceStatus.cancelled,
+            )
+            .toList();
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 80),
       children: [
         if (pending.isNotEmpty) ...[
-          _buildSectionHeader(l10n.pending, pending.length, MaintenanceStatus.pending.color),
+          _buildSectionHeader(
+            l10n.pending,
+            pending.length,
+            MaintenanceStatus.pending.color,
+          ),
           ...pending.map((r) => _buildRequestCard(r)),
         ],
         if (assigned.isNotEmpty) ...[
-          _buildSectionHeader(l10n.assigned, assigned.length, MaintenanceStatus.assigned.color),
+          _buildSectionHeader(
+            l10n.assigned,
+            assigned.length,
+            MaintenanceStatus.assigned.color,
+          ),
           ...assigned.map((r) => _buildRequestCard(r)),
         ],
         if (inProgress.isNotEmpty) ...[
-          _buildSectionHeader(l10n.inProgress, inProgress.length, MaintenanceStatus.inProgress.color),
+          _buildSectionHeader(
+            l10n.inProgress,
+            inProgress.length,
+            MaintenanceStatus.inProgress.color,
+          ),
           ...inProgress.map((r) => _buildRequestCard(r)),
         ],
         if (onHold.isNotEmpty) ...[
-          _buildSectionHeader(l10n.onHold, onHold.length, MaintenanceStatus.onHold.color),
+          _buildSectionHeader(
+            l10n.onHold,
+            onHold.length,
+            MaintenanceStatus.onHold.color,
+          ),
           ...onHold.map((r) => _buildRequestCard(r)),
         ],
         if (completed.isNotEmpty) ...[
-          _buildSectionHeader(l10n.completedCancelled, completed.length, MaintenanceStatus.completed.color),
+          _buildSectionHeader(
+            l10n.completedCancelled,
+            completed.length,
+            MaintenanceStatus.completed.color,
+          ),
           ...completed.map((r) => _buildRequestCard(r)),
         ],
       ],
@@ -222,9 +253,9 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
           Text(
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: color,
-                ),
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
           ),
           AppSpacing.gapHorizontalXs,
           Container(
@@ -239,9 +270,9 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
             child: Text(
               '$count',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -253,12 +284,9 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
     return MaintenanceCard(
       request: request,
       onTap: () => _navigateToDetail(context, request),
-      onAssign: request.status.canAssign
-          ? () => _assignRequest(request)
-          : null,
-      onComplete: request.status.canComplete
-          ? () => _completeRequest(request)
-          : null,
+      onAssign: request.status.canAssign ? () => _assignRequest(request) : null,
+      onComplete:
+          request.status.canComplete ? () => _completeRequest(request) : null,
     );
   }
 
@@ -270,11 +298,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
+            Icon(Icons.error_outline, size: 64, color: AppColors.error),
             AppSpacing.gapVerticalMd,
             Text(
               l10n.errorOccurred,
@@ -283,9 +307,9 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
             AppSpacing.gapVerticalSm,
             Text(
               error.toString(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
             AppSpacing.gapVerticalLg,
@@ -304,14 +328,15 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => MaintenanceFilterSheet(
-        initialFilter: _filter,
-        onApply: (filter) {
-          setState(() {
-            _filter = filter;
-          });
-        },
-      ),
+      builder:
+          (context) => MaintenanceFilterSheet(
+            initialFilter: _filter,
+            onApply: (filter) {
+              setState(() {
+                _filter = filter;
+              });
+            },
+          ),
     );
   }
 
@@ -342,11 +367,14 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
 
     if (userId != null && mounted) {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final result = await notifier.assignMaintenanceRequest(request.id, userId);
+      final result = await notifier.assignMaintenanceRequest(
+        request.id,
+        userId,
+      );
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.taskAssigned)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.taskAssigned)));
         ref.invalidate(maintenanceRequestsProvider);
       }
     }
@@ -356,20 +384,21 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.completeRequest),
-        content: Text(l10n.completeRequestConfirmation),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.completeRequest),
+            content: Text(l10n.completeRequestConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.completed),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.completed),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && mounted) {
@@ -411,9 +440,7 @@ class _MaintenanceAssignDialogState
     final currentUser = ref.watch(currentUserProvider);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -422,15 +449,15 @@ class _MaintenanceAssignDialogState
           children: [
             Text(
               context.l10n.assignRepair,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
               widget.request.title,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             AppSpacing.gapVerticalLg,
             // Self-assign
@@ -440,60 +467,69 @@ class _MaintenanceAssignDialogState
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                tileColor: _selectedUserId == currentUser.id
-                    ? AppColors.primary.withValues(alpha: 0.1)
-                    : null,
+                tileColor:
+                    _selectedUserId == currentUser.id
+                        ? AppColors.primary.withValues(alpha: 0.1)
+                        : null,
                 leading: const CircleAvatar(child: Icon(Icons.person)),
                 title: Text(context.l10n.selfAssign),
                 subtitle: Text(currentUser.displayName),
-                trailing: _selectedUserId == currentUser.id
-                    ? Icon(Icons.check_circle, color: AppColors.primary)
-                    : null,
+                trailing:
+                    _selectedUserId == currentUser.id
+                        ? Icon(Icons.check_circle, color: AppColors.primary)
+                        : null,
               ),
             const Divider(),
             Text(
               context.l10n.selectStaff,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textSecondary,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+              ),
             ),
             AppSpacing.gapVerticalSm,
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 200),
               child: staffAsync.when(
-                data: (staffList) => ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: staffList.length,
-                  itemBuilder: (context, index) {
-                    final staff = staffList[index];
-                    final isSelected = _selectedUserId == staff.id;
-                    return ListTile(
-                      onTap: () =>
-                          setState(() => _selectedUserId = staff.id),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      tileColor: isSelected
-                          ? AppColors.primary.withValues(alpha: 0.1)
-                          : null,
-                      leading: CircleAvatar(
-                        child: Text(staff.displayName[0]),
-                      ),
-                      title: Text(staff.displayName),
-                      subtitle: Text(
-                          staff.roleDisplay ?? staff.role?.localizedName(context.l10n) ?? ''),
-                      trailing: isSelected
-                          ? Icon(Icons.check_circle,
-                              color: AppColors.primary)
-                          : null,
-                    );
-                  },
-                ),
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (_, __) => Center(
-                    child: Text(context.l10n.staffLoadError)),
+                data:
+                    (staffList) => ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: staffList.length,
+                      itemBuilder: (context, index) {
+                        final staff = staffList[index];
+                        final isSelected = _selectedUserId == staff.id;
+                        return ListTile(
+                          onTap:
+                              () => setState(() => _selectedUserId = staff.id),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          tileColor:
+                              isSelected
+                                  ? AppColors.primary.withValues(alpha: 0.1)
+                                  : null,
+                          leading: CircleAvatar(
+                            child: Text(staff.displayName[0]),
+                          ),
+                          title: Text(staff.displayName),
+                          subtitle: Text(
+                            staff.roleDisplay ??
+                                staff.role?.localizedName(context.l10n) ??
+                                '',
+                          ),
+                          trailing:
+                              isSelected
+                                  ? Icon(
+                                    Icons.check_circle,
+                                    color: AppColors.primary,
+                                  )
+                                  : null,
+                        );
+                      },
+                    ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error:
+                    (_, __) => Center(child: Text(context.l10n.staffLoadError)),
               ),
             ),
             AppSpacing.gapVerticalLg,
@@ -510,9 +546,10 @@ class _MaintenanceAssignDialogState
                 Expanded(
                   child: AppButton(
                     label: context.l10n.confirm,
-                    onPressed: _selectedUserId != null
-                        ? () => Navigator.pop(context, _selectedUserId)
-                        : null,
+                    onPressed:
+                        _selectedUserId != null
+                            ? () => Navigator.pop(context, _selectedUserId)
+                            : null,
                   ),
                 ),
               ],

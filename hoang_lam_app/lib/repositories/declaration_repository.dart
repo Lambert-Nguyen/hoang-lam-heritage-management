@@ -15,7 +15,7 @@ class DeclarationRepository {
   final ApiClient _apiClient;
 
   DeclarationRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   /// Export declaration data and save to file.
   /// Returns the file path of the downloaded file.
@@ -37,9 +37,8 @@ class DeclarationRepository {
 
     // Get the download directory
     final directory = await getApplicationDocumentsDirectory();
-    final formSuffix = formType == DeclarationFormType.all
-        ? ''
-        : '_${formType.apiValue}';
+    final formSuffix =
+        formType == DeclarationFormType.all ? '' : '_${formType.apiValue}';
     final filename =
         'khai_bao_luu_tru${formSuffix}_${dateFromStr}_$dateToStr.${format.fileExtension}';
     final filePath = '${directory.path}/$filename';
@@ -50,9 +49,7 @@ class DeclarationRepository {
       queryParameters: queryParams,
       options: Options(
         responseType: ResponseType.bytes,
-        headers: {
-          'Accept': format.mimeType,
-        },
+        headers: {'Accept': format.mimeType},
       ),
     );
 

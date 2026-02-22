@@ -63,7 +63,6 @@ extension EntryTypeExtension on EntryType {
   /// Convert to API value (snake_case)
   String get toApiValue => name;
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case EntryType.income:
@@ -162,7 +161,6 @@ extension PaymentMethodExtension on PaymentMethod {
         return name;
     }
   }
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -278,7 +276,9 @@ sealed class FinancialEntry with _$FinancialEntry {
     required String description,
     int? booking,
     @JsonKey(name: 'booking_details') FinancialBookingDetails? bookingDetails,
-    @JsonKey(name: 'payment_method') @Default(PaymentMethod.cash) PaymentMethod paymentMethod,
+    @JsonKey(name: 'payment_method')
+    @Default(PaymentMethod.cash)
+    PaymentMethod paymentMethod,
     @JsonKey(name: 'receipt_number') String? receiptNumber,
     String? attachment,
     @JsonKey(name: 'created_by') int? createdBy,
@@ -333,7 +333,9 @@ sealed class FinancialEntryListItem with _$FinancialEntryListItem {
     @Default('VND') String currency,
     required DateTime date,
     required String description,
-    @JsonKey(name: 'payment_method') @Default(PaymentMethod.cash) PaymentMethod paymentMethod,
+    @JsonKey(name: 'payment_method')
+    @Default(PaymentMethod.cash)
+    PaymentMethod paymentMethod,
     @JsonKey(name: 'room_number') String? roomNumber,
     @JsonKey(name: 'created_at') DateTime? createdAt,
   }) = _FinancialEntryListItem;
@@ -389,8 +391,12 @@ sealed class DailyFinancialSummary with _$DailyFinancialSummary {
     @JsonKey(name: 'net_profit') required double netProfit,
     @JsonKey(name: 'income_entries') @Default(0) int incomeEntries,
     @JsonKey(name: 'expense_entries') @Default(0) int expenseEntries,
-    @JsonKey(name: 'income_by_category') @Default([]) List<CategoryBreakdown> incomeByCategory,
-    @JsonKey(name: 'expense_by_category') @Default([]) List<CategoryBreakdown> expenseByCategory,
+    @JsonKey(name: 'income_by_category')
+    @Default([])
+    List<CategoryBreakdown> incomeByCategory,
+    @JsonKey(name: 'expense_by_category')
+    @Default([])
+    List<CategoryBreakdown> expenseByCategory,
   }) = _DailyFinancialSummary;
 
   factory DailyFinancialSummary.fromJson(Map<String, dynamic> json) =>
@@ -400,7 +406,8 @@ sealed class DailyFinancialSummary with _$DailyFinancialSummary {
   int get totalEntries => incomeEntries + expenseEntries;
 
   /// Get profit margin percentage
-  double get profitMargin => totalIncome > 0 ? (netProfit / totalIncome * 100) : 0;
+  double get profitMargin =>
+      totalIncome > 0 ? (netProfit / totalIncome * 100) : 0;
 }
 
 /// Daily totals for charts
@@ -428,8 +435,12 @@ sealed class MonthlyFinancialSummary with _$MonthlyFinancialSummary {
     @JsonKey(name: 'total_expense') required double totalExpense,
     @JsonKey(name: 'net_profit') required double netProfit,
     @JsonKey(name: 'profit_margin') @Default(0) double profitMargin,
-    @JsonKey(name: 'income_by_category') @Default([]) List<CategoryBreakdown> incomeByCategory,
-    @JsonKey(name: 'expense_by_category') @Default([]) List<CategoryBreakdown> expenseByCategory,
+    @JsonKey(name: 'income_by_category')
+    @Default([])
+    List<CategoryBreakdown> incomeByCategory,
+    @JsonKey(name: 'expense_by_category')
+    @Default([])
+    List<CategoryBreakdown> expenseByCategory,
     @JsonKey(name: 'daily_totals') @Default([]) List<DailyTotals> dailyTotals,
   }) = _MonthlyFinancialSummary;
 
@@ -439,9 +450,18 @@ sealed class MonthlyFinancialSummary with _$MonthlyFinancialSummary {
   /// Get formatted month name in Vietnamese
   String get monthName {
     const months = [
-      'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
-      'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
-      'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12',
+      'Tháng 1',
+      'Tháng 2',
+      'Tháng 3',
+      'Tháng 4',
+      'Tháng 5',
+      'Tháng 6',
+      'Tháng 7',
+      'Tháng 8',
+      'Tháng 9',
+      'Tháng 10',
+      'Tháng 11',
+      'Tháng 12',
     ];
     return months[month - 1];
   }
@@ -465,7 +485,9 @@ sealed class FinancialEntryRequest with _$FinancialEntryRequest {
     required DateTime date,
     required String description,
     int? booking,
-    @JsonKey(name: 'payment_method') @Default(PaymentMethod.cash) PaymentMethod paymentMethod,
+    @JsonKey(name: 'payment_method')
+    @Default(PaymentMethod.cash)
+    PaymentMethod paymentMethod,
     @JsonKey(name: 'receipt_number') String? receiptNumber,
   }) = _FinancialEntryRequest;
 
@@ -577,7 +599,6 @@ extension PaymentTypeExtension on PaymentType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case PaymentType.deposit:
@@ -669,7 +690,6 @@ extension PaymentStatusExtension on PaymentStatus {
         return const Color(0xFFECEFF1); // Blue Grey light
     }
   }
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -921,7 +941,6 @@ extension FolioItemTypeExtension on FolioItemType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case FolioItemType.room:
@@ -1045,7 +1064,8 @@ sealed class ExchangeRate with _$ExchangeRate {
       _$ExchangeRateFromJson(json);
 
   /// Get display string (e.g., "1 USD = 24,500 VND")
-  String get displayString => '1 $fromCurrency = ${rate.toStringAsFixed(2)} $toCurrency';
+  String get displayString =>
+      '1 $fromCurrency = ${rate.toStringAsFixed(2)} $toCurrency';
 
   /// Convert an amount using this rate
   double convert(double amount) => amount * rate;

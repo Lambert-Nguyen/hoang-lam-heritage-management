@@ -26,7 +26,9 @@ void main() {
       container = ProviderContainer(
         overrides: [
           // Prevent real biometric platform channel calls
-          biometricNotifierProvider.overrideWith(() => _FakeBiometricNotifier()),
+          biometricNotifierProvider.overrideWith(
+            () => _FakeBiometricNotifier(),
+          ),
         ],
       );
     });
@@ -149,8 +151,10 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check snackbar is shown
-      expect(find.text('Vui lòng liên hệ quản trị viên để đặt lại mật khẩu'),
-          findsOneWidget);
+      expect(
+        find.text('Vui lòng liên hệ quản trị viên để đặt lại mật khẩu'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('displays version info', (tester) async {

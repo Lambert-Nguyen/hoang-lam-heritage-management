@@ -23,10 +23,12 @@ class RoomInspectionFormScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<RoomInspectionFormScreen> createState() => _RoomInspectionFormScreenState();
+  ConsumerState<RoomInspectionFormScreen> createState() =>
+      _RoomInspectionFormScreenState();
 }
 
-class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScreen> {
+class _RoomInspectionFormScreenState
+    extends ConsumerState<RoomInspectionFormScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _isSubmitting = false;
@@ -56,7 +58,9 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
   Future<void> _loadInspection() async {
     setState(() => _isLoading = true);
     try {
-      final inspection = await ref.read(roomInspectionRepositoryProvider).getInspection(widget.inspectionId!);
+      final inspection = await ref
+          .read(roomInspectionRepositoryProvider)
+          .getInspection(widget.inspectionId!);
       setState(() {
         _existingInspection = inspection;
         _checklistItems = List.from(inspection.checklistItems);
@@ -69,7 +73,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('${l10n.error}: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     }
@@ -80,7 +87,13 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     final l10n = AppLocalizations.of(context)!;
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(widget.isConductMode ? l10n.conductInspection : l10n.createInspection)),
+        appBar: AppBar(
+          title: Text(
+            widget.isConductMode
+                ? l10n.conductInspection
+                : l10n.createInspection,
+          ),
+        ),
         body: const LoadingIndicator(),
       );
     }
@@ -95,7 +108,9 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     final templatesAsync = ref.watch(defaultTemplatesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.createNewInspection)),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.createNewInspection),
+      ),
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -103,7 +118,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(context.l10n.inspectionInfo, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.inspectionInfo,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.md),
               AppCard(
                 child: Padding(
@@ -119,36 +137,51 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                           prefixIcon: const Icon(Icons.meeting_room),
                         ),
                         keyboardType: TextInputType.number,
-                        validator: (v) => v?.isEmpty ?? true ? context.l10n.pleaseEnterRoomId : null,
+                        validator:
+                            (v) =>
+                                v?.isEmpty ?? true
+                                    ? context.l10n.pleaseEnterRoomId
+                                    : null,
                         onChanged: (v) => _selectedRoomId = int.tryParse(v),
                       ),
                       const SizedBox(height: AppSpacing.md),
 
                       // Inspection type
-                      Text(context.l10n.inspectionType, style: Theme.of(context).textTheme.bodyMedium),
+                      Text(
+                        context.l10n.inspectionType,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 8,
                         runSpacing: 8,
-                        children: InspectionType.values.map((type) {
-                          final isSelected = _selectedType == type;
-                          return ChoiceChip(
-                            label: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(type.icon, size: 16, color: isSelected ? Colors.white : type.color),
-                                const SizedBox(width: 4),
-                                Text(type.localizedName(context.l10n)),
-                              ],
-                            ),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              if (selected) {
-                                setState(() => _selectedType = type);
-                              }
-                            },
-                          );
-                        }).toList(),
+                        children:
+                            InspectionType.values.map((type) {
+                              final isSelected = _selectedType == type;
+                              return ChoiceChip(
+                                label: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      type.icon,
+                                      size: 16,
+                                      color:
+                                          isSelected
+                                              ? Colors.white
+                                              : type.color,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(type.localizedName(context.l10n)),
+                                  ],
+                                ),
+                                selected: isSelected,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() => _selectedType = type);
+                                  }
+                                },
+                              );
+                            }).toList(),
                       ),
                       const SizedBox(height: AppSpacing.md),
 
@@ -171,7 +204,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
               const SizedBox(height: AppSpacing.lg),
 
               // Template selection
-              Text(context.l10n.inspectionTemplateOptional, style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                context.l10n.inspectionTemplateOptional,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const SizedBox(height: AppSpacing.md),
               templatesAsync.when(
                 data: (templates) {
@@ -181,70 +217,108 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                         padding: AppSpacing.paddingCard,
                         child: Row(
                           children: [
-                            Icon(Icons.info_outline, color: AppColors.textSecondary),
+                            Icon(
+                              Icons.info_outline,
+                              color: AppColors.textSecondary,
+                            ),
                             const SizedBox(width: 12),
-                            Expanded(child: Text(context.l10n.noDefaultTemplateDesc)),
+                            Expanded(
+                              child: Text(context.l10n.noDefaultTemplateDesc),
+                            ),
                           ],
                         ),
                       ),
                     );
                   }
                   return Column(
-                    children: templates.map((template) {
-                      final isSelected = _selectedTemplateId == template.id;
-                      return AppCard(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        onTap: () {
-                          setState(() {
-                            _selectedTemplateId = isSelected ? null : template.id;
-                          });
-                        },
-                        child: Container(
-                          padding: AppSpacing.paddingCard,
-                          decoration: BoxDecoration(
-                            border: isSelected ? Border.all(color: Theme.of(context).primaryColor, width: 2) : null,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                                color: isSelected ? Theme.of(context).primaryColor : AppColors.textSecondary,
+                    children:
+                        templates.map((template) {
+                          final isSelected = _selectedTemplateId == template.id;
+                          return AppCard(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            onTap: () {
+                              setState(() {
+                                _selectedTemplateId =
+                                    isSelected ? null : template.id;
+                              });
+                            },
+                            child: Container(
+                              padding: AppSpacing.paddingCard,
+                              decoration: BoxDecoration(
+                                border:
+                                    isSelected
+                                        ? Border.all(
+                                          color: Theme.of(context).primaryColor,
+                                          width: 2,
+                                        )
+                                        : null,
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(template.name, style: const TextStyle(fontWeight: FontWeight.w500)),
-                                    Text(
-                                      '${template.items.length} ${context.l10n.checklistItemsSuffix}',
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isSelected
+                                        ? Icons.check_circle
+                                        : Icons.radio_button_unchecked,
+                                    color:
+                                        isSelected
+                                            ? Theme.of(context).primaryColor
+                                            : AppColors.textSecondary,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          template.name,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          '${template.items.length} ${context.l10n.checklistItemsSuffix}',
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.bodySmall?.copyWith(
+                                            color: AppColors.textSecondary,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  if (template.isDefault)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.success.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        context.l10n.defaultBadge,
+                                        style: TextStyle(
+                                          color: AppColors.success,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
-                              if (template.isDefault)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.success.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    context.l10n.defaultBadge,
-                                    style: TextStyle(color: AppColors.success, fontSize: 12),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                            ),
+                          );
+                        }).toList(),
                   );
                 },
                 loading: () => const LoadingIndicator(),
-                error: (e, _) => ErrorDisplay(message: '${context.l10n.error}: $e'),
+                error:
+                    (e, _) =>
+                        ErrorDisplay(message: '${context.l10n.error}: $e'),
               ),
               const SizedBox(height: AppSpacing.xl),
 
@@ -252,10 +326,19 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 width: double.infinity,
                 child: FilledButton.icon(
                   onPressed: _isSubmitting ? null : _createInspection,
-                  icon: _isSubmitting
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.add),
-                  label: Text(_isSubmitting ? context.l10n.creatingText : context.l10n.createInspectionBtn),
+                  icon:
+                      _isSubmitting
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Icon(Icons.add),
+                  label: Text(
+                    _isSubmitting
+                        ? context.l10n.creatingText
+                        : context.l10n.createInspectionBtn,
+                  ),
                 ),
               ),
             ],
@@ -306,9 +389,11 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                       ),
                       const SizedBox(height: 4),
                       LinearProgressIndicator(
-                        value: _checklistItems.isEmpty
-                            ? 0
-                            : (passedCount + failedCount) / _checklistItems.length,
+                        value:
+                            _checklistItems.isEmpty
+                                ? 0
+                                : (passedCount + failedCount) /
+                                    _checklistItems.length,
                         backgroundColor: AppColors.mutedAccent,
                         minHeight: 6,
                         borderRadius: BorderRadius.circular(3),
@@ -318,21 +403,33 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 ),
                 const SizedBox(width: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Text('✓ $passedCount', style: const TextStyle(color: AppColors.success)),
+                  child: Text(
+                    '✓ $passedCount',
+                    style: const TextStyle(color: AppColors.success),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.error.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Text('✗ $failedCount', style: const TextStyle(color: AppColors.error)),
+                  child: Text(
+                    '✗ $failedCount',
+                    style: const TextStyle(color: AppColors.error),
+                  ),
                 ),
               ],
             ),
@@ -376,11 +473,15 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                     children: [
                       Text(
                         checklistItem.item,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                       Text(
                         checklistItem.category,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -388,12 +489,21 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 if (checklistItem.critical)
                   Container(
                     margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
-                    child: Text(l10n.importantBadge, style: const TextStyle(fontSize: 10, color: AppColors.error)),
+                    child: Text(
+                      l10n.importantBadge,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: AppColors.error,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -403,10 +513,21 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _updateItemStatus(index, true),
-                    icon: Icon(Icons.check, color: isPassed == true ? Colors.white : AppColors.success),
-                    label: Text(l10n.passBtn, style: TextStyle(color: isPassed == true ? Colors.white : AppColors.success)),
+                    icon: Icon(
+                      Icons.check,
+                      color:
+                          isPassed == true ? Colors.white : AppColors.success,
+                    ),
+                    label: Text(
+                      l10n.passBtn,
+                      style: TextStyle(
+                        color:
+                            isPassed == true ? Colors.white : AppColors.success,
+                      ),
+                    ),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: isPassed == true ? AppColors.success : null,
+                      backgroundColor:
+                          isPassed == true ? AppColors.success : null,
                       side: const BorderSide(color: AppColors.success),
                     ),
                   ),
@@ -415,10 +536,20 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _updateItemStatus(index, false),
-                    icon: Icon(Icons.close, color: isPassed == false ? Colors.white : AppColors.error),
-                    label: Text(l10n.failBtn, style: TextStyle(color: isPassed == false ? Colors.white : AppColors.error)),
+                    icon: Icon(
+                      Icons.close,
+                      color: isPassed == false ? Colors.white : AppColors.error,
+                    ),
+                    label: Text(
+                      l10n.failBtn,
+                      style: TextStyle(
+                        color:
+                            isPassed == false ? Colors.white : AppColors.error,
+                      ),
+                    ),
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: isPassed == false ? AppColors.error : null,
+                      backgroundColor:
+                          isPassed == false ? AppColors.error : null,
                       side: const BorderSide(color: AppColors.error),
                     ),
                   ),
@@ -433,7 +564,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
                   labelText: l10n.issueNotes,
                   hintText: l10n.describeIssueHint,
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  contentPadding: EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
                 maxLines: 2,
                 onChanged: (value) => _updateItemNotes(index, value),
@@ -454,7 +588,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.generalNotes, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.generalNotes,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 12),
             TextFormField(
               initialValue: _notes,
@@ -466,7 +603,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
               onChanged: (value) => _notes = value,
             ),
             const SizedBox(height: 16),
-            Text(l10n.actionRequiredIfAny, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.actionRequiredIfAny,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 12),
             TextFormField(
               initialValue: _actionRequired,
@@ -515,7 +655,10 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
     }
     if (_selectedRoomId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.pleaseSelectRoomMsg), backgroundColor: AppColors.error),
+        SnackBar(
+          content: Text(context.l10n.pleaseSelectRoomMsg),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -525,20 +668,29 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
       final data = RoomInspectionCreate(
         room: _selectedRoomId!,
         inspectionType: _selectedType,
-        scheduledDate: '${_scheduledDate.year}-${_scheduledDate.month.toString().padLeft(2, '0')}-${_scheduledDate.day.toString().padLeft(2, '0')}',
+        scheduledDate:
+            '${_scheduledDate.year}-${_scheduledDate.month.toString().padLeft(2, '0')}-${_scheduledDate.day.toString().padLeft(2, '0')}',
         templateId: _selectedTemplateId,
       );
-      await ref.read(roomInspectionNotifierProvider.notifier).createInspection(data);
+      await ref
+          .read(roomInspectionNotifierProvider.notifier)
+          .createInspection(data);
       if (mounted) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.inspectionCreatedSuccess), backgroundColor: AppColors.success),
+          SnackBar(
+            content: Text(context.l10n.inspectionCreatedSuccess),
+            backgroundColor: AppColors.success,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('${context.l10n.error}: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -550,11 +702,14 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
 
   Future<void> _completeInspection() async {
     // Check critical items
-    final uncheckedCritical = _checklistItems.where((i) => i.critical && i.passed == null).toList();
+    final uncheckedCritical =
+        _checklistItems.where((i) => i.critical && i.passed == null).toList();
     if (uncheckedCritical.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${context.l10n.uncheckedCriticalItems}: ${uncheckedCritical.length}'),
+          content: Text(
+            '${context.l10n.uncheckedCriticalItems}: ${uncheckedCritical.length}',
+          ),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -569,20 +724,25 @@ class _RoomInspectionFormScreenState extends ConsumerState<RoomInspectionFormScr
         actionRequired: _actionRequired,
         images: _images,
       );
-      await ref.read(roomInspectionNotifierProvider.notifier).completeInspection(
-            widget.inspectionId!,
-            data,
-          );
+      await ref
+          .read(roomInspectionNotifierProvider.notifier)
+          .completeInspection(widget.inspectionId!, data);
       if (mounted) {
         context.go('/room-inspections');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.inspectionCompleted), backgroundColor: AppColors.success),
+          SnackBar(
+            content: Text(context.l10n.inspectionCompleted),
+            backgroundColor: AppColors.success,
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('${context.l10n.error}: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {

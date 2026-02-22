@@ -181,22 +181,18 @@ void main() {
         updatedAt: DateTime(2024, 1, 15),
       );
 
-      await tester.pumpWidget(buildWidget(
-        items: [voidedItem],
-        includeVoided: true,
-      ));
+      await tester.pumpWidget(
+        buildWidget(items: [voidedItem], includeVoided: true),
+      );
       await tester.pumpAndSettle();
 
       // Should show voided indicator
       expect(find.text('Item hủy'), findsOneWidget);
     });
 
-    testWidgets('onVoid callback is callable',
-        (tester) async {
+    testWidgets('onVoid callback is callable', (tester) async {
       bool voidCalled = false;
-      await tester.pumpWidget(buildWidget(
-        onVoid: (item) => voidCalled = true,
-      ));
+      await tester.pumpWidget(buildWidget(onVoid: (item) => voidCalled = true));
       await tester.pumpAndSettle();
 
       // The widget may or may not show void buttons depending on implementation

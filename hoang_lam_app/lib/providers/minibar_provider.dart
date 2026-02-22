@@ -35,23 +35,27 @@ final minibarCategoriesProvider = FutureProvider<List<String>>((ref) async {
 });
 
 /// Provider for a specific minibar item by ID
-final minibarItemByIdProvider =
-    FutureProvider.family<MinibarItem, int>((ref, id) async {
+final minibarItemByIdProvider = FutureProvider.family<MinibarItem, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(minibarRepositoryProvider);
   return repository.getItem(id);
 });
 
 /// Provider for filtered minibar items
 final filteredMinibarItemsProvider =
-    FutureProvider.family<List<MinibarItem>, MinibarItemFilter?>(
-        (ref, filter) async {
-  final repository = ref.watch(minibarRepositoryProvider);
-  return repository.getItems(
-    isActive: filter?.isActive,
-    category: filter?.category,
-    search: filter?.search,
-  );
-});
+    FutureProvider.family<List<MinibarItem>, MinibarItemFilter?>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(minibarRepositoryProvider);
+      return repository.getItems(
+        isActive: filter?.isActive,
+        category: filter?.category,
+        search: filter?.search,
+      );
+    });
 
 // ============================================================
 // Minibar Sale Providers
@@ -64,46 +68,56 @@ final minibarSalesProvider = FutureProvider<List<MinibarSale>>((ref) async {
 });
 
 /// Provider for minibar sales by booking ID
-final salesByBookingProvider =
-    FutureProvider.family<List<MinibarSale>, int>((ref, bookingId) async {
+final salesByBookingProvider = FutureProvider.family<List<MinibarSale>, int>((
+  ref,
+  bookingId,
+) async {
   final repository = ref.watch(minibarRepositoryProvider);
   return repository.getSales(bookingId: bookingId);
 });
 
 /// Provider for uncharged minibar sales by booking ID
-final unchargedSalesProvider =
-    FutureProvider.family<List<MinibarSale>, int>((ref, bookingId) async {
+final unchargedSalesProvider = FutureProvider.family<List<MinibarSale>, int>((
+  ref,
+  bookingId,
+) async {
   final repository = ref.watch(minibarRepositoryProvider);
   return repository.getUnchargedSales(bookingId);
 });
 
 /// Provider for minibar sales summary by booking ID
-final salesSummaryProvider =
-    FutureProvider.family<MinibarSalesSummary, int>((ref, bookingId) async {
+final salesSummaryProvider = FutureProvider.family<MinibarSalesSummary, int>((
+  ref,
+  bookingId,
+) async {
   final repository = ref.watch(minibarRepositoryProvider);
   return repository.getSalesSummary(bookingId);
 });
 
 /// Provider for a specific minibar sale by ID
-final minibarSaleByIdProvider =
-    FutureProvider.family<MinibarSale, int>((ref, id) async {
+final minibarSaleByIdProvider = FutureProvider.family<MinibarSale, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(minibarRepositoryProvider);
   return repository.getSale(id);
 });
 
 /// Provider for filtered minibar sales
 final filteredMinibarSalesProvider =
-    FutureProvider.family<List<MinibarSale>, MinibarSaleFilter?>(
-        (ref, filter) async {
-  final repository = ref.watch(minibarRepositoryProvider);
-  return repository.getSales(
-    bookingId: filter?.booking,
-    roomId: filter?.room,
-    dateFrom: filter?.dateFrom,
-    dateTo: filter?.dateTo,
-    isCharged: filter?.isCharged,
-  );
-});
+    FutureProvider.family<List<MinibarSale>, MinibarSaleFilter?>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(minibarRepositoryProvider);
+      return repository.getSales(
+        bookingId: filter?.booking,
+        roomId: filter?.room,
+        dateFrom: filter?.dateFrom,
+        dateTo: filter?.dateTo,
+        isCharged: filter?.isCharged,
+      );
+    });
 
 // ============================================================
 // POS Cart State
@@ -122,12 +136,10 @@ sealed class MinibarCartState with _$MinibarCartState {
   }) = _MinibarCartState;
 
   /// Total amount in cart
-  double get totalAmount =>
-      items.fold(0, (sum, item) => sum + item.total);
+  double get totalAmount => items.fold(0, (sum, item) => sum + item.total);
 
   /// Total item count
-  int get totalItemCount =>
-      items.fold(0, (sum, item) => sum + item.quantity);
+  int get totalItemCount => items.fold(0, (sum, item) => sum + item.quantity);
 
   /// Format total for display
   String get formattedTotal => '${totalAmount.toStringAsFixed(0)} ₫';
@@ -145,7 +157,7 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
   final Ref _ref;
 
   MinibarCartNotifier(this._repository, this._ref)
-      : super(const MinibarCartState());
+    : super(const MinibarCartState());
 
   /// Set booking for the cart
   void setBooking(int bookingId) {
@@ -154,8 +166,9 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
 
   /// Add item to cart
   void addItem(MinibarItem item, {int quantity = 1}) {
-    final existingIndex =
-        state.items.indexWhere((cartItem) => cartItem.item.id == item.id);
+    final existingIndex = state.items.indexWhere(
+      (cartItem) => cartItem.item.id == item.id,
+    );
 
     if (existingIndex >= 0) {
       // Update quantity of existing item
@@ -168,7 +181,10 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
     } else {
       // Add new item
       state = state.copyWith(
-        items: [...state.items, MinibarCartItem(item: item, quantity: quantity)],
+        items: [
+          ...state.items,
+          MinibarCartItem(item: item, quantity: quantity),
+        ],
       );
     }
   }
@@ -187,12 +203,13 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
       return;
     }
 
-    final updatedItems = state.items.map((cartItem) {
-      if (cartItem.item.id == itemId) {
-        return cartItem.copyWith(quantity: quantity);
-      }
-      return cartItem;
-    }).toList();
+    final updatedItems =
+        state.items.map((cartItem) {
+          if (cartItem.item.id == itemId) {
+            return cartItem.copyWith(quantity: quantity);
+          }
+          return cartItem;
+        }).toList();
 
     state = state.copyWith(items: updatedItems);
   }
@@ -223,12 +240,16 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
   /// Process cart and create sales
   Future<bool> processCart() async {
     if (state.bookingId == null) {
-      state = state.copyWith(errorMessage: _ref.read(l10nProvider).errorNoBookingSelected);
+      state = state.copyWith(
+        errorMessage: _ref.read(l10nProvider).errorNoBookingSelected,
+      );
       return false;
     }
 
     if (state.items.isEmpty) {
-      state = state.copyWith(errorMessage: _ref.read(l10nProvider).errorEmptyCart);
+      state = state.copyWith(
+        errorMessage: _ref.read(l10nProvider).errorEmptyCart,
+      );
       return false;
     }
 
@@ -237,12 +258,15 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
     try {
       final request = BulkCreateMinibarSaleRequest(
         booking: state.bookingId!,
-        items: state.items
-            .map((item) => MinibarSaleItem(
-                  itemId: item.item.id,
-                  quantity: item.quantity,
-                ))
-            .toList(),
+        items:
+            state.items
+                .map(
+                  (item) => MinibarSaleItem(
+                    itemId: item.item.id,
+                    quantity: item.quantity,
+                  ),
+                )
+                .toList(),
         date: DateTime.now(),
       );
 
@@ -259,10 +283,7 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
 
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isProcessing: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
       return false;
     }
   }
@@ -281,9 +302,9 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
 /// Provider for POS cart
 final minibarCartProvider =
     StateNotifierProvider<MinibarCartNotifier, MinibarCartState>((ref) {
-  final repository = ref.watch(minibarRepositoryProvider);
-  return MinibarCartNotifier(repository, ref);
-});
+      final repository = ref.watch(minibarRepositoryProvider);
+      return MinibarCartNotifier(repository, ref);
+    });
 
 // ============================================================
 // Minibar Operations State
@@ -326,10 +347,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       );
       state = state.copyWith(isLoading: false, items: items);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
@@ -345,30 +363,28 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateItemProviders();
       return newItem;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
 
   /// Update an item
-  Future<MinibarItem?> updateItem(int id, UpdateMinibarItemRequest request) async {
+  Future<MinibarItem?> updateItem(
+    int id,
+    UpdateMinibarItemRequest request,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.updateItem(id, request);
-      final updatedItems = state.items.map((item) {
-        return item.id == id ? updated : item;
-      }).toList();
+      final updatedItems =
+          state.items.map((item) {
+            return item.id == id ? updated : item;
+          }).toList();
       state = state.copyWith(isLoading: false, items: updatedItems);
       _invalidateItemProviders();
       return updated;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -378,17 +394,15 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.toggleItemActive(id);
-      final updatedItems = state.items.map((item) {
-        return item.id == id ? updated : item;
-      }).toList();
+      final updatedItems =
+          state.items.map((item) {
+            return item.id == id ? updated : item;
+          }).toList();
       state = state.copyWith(isLoading: false, items: updatedItems);
       _invalidateItemProviders();
       return updated;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -403,10 +417,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateItemProviders();
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
@@ -432,10 +443,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       );
       state = state.copyWith(isLoading: false, sales: sales);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
@@ -451,10 +459,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(request.booking);
       return newSale;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -464,17 +469,15 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.markSaleCharged(id);
-      final updatedSales = state.sales.map((sale) {
-        return sale.id == id ? updated : sale;
-      }).toList();
+      final updatedSales =
+          state.sales.map((sale) {
+            return sale.id == id ? updated : sale;
+          }).toList();
       state = state.copyWith(isLoading: false, sales: updatedSales);
       _invalidateSaleProviders(updated.booking);
       return updated;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -484,17 +487,15 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.unmarkSaleCharged(id);
-      final updatedSales = state.sales.map((sale) {
-        return sale.id == id ? updated : sale;
-      }).toList();
+      final updatedSales =
+          state.sales.map((sale) {
+            return sale.id == id ? updated : sale;
+          }).toList();
       state = state.copyWith(isLoading: false, sales: updatedSales);
       _invalidateSaleProviders(updated.booking);
       return updated;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -509,10 +510,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(bookingId);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
@@ -526,10 +524,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(bookingId);
       return response;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -549,8 +544,9 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
 }
 
 /// Provider for minibar state management
-final minibarProvider =
-    StateNotifierProvider<MinibarNotifier, MinibarState>((ref) {
+final minibarProvider = StateNotifierProvider<MinibarNotifier, MinibarState>((
+  ref,
+) {
   final repository = ref.watch(minibarRepositoryProvider);
   return MinibarNotifier(repository, ref);
 });

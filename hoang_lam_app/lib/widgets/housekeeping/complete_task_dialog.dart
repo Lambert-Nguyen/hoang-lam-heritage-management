@@ -11,10 +11,7 @@ import '../common/app_input.dart';
 class CompleteTaskDialog extends StatefulWidget {
   final HousekeepingTask task;
 
-  const CompleteTaskDialog({
-    super.key,
-    required this.task,
-  });
+  const CompleteTaskDialog({super.key, required this.task});
 
   @override
   State<CompleteTaskDialog> createState() => _CompleteTaskDialogState();
@@ -101,9 +98,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxHeight: 500, maxWidth: 400),
         child: Column(
@@ -128,10 +123,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                       color: AppColors.success,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
-                      Icons.check,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.check, color: Colors.white),
                   ),
                   AppSpacing.gapHorizontalMd,
                   Expanded(
@@ -140,17 +132,13 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                       children: [
                         Text(
                           l10n.completeTaskTitle,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '${l10n.roomLabel} ${widget.task.roomNumber ?? widget.task.room}',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textSecondary),
                         ),
                       ],
                     ),
@@ -170,9 +158,9 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                     Text(
                       l10n.checklistLabel,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textSecondary,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     AppSpacing.gapVerticalSm,
                     ...List.generate(_checklist.length, (index) {
@@ -184,9 +172,9 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                     Text(
                       l10n.notesOptional,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textSecondary,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     AppSpacing.gapVerticalSm,
                     AppTextField(
@@ -226,12 +214,8 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                           Expanded(
                             child: Text(
                               l10n.completeAllItemsWarning,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.warning,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: AppColors.warning),
                             ),
                           ),
                         ],
@@ -252,12 +236,13 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                       Expanded(
                         child: AppButton(
                           label: l10n.completeBtn,
-                          onPressed: _allItemsChecked
-                              ? () => Navigator.pop(
+                          onPressed:
+                              _allItemsChecked
+                                  ? () => Navigator.pop(
                                     context,
                                     _notesController.text,
                                   )
-                              : null,
+                                  : null,
                         ),
                       ),
                     ],
@@ -289,37 +274,27 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
               width: 24,
               height: 24,
               decoration: BoxDecoration(
-                color: item.isChecked
-                    ? AppColors.success
-                    : Colors.transparent,
+                color: item.isChecked ? AppColors.success : Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: item.isChecked
-                      ? AppColors.success
-                      : AppColors.divider,
+                  color: item.isChecked ? AppColors.success : AppColors.divider,
                   width: 2,
                 ),
               ),
-              child: item.isChecked
-                  ? const Icon(
-                      Icons.check,
-                      size: 16,
-                      color: Colors.white,
-                    )
-                  : null,
+              child:
+                  item.isChecked
+                      ? const Icon(Icons.check, size: 16, color: Colors.white)
+                      : null,
             ),
             AppSpacing.gapHorizontalMd,
             Expanded(
               child: Text(
                 item.label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      decoration: item.isChecked
-                          ? TextDecoration.lineThrough
-                          : null,
-                      color: item.isChecked
-                          ? AppColors.textSecondary
-                          : null,
-                    ),
+                  decoration:
+                      item.isChecked ? TextDecoration.lineThrough : null,
+                  color: item.isChecked ? AppColors.textSecondary : null,
+                ),
               ),
             ),
           ],
@@ -333,8 +308,5 @@ class _ChecklistItem {
   final String label;
   bool isChecked;
 
-  _ChecklistItem({
-    required this.label,
-    this.isChecked = false,
-  });
+  _ChecklistItem({required this.label, this.isChecked = false});
 }

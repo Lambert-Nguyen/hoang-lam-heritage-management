@@ -9,7 +9,7 @@ class ReportRepository {
   final ApiClient _apiClient;
 
   ReportRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== OCCUPANCY REPORT ====================
 
@@ -79,7 +79,8 @@ class ReportRepository {
     );
     return (response.data ?? [])
         .map(
-            (json) => ChannelPerformance.fromJson(json as Map<String, dynamic>))
+          (json) => ChannelPerformance.fromJson(json as Map<String, dynamic>),
+        )
         .toList();
   }
 
@@ -94,8 +95,7 @@ class ReportRepository {
       queryParameters: request.toQueryParams(),
     );
     return (response.data ?? [])
-        .map(
-            (json) => GuestDemographics.fromJson(json as Map<String, dynamic>))
+        .map((json) => GuestDemographics.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
@@ -110,8 +110,7 @@ class ReportRepository {
       queryParameters: request.toQueryParams(),
     );
     return (response.data ?? [])
-        .map(
-            (json) => ComparativeReport.fromJson(json as Map<String, dynamic>))
+        .map((json) => ComparativeReport.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
@@ -142,16 +141,15 @@ class ReportRepository {
       ),
     );
     if (reports.isEmpty) return 0;
-    final totalOccupancy =
-        reports.fold<double>(0, (sum, r) => sum + r.occupancyRate);
+    final totalOccupancy = reports.fold<double>(
+      0,
+      (sum, r) => sum + r.occupancyRate,
+    );
     return totalOccupancy / reports.length;
   }
 
   /// Get total revenue for a date range
-  Future<double> getTotalRevenue(
-    DateTime startDate,
-    DateTime endDate,
-  ) async {
+  Future<double> getTotalRevenue(DateTime startDate, DateTime endDate) async {
     final reports = await getRevenueReport(
       RevenueReportRequest(
         startDate: startDate,
@@ -163,15 +161,9 @@ class ReportRepository {
   }
 
   /// Get total expenses for a date range
-  Future<double> getTotalExpenses(
-    DateTime startDate,
-    DateTime endDate,
-  ) async {
+  Future<double> getTotalExpenses(DateTime startDate, DateTime endDate) async {
     final reports = await getExpenseReport(
-      ExpenseReportRequest(
-        startDate: startDate,
-        endDate: endDate,
-      ),
+      ExpenseReportRequest(startDate: startDate, endDate: endDate),
     );
     return reports.fold<double>(0, (sum, r) => sum + r.totalAmount);
   }
@@ -183,10 +175,7 @@ class ReportRepository {
     int limit = 5,
   }) async {
     final channels = await getChannelPerformance(
-      ChannelPerformanceRequest(
-        startDate: startDate,
-        endDate: endDate,
-      ),
+      ChannelPerformanceRequest(startDate: startDate, endDate: endDate),
     );
     // Sort by revenue and take top N
     channels.sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));

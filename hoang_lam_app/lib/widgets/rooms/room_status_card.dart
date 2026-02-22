@@ -26,10 +26,7 @@ class RoomStatusCard extends StatelessWidget {
       color: room.status.color.withValues(alpha: 0.15),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        side: BorderSide(
-          color: room.status.color,
-          width: 2,
-        ),
+        side: BorderSide(color: room.status.color, width: 2),
       ),
       child: InkWell(
         onTap: onTap,
@@ -44,16 +41,12 @@ class RoomStatusCard extends StatelessWidget {
               Text(
                 room.number,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: room.status.color,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: room.status.color,
+                ),
               ),
               const SizedBox(height: AppSpacing.xs),
-              Icon(
-                room.status.icon,
-                color: room.status.color,
-                size: 20,
-              ),
+              Icon(room.status.icon, color: room.status.color, size: 20),
             ],
           ),
         ),
@@ -103,9 +96,9 @@ class RoomDetailCard extends StatelessWidget {
                     child: Text(
                       room.number,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
@@ -127,8 +120,9 @@ class RoomDetailCard extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: room.status.color.withValues(alpha: 0.15),
-                        borderRadius:
-                            BorderRadius.circular(AppSpacing.radiusSm),
+                        borderRadius: BorderRadius.circular(
+                          AppSpacing.radiusSm,
+                        ),
                         border: Border.all(color: room.status.color),
                       ),
                       child: Row(
@@ -176,8 +170,8 @@ class RoomDetailCard extends StatelessWidget {
                 Text(
                   room.notes!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    color: AppColors.textSecondary,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -194,27 +188,20 @@ class _InfoChip extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _InfoChip({
-    required this.icon,
-    required this.label,
-  });
+  const _InfoChip({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: AppColors.textSecondary,
-        ),
+        Icon(icon, size: 16, color: AppColors.textSecondary),
         const SizedBox(width: AppSpacing.xs),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );

@@ -13,11 +13,7 @@ class TaskFilterSheet extends StatefulWidget {
   final HousekeepingTaskFilter? initialFilter;
   final Function(HousekeepingTaskFilter) onApply;
 
-  const TaskFilterSheet({
-    super.key,
-    this.initialFilter,
-    required this.onApply,
-  });
+  const TaskFilterSheet({super.key, this.initialFilter, required this.onApply});
 
   @override
   State<TaskFilterSheet> createState() => _TaskFilterSheetState();
@@ -70,9 +66,9 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
               children: [
                 Text(
                   context.l10n.filterTasks,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: _clearFilters,
@@ -94,9 +90,9 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                   Text(
                     context.l10n.status,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   AppSpacing.gapVerticalSm,
                   Wrap(
@@ -125,9 +121,9 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                   Text(
                     context.l10n.taskTypeLabel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   AppSpacing.gapVerticalSm,
                   Wrap(
@@ -156,9 +152,9 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                   Text(
                     context.l10n.scheduledDate,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   AppSpacing.gapVerticalSm,
                   InkWell(
@@ -169,22 +165,25 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                       padding: const EdgeInsets.all(AppSpacing.md),
                       decoration: BoxDecoration(
                         border: Border.all(
-                          color: _selectedDate != null
-                              ? AppColors.primary
-                              : AppColors.divider,
+                          color:
+                              _selectedDate != null
+                                  ? AppColors.primary
+                                  : AppColors.divider,
                         ),
                         borderRadius: BorderRadius.circular(12),
-                        color: _selectedDate != null
-                            ? AppColors.primary.withValues(alpha: 0.05)
-                            : null,
+                        color:
+                            _selectedDate != null
+                                ? AppColors.primary.withValues(alpha: 0.05)
+                                : null,
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.calendar_today,
-                            color: _selectedDate != null
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
+                            color:
+                                _selectedDate != null
+                                    ? AppColors.primary
+                                    : AppColors.textSecondary,
                           ),
                           AppSpacing.gapHorizontalMd,
                           Text(
@@ -192,17 +191,18 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                                 ? dateFormat.format(_selectedDate!)
                                 : context.l10n.selectDate,
                             style: TextStyle(
-                              color: _selectedDate != null
-                                  ? AppColors.primary
-                                  : AppColors.textSecondary,
+                              color:
+                                  _selectedDate != null
+                                      ? AppColors.primary
+                                      : AppColors.textSecondary,
                             ),
                           ),
                           const Spacer(),
                           if (_selectedDate != null)
                             IconButton(
                               icon: const Icon(Icons.clear, size: 18),
-                              onPressed: () =>
-                                  setState(() => _selectedDate = null),
+                              onPressed:
+                                  () => setState(() => _selectedDate = null),
                               color: AppColors.textSecondary,
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
@@ -218,10 +218,7 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
                     spacing: AppSpacing.sm,
                     runSpacing: AppSpacing.sm,
                     children: [
-                      _buildQuickDateChip(
-                        context.l10n.today,
-                        DateTime.now(),
-                      ),
+                      _buildQuickDateChip(context.l10n.today, DateTime.now()),
                       _buildQuickDateChip(
                         context.l10n.tomorrow,
                         DateTime.now().add(const Duration(days: 1)),
@@ -271,14 +268,14 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? (color ?? AppColors.primary).withValues(alpha: 0.15)
-              : Colors.transparent,
+          color:
+              isSelected
+                  ? (color ?? AppColors.primary).withValues(alpha: 0.15)
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected
-                ? (color ?? AppColors.primary)
-                : AppColors.divider,
+            color:
+                isSelected ? (color ?? AppColors.primary) : AppColors.divider,
           ),
         ),
         child: Row(
@@ -288,18 +285,20 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
               Icon(
                 icon,
                 size: 16,
-                color: isSelected
-                    ? (color ?? AppColors.primary)
-                    : AppColors.textSecondary,
+                color:
+                    isSelected
+                        ? (color ?? AppColors.primary)
+                        : AppColors.textSecondary,
               ),
               AppSpacing.gapHorizontalXs,
             ],
             Text(
               label,
               style: TextStyle(
-                color: isSelected
-                    ? (color ?? AppColors.primary)
-                    : AppColors.textSecondary,
+                color:
+                    isSelected
+                        ? (color ?? AppColors.primary)
+                        : AppColors.textSecondary,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -310,7 +309,8 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
   }
 
   Widget _buildQuickDateChip(String label, DateTime date) {
-    final isSelected = _selectedDate != null &&
+    final isSelected =
+        _selectedDate != null &&
         _selectedDate!.year == date.year &&
         _selectedDate!.month == date.month &&
         _selectedDate!.day == date.day;
@@ -328,9 +328,10 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.secondary.withValues(alpha: 0.15)
-              : Colors.transparent,
+          color:
+              isSelected
+                  ? AppColors.secondary.withValues(alpha: 0.15)
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? AppColors.secondary : AppColors.divider,
@@ -371,11 +372,13 @@ class _TaskFilterSheetState extends State<TaskFilterSheet> {
   }
 
   void _applyFilters() {
-    widget.onApply(HousekeepingTaskFilter(
-      status: _selectedStatus,
-      taskType: _selectedType,
-      scheduledDate: _selectedDate,
-    ));
+    widget.onApply(
+      HousekeepingTaskFilter(
+        status: _selectedStatus,
+        taskType: _selectedType,
+        scheduledDate: _selectedDate,
+      ),
+    );
     Navigator.pop(context);
   }
 }

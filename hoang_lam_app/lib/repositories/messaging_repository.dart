@@ -7,7 +7,7 @@ class MessagingRepository {
   final ApiClient _apiClient;
 
   MessagingRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Message Templates ====================
 
@@ -67,7 +67,10 @@ class MessagingRepository {
   }
 
   /// Update a template
-  Future<MessageTemplate> updateTemplate(int id, Map<String, dynamic> data) async {
+  Future<MessageTemplate> updateTemplate(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       '${AppConstants.messageTemplatesEndpoint}$id/',
       data: data,

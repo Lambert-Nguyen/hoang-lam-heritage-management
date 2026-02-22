@@ -108,7 +108,6 @@ extension DeclarationFormTypeExtension on DeclarationFormType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case DeclarationFormType.dd10:

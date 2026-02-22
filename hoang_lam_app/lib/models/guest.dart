@@ -81,7 +81,6 @@ extension IDTypeExtension on IDType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case IDType.cccd:
@@ -158,7 +157,6 @@ extension GenderExtension on Gender {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case Gender.male:
@@ -209,7 +207,6 @@ extension PassportTypeExtension on PassportType {
         return 'Other';
     }
   }
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -269,7 +266,6 @@ extension VisaTypeExtension on VisaType {
         return 'Visa Exempt';
     }
   }
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -383,7 +379,9 @@ sealed class Guest with _$Guest {
     @JsonKey(name: 'visa_number') @Default('') String visaNumber,
     @JsonKey(name: 'visa_issue_date') DateTime? visaIssueDate,
     @JsonKey(name: 'visa_expiry_date') DateTime? visaExpiryDate,
-    @JsonKey(name: 'visa_issuing_authority') @Default('') String visaIssuingAuthority,
+    @JsonKey(name: 'visa_issuing_authority')
+    @Default('')
+    String visaIssuingAuthority,
     @JsonKey(name: 'entry_date') DateTime? entryDate,
     @JsonKey(name: 'entry_port') @Default('') String entryPort,
     @JsonKey(name: 'entry_purpose') @Default('') String entryPurpose,

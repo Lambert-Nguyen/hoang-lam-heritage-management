@@ -17,8 +17,7 @@ class StaffManagementScreen extends ConsumerStatefulWidget {
       _StaffManagementScreenState();
 }
 
-class _StaffManagementScreenState
-    extends ConsumerState<StaffManagementScreen> {
+class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
   String _searchQuery = '';
   UserRole? _roleFilter;
 
@@ -28,9 +27,7 @@ class _StaffManagementScreenState
     final staffAsync = ref.watch(staffListProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.accountManagement),
-      ),
+      appBar: AppBar(title: Text(l10n.accountManagement)),
       body: staffAsync.when(
         data: (staffList) {
           if (staffList.isEmpty) {
@@ -97,13 +94,16 @@ class _StaffManagementScreenState
     }
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      filtered = filtered
-          .where((u) =>
-              u.displayName.toLowerCase().contains(query) ||
-              u.username.toLowerCase().contains(query) ||
-              (u.phone ?? '').contains(query) ||
-              (u.email ?? '').toLowerCase().contains(query))
-          .toList();
+      filtered =
+          filtered
+              .where(
+                (u) =>
+                    u.displayName.toLowerCase().contains(query) ||
+                    u.username.toLowerCase().contains(query) ||
+                    (u.phone ?? '').contains(query) ||
+                    (u.email ?? '').toLowerCase().contains(query),
+              )
+              .toList();
     }
 
     // Group by role
@@ -217,7 +217,8 @@ class _StaffManagementScreenState
             child: _StatCard(
               icon: Icons.admin_panel_settings,
               label: context.l10n.ownerManagerFilter,
-              count: (roleCount[UserRole.owner] ?? 0) +
+              count:
+                  (roleCount[UserRole.owner] ?? 0) +
                   (roleCount[UserRole.manager] ?? 0),
               color: AppColors.secondary,
             ),
@@ -257,19 +258,20 @@ class _StaffManagementScreenState
         decoration: InputDecoration(
           hintText: context.l10n.searchStaffHint,
           prefixIcon: const Icon(Icons.search, size: 20),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear, size: 18),
-                  onPressed: () {
-                    setState(() => _searchQuery = '');
-                  },
-                )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+          suffixIcon:
+              _searchQuery.isNotEmpty
+                  ? IconButton(
+                    icon: const Icon(Icons.clear, size: 18),
+                    onPressed: () {
+                      setState(() => _searchQuery = '');
+                    },
+                  )
+                  : null,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           isDense: true,
         ),
         onChanged: (value) => setState(() => _searchQuery = value),
@@ -294,15 +296,15 @@ class _StaffManagementScreenState
             onSelected: (_) => setState(() => _roleFilter = null),
           ),
           ...UserRole.values.map((role) {
-            final count =
-                staffList.where((u) => u.role == role).length;
+            final count = staffList.where((u) => u.role == role).length;
             if (count == 0) return const SizedBox.shrink();
             return ChoiceChip(
               label: Text('${role.localizedName(context.l10n)} ($count)'),
               selected: _roleFilter == role,
-              onSelected: (_) => setState(() {
-                _roleFilter = _roleFilter == role ? null : role;
-              }),
+              onSelected:
+                  (_) => setState(() {
+                    _roleFilter = _roleFilter == role ? null : role;
+                  }),
             );
           }),
         ],
@@ -342,10 +344,12 @@ class _StaffManagementScreenState
             ],
           ),
         ),
-        ...users.map((user) => _StaffTile(
-              user: user,
-              onTap: () => _showStaffDetailSheet(context, user),
-            )),
+        ...users.map(
+          (user) => _StaffTile(
+            user: user,
+            onTap: () => _showStaffDetailSheet(context, user),
+          ),
+        ),
         const Divider(),
       ],
     );
@@ -438,10 +442,7 @@ class _StaffTile extends StatelessWidget {
         backgroundColor: roleColor.withValues(alpha: 0.15),
         child: Text(
           initial,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: roleColor,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: roleColor),
         ),
       ),
       title: Text(
@@ -471,15 +472,15 @@ class _StaffTile extends StatelessWidget {
             const SizedBox(width: 8),
             Icon(Icons.phone, size: 12, color: AppColors.textSecondary),
             const SizedBox(width: 2),
-            Text(
-              user.phone!,
-              style: const TextStyle(fontSize: 12),
-            ),
+            Text(user.phone!, style: const TextStyle(fontSize: 12)),
           ],
         ],
       ),
-      trailing: const Icon(Icons.chevron_right,
-          size: 18, color: AppColors.textHint),
+      trailing: const Icon(
+        Icons.chevron_right,
+        size: 18,
+        color: AppColors.textHint,
+      ),
     );
   }
 }
@@ -545,14 +546,18 @@ class _StaffDetailSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: roleColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      user.roleDisplay ?? user.role?.localizedName(context.l10n) ?? context.l10n.staffRole,
+                      user.roleDisplay ??
+                          user.role?.localizedName(context.l10n) ??
+                          context.l10n.staffRole,
                       style: TextStyle(
                         color: roleColor,
                         fontWeight: FontWeight.w600,
@@ -608,8 +613,7 @@ class _StaffDetailSheet extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Icon(Icons.security,
-                              size: 16, color: AppColors.info),
+                          Icon(Icons.security, size: 16, color: AppColors.info),
                           const SizedBox(width: 6),
                           Text(
                             context.l10n.permissionsLabel,
@@ -648,33 +652,28 @@ class _StaffDetailSheet extends StatelessWidget {
       leading: Icon(icon, size: 20, color: AppColors.textSecondary),
       title: Text(
         label,
-        style: const TextStyle(
-          fontSize: 12,
-          color: AppColors.textSecondary,
-        ),
+        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
       subtitle: Text(
         value,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w500,
-        ),
+        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
       ),
-      trailing: canCopy
-          ? IconButton(
-              icon: const Icon(Icons.copy, size: 18),
-              tooltip: context.l10n.copyTooltip,
-              onPressed: () {
-                Clipboard.setData(ClipboardData(text: value));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${context.l10n.copiedValueMsg}: $value'),
-                    duration: const Duration(seconds: 1),
-                  ),
-                );
-              },
-            )
-          : null,
+      trailing:
+          canCopy
+              ? IconButton(
+                icon: const Icon(Icons.copy, size: 18),
+                tooltip: context.l10n.copyTooltip,
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: value));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${context.l10n.copiedValueMsg}: $value'),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                },
+              )
+              : null,
     );
   }
 
@@ -720,7 +719,9 @@ class _StaffDetailSheet extends StatelessWidget {
           _PermissionItem(context.l10n.permManageFinance, false),
         ]);
       case null:
-        permissions.add(_PermissionItem(context.l10n.noPermissionsAssigned, false));
+        permissions.add(
+          _PermissionItem(context.l10n.noPermissionsAssigned, false),
+        );
     }
 
     return permissions.map((p) {

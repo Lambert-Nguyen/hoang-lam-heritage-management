@@ -16,10 +16,7 @@ import '../../widgets/common/app_card.dart';
 class MaintenanceDetailScreen extends ConsumerStatefulWidget {
   final MaintenanceRequest request;
 
-  const MaintenanceDetailScreen({
-    super.key,
-    required this.request,
-  });
+  const MaintenanceDetailScreen({super.key, required this.request});
 
   @override
   ConsumerState<MaintenanceDetailScreen> createState() =>
@@ -60,41 +57,45 @@ class _MaintenanceDetailScreenState
                   break;
               }
             },
-            itemBuilder: (context) => [
-              if (_request.status.canHold)
-                PopupMenuItem(
-                  value: 'hold',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.pause),
-                      const SizedBox(width: 8),
-                      Text(l10n.hold),
-                    ],
-                  ),
-                ),
-              if (_request.status == MaintenanceStatus.onHold)
-                PopupMenuItem(
-                  value: 'resume',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.play_arrow),
-                      const SizedBox(width: 8),
-                      Text(l10n.resume),
-                    ],
-                  ),
-                ),
-              if (_request.status.canCancel)
-                PopupMenuItem(
-                  value: 'cancel',
-                  child: Row(
-                    children: [
-                      const Icon(Icons.cancel, color: AppColors.error),
-                      const SizedBox(width: 8),
-                      Text(l10n.cancel, style: const TextStyle(color: AppColors.error)),
-                    ],
-                  ),
-                ),
-            ],
+            itemBuilder:
+                (context) => [
+                  if (_request.status.canHold)
+                    PopupMenuItem(
+                      value: 'hold',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.pause),
+                          const SizedBox(width: 8),
+                          Text(l10n.hold),
+                        ],
+                      ),
+                    ),
+                  if (_request.status == MaintenanceStatus.onHold)
+                    PopupMenuItem(
+                      value: 'resume',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.play_arrow),
+                          const SizedBox(width: 8),
+                          Text(l10n.resume),
+                        ],
+                      ),
+                    ),
+                  if (_request.status.canCancel)
+                    PopupMenuItem(
+                      value: 'cancel',
+                      child: Row(
+                        children: [
+                          const Icon(Icons.cancel, color: AppColors.error),
+                          const SizedBox(width: 8),
+                          Text(
+                            l10n.cancel,
+                            style: const TextStyle(color: AppColors.error),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
           ),
         ],
       ),
@@ -144,9 +145,7 @@ class _MaintenanceDetailScreenState
       decoration: BoxDecoration(
         color: _request.status.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _request.status.color.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: _request.status.color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -157,11 +156,7 @@ class _MaintenanceDetailScreenState
               color: _request.status.color,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(
-              _request.status.icon,
-              color: Colors.white,
-              size: 32,
-            ),
+            child: Icon(_request.status.icon, color: Colors.white, size: 32),
           ),
           AppSpacing.gapHorizontalMd,
           Expanded(
@@ -171,9 +166,9 @@ class _MaintenanceDetailScreenState
                 Text(
                   _request.status.localizedName(context.l10n),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: _request.status.color,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: _request.status.color,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 AppSpacing.gapVerticalXs,
                 Row(
@@ -216,9 +211,9 @@ class _MaintenanceDetailScreenState
           Text(
             _request.priority.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: _request.priority.color,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: _request.priority.color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -250,9 +245,9 @@ class _MaintenanceDetailScreenState
           Text(
             _request.category.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: _request.category.color,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: _request.category.color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -267,9 +262,9 @@ class _MaintenanceDetailScreenState
         children: [
           Text(
             l10n.requestInfo,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
@@ -277,11 +272,7 @@ class _MaintenanceDetailScreenState
             l10n.room,
             _request.roomNumber ?? '${l10n.room} ${_request.room}',
           ),
-          _buildInfoRow(
-            Icons.title,
-            l10n.title,
-            _request.title,
-          ),
+          _buildInfoRow(Icons.title, l10n.title, _request.title),
           _buildInfoRow(
             Icons.category,
             l10n.category,
@@ -296,8 +287,10 @@ class _MaintenanceDetailScreenState
             _buildInfoRow(
               Icons.attach_money,
               l10n.estimatedCostOptional,
-              NumberFormat.currency(locale: 'vi_VN', symbol: '₫')
-                  .format(_request.estimatedCost),
+              NumberFormat.currency(
+                locale: 'vi_VN',
+                symbol: '₫',
+              ).format(_request.estimatedCost),
             ),
         ],
       ),
@@ -315,9 +308,9 @@ class _MaintenanceDetailScreenState
             children: [
               Text(
                 l10n.assign,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               if (_request.status.canAssign)
                 TextButton.icon(
@@ -378,9 +371,9 @@ class _MaintenanceDetailScreenState
         children: [
           Text(
             l10n.description,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           Text(
@@ -404,9 +397,9 @@ class _MaintenanceDetailScreenState
               AppSpacing.gapHorizontalSm,
               Text(
                 l10n.resolutionResult,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -428,9 +421,9 @@ class _MaintenanceDetailScreenState
         children: [
           Text(
             l10n.historyLabel,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           if (_request.createdAt != null)
@@ -470,18 +463,18 @@ class _MaintenanceDetailScreenState
           Expanded(
             child: Text(
               label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ),
           Expanded(
             flex: 2,
             child: Text(
               value,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
               textAlign: TextAlign.end,
             ),
           ),
@@ -517,13 +510,10 @@ class _MaintenanceDetailScreenState
                 Text(
                   label,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                    color: AppColors.textSecondary,
+                  ),
                 ),
-                Text(
-                  time,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                Text(time, style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
           ),
@@ -577,16 +567,19 @@ class _MaintenanceDetailScreenState
 
     if (userId != null && mounted) {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final result = await notifier.assignMaintenanceRequest(_request.id, userId);
+      final result = await notifier.assignMaintenanceRequest(
+        _request.id,
+        userId,
+      );
       if (result != null && mounted) {
         setState(() {
           _request = result;
         });
         ref.invalidate(maintenanceRequestsProvider);
         ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.taskAssigned)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.taskAssigned)));
       }
     }
   }
@@ -636,9 +629,9 @@ class _MaintenanceDetailScreenState
         });
         ref.invalidate(maintenanceRequestsProvider);
         ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.requestOnHold)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.requestOnHold)));
       }
     }
   }
@@ -647,35 +640,37 @@ class _MaintenanceDetailScreenState
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.continueRequest),
-        content: Text(l10n.continueRequestConfirmation),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.continueRequest),
+            content: Text(l10n.continueRequestConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.resume),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.resume),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && mounted) {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final updatedRequest =
-          await notifier.resumeMaintenanceRequest(_request.id);
+      final updatedRequest = await notifier.resumeMaintenanceRequest(
+        _request.id,
+      );
       if (updatedRequest != null && mounted) {
         setState(() {
           _request = updatedRequest;
         });
         ref.invalidate(maintenanceRequestsProvider);
         ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.requestContinued)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.requestContinued)));
       }
     }
   }
@@ -684,38 +679,40 @@ class _MaintenanceDetailScreenState
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.cancelRequest),
-        content: Text(l10n.cancelRequestConfirmation),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.no),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.cancelRequest),
+            content: Text(l10n.cancelRequestConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.no),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
+                child: Text(l10n.cancelRequest),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-            ),
-            child: Text(l10n.cancelRequest),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && mounted) {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final updatedRequest =
-          await notifier.cancelMaintenanceRequest(_request.id);
+      final updatedRequest = await notifier.cancelMaintenanceRequest(
+        _request.id,
+      );
       if (updatedRequest != null && mounted) {
         setState(() {
           _request = updatedRequest;
         });
         ref.invalidate(maintenanceRequestsProvider);
         ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.requestCancelled)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.requestCancelled)));
       }
     }
   }
@@ -811,43 +808,54 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                 leading: const CircleAvatar(child: Icon(Icons.person)),
                 title: Text(AppLocalizations.of(context)!.selfAssign),
                 subtitle: Text(currentUser.displayName),
-                trailing: _selectedUserId == currentUser.id
-                    ? Icon(Icons.check_circle,
-                        color: Theme.of(context).colorScheme.primary)
-                    : null,
+                trailing:
+                    _selectedUserId == currentUser.id
+                        ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
+                        : null,
               ),
             const Divider(),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 200),
               child: staffAsync.when(
-                data: (staffList) => ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: staffList.length,
-                  itemBuilder: (context, index) {
-                    final staff = staffList[index];
-                    final isSelected = _selectedUserId == staff.id;
-                    return ListTile(
-                      onTap: () =>
-                          setState(() => _selectedUserId = staff.id),
-                      selected: isSelected,
-                      leading: CircleAvatar(
-                        child: Text(staff.displayName[0]),
-                      ),
-                      title: Text(staff.displayName),
-                      subtitle: Text(staff.roleDisplay ??
-                          staff.role?.localizedName(context.l10n) ??
-                          ''),
-                      trailing: isSelected
-                          ? Icon(Icons.check_circle,
-                              color: Theme.of(context).colorScheme.primary)
-                          : null,
-                    );
-                  },
-                ),
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (_, __) => Center(
-                    child: Text(AppLocalizations.of(context)!.staffLoadError)),
+                data:
+                    (staffList) => ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: staffList.length,
+                      itemBuilder: (context, index) {
+                        final staff = staffList[index];
+                        final isSelected = _selectedUserId == staff.id;
+                        return ListTile(
+                          onTap:
+                              () => setState(() => _selectedUserId = staff.id),
+                          selected: isSelected,
+                          leading: CircleAvatar(
+                            child: Text(staff.displayName[0]),
+                          ),
+                          title: Text(staff.displayName),
+                          subtitle: Text(
+                            staff.roleDisplay ??
+                                staff.role?.localizedName(context.l10n) ??
+                                '',
+                          ),
+                          trailing:
+                              isSelected
+                                  ? Icon(
+                                    Icons.check_circle,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  )
+                                  : null,
+                        );
+                      },
+                    ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error:
+                    (_, __) => Center(
+                      child: Text(AppLocalizations.of(context)!.staffLoadError),
+                    ),
               ),
             ),
           ],
@@ -859,9 +867,10 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
           child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
-          onPressed: _selectedUserId != null
-              ? () => Navigator.pop(context, _selectedUserId)
-              : null,
+          onPressed:
+              _selectedUserId != null
+                  ? () => Navigator.pop(context, _selectedUserId)
+                  : null,
           child: Text(AppLocalizations.of(context)!.confirm),
         ),
       ],

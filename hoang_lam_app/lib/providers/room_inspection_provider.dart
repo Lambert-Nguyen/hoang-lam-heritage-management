@@ -7,7 +7,9 @@ import '../repositories/room_inspection_repository.dart';
 part 'room_inspection_provider.freezed.dart';
 
 /// Provider for RoomInspectionRepository
-final roomInspectionRepositoryProvider = Provider<RoomInspectionRepository>((ref) {
+final roomInspectionRepositoryProvider = Provider<RoomInspectionRepository>((
+  ref,
+) {
   return RoomInspectionRepository();
 });
 
@@ -16,43 +18,50 @@ final roomInspectionRepositoryProvider = Provider<RoomInspectionRepository>((ref
 // ============================================================
 
 /// Provider for all room inspections
-final roomInspectionsProvider =
-    FutureProvider<List<RoomInspection>>((ref) async {
+final roomInspectionsProvider = FutureProvider<List<RoomInspection>>((
+  ref,
+) async {
   final repository = ref.watch(roomInspectionRepositoryProvider);
   return repository.getInspections();
 });
 
 /// Provider for pending inspections today
-final pendingInspectionsTodayProvider =
-    FutureProvider<List<RoomInspection>>((ref) async {
+final pendingInspectionsTodayProvider = FutureProvider<List<RoomInspection>>((
+  ref,
+) async {
   final repository = ref.watch(roomInspectionRepositoryProvider);
   return repository.getPendingToday();
 });
 
 /// Provider for a specific inspection by ID
-final roomInspectionByIdProvider =
-    FutureProvider.family<RoomInspection, int>((ref, id) async {
+final roomInspectionByIdProvider = FutureProvider.family<RoomInspection, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(roomInspectionRepositoryProvider);
   return repository.getInspection(id);
 });
 
 /// Provider for filtered inspections
 final filteredInspectionsProvider =
-    FutureProvider.family<List<RoomInspection>, InspectionFilter>(
-        (ref, filter) async {
-  final repository = ref.watch(roomInspectionRepositoryProvider);
-  return repository.getInspections(
-    roomId: filter.roomId,
-    status: filter.status,
-    type: filter.type,
-    fromDate: filter.fromDate,
-    toDate: filter.toDate,
-  );
-});
+    FutureProvider.family<List<RoomInspection>, InspectionFilter>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(roomInspectionRepositoryProvider);
+      return repository.getInspections(
+        roomId: filter.roomId,
+        status: filter.status,
+        type: filter.type,
+        fromDate: filter.fromDate,
+        toDate: filter.toDate,
+      );
+    });
 
 /// Provider for inspection statistics
-final inspectionStatisticsProvider =
-    FutureProvider<InspectionStatistics>((ref) async {
+final inspectionStatisticsProvider = FutureProvider<InspectionStatistics>((
+  ref,
+) async {
   final repository = ref.watch(roomInspectionRepositoryProvider);
   return repository.getStatistics();
 });
@@ -60,9 +69,9 @@ final inspectionStatisticsProvider =
 /// Provider for inspections by room
 final inspectionsByRoomProvider =
     FutureProvider.family<List<RoomInspection>, int>((ref, roomId) async {
-  final repository = ref.watch(roomInspectionRepositoryProvider);
-  return repository.getInspections(roomId: roomId);
-});
+      final repository = ref.watch(roomInspectionRepositoryProvider);
+      return repository.getInspections(roomId: roomId);
+    });
 
 /// Filter model for inspections
 @freezed
@@ -81,8 +90,9 @@ sealed class InspectionFilter with _$InspectionFilter {
 // ============================================================
 
 /// Provider for all inspection templates
-final inspectionTemplatesProvider =
-    FutureProvider<List<InspectionTemplate>>((ref) async {
+final inspectionTemplatesProvider = FutureProvider<List<InspectionTemplate>>((
+  ref,
+) async {
   final repository = ref.watch(roomInspectionRepositoryProvider);
   return repository.getTemplates(isActive: true);
 });
@@ -90,24 +100,27 @@ final inspectionTemplatesProvider =
 /// Provider for a specific template by ID
 final inspectionTemplateByIdProvider =
     FutureProvider.family<InspectionTemplate, int>((ref, id) async {
-  final repository = ref.watch(roomInspectionRepositoryProvider);
-  return repository.getTemplate(id);
-});
+      final repository = ref.watch(roomInspectionRepositoryProvider);
+      return repository.getTemplate(id);
+    });
 
 /// Provider for default templates
-final defaultTemplatesProvider =
-    FutureProvider<List<InspectionTemplate>>((ref) async {
+final defaultTemplatesProvider = FutureProvider<List<InspectionTemplate>>((
+  ref,
+) async {
   final repository = ref.watch(roomInspectionRepositoryProvider);
   return repository.getDefaultTemplates();
 });
 
 /// Provider for templates by type
 final templatesByTypeProvider =
-    FutureProvider.family<List<InspectionTemplate>, InspectionType>(
-        (ref, type) async {
-  final repository = ref.watch(roomInspectionRepositoryProvider);
-  return repository.getTemplates(type: type, isActive: true);
-});
+    FutureProvider.family<List<InspectionTemplate>, InspectionType>((
+      ref,
+      type,
+    ) async {
+      final repository = ref.watch(roomInspectionRepositoryProvider);
+      return repository.getTemplates(type: type, isActive: true);
+    });
 
 // ============================================================
 // State Management
@@ -131,7 +144,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
   final Ref _ref;
 
   RoomInspectionNotifier(this._repository, this._ref)
-      : super(const RoomInspectionState());
+    : super(const RoomInspectionState());
 
   /// Load all inspections
   Future<void> loadInspections({
@@ -146,15 +159,9 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
         status: status,
         type: type,
       );
-      state = state.copyWith(
-        isLoading: false,
-        inspections: inspections,
-      );
+      state = state.copyWith(isLoading: false, inspections: inspections);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
@@ -179,16 +186,16 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(inspectionStatisticsProvider);
       return newInspection;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
 
   /// Update an inspection
-  Future<RoomInspection?> updateInspection(int id, RoomInspectionUpdate update) async {
+  Future<RoomInspection?> updateInspection(
+    int id,
+    RoomInspectionUpdate update,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updatedInspection = await _repository.updateInspection(id, update);
@@ -197,10 +204,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(roomInspectionsProvider);
       return updatedInspection;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -216,16 +220,16 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(pendingInspectionsTodayProvider);
       return inspection;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
 
   /// Complete an inspection
-  Future<RoomInspection?> completeInspection(int id, CompleteInspection data) async {
+  Future<RoomInspection?> completeInspection(
+    int id,
+    CompleteInspection data,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final inspection = await _repository.completeInspection(id, data);
@@ -236,16 +240,16 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(inspectionStatisticsProvider);
       return inspection;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
 
   /// Create inspection from checkout
-  Future<RoomInspection?> createFromCheckout(int bookingId, {int? templateId}) async {
+  Future<RoomInspection?> createFromCheckout(
+    int bookingId, {
+    int? templateId,
+  }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final inspection = await _repository.createFromCheckout(
@@ -257,10 +261,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(pendingInspectionsTodayProvider);
       return inspection;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -275,10 +276,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(inspectionStatisticsProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
@@ -297,9 +295,9 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
 /// Provider for RoomInspectionNotifier
 final roomInspectionNotifierProvider =
     StateNotifierProvider<RoomInspectionNotifier, RoomInspectionState>((ref) {
-  final repository = ref.watch(roomInspectionRepositoryProvider);
-  return RoomInspectionNotifier(repository, ref);
-});
+      final repository = ref.watch(roomInspectionRepositoryProvider);
+      return RoomInspectionNotifier(repository, ref);
+    });
 
 // ============================================================
 // Template State Management
@@ -317,12 +315,13 @@ sealed class InspectionTemplateState with _$InspectionTemplateState {
 }
 
 /// StateNotifier for managing inspection template operations
-class InspectionTemplateNotifier extends StateNotifier<InspectionTemplateState> {
+class InspectionTemplateNotifier
+    extends StateNotifier<InspectionTemplateState> {
   final RoomInspectionRepository _repository;
   final Ref _ref;
 
   InspectionTemplateNotifier(this._repository, this._ref)
-      : super(const InspectionTemplateState());
+    : super(const InspectionTemplateState());
 
   /// Load all templates
   Future<void> loadTemplates({InspectionType? type}) async {
@@ -332,20 +331,16 @@ class InspectionTemplateNotifier extends StateNotifier<InspectionTemplateState> 
         type: type,
         isActive: true,
       );
-      state = state.copyWith(
-        isLoading: false,
-        templates: templates,
-      );
+      state = state.copyWith(isLoading: false, templates: templates);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
   /// Create a new template
-  Future<InspectionTemplate?> createTemplate(InspectionTemplateCreate data) async {
+  Future<InspectionTemplate?> createTemplate(
+    InspectionTemplateCreate data,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final newTemplate = await _repository.createTemplate(data);
@@ -354,16 +349,16 @@ class InspectionTemplateNotifier extends StateNotifier<InspectionTemplateState> 
       _ref.invalidate(defaultTemplatesProvider);
       return newTemplate;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
 
   /// Update a template
-  Future<InspectionTemplate?> updateTemplate(int id, Map<String, dynamic> data) async {
+  Future<InspectionTemplate?> updateTemplate(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updatedTemplate = await _repository.updateTemplate(id, data);
@@ -372,10 +367,7 @@ class InspectionTemplateNotifier extends StateNotifier<InspectionTemplateState> 
       _ref.invalidate(inspectionTemplatesProvider);
       return updatedTemplate;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -389,10 +381,7 @@ class InspectionTemplateNotifier extends StateNotifier<InspectionTemplateState> 
       _ref.invalidate(inspectionTemplatesProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
@@ -410,7 +399,9 @@ class InspectionTemplateNotifier extends StateNotifier<InspectionTemplateState> 
 
 /// Provider for InspectionTemplateNotifier
 final inspectionTemplateNotifierProvider =
-    StateNotifierProvider<InspectionTemplateNotifier, InspectionTemplateState>((ref) {
-  final repository = ref.watch(roomInspectionRepositoryProvider);
-  return InspectionTemplateNotifier(repository, ref);
-});
+    StateNotifierProvider<InspectionTemplateNotifier, InspectionTemplateState>((
+      ref,
+    ) {
+      final repository = ref.watch(roomInspectionRepositoryProvider);
+      return InspectionTemplateNotifier(repository, ref);
+    });

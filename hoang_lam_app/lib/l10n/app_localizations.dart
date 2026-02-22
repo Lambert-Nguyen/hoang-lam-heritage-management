@@ -108,7 +108,8 @@ class AppLocalizations {
   String get passwordMinLength => translate('password_min_length');
   String get loginButton => translate('login_button');
   String get forgotPassword => translate('forgot_password');
-  String get contactAdminResetPassword => translate('contact_admin_reset_password');
+  String get contactAdminResetPassword =>
+      translate('contact_admin_reset_password');
   String get enableBiometricTitle => translate('enable_biometric_title');
   String get enableBiometricMessage => translate('enable_biometric_message');
   String get biometricEnabled => translate('biometric_enabled');
@@ -122,10 +123,13 @@ class AppLocalizations {
   String get currentPassword => translate('current_password');
   String get newPassword => translate('new_password');
   String get confirmNewPassword => translate('confirm_new_password');
-  String get pleaseEnterCurrentPassword => translate('please_enter_current_password');
+  String get pleaseEnterCurrentPassword =>
+      translate('please_enter_current_password');
   String get pleaseEnterNewPassword => translate('please_enter_new_password');
-  String get pleaseConfirmNewPassword => translate('please_confirm_new_password');
-  String get newPasswordMustBeDifferent => translate('new_password_must_be_different');
+  String get pleaseConfirmNewPassword =>
+      translate('please_confirm_new_password');
+  String get newPasswordMustBeDifferent =>
+      translate('new_password_must_be_different');
   String get passwordsDoNotMatch => translate('passwords_do_not_match');
   String get apartmentManagement => translate('apartment_management');
 
@@ -377,7 +381,8 @@ class AppLocalizations {
   String get cleaningReminder => translate('cleaning_reminder');
   String get notifyRoomNeedsCleaning => translate('notify_room_needs_cleaning');
   String get pushNotifications => translate('push_notifications');
-  String get receivePushNotifications => translate('receive_push_notifications');
+  String get receivePushNotifications =>
+      translate('receive_push_notifications');
   String get localReminders => translate('local_reminders');
   String get tapToRetry => translate('tap_to_retry');
   String get confirmLogout => translate('confirm_logout');
@@ -396,17 +401,21 @@ class AppLocalizations {
   String get createNewTask => translate('create_new_task');
   String get urgent => translate('urgent');
   String get noUrgentRequests => translate('no_urgent_requests');
-  String get noUrgentMaintenanceRequests => translate('no_urgent_maintenance_requests');
+  String get noUrgentMaintenanceRequests =>
+      translate('no_urgent_maintenance_requests');
   String get noMaintenanceRequests => translate('no_maintenance_requests');
-  String get noMaintenanceRequestsCreated => translate('no_maintenance_requests_created');
+  String get noMaintenanceRequestsCreated =>
+      translate('no_maintenance_requests_created');
   String get noYourRequests => translate('no_your_requests');
-  String get noAssignedMaintenanceRequests => translate('no_assigned_maintenance_requests');
+  String get noAssignedMaintenanceRequests =>
+      translate('no_assigned_maintenance_requests');
   String get assigned => translate('assigned');
   String get onHold => translate('on_hold');
   String get completedCancelled => translate('completed_cancelled');
   String get createRequest => translate('create_request');
   String get editRequest => translate('edit_request');
-  String get createMaintenanceRequest => translate('create_maintenance_request');
+  String get createMaintenanceRequest =>
+      translate('create_maintenance_request');
   String get room => translate('room');
   String get cannotLoadRoomList => translate('cannot_load_room_list');
   String get title => translate('title');
@@ -419,7 +428,8 @@ class AppLocalizations {
   String get pleaseEnterDescription => translate('please_enter_description');
   String get estimatedCostOptional => translate('estimated_cost_optional');
   String get requestUpdated => translate('request_updated');
-  String get newMaintenanceRequestCreated => translate('new_maintenance_request_created');
+  String get newMaintenanceRequestCreated =>
+      translate('new_maintenance_request_created');
   String get selectRoom => translate('select_room');
   String get hold => translate('hold');
   String get resume => translate('resume');
@@ -433,13 +443,16 @@ class AppLocalizations {
   String get completedAt => translate('completed_at');
   String get updatedAt => translate('updated_at');
   String get assign => translate('assign');
-  String get maintenanceRequestCompleted => translate('maintenance_request_completed');
+  String get maintenanceRequestCompleted =>
+      translate('maintenance_request_completed');
   String get requestOnHold => translate('request_on_hold');
   String get continueRequest => translate('continue_request');
-  String get continueRequestConfirmation => translate('continue_request_confirmation');
+  String get continueRequestConfirmation =>
+      translate('continue_request_confirmation');
   String get requestContinued => translate('request_continued');
   String get cancelRequest => translate('cancel_request');
-  String get cancelRequestConfirmation => translate('cancel_request_confirmation');
+  String get cancelRequestConfirmation =>
+      translate('cancel_request_confirmation');
   String get no => translate('no');
   String get requestCancelled => translate('request_cancelled');
   String get completeRequest => translate('complete_request');
@@ -449,7 +462,8 @@ class AppLocalizations {
   String get enterHoldReason => translate('enter_hold_reason');
   String get reason => translate('reason');
   String get assignmentInDevelopment => translate('assignment_in_development');
-  String get completeRequestConfirmation => translate('complete_request_confirmation');
+  String get completeRequestConfirmation =>
+      translate('complete_request_confirmation');
   String get taskInfo => translate('task_info');
   String get taskType => translate('task_type');
   String get scheduledDate => translate('scheduled_date');
@@ -494,7 +508,8 @@ class AppLocalizations {
   String get basicInfo => translate('basic_info');
   String get ratePlanName => translate('rate_plan_name');
   String get ratePlanHint => translate('rate_plan_hint');
-  String get pleaseEnterRatePlanName => translate('please_enter_rate_plan_name');
+  String get pleaseEnterRatePlanName =>
+      translate('please_enter_rate_plan_name');
   String get englishNameOptional => translate('english_name_optional');
   String get baseRatePerNight => translate('base_rate_per_night');
   String get vnd => translate('vnd');
@@ -511,7 +526,8 @@ class AppLocalizations {
   String get fromDate => translate('from_date');
   String get toDate => translate('to_date');
   String get includesBreakfast => translate('includes_breakfast');
-  String get ratePlanIncludesFreeBreakfast => translate('rate_plan_includes_free_breakfast');
+  String get ratePlanIncludesFreeBreakfast =>
+      translate('rate_plan_includes_free_breakfast');
   String get isActive => translate('is_active');
   String get showApplyRatePlan => translate('show_apply_rate_plan');
   String get descriptionOptional => translate('description_optional');
@@ -554,7 +570,8 @@ class AppLocalizations {
   String get allRoomTypes => translate('all_room_types');
   String get filterByRoomType => translate('filter_by_room_type');
   String get selectRoomType => translate('select_room_type');
-  String get addRatePlanFlexiblePricing => translate('add_rate_plan_flexible_pricing');
+  String get addRatePlanFlexiblePricing =>
+      translate('add_rate_plan_flexible_pricing');
   String get addSpecialRates => translate('add_special_rates');
   String get noArrivals => translate('no_arrivals');
   String get noDepartures => translate('no_departures');
@@ -563,9 +580,12 @@ class AppLocalizations {
 
   // ===== DECLARATION =====
   String get exportSuccess => translate('export_success');
-  String get residenceDeclarationTitle => translate('residence_declaration_title');
-  String get exportGuestListDescription => translate('export_guest_list_description');
-  String get listIncludesGuestsInRange => translate('list_includes_guests_in_range');
+  String get residenceDeclarationTitle =>
+      translate('residence_declaration_title');
+  String get exportGuestListDescription =>
+      translate('export_guest_list_description');
+  String get listIncludesGuestsInRange =>
+      translate('list_includes_guests_in_range');
   String get todayLabel => translate('today_label');
   String get yesterday => translate('yesterday');
   String get fileFormat => translate('file_format');
@@ -590,7 +610,8 @@ class AppLocalizations {
   String get productDeleted => translate('product_deleted');
   String get inventoryManagement => translate('inventory_management');
   String get noMatchingProducts => translate('no_matching_products');
-  String get pleaseSelectBookingFirst => translate('please_select_booking_first');
+  String get pleaseSelectBookingFirst =>
+      translate('please_select_booking_first');
 
   // ===== FOLIO =====
   String get hideCancelledItems => translate('hide_cancelled_items');
@@ -608,7 +629,8 @@ class AppLocalizations {
   // ===== REPORTS =====
   String get totalRevenue => translate('total_revenue');
   String get roomsLabel => translate('rooms_label');
-  String get totalAvailableRoomNights => translate('total_available_room_nights');
+  String get totalAvailableRoomNights =>
+      translate('total_available_room_nights');
   String get totalSoldRoomNights => translate('total_sold_room_nights');
   String get roomRevenue => translate('room_revenue');
   String get totalExpense => translate('total_expense');
@@ -644,13 +666,15 @@ class AppLocalizations {
   // ===== PHASE 5: NOTIFICATIONS & MESSAGING =====
   String get markAllRead => translate('mark_all_read');
   String get noNotifications => translate('no_notifications');
-  String get noNotificationsDescription => translate('no_notifications_description');
+  String get noNotificationsDescription =>
+      translate('no_notifications_description');
   String get errorLoadingData => translate('error_loading_data');
   String get sendMessage => translate('send_message');
   String get channel => translate('channel');
   String get noMessagingTemplates => translate('no_templates_messaging');
   String get writeCustomMessage => translate('write_custom_message');
-  String get writeCustomMessageDescription => translate('write_custom_message_description');
+  String get writeCustomMessageDescription =>
+      translate('write_custom_message_description');
   String get messagePreview => translate('message_preview');
   String get recipient => translate('recipient');
   String get subject => translate('subject');
@@ -931,7 +955,8 @@ class AppLocalizations {
   String get inspectionInfo => translate('inspection_info');
   String get roomIdRequired => translate('room_id_required');
   String get inspectionDateLabel => translate('inspection_date_label');
-  String get inspectionTemplateOptional => translate('inspection_template_optional');
+  String get inspectionTemplateOptional =>
+      translate('inspection_template_optional');
   String get noDefaultTemplate => translate('no_default_template');
   String get confirmDeleteTemplate => translate('confirm_delete_template');
   String get templateDeleted => translate('template_deleted');
@@ -1168,13 +1193,15 @@ class AppLocalizations {
   // Declaration Export
   String get dateRangeLabel => translate('date_range_label');
   String get fileExportedSuccess => translate('file_exported_success');
-  String get bookingsMarkedAsDeclared => translate('bookings_marked_as_declared');
+  String get bookingsMarkedAsDeclared =>
+      translate('bookings_marked_as_declared');
   String get openFileBtn => translate('open_file_btn');
   String get shareFileBtn => translate('share_file_btn');
   String get fileFormatLabel => translate('file_format_label');
   String get last7DaysLabel => translate('last_7_days_label');
   String get last30DaysLabel => translate('last_30_days_label');
-  String get declarationFormDescriptions => translate('declaration_form_descriptions');
+  String get declarationFormDescriptions =>
+      translate('declaration_form_descriptions');
 
   // Group Booking Detail
   String get phone => translate('phone');
@@ -1215,7 +1242,8 @@ class AppLocalizations {
   // Housekeeping Widgets
   String get unassigned => translate('unassigned');
   String get completeBtn => translate('complete_btn');
-  String get filterMaintenanceRequests => translate('filter_maintenance_requests');
+  String get filterMaintenanceRequests =>
+      translate('filter_maintenance_requests');
   String get clearFilters => translate('clear_filters');
   String get applyBtn => translate('apply_btn');
   String get filterTasks => translate('filter_tasks');
@@ -1268,7 +1296,8 @@ class AppLocalizations {
   String get acWorking => translate('ac_working');
   String get tvWorking => translate('tv_working');
   String get fridgeWorking => translate('fridge_working');
-  String get createNewInspectionTemplate => translate('create_new_inspection_template');
+  String get createNewInspectionTemplate =>
+      translate('create_new_inspection_template');
 
   // Room Inspection Detail
   String get bookingCodeLabel => translate('booking_code_label');
@@ -1280,7 +1309,8 @@ class AppLocalizations {
   String get selectBookingSourceHint => translate('select_booking_source_hint');
 
   // ===== PHASE C5: ADDITIONAL L10N KEYS =====
-  String get totalRoomNightsAvailable => translate('total_room_nights_available');
+  String get totalRoomNightsAvailable =>
+      translate('total_room_nights_available');
   String get totalRoomNightsSold => translate('total_room_nights_sold');
   String get noExpensesInDateRange => translate('no_expenses_in_date_range');
   String get roleHousekeepingLabel => translate('role_housekeeping_label');
@@ -1392,7 +1422,8 @@ class AppLocalizations {
 
   // Financial Category Screen
   String get cannotDeleteCategoryMsg => translate('cannot_delete_category_msg');
-  String get confirmDeleteCategoryMsg => translate('confirm_delete_category_msg');
+  String get confirmDeleteCategoryMsg =>
+      translate('confirm_delete_category_msg');
   String get activeInUseCount => translate('active_in_use_count');
   String get hiddenCount => translate('hidden_count');
   String get editCategory => translate('edit_category');
@@ -1423,7 +1454,8 @@ class AppLocalizations {
   String get actionRequiredIfAny => translate('action_required_if_any');
   String get describeActionRequired => translate('describe_action_required');
   String get pleaseSelectRoomMsg => translate('please_select_room_msg');
-  String get inspectionCreatedSuccess => translate('inspection_created_success');
+  String get inspectionCreatedSuccess =>
+      translate('inspection_created_success');
 
   // PHASE C7 Batch 2: Group Booking, Inspection List, Pricing
   String get checkInDateRequired => translate('check_in_date_required');
@@ -1431,7 +1463,8 @@ class AppLocalizations {
   String get nightsCountDisplay => translate('nights_count_display');
   String get noPendingInspections => translate('no_pending_inspections');
   String get noCompletedInspections => translate('no_completed_inspections');
-  String get noActionRequiredInspections => translate('no_action_required_inspections');
+  String get noActionRequiredInspections =>
+      translate('no_action_required_inspections');
   String get noInspectionsYet => translate('no_inspections_yet');
   String get pendingInspectionsLabel => translate('pending_inspections_label');
   String get totalIssues => translate('total_issues');
@@ -1468,7 +1501,8 @@ class AppLocalizations {
   String get roomNumberHint => translate('room_number_hint');
   String get paidAbbreviation => translate('paid_abbreviation');
   String get phoneValidationLength => translate('phone_validation_length');
-  String get phoneValidationStartWithZero => translate('phone_validation_start_with_zero');
+  String get phoneValidationStartWithZero =>
+      translate('phone_validation_start_with_zero');
   String get productTab => translate('product_tab');
 
   // ===== ENUM DISPLAY NAMES & ERROR MESSAGES (Batch 5) =====
@@ -1483,7 +1517,8 @@ class AppLocalizations {
   String get bookingSourceOtherOta => translate('booking_source_other_ota');
   String get bookingSourceOther => translate('booking_source_other');
   String get paymentMethodCash => translate('payment_method_cash');
-  String get paymentMethodBankTransfer => translate('payment_method_bank_transfer');
+  String get paymentMethodBankTransfer =>
+      translate('payment_method_bank_transfer');
   String get paymentMethodCard => translate('payment_method_card');
   String get paymentMethodOtaCollect => translate('payment_method_ota_collect');
   String get paymentMethodOther => translate('payment_method_other');
@@ -1534,7 +1569,8 @@ class AppLocalizations {
   String get idTypeCccdFull => translate('id_type_cccd_full');
   String get idTypePassportFull => translate('id_type_passport_full');
   String get idTypeCmndFull => translate('id_type_cmnd_full');
-  String get idTypeDrivingLicenseFull => translate('id_type_driving_license_full');
+  String get idTypeDrivingLicenseFull =>
+      translate('id_type_driving_license_full');
   String get idTypeOtherFull => translate('id_type_other_full');
   String get genderMale => translate('gender_male');
   String get genderFemale => translate('gender_female');
@@ -1544,8 +1580,10 @@ class AppLocalizations {
   String get passportTypeDiplomatic => translate('passport_type_diplomatic');
   String get passportTypeOther => translate('passport_type_other');
   String get visaTypeVisa => translate('visa_type_visa');
-  String get visaTypeTemporaryResidence => translate('visa_type_temporary_residence');
-  String get visaTypeVisaExemptionCert => translate('visa_type_visa_exemption_cert');
+  String get visaTypeTemporaryResidence =>
+      translate('visa_type_temporary_residence');
+  String get visaTypeVisaExemptionCert =>
+      translate('visa_type_visa_exemption_cert');
   String get visaTypeAbtc => translate('visa_type_abtc');
   String get visaTypeVisaExempt => translate('visa_type_visa_exempt');
   String get nationalityVietnam => translate('nationality_vietnam');
@@ -1569,20 +1607,29 @@ class AppLocalizations {
   String get taskTypeDeepClean => translate('task_type_deep_clean');
   String get taskTypeMaintenance => translate('task_type_maintenance');
   String get taskTypeInspection => translate('task_type_inspection');
-  String get housekeepingStatusPending => translate('housekeeping_status_pending');
-  String get housekeepingStatusInProgress => translate('housekeeping_status_in_progress');
-  String get housekeepingStatusCompleted => translate('housekeeping_status_completed');
-  String get housekeepingStatusVerified => translate('housekeeping_status_verified');
+  String get housekeepingStatusPending =>
+      translate('housekeeping_status_pending');
+  String get housekeepingStatusInProgress =>
+      translate('housekeeping_status_in_progress');
+  String get housekeepingStatusCompleted =>
+      translate('housekeeping_status_completed');
+  String get housekeepingStatusVerified =>
+      translate('housekeeping_status_verified');
   String get priorityLow => translate('priority_low');
   String get priorityMedium => translate('priority_medium');
   String get priorityHigh => translate('priority_high');
   String get priorityUrgent => translate('priority_urgent');
-  String get maintenanceStatusPending => translate('maintenance_status_pending');
-  String get maintenanceStatusAssigned => translate('maintenance_status_assigned');
-  String get maintenanceStatusInProgress => translate('maintenance_status_in_progress');
+  String get maintenanceStatusPending =>
+      translate('maintenance_status_pending');
+  String get maintenanceStatusAssigned =>
+      translate('maintenance_status_assigned');
+  String get maintenanceStatusInProgress =>
+      translate('maintenance_status_in_progress');
   String get maintenanceStatusPaused => translate('maintenance_status_paused');
-  String get maintenanceStatusCompleted => translate('maintenance_status_completed');
-  String get maintenanceStatusCancelled => translate('maintenance_status_cancelled');
+  String get maintenanceStatusCompleted =>
+      translate('maintenance_status_completed');
+  String get maintenanceStatusCancelled =>
+      translate('maintenance_status_cancelled');
   String get maintCatElectrical => translate('maint_cat_electrical');
   String get maintCatPlumbing => translate('maint_cat_plumbing');
   String get maintCatHvac => translate('maint_cat_hvac');
@@ -1592,18 +1639,23 @@ class AppLocalizations {
   String get maintCatSafety => translate('maint_cat_safety');
   String get maintCatOther => translate('maint_cat_other');
   String get inspectionStatusPending => translate('inspection_status_pending');
-  String get inspectionStatusInProgress => translate('inspection_status_in_progress');
-  String get inspectionStatusCompleted => translate('inspection_status_completed');
-  String get inspectionStatusActionRequired => translate('inspection_status_action_required');
+  String get inspectionStatusInProgress =>
+      translate('inspection_status_in_progress');
+  String get inspectionStatusCompleted =>
+      translate('inspection_status_completed');
+  String get inspectionStatusActionRequired =>
+      translate('inspection_status_action_required');
   String get inspectionTypeCheckout => translate('inspection_type_checkout');
   String get inspectionTypeCheckin => translate('inspection_type_checkin');
   String get inspectionTypeRoutine => translate('inspection_type_routine');
-  String get inspectionTypeMaintenance => translate('inspection_type_maintenance');
+  String get inspectionTypeMaintenance =>
+      translate('inspection_type_maintenance');
   String get inspectionTypeDeepClean => translate('inspection_type_deep_clean');
   String get inspectionCatBedroom => translate('inspection_cat_bedroom');
   String get inspectionCatBathroom => translate('inspection_cat_bathroom');
   String get inspectionCatAmenities => translate('inspection_cat_amenities');
-  String get inspectionCatElectronics => translate('inspection_cat_electronics');
+  String get inspectionCatElectronics =>
+      translate('inspection_cat_electronics');
   String get inspectionCatSafety => translate('inspection_cat_safety');
   String get inspectionCatGeneral => translate('inspection_cat_general');
   String get lostFoundStatusFound => translate('lost_found_status_found');
@@ -1623,31 +1675,43 @@ class AppLocalizations {
   String get cancelPolicyFlexible => translate('cancel_policy_flexible');
   String get cancelPolicyModerate => translate('cancel_policy_moderate');
   String get cancelPolicyStrict => translate('cancel_policy_strict');
-  String get cancelPolicyNonRefundable => translate('cancel_policy_non_refundable');
+  String get cancelPolicyNonRefundable =>
+      translate('cancel_policy_non_refundable');
   String get userRoleOwner => translate('user_role_owner');
   String get userRoleManager => translate('user_role_manager');
   String get userRoleStaff => translate('user_role_staff');
   String get userRoleHousekeeping => translate('user_role_housekeeping');
   String get nightAuditStatusDraft => translate('night_audit_status_draft');
-  String get nightAuditStatusCompleted => translate('night_audit_status_completed');
+  String get nightAuditStatusCompleted =>
+      translate('night_audit_status_completed');
   String get nightAuditStatusClosed => translate('night_audit_status_closed');
-  String get notificationTypeNewBooking => translate('notification_type_new_booking');
-  String get notificationTypeBookingConfirmed => translate('notification_type_booking_confirmed');
-  String get notificationTypeBookingCancelled => translate('notification_type_booking_cancelled');
-  String get notificationTypeCheckinReminder => translate('notification_type_checkin_reminder');
-  String get notificationTypeCheckoutReminder => translate('notification_type_checkout_reminder');
-  String get notificationTypeCheckedIn => translate('notification_type_checked_in');
-  String get notificationTypeCheckedOut => translate('notification_type_checked_out');
+  String get notificationTypeNewBooking =>
+      translate('notification_type_new_booking');
+  String get notificationTypeBookingConfirmed =>
+      translate('notification_type_booking_confirmed');
+  String get notificationTypeBookingCancelled =>
+      translate('notification_type_booking_cancelled');
+  String get notificationTypeCheckinReminder =>
+      translate('notification_type_checkin_reminder');
+  String get notificationTypeCheckoutReminder =>
+      translate('notification_type_checkout_reminder');
+  String get notificationTypeCheckedIn =>
+      translate('notification_type_checked_in');
+  String get notificationTypeCheckedOut =>
+      translate('notification_type_checked_out');
   String get notificationTypeGeneral => translate('notification_type_general');
   String get messageStatusDraft => translate('message_status_draft');
   String get messageStatusSending => translate('message_status_sending');
   String get messageStatusSent => translate('message_status_sent');
   String get messageStatusDelivered => translate('message_status_delivered');
   String get messageStatusFailed => translate('message_status_failed');
-  String get msgTemplateBookingConfirm => translate('msg_template_booking_confirm');
+  String get msgTemplateBookingConfirm =>
+      translate('msg_template_booking_confirm');
   String get msgTemplatePreArrival => translate('msg_template_pre_arrival');
-  String get msgTemplateCheckoutReminder => translate('msg_template_checkout_reminder');
-  String get msgTemplateReviewRequest => translate('msg_template_review_request');
+  String get msgTemplateCheckoutReminder =>
+      translate('msg_template_checkout_reminder');
+  String get msgTemplateReviewRequest =>
+      translate('msg_template_review_request');
   String get msgTemplateCustom => translate('msg_template_custom');
   String get reportGroupDaily => translate('report_group_daily');
   String get reportGroupWeekly => translate('report_group_weekly');
@@ -1658,7 +1722,8 @@ class AppLocalizations {
   String get reportTypeKpi => translate('report_type_kpi');
   String get reportTypeChannel => translate('report_type_channel');
   String get reportTypeGuest => translate('report_type_guest');
-  String get comparisonPreviousPeriod => translate('comparison_previous_period');
+  String get comparisonPreviousPeriod =>
+      translate('comparison_previous_period');
   String get comparisonPreviousYear => translate('comparison_previous_year');
   String get comparisonCustom => translate('comparison_custom');
   String get demographicsNationality => translate('demographics_nationality');
@@ -1703,7 +1768,8 @@ class AppLocalizations {
   String get errorRoomExists => translate('error_room_exists');
   String get errorCannotDeleteRoom => translate('error_cannot_delete_room');
   String get errorReportExport => translate('error_report_export');
-  String get biometricAuthenticateLogin => translate('biometric_authenticate_login');
+  String get biometricAuthenticateLogin =>
+      translate('biometric_authenticate_login');
   String get biometricFingerprint => translate('biometric_fingerprint');
   String get biometricIris => translate('biometric_iris');
   String get biometricGeneric => translate('biometric_generic');
@@ -1732,7 +1798,6 @@ class AppLocalizations {
   String get errorNotFound => translate('error_not_found');
   String get errorConflict => translate('error_conflict');
   String get errorServer => translate('error_server');
-
 }
 
 // Vietnamese translations
@@ -1804,9 +1869,11 @@ const Map<String, String> _viTranslations = {
   'password_min_length': 'Mật khẩu phải có ít nhất 6 ký tự',
   'login_button': 'Đăng nhập',
   'forgot_password': 'Quên mật khẩu?',
-  'contact_admin_reset_password': 'Vui lòng liên hệ quản trị viên để đặt lại mật khẩu',
+  'contact_admin_reset_password':
+      'Vui lòng liên hệ quản trị viên để đặt lại mật khẩu',
   'enable_biometric_title': 'Kích hoạt đăng nhập sinh trắc học',
-  'enable_biometric_message': 'Bạn có muốn sử dụng vân tay hoặc Face ID để đăng nhập nhanh hơn trong lần tới?',
+  'enable_biometric_message':
+      'Bạn có muốn sử dụng vân tay hoặc Face ID để đăng nhập nhanh hơn trong lần tới?',
   'biometric_enabled': 'Đã kích hoạt đăng nhập sinh trắc học',
   'biometric_auth_failed': 'Xác thực sinh trắc học thất bại',
   'authenticating': 'Đang xác thực...',
@@ -1814,7 +1881,8 @@ const Map<String, String> _viTranslations = {
   'change_password': 'Đổi mật khẩu',
   'new_password_min_length': 'Mật khẩu mới phải có ít nhất 6 ký tự',
   'password_change_success': 'Mật khẩu đã được thay đổi thành công',
-  'password_change_failed': 'Không thể thay đổi mật khẩu. Vui lòng kiểm tra lại.',
+  'password_change_failed':
+      'Không thể thay đổi mật khẩu. Vui lòng kiểm tra lại.',
   'current_password': 'Mật khẩu hiện tại',
   'new_password': 'Mật khẩu mới',
   'confirm_new_password': 'Xác nhận mật khẩu mới',
@@ -2083,7 +2151,8 @@ const Map<String, String> _viTranslations = {
   'housekeeping_tasks': 'Công việc Housekeeping',
   'my_tasks': 'Của tôi',
   'no_tasks': 'Không có công việc',
-  'no_tasks_scheduled_today': 'Không có công việc nào được lên lịch cho hôm nay',
+  'no_tasks_scheduled_today':
+      'Không có công việc nào được lên lịch cho hôm nay',
   'no_tasks_created': 'Chưa có công việc nào được tạo',
   'no_tasks_assigned': 'Bạn chưa được phân công công việc nào',
   'pending': 'Chờ xử lý',
@@ -2092,11 +2161,13 @@ const Map<String, String> _viTranslations = {
   'create_new_task': 'Tạo công việc mới',
   'urgent': 'Khẩn cấp',
   'no_urgent_requests': 'Không có yêu cầu khẩn cấp',
-  'no_urgent_maintenance_requests': 'Hiện tại không có yêu cầu bảo trì khẩn cấp nào',
+  'no_urgent_maintenance_requests':
+      'Hiện tại không có yêu cầu bảo trì khẩn cấp nào',
   'no_maintenance_requests': 'Không có yêu cầu bảo trì',
   'no_maintenance_requests_created': 'Chưa có yêu cầu bảo trì nào được tạo',
   'no_your_requests': 'Không có yêu cầu của bạn',
-  'no_assigned_maintenance_requests': 'Bạn chưa được phân công yêu cầu bảo trì nào',
+  'no_assigned_maintenance_requests':
+      'Bạn chưa được phân công yêu cầu bảo trì nào',
   'assigned': 'Đã phân công',
   'on_hold': 'Tạm hoãn',
   'completed_cancelled': 'Hoàn thành/Hủy',
@@ -2145,7 +2216,8 @@ const Map<String, String> _viTranslations = {
   'enter_hold_reason': 'Nhập lý do tạm hoãn (tùy chọn):',
   'reason': 'Lý do...',
   'assignment_in_development': 'Chức năng phân công đang phát triển',
-  'complete_request_confirmation': 'Bạn có chắc đã hoàn thành yêu cầu bảo trì này?',
+  'complete_request_confirmation':
+      'Bạn có chắc đã hoàn thành yêu cầu bảo trì này?',
   'task_info': 'Thông tin công việc',
   'task_type': 'Loại công việc',
   'scheduled_date': 'Ngày dự kiến',
@@ -2155,7 +2227,8 @@ const Map<String, String> _viTranslations = {
   'task_assigned': 'Đã phân công công việc',
   'task_completed': 'Đã hoàn thành công việc',
   'verify_task': 'Xác nhận công việc',
-  'verify_task_confirmation': 'Bạn có chắc muốn xác nhận công việc này đã hoàn thành tốt?',
+  'verify_task_confirmation':
+      'Bạn có chắc muốn xác nhận công việc này đã hoàn thành tốt?',
   'task_verified': 'Đã xác nhận công việc',
   'delete_task': 'Xóa công việc',
   'delete_task_confirmation': 'Bạn có chắc muốn xóa công việc này?',
@@ -2260,8 +2333,10 @@ const Map<String, String> _viTranslations = {
   // ===== DECLARATION =====
   'export_success': 'Xuất file thành công!',
   'residence_declaration_title': 'Khai báo lưu trú',
-  'export_guest_list_description': 'Xuất danh sách khách lưu trú để khai báo tạm trú với công an.',
-  'list_includes_guests_in_range': 'Danh sách bao gồm tất cả khách đã nhận phòng trong khoảng thời gian được chọn.',
+  'export_guest_list_description':
+      'Xuất danh sách khách lưu trú để khai báo tạm trú với công an.',
+  'list_includes_guests_in_range':
+      'Danh sách bao gồm tất cả khách đã nhận phòng trong khoảng thời gian được chọn.',
   'today_label': 'Hôm nay',
   'yesterday': 'Hôm qua',
   'file_format': 'Định dạng file',
@@ -2340,7 +2415,8 @@ const Map<String, String> _viTranslations = {
   // ===== PHASE 5: NOTIFICATIONS & MESSAGING =====
   'mark_all_read': 'Đánh dấu tất cả đã đọc',
   'no_notifications': 'Không có thông báo',
-  'no_notifications_description': 'Khi có thông báo mới, chúng sẽ hiển thị ở đây',
+  'no_notifications_description':
+      'Khi có thông báo mới, chúng sẽ hiển thị ở đây',
   'error_loading_data': 'Không thể tải dữ liệu',
   'send_message': 'Gửi tin nhắn',
   'channel': 'Kênh',
@@ -2450,7 +2526,8 @@ const Map<String, String> _viTranslations = {
   'please_add_checklist_item': 'Vui lòng thêm ít nhất một mục kiểm tra',
   'stats_recalculated': 'Đã tính lại thống kê',
   'close_audit': 'Đóng kiểm toán',
-  'close_audit_confirmation': 'Sau khi đóng, bạn sẽ không thể chỉnh sửa kiểm toán này.\n\nBạn có chắc chắn muốn đóng?',
+  'close_audit_confirmation':
+      'Sau khi đóng, bạn sẽ không thể chỉnh sửa kiểm toán này.\n\nBạn có chắc chắn muốn đóng?',
   'audit_closed': 'Đã đóng kiểm toán',
   'assign_repair': 'Phân công sửa chữa',
   'self_assign': 'Tự nhận việc',
@@ -2533,7 +2610,8 @@ const Map<String, String> _viTranslations = {
   'number_of_guests': 'Số khách *',
   'no_products': 'Không có sản phẩm',
   'clear_cart': 'Xóa giỏ hàng',
-  'confirm_clear_cart': 'Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?',
+  'confirm_clear_cart':
+      'Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?',
   'product_updated_success': 'Cập nhật sản phẩm thành công',
   'confirm_delete_product': 'Bạn có chắc chắn muốn xóa sản phẩm này?',
   'occupancy_percent': '% lấp đầy',
@@ -2556,11 +2634,14 @@ const Map<String, String> _viTranslations = {
   'by_label': 'Bởi',
   'paid_short': 'Đã TT',
   'marked_notifications_read': 'Đã đánh dấu thông báo đã đọc',
-  'app_description': 'Ứng dụng quản lý căn hộ dịch vụ Hoàng Lâm Heritage Suites',
+  'app_description':
+      'Ứng dụng quản lý căn hộ dịch vụ Hoàng Lâm Heritage Suites',
   'developed_by': 'Phát triển bởi: Duy Lâm',
-  'copyright_notice': '© 2024 Hoàng Lâm Heritage Suites.\nĐã đăng ký bản quyền.',
+  'copyright_notice':
+      '© 2024 Hoàng Lâm Heritage Suites.\nĐã đăng ký bản quyền.',
   'dd10_form_description': 'Mẫu ĐD10 (Nghị định 144/2021): Sổ quản lý lưu trú',
-  'na17_form_description': 'Mẫu NA17 (Thông tư 04/2015): Phiếu khai báo tạm trú người nước ngoài',
+  'na17_form_description':
+      'Mẫu NA17 (Thông tư 04/2015): Phiếu khai báo tạm trú người nước ngoài',
   'form_type': 'Loại biểu mẫu',
   'inspection_info': 'Thông tin kiểm tra',
   'room_id_required': 'ID Phòng *',
@@ -2676,7 +2757,8 @@ const Map<String, String> _viTranslations = {
 
   // Settings Help
   'help_room_management': 'Quản lý phòng',
-  'help_room_management_desc': 'Xem trạng thái phòng, thay đổi trạng thái, tạo đặt phòng mới.',
+  'help_room_management_desc':
+      'Xem trạng thái phòng, thay đổi trạng thái, tạo đặt phòng mới.',
   'help_bookings': 'Đặt phòng',
   'help_bookings_desc': 'Quản lý check-in, check-out, và lịch đặt phòng.',
   'help_housekeeping': 'Housekeeping',
@@ -2807,7 +2889,8 @@ const Map<String, String> _viTranslations = {
   'file_format_label': 'Định dạng file',
   'last_7_days_label': '7 ngày qua',
   'last_30_days_label': '30 ngày qua',
-  'declaration_form_descriptions': '• ĐD10: Sổ quản lý lưu trú (khách Việt Nam)\n• NA17: Phiếu khai báo tạm trú (khách nước ngoài)',
+  'declaration_form_descriptions':
+      '• ĐD10: Sổ quản lý lưu trú (khách Việt Nam)\n• NA17: Phiếu khai báo tạm trú (khách nước ngoài)',
 
   // Group Booking Detail
   'phone': 'Điện thoại',
@@ -2925,7 +3008,8 @@ const Map<String, String> _viTranslations = {
   'search_product_hint': 'Tìm kiếm sản phẩm...',
   'select_booking_first': 'Vui lòng chọn đặt phòng trước',
   'clear_cart_title': 'Xóa giỏ hàng',
-  'clear_cart_confirm': 'Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?',
+  'clear_cart_confirm':
+      'Bạn có chắc chắn muốn xóa tất cả sản phẩm trong giỏ hàng?',
   'confirm_checkout': 'Xác nhận thanh toán',
   'guest_name_label': 'Khách',
   'total_label': 'Tổng',
@@ -3004,8 +3088,10 @@ const Map<String, String> _viTranslations = {
   'complete_all_items_warning': 'Vui lòng hoàn thành tất cả các mục',
 
   // Financial Category Screen
-  'cannot_delete_category_msg': 'Không thể xoá danh mục "{name}" vì có {count} giao dịch liên quan.',
-  'confirm_delete_category_msg': 'Bạn có chắc muốn xoá danh mục "{name}"?\n\nThao tác này không thể hoàn tác.',
+  'cannot_delete_category_msg':
+      'Không thể xoá danh mục "{name}" vì có {count} giao dịch liên quan.',
+  'confirm_delete_category_msg':
+      'Bạn có chắc muốn xoá danh mục "{name}"?\n\nThao tác này không thể hoàn tác.',
   'active_in_use_count': 'Đang sử dụng ({count})',
   'hidden_count': 'Đã ẩn ({count})',
   'edit_category': 'Sửa danh mục',
@@ -3022,7 +3108,8 @@ const Map<String, String> _viTranslations = {
   // Room Inspection Form Screen
   'enter_room_id_hint': 'Nhập ID phòng',
   'please_enter_room_id': 'Vui lòng nhập ID phòng',
-  'no_default_template_desc': 'Không có mẫu mặc định nào. Bạn có thể tạo mẫu mới từ danh sách mẫu.',
+  'no_default_template_desc':
+      'Không có mẫu mặc định nào. Bạn có thể tạo mẫu mới từ danh sách mẫu.',
   'checklist_items_suffix': 'mục kiểm tra',
   'creating_text': 'Đang tạo...',
   'create_inspection_btn': 'Tạo kiểm tra',
@@ -3077,7 +3164,8 @@ const Map<String, String> _viTranslations = {
   'assign_to_self': 'Tự nhận việc',
   'deposit_label_amount': 'Đặt cọc: {amount}',
   'overlap_warning_title': 'Cảnh báo trùng lịch',
-  'overlap_warning_message': 'Phòng này đã có {count} đặt phòng trong khoảng thời gian đã chọn. Bạn có muốn tiếp tục?',
+  'overlap_warning_message':
+      'Phòng này đã có {count} đặt phòng trong khoảng thời gian đã chọn. Bạn có muốn tiếp tục?',
   'room_number_hint': 'Ví dụ: 101, 102, 201...',
   'paid_abbreviation': 'Đã TT',
   'phone_validation_length': 'Số điện thoại phải có 10-11 số',
@@ -3281,7 +3369,8 @@ const Map<String, String> _viTranslations = {
   'declaration_na17': 'NA17 - Khách nước ngoài',
   'declaration_all': 'Tất cả',
   'declaration_dd10_desc': 'Sổ quản lý lưu trú (Nghị định 144/2021)',
-  'declaration_na17_desc': 'Phiếu khai báo tạm trú người nước ngoài (Thông tư 04/2015)',
+  'declaration_na17_desc':
+      'Phiếu khai báo tạm trú người nước ngoài (Thông tư 04/2015)',
   'declaration_all_desc': 'Cả ĐD10 và NA17',
   'group_status_pending': 'Đang chờ',
   'group_status_confirmed': 'Đã xác nhận',
@@ -3352,7 +3441,6 @@ const Map<String, String> _viTranslations = {
   'sync_failed': 'Đồng bộ thất bại',
   'sync_in_progress': 'Đang đồng bộ dữ liệu...',
   'offline_data_cached': 'Đang hiển thị dữ liệu đã lưu',
-
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -3423,9 +3511,11 @@ const Map<String, String> _enTranslations = {
   'password_min_length': 'Password must be at least 6 characters',
   'login_button': 'Login',
   'forgot_password': 'Forgot password?',
-  'contact_admin_reset_password': 'Please contact administrator to reset password',
+  'contact_admin_reset_password':
+      'Please contact administrator to reset password',
   'enable_biometric_title': 'Enable biometric login',
-  'enable_biometric_message': 'Do you want to use fingerprint or Face ID for faster login next time?',
+  'enable_biometric_message':
+      'Do you want to use fingerprint or Face ID for faster login next time?',
   'biometric_enabled': 'Biometric login enabled',
   'biometric_auth_failed': 'Biometric authentication failed',
   'authenticating': 'Authenticating...',
@@ -3440,7 +3530,8 @@ const Map<String, String> _enTranslations = {
   'please_enter_current_password': 'Please enter current password',
   'please_enter_new_password': 'Please enter new password',
   'please_confirm_new_password': 'Please confirm new password',
-  'new_password_must_be_different': 'New password must be different from current password',
+  'new_password_must_be_different':
+      'New password must be different from current password',
   'passwords_do_not_match': 'Passwords do not match',
   'apartment_management': 'Apartment management',
 
@@ -3711,11 +3802,13 @@ const Map<String, String> _enTranslations = {
   'create_new_task': 'Create new task',
   'urgent': 'Urgent',
   'no_urgent_requests': 'No urgent requests',
-  'no_urgent_maintenance_requests': 'No urgent maintenance requests at the moment',
+  'no_urgent_maintenance_requests':
+      'No urgent maintenance requests at the moment',
   'no_maintenance_requests': 'No maintenance requests',
   'no_maintenance_requests_created': 'No maintenance requests created yet',
   'no_your_requests': 'No requests from you',
-  'no_assigned_maintenance_requests': 'You have not been assigned any maintenance requests',
+  'no_assigned_maintenance_requests':
+      'You have not been assigned any maintenance requests',
   'assigned': 'Assigned',
   'on_hold': 'On hold',
   'completed_cancelled': 'Completed/Cancelled',
@@ -3751,10 +3844,12 @@ const Map<String, String> _enTranslations = {
   'maintenance_request_completed': 'Maintenance request completed',
   'request_on_hold': 'Request on hold',
   'continue_request': 'Continue request',
-  'continue_request_confirmation': 'Do you want to continue processing this request?',
+  'continue_request_confirmation':
+      'Do you want to continue processing this request?',
   'request_continued': 'Request continued',
   'cancel_request': 'Cancel request',
-  'cancel_request_confirmation': 'Are you sure you want to cancel this maintenance request?',
+  'cancel_request_confirmation':
+      'Are you sure you want to cancel this maintenance request?',
   'no': 'No',
   'request_cancelled': 'Request cancelled',
   'complete_request': 'Complete request',
@@ -3764,7 +3859,8 @@ const Map<String, String> _enTranslations = {
   'enter_hold_reason': 'Enter reason for holding (optional):',
   'reason': 'Reason...',
   'assignment_in_development': 'Assignment feature is under development',
-  'complete_request_confirmation': 'Are you sure you have completed this maintenance request?',
+  'complete_request_confirmation':
+      'Are you sure you have completed this maintenance request?',
   'task_info': 'Task information',
   'task_type': 'Task type',
   'scheduled_date': 'Scheduled date',
@@ -3774,7 +3870,8 @@ const Map<String, String> _enTranslations = {
   'task_assigned': 'Task assigned',
   'task_completed': 'Task completed',
   'verify_task': 'Verify task',
-  'verify_task_confirmation': 'Are you sure you want to verify this task is complete?',
+  'verify_task_confirmation':
+      'Are you sure you want to verify this task is complete?',
   'task_verified': 'Task verified',
   'delete_task': 'Delete task',
   'delete_task_confirmation': 'Are you sure you want to delete this task?',
@@ -3879,8 +3976,10 @@ const Map<String, String> _enTranslations = {
   // ===== DECLARATION =====
   'export_success': 'Export successful!',
   'residence_declaration_title': 'Residence declaration',
-  'export_guest_list_description': 'Export guest list for temporary residence declaration with police.',
-  'list_includes_guests_in_range': 'List includes all guests who checked in during the selected period.',
+  'export_guest_list_description':
+      'Export guest list for temporary residence declaration with police.',
+  'list_includes_guests_in_range':
+      'List includes all guests who checked in during the selected period.',
   'today_label': 'Today',
   'yesterday': 'Yesterday',
   'file_format': 'File format',
@@ -3959,7 +4058,8 @@ const Map<String, String> _enTranslations = {
   // ===== PHASE 5: NOTIFICATIONS & MESSAGING =====
   'mark_all_read': 'Mark all as read',
   'no_notifications': 'No notifications',
-  'no_notifications_description': 'When there are new notifications, they will appear here',
+  'no_notifications_description':
+      'When there are new notifications, they will appear here',
   'error_loading_data': 'Failed to load data',
   'send_message': 'Send message',
   'channel': 'Channel',
@@ -4069,7 +4169,8 @@ const Map<String, String> _enTranslations = {
   'please_add_checklist_item': 'Please add at least one checklist item',
   'stats_recalculated': 'Statistics recalculated',
   'close_audit': 'Close audit',
-  'close_audit_confirmation': 'After closing, you will not be able to edit this audit.\n\nAre you sure you want to close?',
+  'close_audit_confirmation':
+      'After closing, you will not be able to edit this audit.\n\nAre you sure you want to close?',
   'audit_closed': 'Audit closed',
   'assign_repair': 'Assign repair',
   'self_assign': 'Self assign',
@@ -4152,7 +4253,8 @@ const Map<String, String> _enTranslations = {
   'number_of_guests': 'Number of guests *',
   'no_products': 'No products',
   'clear_cart': 'Clear cart',
-  'confirm_clear_cart': 'Are you sure you want to clear all items from the cart?',
+  'confirm_clear_cart':
+      'Are you sure you want to clear all items from the cart?',
   'product_updated_success': 'Product updated successfully',
   'confirm_delete_product': 'Are you sure you want to delete this product?',
   'occupancy_percent': '% occupancy',
@@ -4175,11 +4277,14 @@ const Map<String, String> _enTranslations = {
   'by_label': 'By',
   'paid_short': 'Paid',
   'marked_notifications_read': 'Marked notifications as read',
-  'app_description': 'Hoang Lam Heritage Suites apartment management application',
+  'app_description':
+      'Hoang Lam Heritage Suites apartment management application',
   'developed_by': 'Developed by: Duy Lam',
   'copyright_notice': '© 2024 Hoang Lam Heritage Suites.\nAll rights reserved.',
-  'dd10_form_description': 'Form DD10 (Decree 144/2021): Residence management register',
-  'na17_form_description': 'Form NA17 (Circular 04/2015): Foreign guest temporary residence declaration',
+  'dd10_form_description':
+      'Form DD10 (Decree 144/2021): Residence management register',
+  'na17_form_description':
+      'Form NA17 (Circular 04/2015): Foreign guest temporary residence declaration',
   'form_type': 'Form type',
   'inspection_info': 'Inspection info',
   'room_id_required': 'Room ID *',
@@ -4295,7 +4400,8 @@ const Map<String, String> _enTranslations = {
 
   // Settings Help
   'help_room_management': 'Room Management',
-  'help_room_management_desc': 'View room status, change status, create new bookings.',
+  'help_room_management_desc':
+      'View room status, change status, create new bookings.',
   'help_bookings': 'Bookings',
   'help_bookings_desc': 'Manage check-in, check-out, and booking calendar.',
   'help_housekeeping': 'Housekeeping',
@@ -4426,7 +4532,8 @@ const Map<String, String> _enTranslations = {
   'file_format_label': 'File format',
   'last_7_days_label': 'Last 7 days',
   'last_30_days_label': 'Last 30 days',
-  'declaration_form_descriptions': '• ĐD10: Residence management register (Vietnamese guests)\n• NA17: Temporary residence declaration (Foreign guests)',
+  'declaration_form_descriptions':
+      '• ĐD10: Residence management register (Vietnamese guests)\n• NA17: Temporary residence declaration (Foreign guests)',
 
   // Group Booking Detail
   'phone': 'Phone',
@@ -4544,7 +4651,8 @@ const Map<String, String> _enTranslations = {
   'search_product_hint': 'Search products...',
   'select_booking_first': 'Please select a booking first',
   'clear_cart_title': 'Clear cart',
-  'clear_cart_confirm': 'Are you sure you want to remove all products from the cart?',
+  'clear_cart_confirm':
+      'Are you sure you want to remove all products from the cart?',
   'confirm_checkout': 'Confirm payment',
   'guest_name_label': 'Guest',
   'total_label': 'Total',
@@ -4623,8 +4731,10 @@ const Map<String, String> _enTranslations = {
   'complete_all_items_warning': 'Please complete all items',
 
   // Financial Category Screen
-  'cannot_delete_category_msg': 'Cannot delete category "{name}" because it has {count} related transactions.',
-  'confirm_delete_category_msg': 'Are you sure you want to delete category "{name}"?\n\nThis action cannot be undone.',
+  'cannot_delete_category_msg':
+      'Cannot delete category "{name}" because it has {count} related transactions.',
+  'confirm_delete_category_msg':
+      'Are you sure you want to delete category "{name}"?\n\nThis action cannot be undone.',
   'active_in_use_count': 'Active ({count})',
   'hidden_count': 'Hidden ({count})',
   'edit_category': 'Edit category',
@@ -4641,7 +4751,8 @@ const Map<String, String> _enTranslations = {
   // Room Inspection Form Screen
   'enter_room_id_hint': 'Enter room ID',
   'please_enter_room_id': 'Please enter room ID',
-  'no_default_template_desc': 'No default templates available. You can create new templates from the template list.',
+  'no_default_template_desc':
+      'No default templates available. You can create new templates from the template list.',
   'checklist_items_suffix': 'checklist items',
   'creating_text': 'Creating...',
   'create_inspection_btn': 'Create inspection',
@@ -4696,7 +4807,8 @@ const Map<String, String> _enTranslations = {
   'assign_to_self': 'Assign to self',
   'deposit_label_amount': 'Deposit: {amount}',
   'overlap_warning_title': 'Schedule Overlap Warning',
-  'overlap_warning_message': 'This room already has {count} bookings in the selected period. Do you want to continue?',
+  'overlap_warning_message':
+      'This room already has {count} bookings in the selected period. Do you want to continue?',
   'room_number_hint': 'E.g.: 101, 102, 201...',
   'paid_abbreviation': 'Paid',
   'phone_validation_length': 'Phone number must be 10-11 digits',
@@ -4900,7 +5012,8 @@ const Map<String, String> _enTranslations = {
   'declaration_na17': 'NA17 - Foreign Guests',
   'declaration_all': 'All',
   'declaration_dd10_desc': 'Accommodation management book (Decree 144/2021)',
-  'declaration_na17_desc': 'Foreign guest temporary residence form (Circular 04/2015)',
+  'declaration_na17_desc':
+      'Foreign guest temporary residence form (Circular 04/2015)',
   'declaration_all_desc': 'Both ĐD10 and NA17',
   'group_status_pending': 'Pending',
   'group_status_confirmed': 'Confirmed',
@@ -4971,7 +5084,6 @@ const Map<String, String> _enTranslations = {
   'sync_failed': 'Sync failed',
   'sync_in_progress': 'Syncing data...',
   'offline_data_cached': 'Showing cached data',
-
 };
 
 // Delegate

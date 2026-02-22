@@ -51,9 +51,10 @@ class GuestCard extends StatelessWidget {
   Widget _buildAvatar(BuildContext context) {
     return CircleAvatar(
       radius: 24,
-      backgroundColor: guest.isVip
-          ? AppColors.warning.withValues(alpha: 0.2)
-          : AppColors.primary.withValues(alpha: 0.1),
+      backgroundColor:
+          guest.isVip
+              ? AppColors.warning.withValues(alpha: 0.2)
+              : AppColors.primary.withValues(alpha: 0.1),
       child: Text(
         guest.initials,
         style: TextStyle(
@@ -74,9 +75,9 @@ class GuestCard extends StatelessWidget {
             Expanded(
               child: Text(
                 guest.fullName,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -94,9 +95,9 @@ class GuestCard extends StatelessWidget {
             AppSpacing.gapHorizontalXs,
             Text(
               guest.formattedPhone,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -148,9 +149,9 @@ class GuestCard extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                  fontSize: 11,
-                ),
+              color: AppColors.textSecondary,
+              fontSize: 11,
+            ),
           ),
         ],
       ),
@@ -173,9 +174,9 @@ class GuestCard extends StatelessWidget {
           Text(
             'VIP',
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.warning,
-                  fontWeight: FontWeight.bold,
-                ),
+              color: AppColors.warning,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
@@ -217,9 +218,10 @@ class GuestCompactCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: guest.isVip
-                    ? AppColors.warning.withValues(alpha: 0.2)
-                    : AppColors.primary.withValues(alpha: 0.1),
+                backgroundColor:
+                    guest.isVip
+                        ? AppColors.warning.withValues(alpha: 0.2)
+                        : AppColors.primary.withValues(alpha: 0.1),
                 child: Text(
                   guest.initials,
                   style: TextStyle(
@@ -237,16 +239,16 @@ class GuestCompactCard extends StatelessWidget {
                     Text(
                       guest.fullName,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     Text(
                       guest.formattedPhone,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -254,7 +256,11 @@ class GuestCompactCard extends StatelessWidget {
               if (guest.isVip)
                 const Icon(Icons.star, size: 16, color: AppColors.warning),
               if (isSelected)
-                const Icon(Icons.check_circle, size: 20, color: AppColors.primary),
+                const Icon(
+                  Icons.check_circle,
+                  size: 20,
+                  color: AppColors.primary,
+                ),
             ],
           ),
         ),

@@ -8,10 +8,7 @@ import 'package:hoang_lam_app/widgets/folio/add_charge_dialog.dart';
 
 void main() {
   group('AddChargeDialog', () {
-    Widget buildWidget({
-      int bookingId = 1,
-      VoidCallback? onChargeAdded,
-    }) {
+    Widget buildWidget({int bookingId = 1, VoidCallback? onChargeAdded}) {
       return ProviderScope(
         child: MaterialApp(
           localizationsDelegates: const [
@@ -24,18 +21,20 @@ void main() {
           locale: const Locale('vi'),
           home: Scaffold(
             body: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AddChargeDialog(
-                      bookingId: bookingId,
-                      onChargeAdded: onChargeAdded,
-                    ),
-                  );
-                },
-                child: const Text('Open Dialog'),
-              ),
+              builder:
+                  (context) => ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => AddChargeDialog(
+                              bookingId: bookingId,
+                              onChargeAdded: onChargeAdded,
+                            ),
+                      );
+                    },
+                    child: const Text('Open Dialog'),
+                  ),
             ),
           ),
         ),
@@ -126,8 +125,9 @@ void main() {
       expect(quantityField, findsOneWidget);
     });
 
-    testWidgets('shows validation error when description is empty',
-        (tester) async {
+    testWidgets('shows validation error when description is empty', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
       await openDialog(tester);

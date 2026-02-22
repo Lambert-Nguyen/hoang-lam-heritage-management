@@ -13,19 +13,20 @@ import 'booking_form_screen.dart';
 import '../../core/theme/app_colors.dart';
 
 /// Booking Calendar Screen - Phase 1.9.4
-/// 
+///
 /// Main booking management screen with calendar view showing:
 /// - Monthly calendar with booking indicators
 /// - List of bookings for selected date
 /// - Filter options (all, check-in, check-out, staying)
 /// - FAB for creating new bookings
-/// 
+///
 /// Follows design plan mockup from docs/HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md
 class BookingCalendarScreen extends ConsumerStatefulWidget {
   const BookingCalendarScreen({super.key});
 
   @override
-  ConsumerState<BookingCalendarScreen> createState() => _BookingCalendarScreenState();
+  ConsumerState<BookingCalendarScreen> createState() =>
+      _BookingCalendarScreenState();
 }
 
 class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
@@ -46,11 +47,11 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
       start: DateTime(_focusedDay.year, _focusedDay.month, 1),
       end: DateTime(_focusedDay.year, _focusedDay.month + 1, 0),
     );
-    
+
     final calendarBookingsAsync = ref.watch(
       calendarBookingsProvider(dateRange),
     );
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.bookings),
@@ -74,39 +75,37 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
           // Calendar widget
           calendarBookingsAsync.when(
             data: (bookings) => _buildCalendar(bookings),
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: CircularProgressIndicator(),
-              ),
-            ),
-            error: (error, stack) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text('${context.l10n.error}: $error'),
-              ),
-            ),
+            loading:
+                () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+            error:
+                (error, stack) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text('${context.l10n.error}: $error'),
+                  ),
+                ),
           ),
-          
+
           const Divider(height: 1),
-          
+
           // Filter chips
           _buildFilterChips(),
-          
+
           const Divider(height: 1),
-          
+
           // Bookings for selected day
-          Expanded(
-            child: _buildBookingsList(),
-          ),
+          Expanded(child: _buildBookingsList()),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const BookingFormScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const BookingFormScreen()),
           );
         },
         icon: const Icon(Icons.add),
@@ -129,10 +128,10 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
         booking.checkOutDate.month,
         booking.checkOutDate.day,
       );
-      
+
       // Add booking to check-in date
       bookingsByDate.putIfAbsent(checkInDate, () => []).add(booking);
-      
+
       // Add to intermediate dates if staying multiple nights
       DateTime currentDate = checkInDate.add(const Duration(days: 1));
       while (currentDate.isBefore(checkOutDate)) {
@@ -182,7 +181,9 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             shape: BoxShape.circle,
           ),
           todayDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5),
+            color: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.5),
             shape: BoxShape.circle,
           ),
           selectedDecoration: BoxDecoration(
@@ -230,9 +231,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
 
   Widget _buildBookingsList() {
     if (_selectedDay == null) {
-      return Center(
-        child: Text(context.l10n.selectBooking),
-      );
+      return Center(child: Text(context.l10n.selectBooking));
     }
 
     final dateRange = DateRange(
@@ -251,9 +250,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
       ),
     );
 
-    final bookingsAsync = ref.watch(
-      calendarBookingsProvider(dateRange),
-    );
+    final bookingsAsync = ref.watch(calendarBookingsProvider(dateRange));
 
     return bookingsAsync.when(
       data: (bookings) {
@@ -265,25 +262,15 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.event_busy,
-                  size: 64,
-                  color: AppColors.mutedAccent,
-                ),
+                Icon(Icons.event_busy, size: 64, color: AppColors.mutedAccent),
                 const SizedBox(height: 16),
                 Text(
                   context.l10n.noBookings,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.mutedAccent,
-                  ),
+                  style: TextStyle(fontSize: 16, color: AppColors.mutedAccent),
                 ),
                 Text(
                   DateFormat('dd/MM/yyyy', 'vi').format(_selectedDay!),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.mutedAccent,
-                  ),
+                  style: TextStyle(fontSize: 14, color: AppColors.mutedAccent),
                 ),
               ],
             ),
@@ -298,31 +285,36 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Text(
                 '${context.l10n.bookingDate}: ${DateFormat('dd/MM/yyyy').format(_selectedDay!)}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            
+
             // Bookings grouped by type
             ..._buildGroupedBookings(filteredBookings),
           ],
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              const SizedBox(height: 16),
-              Text('${context.l10n.error}: $error'),
-            ],
+      error:
+          (error, stack) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text('${context.l10n.error}: $error'),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -354,7 +346,8 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
           return isSameDay(checkOutDate, selectedDate);
         case 'staying':
           return booking.status == BookingStatus.checkedIn &&
-              (selectedDate.isAfter(checkInDate) || isSameDay(checkInDate, selectedDate)) &&
+              (selectedDate.isAfter(checkInDate) ||
+                  isSameDay(checkInDate, selectedDate)) &&
               selectedDate.isBefore(checkOutDate);
         case 'all':
         default:
@@ -400,30 +393,45 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
     final widgets = <Widget>[];
 
     // Check-ins
-    if (checkIns.isNotEmpty && (_filterType == 'all' || _filterType == 'check_in')) {
-      widgets.add(_buildGroupHeader('🟢 ${context.l10n.checkIn}', checkIns.length));
-      widgets.addAll(checkIns.map((b) => BookingCard(
-            booking: b,
-            onTap: () => _navigateToBookingDetail(b),
-          )));
+    if (checkIns.isNotEmpty &&
+        (_filterType == 'all' || _filterType == 'check_in')) {
+      widgets.add(
+        _buildGroupHeader('🟢 ${context.l10n.checkIn}', checkIns.length),
+      );
+      widgets.addAll(
+        checkIns.map(
+          (b) =>
+              BookingCard(booking: b, onTap: () => _navigateToBookingDetail(b)),
+        ),
+      );
     }
 
     // Check-outs
-    if (checkOuts.isNotEmpty && (_filterType == 'all' || _filterType == 'check_out')) {
-      widgets.add(_buildGroupHeader('🔴 ${context.l10n.checkOut}', checkOuts.length));
-      widgets.addAll(checkOuts.map((b) => BookingCard(
-            booking: b,
-            onTap: () => _navigateToBookingDetail(b),
-          )));
+    if (checkOuts.isNotEmpty &&
+        (_filterType == 'all' || _filterType == 'check_out')) {
+      widgets.add(
+        _buildGroupHeader('🔴 ${context.l10n.checkOut}', checkOuts.length),
+      );
+      widgets.addAll(
+        checkOuts.map(
+          (b) =>
+              BookingCard(booking: b, onTap: () => _navigateToBookingDetail(b)),
+        ),
+      );
     }
 
     // Staying
-    if (staying.isNotEmpty && (_filterType == 'all' || _filterType == 'staying')) {
-      widgets.add(_buildGroupHeader('🔵 ${context.l10n.occupied}', staying.length));
-      widgets.addAll(staying.map((b) => BookingCard(
-            booking: b,
-            onTap: () => _navigateToBookingDetail(b),
-          )));
+    if (staying.isNotEmpty &&
+        (_filterType == 'all' || _filterType == 'staying')) {
+      widgets.add(
+        _buildGroupHeader('🔵 ${context.l10n.occupied}', staying.length),
+      );
+      widgets.addAll(
+        staying.map(
+          (b) =>
+              BookingCard(booking: b, onTap: () => _navigateToBookingDetail(b)),
+        ),
+      );
     }
 
     return widgets;
@@ -436,9 +444,9 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(width: 8),
           Container(
@@ -473,24 +481,25 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
     final l10n = context.l10n;
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.filter),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildFilterOption(ctx, l10n.all, 'all'),
-            _buildFilterOption(ctx, 'Check-in', 'check_in'),
-            _buildFilterOption(ctx, 'Check-out', 'check_out'),
-            _buildFilterOption(ctx, l10n.staying, 'staying'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.close),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(l10n.filter),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildFilterOption(ctx, l10n.all, 'all'),
+                _buildFilterOption(ctx, 'Check-in', 'check_in'),
+                _buildFilterOption(ctx, 'Check-out', 'check_out'),
+                _buildFilterOption(ctx, l10n.staying, 'staying'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(l10n.close),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 

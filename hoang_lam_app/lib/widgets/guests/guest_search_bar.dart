@@ -57,12 +57,13 @@ class _GuestSearchBarState extends ConsumerState<GuestSearchBar> {
         hintText: widget.hintText ?? context.l10n.searchGuestHint,
         hintStyle: const TextStyle(color: AppColors.textHint),
         prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
-        suffixIcon: _searchController.text.isNotEmpty
-            ? IconButton(
-                icon: const Icon(Icons.clear, color: AppColors.textSecondary),
-                onPressed: _clearSearch,
-              )
-            : null,
+        suffixIcon:
+            _searchController.text.isNotEmpty
+                ? IconButton(
+                  icon: const Icon(Icons.clear, color: AppColors.textSecondary),
+                  onPressed: _clearSearch,
+                )
+                : null,
         filled: true,
         fillColor: AppColors.surface,
         border: OutlineInputBorder(

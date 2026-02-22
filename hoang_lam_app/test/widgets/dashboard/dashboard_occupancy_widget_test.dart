@@ -27,17 +27,19 @@ void main() {
       );
     });
 
-    testWidgets('displays occupancy rate correctly', (WidgetTester tester) async {
+    testWidgets('displays occupancy rate correctly', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -56,14 +58,14 @@ void main() {
     testWidgets('displays room status breakdown', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -80,17 +82,19 @@ void main() {
       expect(find.text('6'), findsOneWidget);
     });
 
-    testWidgets('displays circular progress indicator', (WidgetTester tester) async {
+    testWidgets('displays circular progress indicator', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -122,14 +126,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: fullOccupancy,
@@ -163,14 +167,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: emptyOccupancy,
@@ -186,7 +190,9 @@ void main() {
       expect(find.text('8'), findsOneWidget); // Available count
     });
 
-    testWidgets('shows cleaning status when present', (WidgetTester tester) async {
+    testWidgets('shows cleaning status when present', (
+      WidgetTester tester,
+    ) async {
       final roomStatusWithCleaning = RoomStatusSummary(
         total: 8,
         available: 2,
@@ -198,14 +204,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -217,10 +223,15 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Đang dọn'), findsOneWidget);
-      expect(find.text('2'), findsNWidgets(2)); // Available and Cleaning both = 2
+      expect(
+        find.text('2'),
+        findsNWidgets(2),
+      ); // Available and Cleaning both = 2
     });
 
-    testWidgets('shows maintenance status when present', (WidgetTester tester) async {
+    testWidgets('shows maintenance status when present', (
+      WidgetTester tester,
+    ) async {
       final roomStatusWithMaintenance = RoomStatusSummary(
         total: 8,
         available: 2,
@@ -232,14 +243,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -257,14 +268,14 @@ void main() {
     testWidgets('displays pie chart icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: mockOccupancy,
@@ -278,7 +289,9 @@ void main() {
       expect(find.byIcon(Icons.pie_chart), findsOneWidget);
     });
 
-    testWidgets('formats decimal occupancy rate correctly', (WidgetTester tester) async {
+    testWidgets('formats decimal occupancy rate correctly', (
+      WidgetTester tester,
+    ) async {
       final decimalOccupancy = OccupancySummary(
         rate: 66.67,
         occupiedRooms: 4,
@@ -287,14 +300,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardOccupancyWidget(
               occupancy: decimalOccupancy,

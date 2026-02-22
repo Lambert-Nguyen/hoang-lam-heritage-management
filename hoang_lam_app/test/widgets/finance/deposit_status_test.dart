@@ -36,10 +36,9 @@ void main() {
     }
 
     testWidgets('displays progress percentage', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 500000,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 1000000, paidDeposit: 500000),
+      );
       await tester.pumpAndSettle();
 
       // 500000 / 1000000 = 50%
@@ -47,94 +46,97 @@ void main() {
     });
 
     testWidgets('displays 100% when fully paid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 1000000,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 1000000, paidDeposit: 1000000),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('100%'), findsOneWidget);
     });
 
     testWidgets('displays 0% when no deposit paid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 0,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 1000000, paidDeposit: 0),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('0%'), findsOneWidget);
     });
 
     testWidgets('displays check icon when fully paid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 1000000,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 1000000, paidDeposit: 1000000),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.check_circle), findsOneWidget);
     });
 
     testWidgets('displays warning icon when not fully paid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 500000,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 1000000, paidDeposit: 500000),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.warning), findsOneWidget);
     });
 
     testWidgets('displays "Đã đủ cọc" when fully paid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 1000000,
-        showLabel: true,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          requiredDeposit: 1000000,
+          paidDeposit: 1000000,
+          showLabel: true,
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Đã đặt cọc'), findsOneWidget);
     });
 
     testWidgets('displays "Thiếu cọc" when partially paid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 500000,
-        showLabel: true,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          requiredDeposit: 1000000,
+          paidDeposit: 500000,
+          showLabel: true,
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Thiếu cọc'), findsOneWidget);
     });
 
     testWidgets('displays "Chưa cọc" when no deposit paid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 0,
-        showLabel: true,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          requiredDeposit: 1000000,
+          paidDeposit: 0,
+          showLabel: true,
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Chưa cọc'), findsOneWidget);
     });
 
     testWidgets('hides label when showLabel is false', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 500000,
-        showLabel: false,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          requiredDeposit: 1000000,
+          paidDeposit: 500000,
+          showLabel: false,
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Thiếu cọc'), findsNothing);
     });
 
     testWidgets('displays paid amount', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 500000,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 1000000, paidDeposit: 500000),
+      );
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Đã cọc:'), findsOneWidget);
@@ -142,10 +144,9 @@ void main() {
     });
 
     testWidgets('displays required amount', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 500000,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 1000000, paidDeposit: 500000),
+      );
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Yêu cầu:'), findsOneWidget);
@@ -162,9 +163,7 @@ void main() {
     testWidgets('calls onTap when tapped', (tester) async {
       bool tapped = false;
 
-      await tester.pumpWidget(buildTestWidget(
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(buildTestWidget(onTap: () => tapped = true));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(InkWell));
@@ -174,10 +173,9 @@ void main() {
     });
 
     testWidgets('handles zero required deposit', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 0,
-        paidDeposit: 0,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(requiredDeposit: 0, paidDeposit: 0),
+      );
       await tester.pumpAndSettle();
 
       // Should show 0% and not crash
@@ -185,10 +183,12 @@ void main() {
     });
 
     testWidgets('caps progress at 100% when overpaid', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        requiredDeposit: 1000000,
-        paidDeposit: 1500000, // Overpaid
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          requiredDeposit: 1000000,
+          paidDeposit: 1500000, // Overpaid
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Should still show 100%, not 150%
@@ -249,10 +249,12 @@ void main() {
     });
 
     testWidgets('displays outstanding amount', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        deposit: testDeposit,
-        onRecordDeposit: () {}, // Required for outstanding to show
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          deposit: testDeposit,
+          onRecordDeposit: () {}, // Required for outstanding to show
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Còn thiếu:'), findsOneWidget);
@@ -260,10 +262,9 @@ void main() {
     });
 
     testWidgets('displays record deposit button', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        deposit: testDeposit,
-        onRecordDeposit: () {},
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(deposit: testDeposit, onRecordDeposit: () {}),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Ghi cọc'), findsOneWidget);
@@ -272,10 +273,12 @@ void main() {
     testWidgets('calls onRecordDeposit when button tapped', (tester) async {
       bool buttonTapped = false;
 
-      await tester.pumpWidget(buildTestWidget(
-        deposit: testDeposit,
-        onRecordDeposit: () => buttonTapped = true,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          deposit: testDeposit,
+          onRecordDeposit: () => buttonTapped = true,
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Ghi cọc'));
@@ -344,20 +347,14 @@ void main() {
     ];
 
     testWidgets('displays loading indicator when loading', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        deposits: [],
-        isLoading: true,
-      ));
+      await tester.pumpWidget(buildTestWidget(deposits: [], isLoading: true));
       await tester.pump();
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('displays empty message when no deposits', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        deposits: [],
-        isLoading: false,
-      ));
+      await tester.pumpWidget(buildTestWidget(deposits: [], isLoading: false));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Không có'), findsOneWidget);
@@ -374,10 +371,12 @@ void main() {
     testWidgets('calls onRecordDeposit with correct deposit', (tester) async {
       OutstandingDeposit? selectedDeposit;
 
-      await tester.pumpWidget(buildTestWidget(
-        deposits: testDeposits,
-        onRecordDeposit: (deposit) => selectedDeposit = deposit,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(
+          deposits: testDeposits,
+          onRecordDeposit: (deposit) => selectedDeposit = deposit,
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Tap the first "Ghi cọc" button

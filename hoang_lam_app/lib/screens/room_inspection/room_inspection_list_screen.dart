@@ -16,10 +16,12 @@ class RoomInspectionListScreen extends ConsumerStatefulWidget {
   const RoomInspectionListScreen({super.key});
 
   @override
-  ConsumerState<RoomInspectionListScreen> createState() => _RoomInspectionListScreenState();
+  ConsumerState<RoomInspectionListScreen> createState() =>
+      _RoomInspectionListScreenState();
 }
 
-class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScreen>
+class _RoomInspectionListScreenState
+    extends ConsumerState<RoomInspectionListScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _searchQuery = '';
@@ -72,20 +74,31 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
           _buildSearchBar(),
           Expanded(
             child: inspectionsAsync.when(
-              data: (inspections) => TabBarView(
-                controller: _tabController,
-                children: [
-                  _buildInspectionList(inspections, null),
-                  _buildInspectionList(inspections, InspectionStatus.pending),
-                  _buildInspectionList(inspections, InspectionStatus.completed),
-                  _buildInspectionList(inspections, InspectionStatus.requiresAction),
-                ],
-              ),
+              data:
+                  (inspections) => TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildInspectionList(inspections, null),
+                      _buildInspectionList(
+                        inspections,
+                        InspectionStatus.pending,
+                      ),
+                      _buildInspectionList(
+                        inspections,
+                        InspectionStatus.completed,
+                      ),
+                      _buildInspectionList(
+                        inspections,
+                        InspectionStatus.requiresAction,
+                      ),
+                    ],
+                  ),
               loading: () => const LoadingIndicator(),
-              error: (e, _) => ErrorDisplay(
-                message: '${l10n.error}: $e',
-                onRetry: () => ref.invalidate(roomInspectionsProvider),
-              ),
+              error:
+                  (e, _) => ErrorDisplay(
+                    message: '${l10n.error}: $e',
+                    onRetry: () => ref.invalidate(roomInspectionsProvider),
+                  ),
             ),
           ),
         ],
@@ -108,14 +121,20 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
             decoration: InputDecoration(
               hintText: AppLocalizations.of(context)!.search,
               prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              suffixIcon: _typeFilter != null
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => setState(() => _typeFilter = null),
-                    )
-                  : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              suffixIcon:
+                  _typeFilter != null
+                      ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () => setState(() => _typeFilter = null),
+                      )
+                      : null,
             ),
             onChanged: (value) => setState(() => _searchQuery = value),
           ),
@@ -123,19 +142,20 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: InspectionType.values.map((type) {
-                final isSelected = _typeFilter == type;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(type.localizedName(context.l10n)),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      setState(() => _typeFilter = selected ? type : null);
-                    },
-                  ),
-                );
-              }).toList(),
+              children:
+                  InspectionType.values.map((type) {
+                    final isSelected = _typeFilter == type;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(type.localizedName(context.l10n)),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() => _typeFilter = selected ? type : null);
+                        },
+                      ),
+                    );
+                  }).toList(),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -144,20 +164,26 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
     );
   }
 
-  Widget _buildInspectionList(List<RoomInspection> inspections, InspectionStatus? status) {
-    var filtered = inspections.where((i) {
-      if (status != null && i.status != status) {
-        return false;
-      }
-      if (_typeFilter != null && i.inspectionType != _typeFilter) {
-        return false;
-      }
-      if (_searchQuery.isNotEmpty &&
-          !i.roomNumber.toLowerCase().contains(_searchQuery.toLowerCase())) {
-        return false;
-      }
-      return true;
-    }).toList();
+  Widget _buildInspectionList(
+    List<RoomInspection> inspections,
+    InspectionStatus? status,
+  ) {
+    var filtered =
+        inspections.where((i) {
+          if (status != null && i.status != status) {
+            return false;
+          }
+          if (_typeFilter != null && i.inspectionType != _typeFilter) {
+            return false;
+          }
+          if (_searchQuery.isNotEmpty &&
+              !i.roomNumber.toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              )) {
+            return false;
+          }
+          return true;
+        }).toList();
 
     if (filtered.isEmpty) {
       return _buildEmptyState(status);
@@ -184,19 +210,23 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.checklist, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.5)),
+          Icon(
+            Icons.checklist,
+            size: 64,
+            color: AppColors.textSecondary.withValues(alpha: 0.5),
+          ),
           const SizedBox(height: AppSpacing.md),
           Text(
             status == InspectionStatus.pending
                 ? AppLocalizations.of(context)!.noPendingInspections
                 : status == InspectionStatus.completed
-                    ? AppLocalizations.of(context)!.noCompletedInspections
-                    : status == InspectionStatus.requiresAction
-                        ? AppLocalizations.of(context)!.noActionRequiredInspections
-                        : AppLocalizations.of(context)!.noInspectionsYet,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                ? AppLocalizations.of(context)!.noCompletedInspections
+                : status == InspectionStatus.requiresAction
+                ? AppLocalizations.of(context)!.noActionRequiredInspections
+                : AppLocalizations.of(context)!.noInspectionsYet,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -207,142 +237,188 @@ class _RoomInspectionListScreenState extends ConsumerState<RoomInspectionListScr
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        maxChildSize: 0.9,
-        minChildSize: 0.3,
-        expand: false,
-        builder: (context, scrollController) {
-          return Consumer(
-            builder: (context, ref, _) {
-              final statsAsync = ref.watch(inspectionStatisticsProvider);
-              return Container(
-                padding: AppSpacing.paddingAll,
-                child: statsAsync.when(
-                  data: (stats) => ListView(
-                    controller: scrollController,
-                    children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 4,
-                          margin: const EdgeInsets.only(bottom: 16),
-                          decoration: BoxDecoration(
-                            color: AppColors.mutedAccent,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                      ),
-                      Text(context.l10n.inspectionStatistics, style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: AppSpacing.lg),
-                      _StatCard(
-                        title: context.l10n.totalInspections,
-                        value: stats.totalInspections.toString(),
-                        icon: Icons.checklist,
-                        color: AppColors.statusBlue,
-                      ),
-                      _StatCard(
-                        title: context.l10n.completed,
-                        value: stats.completedInspections.toString(),
-                        icon: Icons.check_circle,
-                        color: AppColors.success,
-                      ),
-                      _StatCard(
-                        title: context.l10n.pending,
-                        value: stats.pendingInspections.toString(),
-                        icon: Icons.schedule,
-                        color: AppColors.mutedAccent,
-                      ),
-                      _StatCard(
-                        title: context.l10n.requiresAction,
-                        value: stats.requiresAction.toString(),
-                        icon: Icons.warning,
-                        color: AppColors.warning,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      AppCard(
-                        child: Padding(
-                          padding: AppSpacing.paddingCard,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.6,
+            maxChildSize: 0.9,
+            minChildSize: 0.3,
+            expand: false,
+            builder: (context, scrollController) {
+              return Consumer(
+                builder: (context, ref, _) {
+                  final statsAsync = ref.watch(inspectionStatisticsProvider);
+                  return Container(
+                    padding: AppSpacing.paddingAll,
+                    child: statsAsync.when(
+                      data:
+                          (stats) => ListView(
+                            controller: scrollController,
                             children: [
-                              Text(context.l10n.averageScore, style: Theme.of(context).textTheme.titleMedium),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Text(
-                                    '${stats.averageScore.toStringAsFixed(1)}%',
-                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                          color: _getScoreColor(stats.averageScore),
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                              Center(
+                                child: Container(
+                                  width: 40,
+                                  height: 4,
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.mutedAccent,
+                                    borderRadius: BorderRadius.circular(2),
                                   ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    child: LinearProgressIndicator(
-                                      value: stats.averageScore / 100,
-                                      backgroundColor: AppColors.mutedAccent,
-                                      valueColor: AlwaysStoppedAnimation(_getScoreColor(stats.averageScore)),
-                                    ),
+                                ),
+                              ),
+                              Text(
+                                context.l10n.inspectionStatistics,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: AppSpacing.lg),
+                              _StatCard(
+                                title: context.l10n.totalInspections,
+                                value: stats.totalInspections.toString(),
+                                icon: Icons.checklist,
+                                color: AppColors.statusBlue,
+                              ),
+                              _StatCard(
+                                title: context.l10n.completed,
+                                value: stats.completedInspections.toString(),
+                                icon: Icons.check_circle,
+                                color: AppColors.success,
+                              ),
+                              _StatCard(
+                                title: context.l10n.pending,
+                                value: stats.pendingInspections.toString(),
+                                icon: Icons.schedule,
+                                color: AppColors.mutedAccent,
+                              ),
+                              _StatCard(
+                                title: context.l10n.requiresAction,
+                                value: stats.requiresAction.toString(),
+                                icon: Icons.warning,
+                                color: AppColors.warning,
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              AppCard(
+                                child: Padding(
+                                  padding: AppSpacing.paddingCard,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        context.l10n.averageScore,
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.titleMedium,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            '${stats.averageScore.toStringAsFixed(1)}%',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineMedium
+                                                ?.copyWith(
+                                                  color: _getScoreColor(
+                                                    stats.averageScore,
+                                                  ),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                          ),
+                                          const SizedBox(width: 16),
+                                          Expanded(
+                                            child: LinearProgressIndicator(
+                                              value: stats.averageScore / 100,
+                                              backgroundColor:
+                                                  AppColors.mutedAccent,
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(
+                                                    _getScoreColor(
+                                                      stats.averageScore,
+                                                    ),
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
+                              ),
+                              const SizedBox(height: AppSpacing.md),
+                              AppCard(
+                                child: Padding(
+                                  padding: AppSpacing.paddingCard,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        context.l10n.issuesDetected,
+                                        style:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.titleMedium,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  stats.totalIssues.toString(),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headlineSmall
+                                                      ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                ),
+                                                Text(context.l10n.totalIssues),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                Text(
+                                                  stats.criticalIssues
+                                                      .toString(),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .headlineSmall
+                                                      ?.copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: AppColors.error,
+                                                      ),
+                                                ),
+                                                Text(
+                                                  context.l10n.criticalLabel,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ],
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                      AppCard(
-                        child: Padding(
-                          padding: AppSpacing.paddingCard,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(context.l10n.issuesDetected, style: Theme.of(context).textTheme.titleMedium),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          stats.totalIssues.toString(),
-                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(context.l10n.totalIssues),
-                                      ],
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          stats.criticalIssues.toString(),
-                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                                color: AppColors.error,
-                                              ),
-                                        ),
-                                        Text(context.l10n.criticalLabel),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                      loading: () => const LoadingIndicator(),
+                      error:
+                          (e, _) => ErrorDisplay(
+                            message: '${context.l10n.error}: $e',
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  loading: () => const LoadingIndicator(),
-                  error: (e, _) => ErrorDisplay(message: '${context.l10n.error}: $e'),
-                ),
+                    ),
+                  );
+                },
               );
             },
-          );
-        },
-      ),
+          ),
     );
   }
 
@@ -378,16 +454,18 @@ class _InspectionCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: inspection.inspectionType.icon == Icons.logout
-                        ? AppColors.warning.withValues(alpha: 0.1)
-                        : AppColors.statusBlue.withValues(alpha: 0.1),
+                    color:
+                        inspection.inspectionType.icon == Icons.logout
+                            ? AppColors.warning.withValues(alpha: 0.1)
+                            : AppColors.statusBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     inspection.inspectionType.icon,
-                    color: inspection.inspectionType == InspectionType.checkout
-                        ? AppColors.warning
-                        : AppColors.statusBlue,
+                    color:
+                        inspection.inspectionType == InspectionType.checkout
+                            ? AppColors.warning
+                            : AppColors.statusBlue,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -396,12 +474,18 @@ class _InspectionCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.roomWithNumber.replaceAll('{number}', inspection.roomNumber),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        AppLocalizations.of(context)!.roomWithNumber.replaceAll(
+                          '{number}',
+                          inspection.roomNumber,
+                        ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         inspection.inspectionType.localizedName(context.l10n),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -412,11 +496,17 @@ class _InspectionCard extends StatelessWidget {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.calendar_today, size: 16, color: AppColors.textSecondary),
+                Icon(
+                  Icons.calendar_today,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   _formatDate(inspection.scheduledDate),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 if (inspection.inspectorName != null) ...[
                   const SizedBox(width: 16),
@@ -424,7 +514,9 @@ class _InspectionCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     inspection.inspectorName!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ],
@@ -435,19 +527,28 @@ class _InspectionCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.scoreValueDisplay.replaceAll('{value}', inspection.score.toStringAsFixed(0)),
+                    AppLocalizations.of(context)!.scoreValueDisplay.replaceAll(
+                      '{value}',
+                      inspection.score.toStringAsFixed(0),
+                    ),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: _getScoreColor(inspection.score),
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: _getScoreColor(inspection.score),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   if (inspection.issuesFound > 0) ...[
                     const SizedBox(width: 16),
-                    Icon(Icons.warning_amber, size: 16, color: AppColors.warning),
+                    Icon(
+                      Icons.warning_amber,
+                      size: 16,
+                      color: AppColors.warning,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${inspection.issuesFound} ${AppLocalizations.of(context)!.issuesCount}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.warning),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: AppColors.warning),
                     ),
                   ],
                   if (inspection.criticalIssues > 0) ...[
@@ -456,7 +557,9 @@ class _InspectionCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       '${inspection.criticalIssues} ${AppLocalizations.of(context)!.criticalIssuesLabel}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.error),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: AppColors.error),
                     ),
                   ],
                 ],
@@ -478,14 +581,18 @@ class _InspectionCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(inspection.status.icon, size: 14, color: inspection.status.color),
+          Icon(
+            inspection.status.icon,
+            size: 14,
+            color: inspection.status.color,
+          ),
           const SizedBox(width: 4),
           Text(
             inspection.status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: inspection.status.color,
-                  fontWeight: FontWeight.w500,
-                ),
+              color: inspection.status.color,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -545,7 +652,9 @@ class _StatCard extends StatelessWidget {
             Expanded(child: Text(title)),
             Text(
               value,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),

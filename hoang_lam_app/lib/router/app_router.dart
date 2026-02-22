@@ -152,9 +152,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             // Handle invalid deep link or missing extra
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.roomInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.roomInfoNotFound)),
             );
           }
           return RoomDetailScreen(room: room);
@@ -186,15 +184,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '${AppRoutes.receipt}/:bookingId',
         name: 'receipt',
         builder: (context, state) {
-          final bookingId = int.tryParse(state.pathParameters['bookingId'] ?? '');
+          final bookingId = int.tryParse(
+            state.pathParameters['bookingId'] ?? '',
+          );
           final extra = state.extra as Map<String, dynamic>?;
-          
+
           if (bookingId == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.bookingInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.bookingInfoNotFound)),
             );
           }
 
@@ -211,14 +209,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '${AppRoutes.roomFolio}/:bookingId',
         name: 'roomFolio',
         builder: (context, state) {
-          final bookingId = int.tryParse(state.pathParameters['bookingId'] ?? '');
-          
+          final bookingId = int.tryParse(
+            state.pathParameters['bookingId'] ?? '',
+          );
+
           if (bookingId == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.bookingInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.bookingInfoNotFound)),
             );
           }
 
@@ -233,16 +231,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           // Task is passed via extra
           final task = state.extra;
-          
+
           if (task == null || task is! HousekeepingTask) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.taskInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.taskInfoNotFound)),
             );
           }
-          
+
           return TaskDetailScreen(task: task);
         },
       ),
@@ -264,16 +260,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           // Request is passed via extra
           final request = state.extra;
-          
+
           if (request == null || request is! MaintenanceRequest) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.maintenanceNotFound),
-              ),
+              body: Center(child: Text(context.l10n.maintenanceNotFound)),
             );
           }
-          
+
           return MaintenanceDetailScreen(request: request);
         },
       ),
@@ -302,9 +296,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.lostItemNotFound),
-              ),
+              body: Center(child: Text(context.l10n.lostItemNotFound)),
             );
           }
           return LostFoundFormScreen(itemId: id);
@@ -318,9 +310,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.lostItemNotFound),
-              ),
+              body: Center(child: Text(context.l10n.lostItemNotFound)),
             );
           }
           return LostFoundDetailScreen(itemId: id);
@@ -341,9 +331,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.bookingInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.bookingInfoNotFound)),
             );
           }
           return GroupBookingFormScreen(bookingId: id);
@@ -357,9 +345,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.bookingInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.bookingInfoNotFound)),
             );
           }
           return GroupBookingDetailScreen(bookingId: id);
@@ -380,12 +366,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.roomInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.roomInfoNotFound)),
             );
           }
-          return RoomInspectionFormScreen(inspectionId: id, isConductMode: true);
+          return RoomInspectionFormScreen(
+            inspectionId: id,
+            isConductMode: true,
+          );
         },
       ),
       GoRoute(
@@ -396,9 +383,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.roomInfoNotFound),
-              ),
+              body: Center(child: Text(context.l10n.roomInfoNotFound)),
             );
           }
           return RoomInspectionDetailScreen(inspectionId: id);
@@ -466,9 +451,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.ratePlanNotFound),
-              ),
+              body: Center(child: Text(context.l10n.ratePlanNotFound)),
             );
           }
           return RatePlanFormScreen(ratePlanId: id);
@@ -487,9 +470,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (id == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(
-                child: Text(context.l10n.dateRateNotFound),
-              ),
+              body: Center(child: Text(context.l10n.dateRateNotFound)),
             );
           }
           return DateRateOverrideFormScreen(overrideId: id);
@@ -519,18 +500,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.home,
             name: 'home',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: HomeScreen(),
-            ),
+            pageBuilder:
+                (context, state) => const NoTransitionPage(child: HomeScreen()),
           ),
 
           // Bookings
           GoRoute(
             path: AppRoutes.bookings,
             name: 'bookings',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: BookingsScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: BookingsScreen()),
             routes: [
               // New Booking
               GoRoute(
@@ -545,7 +525,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'bookingDetail',
                 parentNavigatorKey: _rootNavigatorKey,
                 builder: (context, state) {
-                  final id = int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
+                  final id =
+                      int.tryParse(state.pathParameters['id'] ?? '') ?? 0;
                   return BookingDetailScreen(bookingId: id);
                 },
               ),
@@ -556,18 +537,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.finance,
             name: 'finance',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: FinanceScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: FinanceScreen()),
           ),
 
           // Minibar POS
           GoRoute(
             path: AppRoutes.minibarPos,
             name: 'minibarPos',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: MinibarPosScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: MinibarPosScreen()),
             routes: [
               // Minibar Inventory
               GoRoute(
@@ -583,117 +564,120 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.nightAudit,
             name: 'nightAudit',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: NightAuditScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: NightAuditScreen()),
           ),
 
           // Declaration Export
           GoRoute(
             path: AppRoutes.declaration,
             name: 'declaration',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: DeclarationExportScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: DeclarationExportScreen()),
           ),
 
           // Reports & Analytics
           GoRoute(
             path: AppRoutes.reports,
             name: 'reports',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ReportScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: ReportScreen()),
           ),
 
           // Housekeeping Tasks
           GoRoute(
             path: AppRoutes.housekeepingTasks,
             name: 'housekeepingTasks',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: TaskListScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: TaskListScreen()),
           ),
 
           // Maintenance Requests
           GoRoute(
             path: AppRoutes.maintenance,
             name: 'maintenance',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: MaintenanceListScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: MaintenanceListScreen()),
           ),
 
           // Lost & Found
           GoRoute(
             path: AppRoutes.lostFound,
             name: 'lostFound',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: LostFoundListScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: LostFoundListScreen()),
           ),
 
           // Group Bookings
           GoRoute(
             path: AppRoutes.groupBookings,
             name: 'groupBookings',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: GroupBookingListScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: GroupBookingListScreen()),
           ),
 
           // Room Inspections
           GoRoute(
             path: AppRoutes.roomInspections,
             name: 'roomInspections',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: RoomInspectionListScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: RoomInspectionListScreen()),
           ),
 
           // Settings
           GoRoute(
             path: AppRoutes.settings,
             name: 'settings',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: SettingsScreen(),
-            ),
+            pageBuilder:
+                (context, state) =>
+                    const NoTransitionPage(child: SettingsScreen()),
           ),
         ],
       ),
     ],
 
     // Error page
-    errorBuilder: (context, state) => Scaffold(
-      appBar: AppBar(title: Text(context.l10n.error)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 16),
-            Text(
-              context.l10n.pageNotFound,
-              style: Theme.of(context).textTheme.headlineSmall,
+    errorBuilder:
+        (context, state) => Scaffold(
+          appBar: AppBar(title: Text(context.l10n.error)),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                Text(
+                  context.l10n.pageNotFound,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 8),
+                Text(state.error?.message ?? context.l10n.errorOccurred),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => context.go(AppRoutes.home),
+                  child: Text(context.l10n.goHome),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(state.error?.message ?? context.l10n.errorOccurred),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => context.go(AppRoutes.home),
-              child: Text(context.l10n.goHome),
-            ),
-          ],
+          ),
         ),
-      ),
-    ),
 
     // Redirect logic for authentication
     redirect: (context, state) {
       final currentPath = state.matchedLocation;
       // Read current auth state (don't watch - refreshListenable handles refresh)
       final authState = ref.read(authStateProvider);
-      debugPrint('[Router] redirect called - path: $currentPath, authState: $authState');
+      debugPrint(
+        '[Router] redirect called - path: $currentPath, authState: $authState',
+      );
 
       // Check auth state
       final isAuthenticated = authState.maybeWhen(
@@ -735,7 +719,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       // If authenticated and on login/splash, redirect to home
-      if (isAuthenticated && (currentPath == AppRoutes.login || currentPath == AppRoutes.splash)) {
+      if (isAuthenticated &&
+          (currentPath == AppRoutes.login || currentPath == AppRoutes.splash)) {
         debugPrint('[Router] Authenticated, redirecting to home');
         return AppRoutes.home;
       }

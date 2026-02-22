@@ -3,11 +3,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Connectivity status enum
-enum ConnectivityStatus {
-  online,
-  offline,
-  unknown,
-}
+enum ConnectivityStatus { online, offline, unknown }
 
 /// Service to monitor network connectivity
 class ConnectivityService {

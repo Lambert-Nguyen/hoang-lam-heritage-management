@@ -91,33 +91,41 @@ class HomeScreen extends ConsumerWidget {
                   AppSpacing.gapVerticalLg,
 
                   // Upcoming checkouts
-                  _buildSectionHeader(context, l10n.upcomingCheckout, Icons.logout),
+                  _buildSectionHeader(
+                    context,
+                    l10n.upcomingCheckout,
+                    Icons.logout,
+                  ),
                   AppSpacing.gapVerticalMd,
                   todayBookingsAsync.when(
-                    data: (todayBookings) => _buildUpcomingList(
-                      context,
-                      todayBookings.checkOuts,
-                      isCheckout: true,
-                    ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    data:
+                        (todayBookings) => _buildUpcomingList(
+                          context,
+                          todayBookings.checkOuts,
+                          isCheckout: true,
+                        ),
+                    loading:
+                        () => const Center(child: CircularProgressIndicator()),
                     error: (error, _) => Text('${l10n.error}: $error'),
                   ),
                   AppSpacing.gapVerticalLg,
 
                   // Upcoming checkins
-                  _buildSectionHeader(context, l10n.upcomingCheckin, Icons.login),
+                  _buildSectionHeader(
+                    context,
+                    l10n.upcomingCheckin,
+                    Icons.login,
+                  ),
                   AppSpacing.gapVerticalMd,
                   todayBookingsAsync.when(
-                    data: (todayBookings) => _buildUpcomingList(
-                      context,
-                      todayBookings.checkIns,
-                      isCheckout: false,
-                    ),
-                    loading: () => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    data:
+                        (todayBookings) => _buildUpcomingList(
+                          context,
+                          todayBookings.checkIns,
+                          isCheckout: false,
+                        ),
+                    loading:
+                        () => const Center(child: CircularProgressIndicator()),
                     error: (error, _) => Text('${l10n.error}: $error'),
                   ),
 
@@ -128,63 +136,65 @@ class HomeScreen extends ConsumerWidget {
               ),
             );
           },
-          loading: () => LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: constraints.maxHeight,
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-            ),
-          ),
-          error: (error, stack) => LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: constraints.maxHeight,
-                child: Center(
-                  child: Padding(
-                    padding: AppSpacing.paddingScreen,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: AppColors.error,
-                        ),
-                        AppSpacing.gapVerticalMd,
-                        Text(
-                          context.l10n.dashboardLoadError,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        AppSpacing.gapVerticalSm,
-                        Text(
-                          error.toString(),
-                          style: const TextStyle(
-                            color: AppColors.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        AppSpacing.gapVerticalMd,
-                        ElevatedButton(
-                          onPressed: () {
-                            ref.invalidate(dashboardSummaryProvider);
-                          },
-                          child: Text(context.l10n.retry),
-                        ),
-                      ],
+          loading:
+              () => LayoutBuilder(
+                builder:
+                    (context, constraints) => SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: constraints.maxHeight,
+                        child: const Center(child: CircularProgressIndicator()),
+                      ),
                     ),
-                  ),
-                ),
               ),
-            ),
-          ),
+          error:
+              (error, stack) => LayoutBuilder(
+                builder:
+                    (context, constraints) => SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: constraints.maxHeight,
+                        child: Center(
+                          child: Padding(
+                            padding: AppSpacing.paddingScreen,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.error_outline,
+                                  size: 48,
+                                  color: AppColors.error,
+                                ),
+                                AppSpacing.gapVerticalMd,
+                                Text(
+                                  context.l10n.dashboardLoadError,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                AppSpacing.gapVerticalSm,
+                                Text(
+                                  error.toString(),
+                                  style: const TextStyle(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                AppSpacing.gapVerticalMd,
+                                ElevatedButton(
+                                  onPressed: () {
+                                    ref.invalidate(dashboardSummaryProvider);
+                                  },
+                                  child: Text(context.l10n.retry),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+              ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -212,13 +222,18 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildQuickStats(BuildContext context, AppLocalizations l10n, dashboard) {
+  Widget _buildQuickStats(
+    BuildContext context,
+    AppLocalizations l10n,
+    dashboard,
+  ) {
     return Row(
       children: [
         Expanded(
           child: StatCard(
             label: l10n.availableRooms,
-            value: '${dashboard.roomStatus.available}/${dashboard.roomStatus.total}',
+            value:
+                '${dashboard.roomStatus.available}/${dashboard.roomStatus.total}',
             icon: Icons.hotel,
             color: AppColors.available,
           ),
@@ -236,17 +251,18 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title, IconData icon) {
+  Widget _buildSectionHeader(
+    BuildContext context,
+    String title,
+    IconData icon,
+  ) {
     return Row(
       children: [
         Icon(icon, color: AppColors.primary, size: AppSpacing.iconMd),
         AppSpacing.gapHorizontalSm,
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ],
     );
@@ -270,39 +286,41 @@ class HomeScreen extends ConsumerWidget {
         return Wrap(
           spacing: AppSpacing.roomCardSpacing,
           runSpacing: AppSpacing.roomCardSpacing,
-          children: rooms.map((room) {
-            return RoomStatusCard(
-              room: room,
-              onTap: () {
-                // Navigate to room detail
-                context.push(AppRoutes.roomDetail, extra: room);
-              },
-              onLongPress: () async {
-                // Show quick status update
-                final newStatus = await QuickStatusBottomSheet.show(context, room);
-                if (newStatus != null) {
-                  await ref.read(roomStateProvider.notifier).updateRoomStatus(
-                    room.id,
-                    newStatus,
-                  );
-                  // Refresh dashboard stats after room status change
-                  ref.invalidate(dashboardSummaryProvider);
-                }
-              },
-            );
-          }).toList(),
+          children:
+              rooms.map((room) {
+                return RoomStatusCard(
+                  room: room,
+                  onTap: () {
+                    // Navigate to room detail
+                    context.push(AppRoutes.roomDetail, extra: room);
+                  },
+                  onLongPress: () async {
+                    // Show quick status update
+                    final newStatus = await QuickStatusBottomSheet.show(
+                      context,
+                      room,
+                    );
+                    if (newStatus != null) {
+                      await ref
+                          .read(roomStateProvider.notifier)
+                          .updateRoomStatus(room.id, newStatus);
+                      // Refresh dashboard stats after room status change
+                      ref.invalidate(dashboardSummaryProvider);
+                    }
+                  },
+                );
+              }).toList(),
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      error: (error, stack) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.md),
-        child: Text(
-          '${context.l10n.roomLoadError}: $error',
-          style: const TextStyle(color: AppColors.error),
-        ),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error:
+          (error, stack) => Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Text(
+              '${context.l10n.roomLoadError}: $error',
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ),
     );
   }
 
@@ -329,18 +347,12 @@ class HomeScreen extends ConsumerWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         AppSpacing.gapHorizontalXs,
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -366,73 +378,81 @@ class HomeScreen extends ConsumerWidget {
     }
 
     return Column(
-      children: bookings.map((booking) {
-        final timeStr = isCheckout
-            ? (booking.actualCheckOut != null
-                ? TimeOfDay.fromDateTime(booking.actualCheckOut!).format(context)
-                : '12:00')
-            : (booking.actualCheckIn != null
-                ? TimeOfDay.fromDateTime(booking.actualCheckIn!).format(context)
-                : '14:00');
+      children:
+          bookings.map((booking) {
+            final timeStr =
+                isCheckout
+                    ? (booking.actualCheckOut != null
+                        ? TimeOfDay.fromDateTime(
+                          booking.actualCheckOut!,
+                        ).format(context)
+                        : '12:00')
+                    : (booking.actualCheckIn != null
+                        ? TimeOfDay.fromDateTime(
+                          booking.actualCheckIn!,
+                        ).format(context)
+                        : '14:00');
 
-        final roomNumber = booking.roomNumber ?? booking.room.toString();
-        final guestName = booking.guestDetails?.fullName ?? l10n.guest;
+            final roomNumber = booking.roomNumber ?? booking.room.toString();
+            final guestName = booking.guestDetails?.fullName ?? l10n.guest;
 
-        return AppCard(
-          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-          onTap: () {
-            context.push('${AppRoutes.bookings}/${booking.id}');
-          },
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: (isCheckout ? AppColors.occupied : AppColors.available)
-                      .withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                ),
-                child: Center(
-                  child: Text(
-                    roomNumber,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: isCheckout ? AppColors.occupied : AppColors.available,
+            return AppCard(
+              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+              onTap: () {
+                context.push('${AppRoutes.bookings}/${booking.id}');
+              },
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: (isCheckout
+                              ? AppColors.occupied
+                              : AppColors.available)
+                          .withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                    ),
+                    child: Center(
+                      child: Text(
+                        roomNumber,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color:
+                              isCheckout
+                                  ? AppColors.occupied
+                                  : AppColors.available,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              AppSpacing.gapHorizontalMd,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      guestName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
+                  AppSpacing.gapHorizontalMd,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          guestName,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          '${isCheckout ? l10n.checkOut : l10n.checkIn}: $timeStr',
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      '${isCheckout ? l10n.checkOut : l10n.checkIn}: $timeStr',
-                      style: const TextStyle(
-                        color: AppColors.textSecondary,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                  const Icon(Icons.chevron_right, color: AppColors.textHint),
+                ],
               ),
-              const Icon(
-                Icons.chevron_right,
-                color: AppColors.textHint,
-              ),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 }

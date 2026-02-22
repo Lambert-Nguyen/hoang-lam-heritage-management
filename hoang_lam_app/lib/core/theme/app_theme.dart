@@ -55,7 +55,10 @@ class AppTheme {
         unselectedItemColor: AppColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        selectedLabelStyle: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
         unselectedLabelStyle: TextStyle(fontSize: 14),
       ),
 
@@ -77,7 +80,10 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: AppColors.onPrimary,
-          minimumSize: const Size(AppSpacing.buttonMinWidth, AppSpacing.buttonHeight),
+          minimumSize: const Size(
+            AppSpacing.buttonMinWidth,
+            AppSpacing.buttonHeight,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.buttonPadding,
             vertical: AppSpacing.md,
@@ -94,7 +100,10 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
-          minimumSize: const Size(AppSpacing.touchTarget, AppSpacing.touchTarget),
+          minimumSize: const Size(
+            AppSpacing.touchTarget,
+            AppSpacing.touchTarget,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.sm,
@@ -107,7 +116,10 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
-          minimumSize: const Size(AppSpacing.buttonMinWidth, AppSpacing.buttonHeight),
+          minimumSize: const Size(
+            AppSpacing.buttonMinWidth,
+            AppSpacing.buttonHeight,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.buttonPadding,
             vertical: AppSpacing.md,
@@ -125,16 +137,17 @@ class AppTheme {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
         elevation: AppSpacing.elevationLg,
-        extendedPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        extendedPadding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 16,
+        ),
         extendedTextStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),
         extendedIconLabelSpacing: 12,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
 
       // Input Decoration
@@ -165,7 +178,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
+        labelStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.textSecondary,
+        ),
         hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textHint),
         helperStyle: AppTypography.bodySmall,
         errorStyle: AppTypography.bodySmall.copyWith(color: AppColors.error),
@@ -200,7 +215,9 @@ class AppTheme {
       // Snack Bar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textOnDark),
+        contentTextStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.textOnDark,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
         ),
@@ -304,7 +321,10 @@ class AppTheme {
         unselectedItemColor: AppColors.darkTextSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        selectedLabelStyle: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
         unselectedLabelStyle: TextStyle(fontSize: 14),
       ),
 
@@ -326,7 +346,10 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryLight,
           foregroundColor: AppColors.darkBackground,
-          minimumSize: const Size(AppSpacing.buttonMinWidth, AppSpacing.buttonHeight),
+          minimumSize: const Size(
+            AppSpacing.buttonMinWidth,
+            AppSpacing.buttonHeight,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.buttonPadding,
             vertical: AppSpacing.md,
@@ -343,7 +366,10 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primaryLight,
-          minimumSize: const Size(AppSpacing.touchTarget, AppSpacing.touchTarget),
+          minimumSize: const Size(
+            AppSpacing.touchTarget,
+            AppSpacing.touchTarget,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.md,
             vertical: AppSpacing.sm,
@@ -356,7 +382,10 @@ class AppTheme {
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryLight,
-          minimumSize: const Size(AppSpacing.buttonMinWidth, AppSpacing.buttonHeight),
+          minimumSize: const Size(
+            AppSpacing.buttonMinWidth,
+            AppSpacing.buttonHeight,
+          ),
           padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.buttonPadding,
             vertical: AppSpacing.md,
@@ -374,16 +403,17 @@ class AppTheme {
         backgroundColor: AppColors.primaryLight,
         foregroundColor: AppColors.darkBackground,
         elevation: AppSpacing.elevationLg,
-        extendedPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        extendedPadding: const EdgeInsets.symmetric(
+          horizontal: 24,
+          vertical: 16,
+        ),
         extendedTextStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           letterSpacing: 0.5,
         ),
         extendedIconLabelSpacing: 12,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
 
       // Input Decoration
@@ -414,8 +444,12 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.darkTextSecondary),
-        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.darkTextHint),
+        labelStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        hintStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.darkTextHint,
+        ),
         errorStyle: AppTypography.bodySmall.copyWith(color: AppColors.error),
         prefixIconColor: AppColors.darkTextSecondary,
         suffixIconColor: AppColors.darkTextSecondary,
@@ -428,8 +462,12 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
         ),
-        titleTextStyle: AppTypography.headlineMedium.copyWith(color: AppColors.darkTextPrimary),
-        contentTextStyle: AppTypography.bodyLarge.copyWith(color: AppColors.darkTextSecondary),
+        titleTextStyle: AppTypography.headlineMedium.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        contentTextStyle: AppTypography.bodyLarge.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
       ),
 
       // BottomSheet
@@ -447,7 +485,9 @@ class AppTheme {
       // SnackBar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.darkSurfaceVariant,
-        contentTextStyle: AppTypography.bodyMedium.copyWith(color: AppColors.darkTextPrimary),
+        contentTextStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
         actionTextColor: AppColors.primaryLight,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
@@ -497,21 +537,51 @@ class AppTheme {
 
       // Text
       textTheme: TextTheme(
-        displayLarge: AppTypography.displayLarge.copyWith(color: AppColors.darkTextPrimary),
-        displayMedium: AppTypography.displayMedium.copyWith(color: AppColors.darkTextPrimary),
-        displaySmall: AppTypography.displaySmall.copyWith(color: AppColors.darkTextPrimary),
-        headlineLarge: AppTypography.headlineLarge.copyWith(color: AppColors.darkTextPrimary),
-        headlineMedium: AppTypography.headlineMedium.copyWith(color: AppColors.darkTextPrimary),
-        headlineSmall: AppTypography.headlineSmall.copyWith(color: AppColors.darkTextPrimary),
-        titleLarge: AppTypography.titleLarge.copyWith(color: AppColors.darkTextPrimary),
-        titleMedium: AppTypography.titleMedium.copyWith(color: AppColors.darkTextPrimary),
-        titleSmall: AppTypography.titleSmall.copyWith(color: AppColors.darkTextPrimary),
-        bodyLarge: AppTypography.bodyLarge.copyWith(color: AppColors.darkTextPrimary),
-        bodyMedium: AppTypography.bodyMedium.copyWith(color: AppColors.darkTextSecondary),
-        bodySmall: AppTypography.bodySmall.copyWith(color: AppColors.darkTextSecondary),
-        labelLarge: AppTypography.labelLarge.copyWith(color: AppColors.darkTextPrimary),
-        labelMedium: AppTypography.labelMedium.copyWith(color: AppColors.darkTextSecondary),
-        labelSmall: AppTypography.labelSmall.copyWith(color: AppColors.darkTextSecondary),
+        displayLarge: AppTypography.displayLarge.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        displayMedium: AppTypography.displayMedium.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        displaySmall: AppTypography.displaySmall.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        headlineLarge: AppTypography.headlineLarge.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        headlineMedium: AppTypography.headlineMedium.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        headlineSmall: AppTypography.headlineSmall.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        titleLarge: AppTypography.titleLarge.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        titleMedium: AppTypography.titleMedium.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        titleSmall: AppTypography.titleSmall.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        bodyLarge: AppTypography.bodyLarge.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        bodyMedium: AppTypography.bodyMedium.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        bodySmall: AppTypography.bodySmall.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        labelLarge: AppTypography.labelLarge.copyWith(
+          color: AppColors.darkTextPrimary,
+        ),
+        labelMedium: AppTypography.labelMedium.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
+        labelSmall: AppTypography.labelSmall.copyWith(
+          color: AppColors.darkTextSecondary,
+        ),
       ),
     );
   }

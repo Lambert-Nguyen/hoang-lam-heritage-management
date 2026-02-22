@@ -19,24 +19,24 @@ void main() {
 
   BookingNotifier createNotifier() {
     container = ProviderContainer(
-      overrides: [
-        bookingRepositoryProvider.overrideWithValue(mockRepository),
-      ],
+      overrides: [bookingRepositoryProvider.overrideWithValue(mockRepository)],
     );
     return BookingNotifier(mockRepository, mockRef);
   }
 
   // Provide dummy values for Freezed types that Mockito can't auto-generate
   setUpAll(() {
-    provideDummy<Booking>(Booking(
-      id: 0,
-      room: 0,
-      guest: 0,
-      checkInDate: DateTime(2020),
-      checkOutDate: DateTime(2020),
-      nightlyRate: 0,
-      totalAmount: 0,
-    ));
+    provideDummy<Booking>(
+      Booking(
+        id: 0,
+        room: 0,
+        guest: 0,
+        checkInDate: DateTime(2020),
+        checkOutDate: DateTime(2020),
+        nightlyRate: 0,
+        totalAmount: 0,
+      ),
+    );
   });
 
   final testBookings = [
@@ -74,15 +74,17 @@ void main() {
   group('BookingNotifier', () {
     group('loadBookings', () {
       test('should load bookings successfully', () async {
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         // Constructor calls loadBookings, wait for it
@@ -95,15 +97,17 @@ void main() {
       });
 
       test('should set error state on failure', () async {
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenThrow(Exception('Network error'));
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenThrow(Exception('Network error'));
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
@@ -114,15 +118,17 @@ void main() {
 
     group('applyFilter', () {
       test('should reload bookings with filter params', () async {
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
@@ -134,29 +140,33 @@ void main() {
         await notifier.applyFilter(filter);
 
         // Should have called getBookings twice (initial + filter)
-        verify(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).called(2);
+        verify(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).called(2);
       });
     });
 
     group('clearFilter', () {
       test('should reload bookings without filter', () async {
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
@@ -164,15 +174,17 @@ void main() {
         await notifier.clearFilter();
 
         // initial + clearFilter = 2 calls
-        verify(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).called(2);
+        verify(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).called(2);
       });
     });
 
@@ -187,18 +199,21 @@ void main() {
           nightlyRate: 1000000,
         );
 
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
-        when(mockRepository.createBooking(any))
-            .thenAnswer((_) async => newBooking);
+        when(
+          mockRepository.createBooking(any),
+        ).thenAnswer((_) async => newBooking);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
@@ -210,30 +225,35 @@ void main() {
       });
 
       test('should rethrow on creation failure', () async {
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
-        when(mockRepository.createBooking(any))
-            .thenThrow(Exception('Validation error'));
+        when(
+          mockRepository.createBooking(any),
+        ).thenThrow(Exception('Validation error'));
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
         expect(
-          () => notifier.createBooking(BookingCreate(
-            room: 101,
-            guest: 1,
-            checkInDate: DateTime(2026, 2, 15),
-            checkOutDate: DateTime(2026, 2, 17),
-            nightlyRate: 1000000,
-          )),
+          () => notifier.createBooking(
+            BookingCreate(
+              room: 101,
+              guest: 1,
+              checkInDate: DateTime(2026, 2, 15),
+              checkOutDate: DateTime(2026, 2, 17),
+              nightlyRate: 1000000,
+            ),
+          ),
           throwsA(isA<Exception>()),
         );
       });
@@ -249,24 +269,29 @@ void main() {
           checkInDate: DateTime(2026, 2, 15),
           checkOutDate: DateTime(2026, 2, 17),
           status: BookingStatus.checkedIn,
-source: BookingSource.walkIn,
+          source: BookingSource.walkIn,
           nightlyRate: 1000000,
           totalAmount: 2000000,
         );
 
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => [checkedInBooking]);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => [checkedInBooking]);
 
-        when(mockRepository.checkIn(any,
-                actualCheckInNotes: anyNamed('actualCheckInNotes')))
-            .thenAnswer((_) async => checkedInBooking);
+        when(
+          mockRepository.checkIn(
+            any,
+            actualCheckInNotes: anyNamed('actualCheckInNotes'),
+          ),
+        ).thenAnswer((_) async => checkedInBooking);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
@@ -274,8 +299,9 @@ source: BookingSource.walkIn,
         final result = await notifier.checkIn(1, notes: 'Early check-in');
 
         expect(result.status, BookingStatus.checkedIn);
-        verify(mockRepository.checkIn(1, actualCheckInNotes: 'Early check-in'))
-            .called(1);
+        verify(
+          mockRepository.checkIn(1, actualCheckInNotes: 'Early check-in'),
+        ).called(1);
       });
     });
 
@@ -292,21 +318,25 @@ source: BookingSource.walkIn,
           totalAmount: 2000000,
         );
 
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
-        when(mockRepository.checkOut(
-          any,
-          actualCheckOutNotes: anyNamed('actualCheckOutNotes'),
-          finalAmount: anyNamed('finalAmount'),
-        )).thenAnswer((_) async => checkedOutBooking);
+        when(
+          mockRepository.checkOut(
+            any,
+            actualCheckOutNotes: anyNamed('actualCheckOutNotes'),
+            finalAmount: anyNamed('finalAmount'),
+          ),
+        ).thenAnswer((_) async => checkedOutBooking);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
@@ -330,44 +360,50 @@ source: BookingSource.walkIn,
           totalAmount: 2000000,
         );
 
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
-        when(mockRepository.cancelBooking(any,
-                cancellationReason: anyNamed('cancellationReason')))
-            .thenAnswer((_) async => cancelledBooking);
+        when(
+          mockRepository.cancelBooking(
+            any,
+            cancellationReason: anyNamed('cancellationReason'),
+          ),
+        ).thenAnswer((_) async => cancelledBooking);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
-        final result =
-            await notifier.cancelBooking(1, reason: 'Guest request');
+        final result = await notifier.cancelBooking(1, reason: 'Guest request');
 
         expect(result.status, BookingStatus.cancelled);
-        verify(mockRepository.cancelBooking(1,
-                cancellationReason: 'Guest request'))
-            .called(1);
+        verify(
+          mockRepository.cancelBooking(1, cancellationReason: 'Guest request'),
+        ).called(1);
       });
     });
 
     group('deleteBooking', () {
       test('should delete booking and reload list', () async {
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
         when(mockRepository.deleteBooking(any)).thenAnswer((_) async {});
 
@@ -380,26 +416,26 @@ source: BookingSource.walkIn,
       });
 
       test('should rethrow on delete failure', () async {
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
-        when(mockRepository.deleteBooking(any))
-            .thenThrow(Exception('Cannot delete'));
+        when(
+          mockRepository.deleteBooking(any),
+        ).thenThrow(Exception('Cannot delete'));
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
 
-        expect(
-          () => notifier.deleteBooking(1),
-          throwsA(isA<Exception>()),
-        );
+        expect(() => notifier.deleteBooking(1), throwsA(isA<Exception>()));
       });
     });
 
@@ -416,18 +452,21 @@ source: BookingSource.walkIn,
           totalAmount: 2000000,
         );
 
-        when(mockRepository.getBookings(
-          status: anyNamed('status'),
-          roomId: anyNamed('roomId'),
-          guestId: anyNamed('guestId'),
-          source: anyNamed('source'),
-          checkInFrom: anyNamed('checkInFrom'),
-          checkInTo: anyNamed('checkInTo'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testBookings);
+        when(
+          mockRepository.getBookings(
+            status: anyNamed('status'),
+            roomId: anyNamed('roomId'),
+            guestId: anyNamed('guestId'),
+            source: anyNamed('source'),
+            checkInFrom: anyNamed('checkInFrom'),
+            checkInTo: anyNamed('checkInTo'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testBookings);
 
-        when(mockRepository.markAsNoShow(any, notes: anyNamed('notes')))
-            .thenAnswer((_) async => noShowBooking);
+        when(
+          mockRepository.markAsNoShow(any, notes: anyNamed('notes')),
+        ).thenAnswer((_) async => noShowBooking);
 
         final notifier = BookingNotifier(mockRepository, mockRef);
         await Future.delayed(Duration.zero);
@@ -445,8 +484,9 @@ source: BookingSource.walkIn,
     });
 
     test('bookingsProvider fetches bookings', () async {
-      when(mockRepository.getBookings(ordering: anyNamed('ordering')))
-          .thenAnswer((_) async => testBookings);
+      when(
+        mockRepository.getBookings(ordering: anyNamed('ordering')),
+      ).thenAnswer((_) async => testBookings);
 
       final container = ProviderContainer(
         overrides: [
@@ -460,8 +500,9 @@ source: BookingSource.walkIn,
     });
 
     test('activeBookingsProvider fetches active bookings', () async {
-      when(mockRepository.getActiveBookings())
-          .thenAnswer((_) async => [testBookings[1]]);
+      when(
+        mockRepository.getActiveBookings(),
+      ).thenAnswer((_) async => [testBookings[1]]);
 
       final container = ProviderContainer(
         overrides: [
@@ -476,8 +517,9 @@ source: BookingSource.walkIn,
     });
 
     test('bookingByIdProvider fetches single booking', () async {
-      when(mockRepository.getBooking(1))
-          .thenAnswer((_) async => testBookings.first);
+      when(
+        mockRepository.getBooking(1),
+      ).thenAnswer((_) async => testBookings.first);
 
       final container = ProviderContainer(
         overrides: [
@@ -492,15 +534,17 @@ source: BookingSource.walkIn,
     });
 
     test('bookingNotifierProvider creates notifier', () async {
-      when(mockRepository.getBookings(
-        status: anyNamed('status'),
-        roomId: anyNamed('roomId'),
-        guestId: anyNamed('guestId'),
-        source: anyNamed('source'),
-        checkInFrom: anyNamed('checkInFrom'),
-        checkInTo: anyNamed('checkInTo'),
-        ordering: anyNamed('ordering'),
-      )).thenAnswer((_) async => testBookings);
+      when(
+        mockRepository.getBookings(
+          status: anyNamed('status'),
+          roomId: anyNamed('roomId'),
+          guestId: anyNamed('guestId'),
+          source: anyNamed('source'),
+          checkInFrom: anyNamed('checkInFrom'),
+          checkInTo: anyNamed('checkInTo'),
+          ordering: anyNamed('ordering'),
+        ),
+      ).thenAnswer((_) async => testBookings);
 
       final container = ProviderContainer(
         overrides: [

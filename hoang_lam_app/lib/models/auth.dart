@@ -37,9 +37,8 @@ sealed class LoginResponse with _$LoginResponse {
 /// Token refresh request
 @freezed
 sealed class RefreshTokenRequest with _$RefreshTokenRequest {
-  const factory RefreshTokenRequest({
-    required String refresh,
-  }) = _RefreshTokenRequest;
+  const factory RefreshTokenRequest({required String refresh}) =
+      _RefreshTokenRequest;
 
   factory RefreshTokenRequest.fromJson(Map<String, dynamic> json) =>
       _$RefreshTokenRequestFromJson(json);
@@ -60,9 +59,7 @@ sealed class RefreshTokenResponse with _$RefreshTokenResponse {
 /// Logout request
 @freezed
 sealed class LogoutRequest with _$LogoutRequest {
-  const factory LogoutRequest({
-    required String refresh,
-  }) = _LogoutRequest;
+  const factory LogoutRequest({required String refresh}) = _LogoutRequest;
 
   factory LogoutRequest.fromJson(Map<String, dynamic> json) =>
       _$LogoutRequestFromJson(json);
@@ -83,7 +80,8 @@ sealed class PasswordChangeRequest with _$PasswordChangeRequest {
       _$PasswordChangeRequestFromJson(json);
 
   @override
-  String toString() => 'PasswordChangeRequest(oldPassword: ***, newPassword: ***, confirmPassword: ***)';
+  String toString() =>
+      'PasswordChangeRequest(oldPassword: ***, newPassword: ***, confirmPassword: ***)';
 }
 
 /// Authentication state
@@ -96,15 +94,12 @@ sealed class AuthState with _$AuthState {
   const factory AuthState.loading() = AuthStateLoading;
 
   /// User is authenticated
-  const factory AuthState.authenticated({
-    required User user,
-  }) = AuthStateAuthenticated;
+  const factory AuthState.authenticated({required User user}) =
+      AuthStateAuthenticated;
 
   /// User is not authenticated
   const factory AuthState.unauthenticated() = AuthStateUnauthenticated;
 
   /// Authentication error
-  const factory AuthState.error({
-    required String message,
-  }) = AuthStateError;
+  const factory AuthState.error({required String message}) = AuthStateError;
 }

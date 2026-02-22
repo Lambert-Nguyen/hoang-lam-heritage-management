@@ -23,10 +23,7 @@ void main() {
       );
     });
 
-    Widget buildWidget({
-      MinibarItem? item,
-      VoidCallback? onTap,
-    }) {
+    Widget buildWidget({MinibarItem? item, VoidCallback? onTap}) {
       return MaterialApp(
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -40,10 +37,7 @@ void main() {
           body: SizedBox(
             width: 200,
             height: 250,
-            child: MinibarItemCard(
-              item: item ?? mockItem,
-              onTap: onTap,
-            ),
+            child: MinibarItemCard(item: item ?? mockItem, onTap: onTap),
           ),
         ),
       );
@@ -73,9 +67,7 @@ void main() {
 
     testWidgets('calls onTap when active item is tapped', (tester) async {
       bool tapped = false;
-      await tester.pumpWidget(buildWidget(
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(buildWidget(onTap: () => tapped = true));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(MinibarItemCard));
@@ -84,8 +76,9 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('does not call onTap when inactive item is tapped',
-        (tester) async {
+    testWidgets('does not call onTap when inactive item is tapped', (
+      tester,
+    ) async {
       bool tapped = false;
       final inactiveItem = const MinibarItem(
         id: 2,
@@ -98,10 +91,9 @@ void main() {
         updatedAt: null,
       );
 
-      await tester.pumpWidget(buildWidget(
-        item: inactiveItem,
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(
+        buildWidget(item: inactiveItem, onTap: () => tapped = true),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(MinibarItemCard));

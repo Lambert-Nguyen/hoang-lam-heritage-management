@@ -39,8 +39,10 @@ class _DeclarationExportScreenState
     final colorScheme = Theme.of(context).colorScheme;
 
     // Listen for state changes
-    ref.listen<DeclarationExportState>(declarationExportProvider,
-        (previous, next) {
+    ref.listen<DeclarationExportState>(declarationExportProvider, (
+      previous,
+      next,
+    ) {
       next.whenOrNull(
         success: (filePath) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -66,10 +68,7 @@ class _DeclarationExportScreenState
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.residenceDeclarationTitle),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(l10n.residenceDeclarationTitle), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -84,10 +83,7 @@ class _DeclarationExportScreenState
                   children: [
                     Row(
                       children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: colorScheme.primary,
-                        ),
+                        Icon(Icons.info_outline, color: colorScheme.primary),
                         const SizedBox(width: 8),
                         Text(
                           l10n.info,
@@ -104,8 +100,8 @@ class _DeclarationExportScreenState
                     Text(
                       l10n.declarationFormDescriptions,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
@@ -122,27 +118,28 @@ class _DeclarationExportScreenState
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: DeclarationFormType.values.map((type) {
-                final isSelected = _formType == type;
-                return ChoiceChip(
-                  label: Text(type.localizedName(context.l10n)),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() => _formType = type);
-                    }
-                  },
-                );
-              }).toList(),
+              children:
+                  DeclarationFormType.values.map((type) {
+                    final isSelected = _formType == type;
+                    return ChoiceChip(
+                      label: Text(type.localizedName(context.l10n)),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() => _formType = type);
+                        }
+                      },
+                    );
+                  }).toList(),
             ),
             if (_formType != DeclarationFormType.all) ...[
               const SizedBox(height: 4),
               Text(
                 _formType.description,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                      fontStyle: FontStyle.italic,
-                    ),
+                  color: colorScheme.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ],
             const SizedBox(height: 24),
@@ -204,8 +201,9 @@ class _DeclarationExportScreenState
                 ActionChip(
                   label: Text(l10n.yesterday),
                   onPressed: () {
-                    final yesterday =
-                        DateTime.now().subtract(const Duration(days: 1));
+                    final yesterday = DateTime.now().subtract(
+                      const Duration(days: 1),
+                    );
                     setState(() {
                       _dateFrom = yesterday;
                       _dateTo = yesterday;
@@ -217,8 +215,9 @@ class _DeclarationExportScreenState
                   onPressed: () {
                     setState(() {
                       _dateTo = DateTime.now();
-                      _dateFrom =
-                          DateTime.now().subtract(const Duration(days: 6));
+                      _dateFrom = DateTime.now().subtract(
+                        const Duration(days: 6),
+                      );
                     });
                   },
                 ),
@@ -227,8 +226,9 @@ class _DeclarationExportScreenState
                   onPressed: () {
                     setState(() {
                       _dateTo = DateTime.now();
-                      _dateFrom =
-                          DateTime.now().subtract(const Duration(days: 29));
+                      _dateFrom = DateTime.now().subtract(
+                        const Duration(days: 29),
+                      );
                     });
                   },
                 ),
@@ -269,19 +269,21 @@ class _DeclarationExportScreenState
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
-                onPressed: exportState is DeclarationExportLoading
-                    ? null
-                    : _handleExport,
-                icon: exportState is DeclarationExportLoading
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.download),
+                onPressed:
+                    exportState is DeclarationExportLoading
+                        ? null
+                        : _handleExport,
+                icon:
+                    exportState is DeclarationExportLoading
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                        : const Icon(Icons.download),
                 label: Text(
                   exportState is DeclarationExportLoading
                       ? l10n.exporting
@@ -305,7 +307,9 @@ class _DeclarationExportScreenState
   }
 
   void _handleExport() {
-    ref.read(declarationExportProvider.notifier).export(
+    ref
+        .read(declarationExportProvider.notifier)
+        .export(
           dateFrom: _dateFrom,
           dateTo: _dateTo,
           format: _format,
@@ -332,9 +336,7 @@ class _DeclarationExportScreenState
   Future<void> _shareFile(String filePath) async {
     final l10n = context.l10n;
     try {
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(filePath)]),
-      );
+      await SharePlus.instance.share(ShareParams(files: [XFile(filePath)]));
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -420,9 +422,10 @@ class _FormatCard extends StatelessWidget {
             color: isSelected ? colorScheme.primary : colorScheme.outline,
             width: isSelected ? 2 : 1,
           ),
-          color: isSelected
-              ? colorScheme.primaryContainer.withValues(alpha: 0.3)
-              : null,
+          color:
+              isSelected
+                  ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+                  : null,
         ),
         child: Column(
           children: [
@@ -472,7 +475,9 @@ class _ExportedFileCard extends StatelessWidget {
     final filename = filePath.split('/').last;
 
     return Card(
-      color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+      color: Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.3),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -489,23 +494,20 @@ class _ExportedFileCard extends StatelessWidget {
                   child: Text(
                     l10n.fileExportedSuccess,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              filename,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
+            Text(filename, style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 4),
             Text(
               l10n.bookingsMarkedAsDeclared,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 12),
             Row(

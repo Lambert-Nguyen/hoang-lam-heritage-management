@@ -6,14 +6,14 @@ import '../../models/booking.dart';
 import 'booking_status_badge.dart';
 
 /// Booking Card Widget - Displays booking information in a card
-/// 
+///
 /// Shows:
 /// - Room number and type
 /// - Guest name
 /// - Check-in/out dates and nights
 /// - Booking source and total amount
 /// - Status badge
-/// 
+///
 /// Used in booking lists and calendar views
 class BookingCard extends StatelessWidget {
   final Booking booking;
@@ -61,10 +61,14 @@ class BookingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      booking.roomNumber ?? context.l10n.roomWithNumber.replaceAll('{number}', '${booking.room}'),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                      booking.roomNumber ??
+                          context.l10n.roomWithNumber.replaceAll(
+                            '{number}',
+                            '${booking.room}',
                           ),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                   if (showGuest && showRoom) const SizedBox(width: 8),
@@ -81,9 +85,9 @@ class BookingCard extends StatelessWidget {
                   BookingStatusBadge(status: booking.status),
                 ],
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Dates and nights
               Row(
                 children: [
@@ -102,13 +106,19 @@ class BookingCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.surfaceVariant,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      context.l10n.nightsCountDisplay.replaceAll('{count}', '${_calculateNights(booking.checkInDate, booking.checkOutDate)}'),
+                      context.l10n.nightsCountDisplay.replaceAll(
+                        '{count}',
+                        '${_calculateNights(booking.checkInDate, booking.checkOutDate)}',
+                      ),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -117,43 +127,45 @@ class BookingCard extends StatelessWidget {
                   ),
                 ],
               ),
-              
+
               if (!compact) ...[
                 const SizedBox(height: 8),
-                
+
                 // Source and amount
                 Row(
                   children: [
                     _buildSourceChip(context, booking.source),
                     const SizedBox(width: 8),
-                    Text(
-                      '•',
-                      style: TextStyle(color: AppColors.textSecondary),
-                    ),
+                    Text('•', style: TextStyle(color: AppColors.textSecondary)),
                     const SizedBox(width: 8),
                     Text(
                       currencyFormat.format(booking.totalAmount),
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
-                
+
                 // Additional info for specific statuses
-                if (booking.status == BookingStatus.pending && booking.depositAmount > 0) ...[
+                if (booking.status == BookingStatus.pending &&
+                    booking.depositAmount > 0) ...[
                   const SizedBox(height: 4),
                   Text(
-                    context.l10n.depositLabelAmount.replaceAll('{amount}', currencyFormat.format(booking.depositAmount)),
+                    context.l10n.depositLabelAmount.replaceAll(
+                      '{amount}',
+                      currencyFormat.format(booking.depositAmount),
+                    ),
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
                     ),
                   ),
                 ],
-                
-                if (booking.status == BookingStatus.checkedIn && booking.actualCheckIn != null) ...[
+
+                if (booking.status == BookingStatus.checkedIn &&
+                    booking.actualCheckIn != null) ...[
                   const SizedBox(height: 4),
                   Text(
                     'Check-in: ${DateFormat('HH:mm dd/MM', 'vi').format(booking.actualCheckIn!)}',
@@ -164,7 +176,7 @@ class BookingCard extends StatelessWidget {
                   ),
                 ],
               ],
-              
+
               // Arrow indicator for tap
               if (onTap != null)
                 Align(
@@ -196,11 +208,7 @@ class BookingCard extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            sourceInfo.icon,
-            size: 14,
-            color: sourceInfo.color,
-          ),
+          Icon(sourceInfo.icon, size: 14, color: sourceInfo.color),
           const SizedBox(width: 4),
           Text(
             sourceInfo.label,
@@ -215,26 +223,65 @@ class BookingCard extends StatelessWidget {
     );
   }
 
-  ({String label, IconData icon, Color color}) _getSourceInfo(BuildContext context, BookingSource source) {
+  ({String label, IconData icon, Color color}) _getSourceInfo(
+    BuildContext context,
+    BookingSource source,
+  ) {
     switch (source) {
       case BookingSource.walkIn:
-        return (label: context.l10n.walkIn, icon: Icons.directions_walk, color: AppColors.statusBlue);
+        return (
+          label: context.l10n.walkIn,
+          icon: Icons.directions_walk,
+          color: AppColors.statusBlue,
+        );
       case BookingSource.phone:
-        return (label: context.l10n.phoneSource, icon: Icons.phone, color: AppColors.success);
+        return (
+          label: context.l10n.phoneSource,
+          icon: Icons.phone,
+          color: AppColors.success,
+        );
       case BookingSource.bookingCom:
-        return (label: 'Booking.com', icon: Icons.public, color: AppColors.brandBookingCom);
+        return (
+          label: 'Booking.com',
+          icon: Icons.public,
+          color: AppColors.brandBookingCom,
+        );
       case BookingSource.agoda:
-        return (label: 'Agoda', icon: Icons.public, color: AppColors.brandAgoda);
+        return (
+          label: 'Agoda',
+          icon: Icons.public,
+          color: AppColors.brandAgoda,
+        );
       case BookingSource.airbnb:
-        return (label: 'Airbnb', icon: Icons.public, color: AppColors.brandAirbnb);
+        return (
+          label: 'Airbnb',
+          icon: Icons.public,
+          color: AppColors.brandAirbnb,
+        );
       case BookingSource.traveloka:
-        return (label: 'Traveloka', icon: Icons.public, color: AppColors.brandTraveloka);
+        return (
+          label: 'Traveloka',
+          icon: Icons.public,
+          color: AppColors.brandTraveloka,
+        );
       case BookingSource.otherOta:
-        return (label: context.l10n.otherOta, icon: Icons.public, color: AppColors.statusBlueGrey);
+        return (
+          label: context.l10n.otherOta,
+          icon: Icons.public,
+          color: AppColors.statusBlueGrey,
+        );
       case BookingSource.website:
-        return (label: 'Website', icon: Icons.language, color: AppColors.statusPurple);
+        return (
+          label: 'Website',
+          icon: Icons.language,
+          color: AppColors.statusPurple,
+        );
       case BookingSource.other:
-        return (label: context.l10n.otherLabel, icon: Icons.more_horiz, color: AppColors.mutedAccent);
+        return (
+          label: context.l10n.otherLabel,
+          icon: Icons.more_horiz,
+          color: AppColors.mutedAccent,
+        );
     }
   }
 

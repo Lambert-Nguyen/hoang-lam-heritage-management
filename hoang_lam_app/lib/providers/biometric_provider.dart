@@ -17,8 +17,9 @@ final biometricSupportedProvider = FutureProvider<bool>((ref) async {
 });
 
 /// Provider for available biometric types
-final availableBiometricsProvider =
-    FutureProvider<List<BiometricType>>((ref) async {
+final availableBiometricsProvider = FutureProvider<List<BiometricType>>((
+  ref,
+) async {
   final service = ref.watch(biometricServiceProvider);
   return await service.getAvailableBiometrics();
 });
@@ -75,8 +76,8 @@ class BiometricNotifier extends AsyncNotifier<BiometricState> {
 /// Provider for biometric notifier
 final biometricNotifierProvider =
     AsyncNotifierProvider<BiometricNotifier, BiometricState>(
-  BiometricNotifier.new,
-);
+      BiometricNotifier.new,
+    );
 
 /// State class for biometric authentication
 class BiometricState {
@@ -117,5 +118,6 @@ class BiometricState {
   }
 
   /// Check if biometric login can be offered
-  bool get canUseBiometric => isSupported && isEnabled && storedUsername != null;
+  bool get canUseBiometric =>
+      isSupported && isEnabled && storedUsername != null;
 }

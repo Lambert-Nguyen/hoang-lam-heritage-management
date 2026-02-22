@@ -45,7 +45,7 @@ class CurrencyFormatter {
     final isNegative = amount < 0;
     final absAmount = amount.abs();
     final prefix = isNegative ? '-' : '';
-    
+
     if (absAmount >= 1000000000) {
       return '$prefix${(absAmount / 1000000000).toStringAsFixed(1)}B';
     } else if (absAmount >= 1000000) {
@@ -71,11 +71,12 @@ class CurrencyFormatter {
       final isUsd = value.contains('\$');
 
       // Remove currency symbols and spaces
-      String cleaned = value
-          .replaceAll('₫', '')
-          .replaceAll('\$', '')
-          .replaceAll(' ', '')
-          .trim();
+      String cleaned =
+          value
+              .replaceAll('₫', '')
+              .replaceAll('\$', '')
+              .replaceAll(' ', '')
+              .trim();
 
       if (isUsd) {
         // USD format: remove thousand separators (commas), keep decimal dot

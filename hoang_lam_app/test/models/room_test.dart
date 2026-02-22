@@ -107,21 +107,13 @@ void main() {
     });
 
     test('displayName falls back to Vietnamese when English is null', () {
-      const roomType = RoomType(
-        id: 1,
-        name: 'Phòng đơn',
-        baseRate: 300000,
-      );
+      const roomType = RoomType(id: 1, name: 'Phòng đơn', baseRate: 300000);
 
       expect(roomType.displayName(true), 'Phòng đơn');
     });
 
     test('formattedBaseRate formats correctly', () {
-      const roomType = RoomType(
-        id: 1,
-        name: 'Test',
-        baseRate: 300000,
-      );
+      const roomType = RoomType(id: 1, name: 'Test', baseRate: 300000);
 
       expect(roomType.formattedBaseRate, '300.000đ');
     });
@@ -174,22 +166,13 @@ void main() {
     });
 
     test('displayName returns number when name is null', () {
-      const room = Room(
-        id: 1,
-        number: '101',
-        roomTypeId: 1,
-      );
+      const room = Room(id: 1, number: '101', roomTypeId: 1);
 
       expect(room.displayName, '101');
     });
 
     test('displayName returns number and name when both present', () {
-      const room = Room(
-        id: 1,
-        number: '101',
-        name: 'VIP Suite',
-        roomTypeId: 1,
-      );
+      const room = Room(id: 1, number: '101', name: 'VIP Suite', roomTypeId: 1);
 
       expect(room.displayName, '101 - VIP Suite');
     });
@@ -225,12 +208,7 @@ void main() {
     });
 
     test('formattedRate formats baseRate correctly', () {
-      const room = Room(
-        id: 1,
-        number: '101',
-        roomTypeId: 1,
-        baseRate: 500000,
-      );
+      const room = Room(id: 1, number: '101', roomTypeId: 1, baseRate: 500000);
 
       expect(room.formattedRate, '500.000đ');
     });

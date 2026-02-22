@@ -7,7 +7,7 @@ import '../../models/room.dart';
 import '../../providers/room_provider.dart';
 
 /// Room Form Screen for creating and editing rooms
-/// 
+///
 /// Fields:
 /// - Room number (required)
 /// - Room name (optional)
@@ -27,17 +27,17 @@ class RoomFormScreen extends ConsumerStatefulWidget {
 
 class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   late TextEditingController _numberController;
   late TextEditingController _nameController;
   late TextEditingController _notesController;
-  
+
   int? _selectedRoomTypeId;
   int _floor = 1;
   bool _isActive = true;
   RoomStatus _status = RoomStatus.available;
   List<String> _amenities = [];
-  
+
   bool _isLoading = false;
   bool get _isEditing => widget.room != null;
 
@@ -57,11 +57,11 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
   void initState() {
     super.initState();
     final room = widget.room;
-    
+
     _numberController = TextEditingController(text: room?.number ?? '');
     _nameController = TextEditingController(text: room?.name ?? '');
     _notesController = TextEditingController(text: room?.notes ?? '');
-    
+
     if (room != null) {
       _selectedRoomTypeId = room.roomTypeId;
       _floor = room.floor;
@@ -85,7 +85,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? context.l10n.editRoom : context.l10n.addNewRoom),
+        title: Text(
+          _isEditing ? context.l10n.editRoom : context.l10n.addNewRoom,
+        ),
         actions: [
           if (_isEditing)
             IconButton(
@@ -116,9 +118,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                 return null;
               },
             ),
-            
+
             AppSpacing.gapVerticalMd,
-            
+
             // Room Name (optional)
             TextFormField(
               controller: _nameController,
@@ -128,35 +130,44 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                 prefixIcon: const Icon(Icons.label_outline),
               ),
             ),
-            
+
             AppSpacing.gapVerticalMd,
-            
+
             // Room Type Dropdown
             roomTypesAsync.when(
-              data: (roomTypes) => DropdownButtonFormField<int>(
-                value: _selectedRoomTypeId,
-                decoration: InputDecoration(
-                  labelText: '${context.l10n.roomType} *',
-                  prefixIcon: const Icon(Icons.category),
-                ),
-                items: roomTypes.map((type) => DropdownMenuItem(
-                  value: type.id,
-                  child: Text('${type.name} - ${type.formattedBaseRate}'),
-                )).toList(),
-                onChanged: (value) => setState(() => _selectedRoomTypeId = value),
-                validator: (value) {
-                  if (value == null) {
-                    return context.l10n.pleaseSelectRoomType;
-                  }
-                  return null;
-                },
-              ),
+              data:
+                  (roomTypes) => DropdownButtonFormField<int>(
+                    value: _selectedRoomTypeId,
+                    decoration: InputDecoration(
+                      labelText: '${context.l10n.roomType} *',
+                      prefixIcon: const Icon(Icons.category),
+                    ),
+                    items:
+                        roomTypes
+                            .map(
+                              (type) => DropdownMenuItem(
+                                value: type.id,
+                                child: Text(
+                                  '${type.name} - ${type.formattedBaseRate}',
+                                ),
+                              ),
+                            )
+                            .toList(),
+                    onChanged:
+                        (value) => setState(() => _selectedRoomTypeId = value),
+                    validator: (value) {
+                      if (value == null) {
+                        return context.l10n.pleaseSelectRoomType;
+                      }
+                      return null;
+                    },
+                  ),
               loading: () => const LinearProgressIndicator(),
               error: (_, __) => Text(context.l10n.cannotLoadRoomTypes),
             ),
-            
+
             AppSpacing.gapVerticalMd,
-            
+
             // Floor
             Row(
               children: [
@@ -171,9 +182,10 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.remove_circle_outline),
-                          onPressed: _floor > 1 
-                            ? () => setState(() => _floor--) 
-                            : null,
+                          onPressed:
+                              _floor > 1
+                                  ? () => setState(() => _floor--)
+                                  : null,
                         ),
                         Text(
                           '$_floor',
@@ -181,9 +193,10 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.add_circle_outline),
-                          onPressed: _floor < 20 
-                            ? () => setState(() => _floor++) 
-                            : null,
+                          onPressed:
+                              _floor < 20
+                                  ? () => setState(() => _floor++)
+                                  : null,
                         ),
                       ],
                     ),
@@ -191,9 +204,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                 ),
               ],
             ),
-            
+
             AppSpacing.gapVerticalLg,
-            
+
             // Status (only for editing)
             if (_isEditing) ...[
               Text(
@@ -207,50 +220,61 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: RoomStatus.values.map((status) => ChoiceChip(
-                  label: Text(status.localizedName(context.l10n)),
-                  selected: _status == status,
-                  selectedColor: status.color.withValues(alpha: 0.3),
-                  avatar: Icon(status.icon, size: 18, color: status.color),
-                  onSelected: (selected) {
-                    if (selected) {
-                      setState(() => _status = status);
-                    }
-                  },
-                )).toList(),
+                children:
+                    RoomStatus.values
+                        .map(
+                          (status) => ChoiceChip(
+                            label: Text(status.localizedName(context.l10n)),
+                            selected: _status == status,
+                            selectedColor: status.color.withValues(alpha: 0.3),
+                            avatar: Icon(
+                              status.icon,
+                              size: 18,
+                              color: status.color,
+                            ),
+                            onSelected: (selected) {
+                              if (selected) {
+                                setState(() => _status = status);
+                              }
+                            },
+                          ),
+                        )
+                        .toList(),
               ),
               AppSpacing.gapVerticalLg,
             ],
-            
+
             // Amenities
             Text(
               context.l10n.amenities,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             AppSpacing.gapVerticalSm,
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _getCommonAmenities(context).map((amenity) => FilterChip(
-                label: Text(amenity),
-                selected: _amenities.contains(amenity),
-                onSelected: (selected) {
-                  setState(() {
-                    if (selected) {
-                      _amenities.add(amenity);
-                    } else {
-                      _amenities.remove(amenity);
-                    }
-                  });
-                },
-              )).toList(),
+              children:
+                  _getCommonAmenities(context)
+                      .map(
+                        (amenity) => FilterChip(
+                          label: Text(amenity),
+                          selected: _amenities.contains(amenity),
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _amenities.add(amenity);
+                              } else {
+                                _amenities.remove(amenity);
+                              }
+                            });
+                          },
+                        ),
+                      )
+                      .toList(),
             ),
-            
+
             AppSpacing.gapVerticalLg,
-            
+
             // Notes
             TextFormField(
               controller: _notesController,
@@ -262,16 +286,16 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               ),
               maxLines: 3,
             ),
-            
+
             AppSpacing.gapVerticalMd,
-            
+
             // Active Status
             SwitchListTile(
               title: Text(context.l10n.roomIsActive),
               subtitle: Text(
-                _isActive 
-                  ? context.l10n.roomCanBeBooked 
-                  : context.l10n.roomDisabled,
+                _isActive
+                    ? context.l10n.roomCanBeBooked
+                    : context.l10n.roomDisabled,
               ),
               value: _isActive,
               onChanged: (value) => setState(() => _isActive = value),
@@ -280,25 +304,28 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
                 color: _isActive ? AppColors.success : AppColors.error,
               ),
             ),
-            
+
             AppSpacing.gapVerticalXl,
-            
+
             // Save Button
             ElevatedButton.icon(
               onPressed: _isLoading ? null : _saveRoom,
-              icon: _isLoading 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
-              label: Text(_isEditing ? context.l10n.update : context.l10n.addRoom),
+              icon:
+                  _isLoading
+                      ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Icon(Icons.save),
+              label: Text(
+                _isEditing ? context.l10n.update : context.l10n.addRoom,
+              ),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(56),
               ),
             ),
-            
+
             AppSpacing.gapVerticalXl,
           ],
         ),
@@ -316,17 +343,23 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       final room = Room(
         id: widget.room?.id ?? 0,
         number: _numberController.text.trim(),
-        name: _nameController.text.trim().isEmpty ? null : _nameController.text.trim(),
+        name:
+            _nameController.text.trim().isEmpty
+                ? null
+                : _nameController.text.trim(),
         roomTypeId: _selectedRoomTypeId!,
         floor: _floor,
         status: _isEditing ? _status : RoomStatus.available,
         amenities: _amenities,
-        notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+        notes:
+            _notesController.text.trim().isEmpty
+                ? null
+                : _notesController.text.trim(),
         isActive: _isActive,
       );
 
       final notifier = ref.read(roomStateProvider.notifier);
-      
+
       Room? result;
       if (_isEditing) {
         result = await notifier.updateRoom(room);
@@ -341,9 +374,11 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEditing
-              ? '${context.l10n.roomUpdated} ${result.number}'
-              : '${context.l10n.roomAdded} ${result.number}'),
+            content: Text(
+              _isEditing
+                  ? '${context.l10n.roomUpdated} ${result.number}'
+                  : '${context.l10n.roomAdded} ${result.number}',
+            ),
             backgroundColor: AppColors.success,
           ),
         );
@@ -368,24 +403,27 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
   void _confirmDelete() {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('${context.l10n.deleteRoom}?'),
-        content: Text('${context.l10n.confirmDeleteRoom} ${widget.room?.number}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(context.l10n.cancel),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text('${context.l10n.deleteRoom}?'),
+            content: Text(
+              '${context.l10n.confirmDeleteRoom} ${widget.room?.number}?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(context.l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  await _deleteRoom();
+                },
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                child: Text(context.l10n.delete),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await _deleteRoom();
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(context.l10n.delete),
-          ),
-        ],
-      ),
     );
   }
 
@@ -395,8 +433,10 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final success = await ref.read(roomStateProvider.notifier).deleteRoom(widget.room!.id);
-      
+      final success = await ref
+          .read(roomStateProvider.notifier)
+          .deleteRoom(widget.room!.id);
+
       if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

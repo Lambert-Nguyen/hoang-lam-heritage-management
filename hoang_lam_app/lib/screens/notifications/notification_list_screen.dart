@@ -31,13 +31,16 @@ class NotificationListScreen extends ConsumerWidget {
             icon: const Icon(Icons.done_all),
             tooltip: l10n.markAllRead,
             onPressed: () async {
-              final count = await ref
-                  .read(notificationNotifierProvider.notifier)
-                  .markAllAsRead();
+              final count =
+                  await ref
+                      .read(notificationNotifierProvider.notifier)
+                      .markAllAsRead();
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${context.l10n.markedNotificationsRead} ($count)'),
+                    content: Text(
+                      '${context.l10n.markedNotificationsRead} ($count)',
+                    ),
                     duration: const Duration(seconds: 2),
                   ),
                 );
@@ -53,9 +56,7 @@ class NotificationListScreen extends ConsumerWidget {
           }
           return RefreshIndicator(
             onRefresh: () async {
-              await ref
-                  .read(notificationNotifierProvider.notifier)
-                  .refresh();
+              await ref.read(notificationNotifierProvider.notifier).refresh();
             },
             child: ListView.separated(
               padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -72,28 +73,31 @@ class NotificationListScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              const SizedBox(height: 16),
-              Text(
-                l10n.errorLoadingData,
-                style: Theme.of(context).textTheme.titleMedium,
+        error:
+            (error, _) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.errorLoadingData,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.read(notificationNotifierProvider.notifier).refresh();
+                    },
+                    child: Text(l10n.retry),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () {
-                  ref
-                      .read(notificationNotifierProvider.notifier)
-                      .refresh();
-                },
-                child: Text(l10n.retry),
-              ),
-            ],
-          ),
-        ),
+            ),
       ),
     );
   }
@@ -112,15 +116,15 @@ class NotificationListScreen extends ConsumerWidget {
           Text(
             l10n.noNotifications,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+              color: Theme.of(context).colorScheme.outline,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             l10n.noNotificationsDescription,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.outline,
-                ),
+              color: Theme.of(context).colorScheme.outline,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -135,7 +139,9 @@ class NotificationListScreen extends ConsumerWidget {
   ) {
     // Mark as read if unread
     if (!notification.isRead) {
-      ref.read(notificationNotifierProvider.notifier).markAsRead(notification.id);
+      ref
+          .read(notificationNotifierProvider.notifier)
+          .markAsRead(notification.id);
     }
 
     // Navigate to related booking if available
@@ -150,10 +156,7 @@ class _NotificationTile extends StatelessWidget {
   final AppNotification notification;
   final VoidCallback onTap;
 
-  const _NotificationTile({
-    required this.notification,
-    required this.onTap,
-  });
+  const _NotificationTile({required this.notification, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -163,11 +166,12 @@ class _NotificationTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        color: notification.isRead
-            ? null
-            : (isDark
-                ? AppColors.primary.withValues(alpha: 0.08)
-                : AppColors.primary.withValues(alpha: 0.04)),
+        color:
+            notification.isRead
+                ? null
+                : (isDark
+                    ? AppColors.primary.withValues(alpha: 0.08)
+                    : AppColors.primary.withValues(alpha: 0.04)),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
@@ -183,11 +187,7 @@ class _NotificationTile extends StatelessWidget {
                 color: _getIconColor().withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                _getIconData(),
-                color: _getIconColor(),
-                size: 22,
-              ),
+              child: Icon(_getIconData(), color: _getIconColor(), size: 22),
             ),
             const SizedBox(width: AppSpacing.sm),
             // Content
@@ -201,9 +201,10 @@ class _NotificationTile extends StatelessWidget {
                         child: Text(
                           notification.title,
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: notification.isRead
-                                ? FontWeight.w500
-                                : FontWeight.w700,
+                            fontWeight:
+                                notification.isRead
+                                    ? FontWeight.w500
+                                    : FontWeight.w700,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -233,7 +234,9 @@ class _NotificationTile extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        notification.notificationType.localizedName(context.l10n),
+                        notification.notificationType.localizedName(
+                          context.l10n,
+                        ),
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: _getIconColor(),
                           fontWeight: FontWeight.w600,
@@ -315,7 +318,8 @@ class _NotificationTile extends StatelessWidget {
     final diff = now.difference(dateTime);
 
     if (diff.inMinutes < 1) return context.l10n.justNow;
-    if (diff.inMinutes < 60) return '${diff.inMinutes} ${context.l10n.minutesAgo}';
+    if (diff.inMinutes < 60)
+      return '${diff.inMinutes} ${context.l10n.minutesAgo}';
     if (diff.inHours < 24) return '${diff.inHours} ${context.l10n.hoursAgo}';
     if (diff.inDays < 7) return '${diff.inDays} ${context.l10n.daysAgo}';
 

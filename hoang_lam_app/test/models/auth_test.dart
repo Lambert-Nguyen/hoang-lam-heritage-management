@@ -26,10 +26,7 @@ void main() {
     });
 
     test('deserializes from JSON', () {
-      final json = {
-        'username': 'testuser',
-        'password': 'testpass123',
-      };
+      final json = {'username': 'testuser', 'password': 'testpass123'};
 
       final request = LoginRequest.fromJson(json);
       expect(request.username, 'testuser');
@@ -84,9 +81,7 @@ void main() {
     });
 
     test('deserializes from JSON without new refresh token', () {
-      final json = {
-        'access': 'new_access_token',
-      };
+      final json = {'access': 'new_access_token'};
 
       final response = RefreshTokenResponse.fromJson(json);
       expect(response.access, 'new_access_token');
@@ -138,10 +133,7 @@ void main() {
     });
 
     test('creates authenticated state with user', () {
-      final user = User.fromJson({
-        'id': 1,
-        'username': 'testuser',
-      });
+      final user = User.fromJson({'id': 1, 'username': 'testuser'});
       final state = AuthState.authenticated(user: user);
 
       state.maybeWhen(

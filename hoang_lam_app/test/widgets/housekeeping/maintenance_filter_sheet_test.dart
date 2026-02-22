@@ -24,28 +24,28 @@ void main() {
         locale: const Locale('vi'),
         home: Scaffold(
           body: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) => MaintenanceFilterSheet(
-                    initialFilter: initialFilter,
-                    onApply: onApply,
-                  ),
-                );
-              },
-              child: const Text('Open Filter'),
-            ),
+            builder:
+                (context) => ElevatedButton(
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder:
+                          (_) => MaintenanceFilterSheet(
+                            initialFilter: initialFilter,
+                            onApply: onApply,
+                          ),
+                    );
+                  },
+                  child: const Text('Open Filter'),
+                ),
           ),
         ),
       );
     }
 
     testWidgets('displays filter sheet when opened', (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -55,11 +55,10 @@ void main() {
       expect(find.text('Lọc yêu cầu bảo trì'), findsOneWidget);
     });
 
-    testWidgets('displays status filter section with all statuses',
-        (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+    testWidgets('displays status filter section with all statuses', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -73,11 +72,10 @@ void main() {
       }
     });
 
-    testWidgets('displays priority filter section with all priorities',
-        (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+    testWidgets('displays priority filter section with all priorities', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -91,11 +89,10 @@ void main() {
       }
     });
 
-    testWidgets('displays category filter section with all categories',
-        (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+    testWidgets('displays category filter section with all categories', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -111,9 +108,9 @@ void main() {
 
     testWidgets('selects status filter and applies', (tester) async {
       MaintenanceRequestFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onApply: (filter) => appliedFilter = filter),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -132,9 +129,9 @@ void main() {
 
     testWidgets('selects priority filter and applies', (tester) async {
       MaintenanceRequestFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onApply: (filter) => appliedFilter = filter),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -153,9 +150,9 @@ void main() {
 
     testWidgets('selects category filter and applies', (tester) async {
       MaintenanceRequestFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onApply: (filter) => appliedFilter = filter),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -172,17 +169,20 @@ void main() {
       expect(appliedFilter!.category, equals(MaintenanceCategory.electrical));
     });
 
-    testWidgets('clears all filters when reset button is tapped',
-        (tester) async {
+    testWidgets('clears all filters when reset button is tapped', (
+      tester,
+    ) async {
       MaintenanceRequestFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        initialFilter: MaintenanceRequestFilter(
-          status: MaintenanceStatus.pending,
-          priority: MaintenancePriority.high,
-          category: MaintenanceCategory.plumbing,
+      await tester.pumpWidget(
+        buildWidget(
+          initialFilter: MaintenanceRequestFilter(
+            status: MaintenanceStatus.pending,
+            priority: MaintenancePriority.high,
+            category: MaintenanceCategory.plumbing,
+          ),
+          onApply: (filter) => appliedFilter = filter,
         ),
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -203,9 +203,9 @@ void main() {
 
     testWidgets('applies multiple filters at once', (tester) async {
       MaintenanceRequestFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onApply: (filter) => appliedFilter = filter),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));

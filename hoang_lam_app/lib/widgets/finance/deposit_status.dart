@@ -19,8 +19,12 @@ class DepositStatusIndicator extends StatelessWidget {
     this.onTap,
   });
 
-  double get progress => requiredDeposit > 0 ? (paidDeposit / requiredDeposit).clamp(0.0, 1.0) : 0.0;
-  double get outstanding => (requiredDeposit - paidDeposit).clamp(0.0, requiredDeposit);
+  double get progress =>
+      requiredDeposit > 0
+          ? (paidDeposit / requiredDeposit).clamp(0.0, 1.0)
+          : 0.0;
+  double get outstanding =>
+      (requiredDeposit - paidDeposit).clamp(0.0, requiredDeposit);
   bool get isFullyPaid => paidDeposit >= requiredDeposit;
 
   Color _getStatusColor(ThemeData theme) {
@@ -146,7 +150,10 @@ class OutstandingDepositCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(4),
@@ -212,7 +219,10 @@ class OutstandingDepositCard extends StatelessWidget {
                       icon: const Icon(Icons.add, size: 18),
                       label: Text(context.l10n.recordDepositBtn),
                       style: FilledButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                       ),
                     ),
                   ],
@@ -289,7 +299,8 @@ class OutstandingDepositsList extends StatelessWidget {
         final deposit = deposits[index];
         return OutstandingDepositCard(
           deposit: deposit,
-          onRecordDeposit: onRecordDeposit != null ? () => onRecordDeposit!(deposit) : null,
+          onRecordDeposit:
+              onRecordDeposit != null ? () => onRecordDeposit!(deposit) : null,
           onTap: onTap != null ? () => onTap!(deposit) : null,
         );
       },

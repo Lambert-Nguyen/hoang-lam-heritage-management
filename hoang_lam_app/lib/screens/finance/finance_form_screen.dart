@@ -14,11 +14,7 @@ class FinanceFormScreen extends ConsumerStatefulWidget {
   final EntryType entryType;
   final FinancialEntry? entry; // null for new, provided for edit
 
-  const FinanceFormScreen({
-    super.key,
-    required this.entryType,
-    this.entry,
-  });
+  const FinanceFormScreen({super.key, required this.entryType, this.entry});
 
   @override
   ConsumerState<FinanceFormScreen> createState() => _FinanceFormScreenState();
@@ -77,42 +73,54 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final categoriesAsync = isIncome
-        ? ref.watch(incomeCategoriesProvider)
-        : ref.watch(expenseCategoriesProvider);
+    final categoriesAsync =
+        isIncome
+            ? ref.watch(incomeCategoriesProvider)
+            : ref.watch(expenseCategoriesProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit
-            ? (isIncome ? '${l10n.edit} ${l10n.income}' : '${l10n.edit} ${l10n.expense}')
-            : (isIncome ? '${l10n.add} ${l10n.income}' : '${l10n.add} ${l10n.expense}')),
+        title: Text(
+          isEdit
+              ? (isIncome
+                  ? '${l10n.edit} ${l10n.income}'
+                  : '${l10n.edit} ${l10n.expense}')
+              : (isIncome
+                  ? '${l10n.add} ${l10n.income}'
+                  : '${l10n.add} ${l10n.expense}'),
+        ),
         backgroundColor: isIncome ? AppColors.income : AppColors.expense,
         foregroundColor: AppColors.onPrimary,
       ),
       body: categoriesAsync.when(
         data: (categories) => _buildForm(context, categories),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-              AppSpacing.gapVerticalMd,
-              Text('${l10n.dataLoadError}: $error'),
-              AppSpacing.gapVerticalMd,
-              ElevatedButton(
-                onPressed: () {
-                  if (isIncome) {
-                    ref.invalidate(incomeCategoriesProvider);
-                  } else {
-                    ref.invalidate(expenseCategoriesProvider);
-                  }
-                },
-                child: Text(l10n.retry),
+        error:
+            (error, _) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: AppColors.error,
+                  ),
+                  AppSpacing.gapVerticalMd,
+                  Text('${l10n.dataLoadError}: $error'),
+                  AppSpacing.gapVerticalMd,
+                  ElevatedButton(
+                    onPressed: () {
+                      if (isIncome) {
+                        ref.invalidate(incomeCategoriesProvider);
+                      } else {
+                        ref.invalidate(expenseCategoriesProvider);
+                      }
+                    },
+                    child: Text(l10n.retry),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
       ),
     );
   }
@@ -164,7 +172,9 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
     return Container(
       padding: AppSpacing.paddingAll,
       decoration: BoxDecoration(
-        color: (isIncome ? AppColors.income : AppColors.expense).withValues(alpha: 0.1),
+        color: (isIncome ? AppColors.income : AppColors.expense).withValues(
+          alpha: 0.1,
+        ),
         borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
       ),
       child: Column(
@@ -195,7 +205,8 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
               hintStyle: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: (isIncome ? AppColors.income : AppColors.expense).withValues(alpha: 0.3),
+                color: (isIncome ? AppColors.income : AppColors.expense)
+                    .withValues(alpha: 0.3),
               ),
               border: InputBorder.none,
               suffixText: 'VNĐ',
@@ -227,10 +238,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       children: [
         Text(
           l10n.financialCategories,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
         ),
         AppSpacing.gapVerticalSm,
         if (categories.isEmpty)
@@ -252,43 +260,43 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
           Wrap(
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
-            children: categories.map((category) {
-              final isSelected = _selectedCategoryId == category.id;
-              return ChoiceChip(
-                label: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      category.iconData,
-                      size: 18,
+            children:
+                categories.map((category) {
+                  final isSelected = _selectedCategoryId == category.id;
+                  return ChoiceChip(
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          category.iconData,
+                          size: 18,
+                          color:
+                              isSelected ? Colors.white : AppColors.textPrimary,
+                        ),
+                        AppSpacing.gapHorizontalXs,
+                        Text(category.name),
+                      ],
+                    ),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() {
+                        _selectedCategoryId = selected ? category.id : null;
+                      });
+                    },
+                    selectedColor:
+                        isIncome ? AppColors.income : AppColors.expense,
+                    labelStyle: TextStyle(
                       color: isSelected ? Colors.white : AppColors.textPrimary,
                     ),
-                    AppSpacing.gapHorizontalXs,
-                    Text(category.name),
-                  ],
-                ),
-                selected: isSelected,
-                onSelected: (selected) {
-                  setState(() {
-                    _selectedCategoryId = selected ? category.id : null;
-                  });
-                },
-                selectedColor: isIncome ? AppColors.income : AppColors.expense,
-                labelStyle: TextStyle(
-                  color: isSelected ? Colors.white : AppColors.textPrimary,
-                ),
-              );
-            }).toList(),
+                  );
+                }).toList(),
           ),
         if (_selectedCategoryId == null && categories.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.xs),
             child: Text(
               l10n.enterOrSelectCategory,
-              style: TextStyle(
-                color: AppColors.error,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: AppColors.error, fontSize: 12),
             ),
           ),
       ],
@@ -316,10 +324,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       title: Text(l10n.selectDate),
       subtitle: Text(
         DateFormat('dd/MM/yyyy HH:mm').format(_entryDate),
-        style: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 16,
-        ),
+        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
       ),
       trailing: const Icon(Icons.chevron_right),
       onTap: _selectDate,
@@ -361,41 +366,40 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       children: [
         Text(
           l10n.paymentMethod,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
         ),
         AppSpacing.gapVerticalSm,
         Wrap(
           spacing: AppSpacing.sm,
-          children: PaymentMethod.values.map((method) {
-            final isSelected = _paymentMethod == method;
-            return ChoiceChip(
-              label: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    method.icon,
-                    size: 18,
+          children:
+              PaymentMethod.values.map((method) {
+                final isSelected = _paymentMethod == method;
+                return ChoiceChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        method.icon,
+                        size: 18,
+                        color:
+                            isSelected ? Colors.white : AppColors.textPrimary,
+                      ),
+                      AppSpacing.gapHorizontalXs,
+                      Text(method.localizedName(context.l10n)),
+                    ],
+                  ),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() => _paymentMethod = method);
+                    }
+                  },
+                  selectedColor: AppColors.primary,
+                  labelStyle: TextStyle(
                     color: isSelected ? Colors.white : AppColors.textPrimary,
                   ),
-                  AppSpacing.gapHorizontalXs,
-                  Text(method.localizedName(context.l10n)),
-                ],
-              ),
-              selected: isSelected,
-              onSelected: (selected) {
-                if (selected) {
-                  setState(() => _paymentMethod = method);
-                }
-              },
-              selectedColor: AppColors.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : AppColors.textPrimary,
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
       ],
     );
@@ -437,22 +441,23 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
           foregroundColor: AppColors.onPrimary,
           padding: const EdgeInsets.all(AppSpacing.md),
         ),
-        child: _isSubmitting
-            ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: AppColors.onPrimary,
+        child:
+            _isSubmitting
+                ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.onPrimary,
+                  ),
+                )
+                : Text(
+                  isEdit ? l10n.update : l10n.save,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              )
-            : Text(
-                isEdit ? l10n.update : l10n.save,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
       ),
     );
   }
@@ -494,9 +499,10 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
         date: _entryDate,
         description: description,
         paymentMethod: _paymentMethod,
-        receiptNumber: _referenceController.text.trim().isNotEmpty
-            ? _referenceController.text.trim()
-            : null,
+        receiptNumber:
+            _referenceController.text.trim().isNotEmpty
+                ? _referenceController.text.trim()
+                : null,
       );
 
       final notifier = ref.read(financeNotifierProvider.notifier);

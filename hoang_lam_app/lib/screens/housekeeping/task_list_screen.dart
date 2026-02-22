@@ -62,11 +62,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildTodayTab(),
-          _buildAllTasksTab(),
-          _buildMyTasksTab(),
-        ],
+        children: [_buildTodayTab(), _buildAllTasksTab(), _buildMyTasksTab()],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _createTask,
@@ -142,12 +138,17 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
     final pendingTasks =
         tasks.where((t) => t.status == HousekeepingTaskStatus.pending).toList();
     final inProgressTasks =
-        tasks.where((t) => t.status == HousekeepingTaskStatus.inProgress).toList();
-    final completedTasks = tasks
-        .where((t) =>
-            t.status == HousekeepingTaskStatus.completed ||
-            t.status == HousekeepingTaskStatus.verified)
-        .toList();
+        tasks
+            .where((t) => t.status == HousekeepingTaskStatus.inProgress)
+            .toList();
+    final completedTasks =
+        tasks
+            .where(
+              (t) =>
+                  t.status == HousekeepingTaskStatus.completed ||
+                  t.status == HousekeepingTaskStatus.verified,
+            )
+            .toList();
 
     return RefreshIndicator(
       onRefresh: _refreshTasks,
@@ -156,27 +157,24 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         children: [
           if (pendingTasks.isNotEmpty) ...[
             _buildSectionHeader(l10n.pending, pendingTasks.length),
-            ...pendingTasks.map((task) => TaskCard(
-                  task: task,
-                  onTap: () => _viewTask(task),
-                )),
+            ...pendingTasks.map(
+              (task) => TaskCard(task: task, onTap: () => _viewTask(task)),
+            ),
           ],
           if (inProgressTasks.isNotEmpty) ...[
             if (pendingTasks.isNotEmpty) AppSpacing.gapVerticalLg,
             _buildSectionHeader(l10n.inProgress, inProgressTasks.length),
-            ...inProgressTasks.map((task) => TaskCard(
-                  task: task,
-                  onTap: () => _viewTask(task),
-                )),
+            ...inProgressTasks.map(
+              (task) => TaskCard(task: task, onTap: () => _viewTask(task)),
+            ),
           ],
           if (completedTasks.isNotEmpty) ...[
             if (pendingTasks.isNotEmpty || inProgressTasks.isNotEmpty)
               AppSpacing.gapVerticalLg,
             _buildSectionHeader(l10n.completed, completedTasks.length),
-            ...completedTasks.map((task) => TaskCard(
-                  task: task,
-                  onTap: () => _viewTask(task),
-                )),
+            ...completedTasks.map(
+              (task) => TaskCard(task: task, onTap: () => _viewTask(task)),
+            ),
           ],
         ],
       ),
@@ -190,9 +188,9 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapHorizontalSm,
           Container(
@@ -207,9 +205,9 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
             child: Text(
               count.toString(),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -235,15 +233,12 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
             Text(
               error,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
             ),
             AppSpacing.gapVerticalLg,
-            ElevatedButton(
-              onPressed: _refreshTasks,
-              child: Text(l10n.retry),
-            ),
+            ElevatedButton(onPressed: _refreshTasks, child: Text(l10n.retry)),
           ],
         ),
       ),
@@ -260,33 +255,30 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => TaskFilterSheet(
-        initialFilter: _filter,
-        onApply: (newFilter) {
-          setState(() {
-            _filter = newFilter;
-          });
-          Navigator.pop(context);
-        },
-      ),
+      builder:
+          (context) => TaskFilterSheet(
+            initialFilter: _filter,
+            onApply: (newFilter) {
+              setState(() {
+                _filter = newFilter;
+              });
+              Navigator.pop(context);
+            },
+          ),
     );
   }
 
   void _viewTask(HousekeepingTask task) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => TaskDetailScreen(task: task),
-      ),
+      MaterialPageRoute(builder: (context) => TaskDetailScreen(task: task)),
     );
   }
 
   void _createTask() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const TaskFormScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const TaskFormScreen()),
     );
   }
 }

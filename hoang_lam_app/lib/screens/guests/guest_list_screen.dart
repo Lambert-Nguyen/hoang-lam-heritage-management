@@ -68,15 +68,16 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
         decoration: InputDecoration(
           hintText: context.l10n.searchGuests,
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    _performSearch('');
-                  },
-                )
-              : null,
+          suffixIcon:
+              _searchController.text.isNotEmpty
+                  ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      _performSearch('');
+                    },
+                  )
+                  : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           ),
@@ -88,12 +89,13 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
 
   void _performSearch(String query) {
     if (query.trim().length >= 2) {
-      ref.read(guestStateProvider.notifier).searchGuests(
-            query.trim(),
-            searchBy: _searchType,
-          );
+      ref
+          .read(guestStateProvider.notifier)
+          .searchGuests(query.trim(), searchBy: _searchType);
     } else if (query.isEmpty) {
-      ref.read(guestStateProvider.notifier).loadGuests(
+      ref
+          .read(guestStateProvider.notifier)
+          .loadGuests(
             isVip: _showVipOnly ? true : null,
             nationality: _selectedNationality,
           );
@@ -167,7 +169,9 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) {
               _isReloadingAfterSuccess = false;
-              ref.read(guestStateProvider.notifier).loadGuests(
+              ref
+                  .read(guestStateProvider.notifier)
+                  .loadGuests(
                     isVip: _showVipOnly ? true : null,
                     nationality: _selectedNationality,
                   );
@@ -187,7 +191,9 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        ref.read(guestStateProvider.notifier).loadGuests(
+        ref
+            .read(guestStateProvider.notifier)
+            .loadGuests(
               isVip: _showVipOnly ? true : null,
               nationality: _selectedNationality,
             );
@@ -209,7 +215,8 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   }
 
   Widget _buildEmptyState() {
-    final hasFilters = _showVipOnly ||
+    final hasFilters =
+        _showVipOnly ||
         _selectedNationality != null ||
         _searchController.text.isNotEmpty;
 
@@ -229,18 +236,18 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
               hasFilters
                   ? context.l10n.guestNotFound
                   : context.l10n.noGuestsYet,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
             ),
             AppSpacing.gapVerticalSm,
             Text(
               hasFilters
                   ? context.l10n.tryDifferentSearch
                   : context.l10n.pressToAddGuest,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textHint,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textHint),
             ),
           ],
         ),
@@ -255,18 +262,14 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
             AppSpacing.gapVerticalMd,
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
             ),
             AppSpacing.gapVerticalLg,
             AppButton(
@@ -283,72 +286,72 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   }
 
   void _navigateToDetail(BuildContext context, Guest guest) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => GuestDetailScreen(guest: guest),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => GuestDetailScreen(guest: guest)));
   }
 
   void _navigateToForm(BuildContext context, [Guest? guest]) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => GuestFormScreen(guest: guest),
-      ),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => GuestFormScreen(guest: guest)));
   }
 
   void _showGuestActions(BuildContext context, Guest guest) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.visibility),
-              title: Text(context.l10n.viewBookingDetails),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToDetail(context, guest);
-              },
+      builder:
+          (context) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.visibility),
+                  title: Text(context.l10n.viewBookingDetails),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToDetail(context, guest);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: Text(context.l10n.edit),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToForm(context, guest);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    guest.isVip ? Icons.star_border : Icons.star,
+                    color: AppColors.warning,
+                  ),
+                  title: Text(
+                    guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _toggleVipStatus(guest);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: Text(context.l10n.history),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToDetail(context, guest);
+                  },
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: Text(context.l10n.edit),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToForm(context, guest);
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                guest.isVip ? Icons.star_border : Icons.star,
-                color: AppColors.warning,
-              ),
-              title: Text(guest.isVip ? context.l10n.removeVip : context.l10n.markVip),
-              onTap: () {
-                Navigator.pop(context);
-                _toggleVipStatus(guest);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: Text(context.l10n.history),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToDetail(context, guest);
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   Future<void> _toggleVipStatus(Guest guest) async {
-    final result =
-        await ref.read(guestStateProvider.notifier).toggleVipStatus(guest.id);
+    final result = await ref
+        .read(guestStateProvider.notifier)
+        .toggleVipStatus(guest.id);
     if (result != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -367,18 +370,19 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => _FilterSheet(
-        showVipOnly: _showVipOnly,
-        selectedNationality: _selectedNationality,
-        onApply: (vipOnly, nationality) {
-          setState(() {
-            _showVipOnly = vipOnly;
-            _selectedNationality = nationality;
-          });
-          Navigator.pop(context);
-          _performSearch(_searchController.text);
-        },
-      ),
+      builder:
+          (context) => _FilterSheet(
+            showVipOnly: _showVipOnly,
+            selectedNationality: _selectedNationality,
+            onApply: (vipOnly, nationality) {
+              setState(() {
+                _showVipOnly = vipOnly;
+                _selectedNationality = nationality;
+              });
+              Navigator.pop(context);
+              _performSearch(_searchController.text);
+            },
+          ),
     );
   }
 }
@@ -408,9 +412,10 @@ class _FilterChip extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
+          color:
+              isSelected
+                  ? AppColors.primary.withValues(alpha: 0.1)
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.divider,
@@ -480,9 +485,7 @@ class _FilterSheetState extends State<_FilterSheet> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: AppColors.divider),
-                ),
+                border: Border(bottom: BorderSide(color: AppColors.divider)),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -490,8 +493,8 @@ class _FilterSheetState extends State<_FilterSheet> {
                   Text(
                     context.l10n.filter,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   TextButton(
                     onPressed: () {
@@ -520,8 +523,8 @@ class _FilterSheetState extends State<_FilterSheet> {
                   Text(
                     context.l10n.nationality,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   AppSpacing.gapVerticalSm,
                   Wrap(
@@ -543,9 +546,7 @@ class _FilterSheetState extends State<_FilterSheet> {
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: AppColors.divider),
-                ),
+                border: Border(top: BorderSide(color: AppColors.divider)),
               ),
               child: SafeArea(
                 child: SizedBox(
@@ -573,9 +574,10 @@ class _FilterSheetState extends State<_FilterSheet> {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
+          color:
+              isSelected
+                  ? AppColors.primary.withValues(alpha: 0.1)
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.divider,

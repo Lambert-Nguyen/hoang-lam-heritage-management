@@ -52,15 +52,19 @@ void main() {
           statusCode: 200,
         );
 
-        when(mockApiClient.post<Map<String, dynamic>>(
-          AppConstants.authLoginEndpoint,
-          data: anyNamed('data'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockApiClient.post<Map<String, dynamic>>(
+            AppConstants.authLoginEndpoint,
+            data: anyNamed('data'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
-        when(mockSecureStorage.write(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        )).thenAnswer((_) async => {});
+        when(
+          mockSecureStorage.write(
+            key: anyNamed('key'),
+            value: anyNamed('value'),
+          ),
+        ).thenAnswer((_) async => {});
 
         // Act
         final result = await authRepository.login(loginRequest);
@@ -72,97 +76,120 @@ void main() {
         expect(result.user.role, UserRole.staff);
 
         // Verify tokens were stored
-        verify(mockSecureStorage.write(
-          key: AppConstants.accessTokenKey,
-          value: 'mock_access_token',
-        )).called(1);
-        verify(mockSecureStorage.write(
-          key: AppConstants.refreshTokenKey,
-          value: 'mock_refresh_token',
-        )).called(1);
+        verify(
+          mockSecureStorage.write(
+            key: AppConstants.accessTokenKey,
+            value: 'mock_access_token',
+          ),
+        ).called(1);
+        verify(
+          mockSecureStorage.write(
+            key: AppConstants.refreshTokenKey,
+            value: 'mock_refresh_token',
+          ),
+        ).called(1);
       });
     });
 
     group('logout', () {
       test('should logout and clear tokens', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.refreshTokenKey))
-            .thenAnswer((_) async => 'mock_refresh_token');
+        when(
+          mockSecureStorage.read(key: AppConstants.refreshTokenKey),
+        ).thenAnswer((_) async => 'mock_refresh_token');
 
-        when(mockApiClient.post(
-          AppConstants.authLogoutEndpoint,
-          data: anyNamed('data'),
-        )).thenAnswer((_) async => Response(
-              requestOptions: RequestOptions(path: '/auth/logout/'),
-              statusCode: 200,
-            ));
+        when(
+          mockApiClient.post(
+            AppConstants.authLogoutEndpoint,
+            data: anyNamed('data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/auth/logout/'),
+            statusCode: 200,
+          ),
+        );
 
-        when(mockSecureStorage.delete(key: anyNamed('key')))
-            .thenAnswer((_) async => {});
+        when(
+          mockSecureStorage.delete(key: anyNamed('key')),
+        ).thenAnswer((_) async => {});
 
         // Act
         await authRepository.logout();
 
         // Assert
-        verify(mockSecureStorage.delete(key: AppConstants.accessTokenKey))
-            .called(1);
-        verify(mockSecureStorage.delete(key: AppConstants.refreshTokenKey))
-            .called(1);
-        verify(mockSecureStorage.delete(key: AppConstants.userDataKey))
-            .called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.accessTokenKey),
+        ).called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.refreshTokenKey),
+        ).called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.userDataKey),
+        ).called(1);
       });
 
       test('should clear tokens even if server logout fails', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.refreshTokenKey))
-            .thenAnswer((_) async => 'mock_refresh_token');
+        when(
+          mockSecureStorage.read(key: AppConstants.refreshTokenKey),
+        ).thenAnswer((_) async => 'mock_refresh_token');
 
-        when(mockApiClient.post(
-          AppConstants.authLogoutEndpoint,
-          data: anyNamed('data'),
-        )).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/auth/logout/'),
-          type: DioExceptionType.connectionError,
-        ));
+        when(
+          mockApiClient.post(
+            AppConstants.authLogoutEndpoint,
+            data: anyNamed('data'),
+          ),
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/auth/logout/'),
+            type: DioExceptionType.connectionError,
+          ),
+        );
 
-        when(mockSecureStorage.delete(key: anyNamed('key')))
-            .thenAnswer((_) async => {});
+        when(
+          mockSecureStorage.delete(key: anyNamed('key')),
+        ).thenAnswer((_) async => {});
 
         // Act
         await authRepository.logout();
 
         // Assert - tokens still cleared despite error
-        verify(mockSecureStorage.delete(key: AppConstants.accessTokenKey))
-            .called(1);
-        verify(mockSecureStorage.delete(key: AppConstants.refreshTokenKey))
-            .called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.accessTokenKey),
+        ).called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.refreshTokenKey),
+        ).called(1);
       });
     });
 
     group('refreshToken', () {
       test('should refresh token successfully', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.refreshTokenKey))
-            .thenAnswer((_) async => 'mock_refresh_token');
+        when(
+          mockSecureStorage.read(key: AppConstants.refreshTokenKey),
+        ).thenAnswer((_) async => 'mock_refresh_token');
 
         final mockResponse = Response(
           requestOptions: RequestOptions(path: '/auth/refresh/'),
-          data: {
-            'access': 'new_access_token',
-            'refresh': 'new_refresh_token',
-          },
+          data: {'access': 'new_access_token', 'refresh': 'new_refresh_token'},
           statusCode: 200,
         );
 
-        when(mockApiClient.post<Map<String, dynamic>>(
-          AppConstants.authRefreshEndpoint,
-          data: anyNamed('data'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockApiClient.post<Map<String, dynamic>>(
+            AppConstants.authRefreshEndpoint,
+            data: anyNamed('data'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
-        when(mockSecureStorage.write(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        )).thenAnswer((_) async => {});
+        when(
+          mockSecureStorage.write(
+            key: anyNamed('key'),
+            value: anyNamed('value'),
+          ),
+        ).thenAnswer((_) async => {});
 
         // Act
         final result = await authRepository.refreshToken();
@@ -172,55 +199,64 @@ void main() {
         expect(result!.access, 'new_access_token');
         expect(result.refresh, 'new_refresh_token');
 
-        verify(mockSecureStorage.write(
-          key: AppConstants.accessTokenKey,
-          value: 'new_access_token',
-        )).called(1);
+        verify(
+          mockSecureStorage.write(
+            key: AppConstants.accessTokenKey,
+            value: 'new_access_token',
+          ),
+        ).called(1);
       });
 
       test('should return null when refresh token not found', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.refreshTokenKey))
-            .thenAnswer((_) async => null);
+        when(
+          mockSecureStorage.read(key: AppConstants.refreshTokenKey),
+        ).thenAnswer((_) async => null);
 
         // Act
         final result = await authRepository.refreshToken();
 
         // Assert
         expect(result, isNull);
-        verifyNever(mockApiClient.post<Map<String, dynamic>>(
-          any,
-          data: anyNamed('data'),
-        ));
+        verifyNever(
+          mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+        );
       });
 
       test('should clear auth data when refresh fails', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.refreshTokenKey))
-            .thenAnswer((_) async => 'expired_refresh_token');
+        when(
+          mockSecureStorage.read(key: AppConstants.refreshTokenKey),
+        ).thenAnswer((_) async => 'expired_refresh_token');
 
-        when(mockApiClient.post<Map<String, dynamic>>(
-          AppConstants.authRefreshEndpoint,
-          data: anyNamed('data'),
-        )).thenThrow(DioException(
-          requestOptions: RequestOptions(path: '/auth/refresh/'),
-          response: Response(
-            requestOptions: RequestOptions(path: '/auth/refresh/'),
-            statusCode: 401,
+        when(
+          mockApiClient.post<Map<String, dynamic>>(
+            AppConstants.authRefreshEndpoint,
+            data: anyNamed('data'),
           ),
-          type: DioExceptionType.badResponse,
-        ));
+        ).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/auth/refresh/'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/auth/refresh/'),
+              statusCode: 401,
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
 
-        when(mockSecureStorage.delete(key: anyNamed('key')))
-            .thenAnswer((_) async => {});
+        when(
+          mockSecureStorage.delete(key: anyNamed('key')),
+        ).thenAnswer((_) async => {});
 
         // Act
         final result = await authRepository.refreshToken();
 
         // Assert
         expect(result, isNull);
-        verify(mockSecureStorage.delete(key: AppConstants.accessTokenKey))
-            .called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.accessTokenKey),
+        ).called(1);
       });
     });
 
@@ -240,14 +276,16 @@ void main() {
           statusCode: 200,
         );
 
-        when(mockApiClient.get<Map<String, dynamic>>(
-          AppConstants.authMeEndpoint,
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockApiClient.get<Map<String, dynamic>>(AppConstants.authMeEndpoint),
+        ).thenAnswer((_) async => mockResponse);
 
-        when(mockSecureStorage.write(
-          key: anyNamed('key'),
-          value: anyNamed('value'),
-        )).thenAnswer((_) async => {});
+        when(
+          mockSecureStorage.write(
+            key: anyNamed('key'),
+            value: anyNamed('value'),
+          ),
+        ).thenAnswer((_) async => {});
 
         // Act
         final user = await authRepository.getCurrentUser();
@@ -255,10 +293,12 @@ void main() {
         // Assert
         expect(user.username, 'testuser');
         expect(user.role, UserRole.manager);
-        verify(mockSecureStorage.write(
-          key: AppConstants.userDataKey,
-          value: anyNamed('value'),
-        )).called(1);
+        verify(
+          mockSecureStorage.write(
+            key: AppConstants.userDataKey,
+            value: anyNamed('value'),
+          ),
+        ).called(1);
       });
     });
 
@@ -271,28 +311,29 @@ void main() {
           confirmPassword: 'newpass456',
         );
 
-        when(mockApiClient.post(
-          AppConstants.authPasswordChangeEndpoint,
-          data: anyNamed('data'),
-        )).thenAnswer((_) async => Response(
-              requestOptions:
-                  RequestOptions(path: '/auth/password/change/'),
-              statusCode: 200,
-            ));
+        when(
+          mockApiClient.post(
+            AppConstants.authPasswordChangeEndpoint,
+            data: anyNamed('data'),
+          ),
+        ).thenAnswer(
+          (_) async => Response(
+            requestOptions: RequestOptions(path: '/auth/password/change/'),
+            statusCode: 200,
+          ),
+        );
 
         // Act & Assert
-        await expectLater(
-          authRepository.changePassword(request),
-          completes,
-        );
+        await expectLater(authRepository.changePassword(request), completes);
       });
     });
 
     group('isAuthenticated', () {
       test('should return true when access token exists', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.accessTokenKey))
-            .thenAnswer((_) async => 'mock_access_token');
+        when(
+          mockSecureStorage.read(key: AppConstants.accessTokenKey),
+        ).thenAnswer((_) async => 'mock_access_token');
 
         // Act
         final result = await authRepository.isAuthenticated();
@@ -303,8 +344,9 @@ void main() {
 
       test('should return false when no access token', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.accessTokenKey))
-            .thenAnswer((_) async => null);
+        when(
+          mockSecureStorage.read(key: AppConstants.accessTokenKey),
+        ).thenAnswer((_) async => null);
 
         // Act
         final result = await authRepository.isAuthenticated();
@@ -317,9 +359,11 @@ void main() {
     group('getCachedUser', () {
       test('should return cached user when data exists', () async {
         // Arrange
-        final userJson = '{"id":1,"username":"testuser","email":"test@example.com","first_name":"Test","last_name":"User","role":"staff"}';
-        when(mockSecureStorage.read(key: AppConstants.userDataKey))
-            .thenAnswer((_) async => userJson);
+        final userJson =
+            '{"id":1,"username":"testuser","email":"test@example.com","first_name":"Test","last_name":"User","role":"staff"}';
+        when(
+          mockSecureStorage.read(key: AppConstants.userDataKey),
+        ).thenAnswer((_) async => userJson);
 
         // Act
         final user = await authRepository.getCachedUser();
@@ -332,8 +376,9 @@ void main() {
 
       test('should return null when no cached data', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.userDataKey))
-            .thenAnswer((_) async => null);
+        when(
+          mockSecureStorage.read(key: AppConstants.userDataKey),
+        ).thenAnswer((_) async => null);
 
         // Act
         final user = await authRepository.getCachedUser();
@@ -344,8 +389,9 @@ void main() {
 
       test('should return null when cached data is invalid', () async {
         // Arrange
-        when(mockSecureStorage.read(key: AppConstants.userDataKey))
-            .thenAnswer((_) async => 'invalid json');
+        when(
+          mockSecureStorage.read(key: AppConstants.userDataKey),
+        ).thenAnswer((_) async => 'invalid json');
 
         // Act
         final user = await authRepository.getCachedUser();
@@ -358,19 +404,23 @@ void main() {
     group('clearAuthData', () {
       test('should clear all auth data', () async {
         // Arrange
-        when(mockSecureStorage.delete(key: anyNamed('key')))
-            .thenAnswer((_) async => {});
+        when(
+          mockSecureStorage.delete(key: anyNamed('key')),
+        ).thenAnswer((_) async => {});
 
         // Act
         await authRepository.clearAuthData();
 
         // Assert
-        verify(mockSecureStorage.delete(key: AppConstants.accessTokenKey))
-            .called(1);
-        verify(mockSecureStorage.delete(key: AppConstants.refreshTokenKey))
-            .called(1);
-        verify(mockSecureStorage.delete(key: AppConstants.userDataKey))
-            .called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.accessTokenKey),
+        ).called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.refreshTokenKey),
+        ).called(1);
+        verify(
+          mockSecureStorage.delete(key: AppConstants.userDataKey),
+        ).called(1);
       });
     });
   });

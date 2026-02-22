@@ -39,8 +39,8 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   final FlutterSecureStorage _storage;
 
   SettingsNotifier({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage(iOptions: _iOSOptions),
-        super(const AppSettings()) {
+    : _storage = storage ?? const FlutterSecureStorage(iOptions: _iOSOptions),
+      super(const AppSettings()) {
     _loadSettings();
   }
 
@@ -48,7 +48,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
   Future<void> _loadSettings() async {
     try {
       // Load theme mode
-      final themeModeStr = await _storage.read(key: SettingsStorageKeys.themeMode);
+      final themeModeStr = await _storage.read(
+        key: SettingsStorageKeys.themeMode,
+      );
       ThemeMode themeMode = ThemeMode.system;
       if (themeModeStr == 'light') {
         themeMode = ThemeMode.light;
@@ -57,20 +59,30 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       }
 
       // Load locale
-      final locale = await _storage.read(key: SettingsStorageKeys.locale) ?? 'vi';
+      final locale =
+          await _storage.read(key: SettingsStorageKeys.locale) ?? 'vi';
 
       // Load text scale factor
-      final textScaleStr = await _storage.read(key: SettingsStorageKeys.textScaleFactor);
-      final textScaleFactor = textScaleStr != null ? double.tryParse(textScaleStr) ?? 1.0 : 1.0;
+      final textScaleStr = await _storage.read(
+        key: SettingsStorageKeys.textScaleFactor,
+      );
+      final textScaleFactor =
+          textScaleStr != null ? double.tryParse(textScaleStr) ?? 1.0 : 1.0;
 
       // Load notification settings
-      final notifyCheckInStr = await _storage.read(key: SettingsStorageKeys.notifyCheckIn);
+      final notifyCheckInStr = await _storage.read(
+        key: SettingsStorageKeys.notifyCheckIn,
+      );
       final notifyCheckIn = notifyCheckInStr != 'false';
 
-      final notifyCheckOutStr = await _storage.read(key: SettingsStorageKeys.notifyCheckOut);
+      final notifyCheckOutStr = await _storage.read(
+        key: SettingsStorageKeys.notifyCheckOut,
+      );
       final notifyCheckOut = notifyCheckOutStr != 'false';
 
-      final notifyCleaningStr = await _storage.read(key: SettingsStorageKeys.notifyCleaning);
+      final notifyCleaningStr = await _storage.read(
+        key: SettingsStorageKeys.notifyCleaning,
+      );
       final notifyCleaning = notifyCleaningStr == 'true';
 
       state = AppSettings(
@@ -150,7 +162,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
 }
 
 /// Provider for app settings
-final settingsProvider = StateNotifierProvider<SettingsNotifier, AppSettings>((ref) {
+final settingsProvider = StateNotifierProvider<SettingsNotifier, AppSettings>((
+  ref,
+) {
   return SettingsNotifier();
 });
 

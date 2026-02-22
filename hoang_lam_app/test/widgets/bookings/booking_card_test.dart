@@ -46,19 +46,15 @@ void main() {
     testWidgets('renders without crashing', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-          home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-            ),
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: BookingCard(booking: testBooking)),
         ),
       );
       await tester.pumpAndSettle();
@@ -70,19 +66,16 @@ void main() {
     testWidgets('displays room number when showRoom is true', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-              showRoom: true,
-            ),
+            body: BookingCard(booking: testBooking, showRoom: true),
           ),
         ),
       );
@@ -94,19 +87,16 @@ void main() {
     testWidgets('displays guest name when showGuest is true', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-              showGuest: true,
-            ),
+            body: BookingCard(booking: testBooking, showGuest: true),
           ),
         ),
       );
@@ -118,19 +108,15 @@ void main() {
     testWidgets('shows status badge', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-          home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-            ),
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: BookingCard(booking: testBooking)),
         ),
       );
       await tester.pumpAndSettle();
@@ -144,19 +130,15 @@ void main() {
     testWidgets('displays booking dates', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-          home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-            ),
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: BookingCard(booking: testBooking)),
         ),
       );
       await tester.pumpAndSettle();
@@ -169,19 +151,15 @@ void main() {
     testWidgets('displays nights count', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-          home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-            ),
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: BookingCard(booking: testBooking)),
         ),
       );
       await tester.pumpAndSettle();
@@ -192,19 +170,15 @@ void main() {
     testWidgets('displays total amount', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-          home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-            ),
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: BookingCard(booking: testBooking)),
         ),
       );
       await tester.pumpAndSettle();
@@ -218,14 +192,14 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -245,19 +219,16 @@ void main() {
     testWidgets('compact mode renders correctly', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-              compact: true,
-            ),
+            body: BookingCard(booking: testBooking, compact: true),
           ),
         ),
       );
@@ -265,7 +236,7 @@ void main() {
 
       // Compact mode should still render the card
       expect(find.byType(BookingCard), findsOneWidget);
-      
+
       // In compact mode, source chip shouldn't be visible
       expect(find.textContaining('Booking.com'), findsNothing);
     });
@@ -273,14 +244,14 @@ void main() {
     testWidgets('hides room when showRoom is false', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: BookingCard(
               booking: testBooking,
@@ -311,20 +282,18 @@ void main() {
 
         await tester.pumpWidget(
           MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-            home: Scaffold(
-              body: BookingCard(booking: booking),
-            ),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('vi'),
+            home: Scaffold(body: BookingCard(booking: booking)),
           ),
         );
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
         final badge = tester.widget<BookingStatusBadge>(
           find.byType(BookingStatusBadge),
@@ -334,25 +303,20 @@ void main() {
     });
 
     testWidgets('handles null room number gracefully', (tester) async {
-      final bookingNoRoomNumber = testBooking.copyWith(
-        roomNumber: null,
-      );
+      final bookingNoRoomNumber = testBooking.copyWith(roomNumber: null);
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: BookingCard(
-              booking: bookingNoRoomNumber,
-              showRoom: true,
-            ),
+            body: BookingCard(booking: bookingNoRoomNumber, showRoom: true),
           ),
         ),
       );
@@ -363,25 +327,20 @@ void main() {
     });
 
     testWidgets('handles null guest details gracefully', (tester) async {
-      final bookingNoGuest = testBooking.copyWith(
-        guestDetails: null,
-      );
+      final bookingNoGuest = testBooking.copyWith(guestDetails: null);
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: BookingCard(
-              booking: bookingNoGuest,
-              showGuest: true,
-            ),
+            body: BookingCard(booking: bookingNoGuest, showGuest: true),
           ),
         ),
       );
@@ -399,19 +358,16 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: BookingCard(
-              booking: pendingBooking,
-              compact: false,
-            ),
+            body: BookingCard(booking: pendingBooking, compact: false),
           ),
         ),
       );
@@ -420,7 +376,9 @@ void main() {
       expect(find.textContaining('Đặt cọc'), findsOneWidget);
     });
 
-    testWidgets('displays check-in time for checked-in bookings', (tester) async {
+    testWidgets('displays check-in time for checked-in bookings', (
+      tester,
+    ) async {
       final checkedInBooking = testBooking.copyWith(
         status: BookingStatus.checkedIn,
         actualCheckIn: DateTime(2024, 1, 15, 14, 30),
@@ -428,19 +386,16 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: BookingCard(
-              booking: checkedInBooking,
-              compact: false,
-            ),
+            body: BookingCard(booking: checkedInBooking, compact: false),
           ),
         ),
       );
@@ -452,20 +407,15 @@ void main() {
     testWidgets('shows chevron icon when onTap is provided', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-          home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-              onTap: () {},
-            ),
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: BookingCard(booking: testBooking, onTap: () {})),
         ),
       );
       await tester.pumpAndSettle();
@@ -476,19 +426,15 @@ void main() {
     testWidgets('wraps in Card widget', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-          home: Scaffold(
-            body: BookingCard(
-              booking: testBooking,
-            ),
-          ),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: BookingCard(booking: testBooking)),
         ),
       );
       await tester.pumpAndSettle();

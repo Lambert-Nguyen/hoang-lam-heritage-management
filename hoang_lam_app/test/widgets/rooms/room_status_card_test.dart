@@ -22,14 +22,14 @@ void main() {
     VoidCallback? onLongPress,
   }) {
     return MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('vi'),
       home: Scaffold(
         body: Center(
           child: RoomStatusCard(
@@ -117,9 +117,7 @@ void main() {
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
 
-      await tester.pumpWidget(buildTestWidget(
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(buildTestWidget(onTap: () => tapped = true));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(RoomStatusCard));
@@ -131,9 +129,9 @@ void main() {
     testWidgets('calls onLongPress when long pressed', (tester) async {
       var longPressed = false;
 
-      await tester.pumpWidget(buildTestWidget(
-        onLongPress: () => longPressed = true,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(onLongPress: () => longPressed = true),
+      );
       await tester.pumpAndSettle();
 
       await tester.longPress(find.byType(RoomStatusCard));
@@ -154,95 +152,95 @@ void main() {
 
   group('RoomDetailCard', () {
     testWidgets('displays room number', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(room: testRoom),
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: RoomDetailCard(room: testRoom)),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('101'), findsOneWidget);
     });
 
     testWidgets('displays room type name', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(room: testRoom),
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: RoomDetailCard(room: testRoom)),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Phòng đơn'), findsOneWidget);
     });
 
     testWidgets('displays status', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(room: testRoom),
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: RoomDetailCard(room: testRoom)),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Trống'), findsOneWidget);
     });
 
     testWidgets('displays floor info', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(room: testRoom),
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: RoomDetailCard(room: testRoom)),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Tầng 1'), findsOneWidget);
     });
 
     testWidgets('displays formatted rate', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(room: testRoom),
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: RoomDetailCard(room: testRoom)),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('300.000đ'), findsOneWidget);
@@ -256,19 +254,19 @@ void main() {
         notes: 'VIP guest room',
       );
 
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(room: roomWithNotes),
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(body: RoomDetailCard(room: roomWithNotes)),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('VIP guest room'), findsOneWidget);
@@ -277,22 +275,21 @@ void main() {
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
 
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(
-            room: testRoom,
-            onTap: () => tapped = true,
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(
+            body: RoomDetailCard(room: testRoom, onTap: () => tapped = true),
           ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(RoomDetailCard));
@@ -304,22 +301,24 @@ void main() {
     testWidgets('calls onStatusTap when status is tapped', (tester) async {
       var statusTapped = false;
 
-      await tester.pumpWidget(MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
-        home: Scaffold(
-          body: RoomDetailCard(
-            room: testRoom,
-            onStatusTap: () => statusTapped = true,
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Scaffold(
+            body: RoomDetailCard(
+              room: testRoom,
+              onStatusTap: () => statusTapped = true,
+            ),
           ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       // Find and tap the status container

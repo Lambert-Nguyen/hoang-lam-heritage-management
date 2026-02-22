@@ -12,10 +12,7 @@ import '../common/app_button.dart';
 class AssignTaskDialog extends ConsumerStatefulWidget {
   final HousekeepingTask task;
 
-  const AssignTaskDialog({
-    super.key,
-    required this.task,
-  });
+  const AssignTaskDialog({super.key, required this.task});
 
   @override
   ConsumerState<AssignTaskDialog> createState() => _AssignTaskDialogState();
@@ -35,9 +32,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
     final staffAsync = ref.watch(staffListProvider);
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
@@ -54,10 +49,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.person_add,
-                    color: AppColors.primary,
-                  ),
+                  child: Icon(Icons.person_add, color: AppColors.primary),
                 ),
                 AppSpacing.gapHorizontalMd,
                 Expanded(
@@ -66,15 +58,14 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                     children: [
                       Text(
                         context.l10n.assignRepair,
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '${context.l10n.room} ${widget.task.roomNumber ?? widget.task.room}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -94,9 +85,9 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
             Text(
               context.l10n.selectStaff,
               style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textSecondary,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: AppColors.textSecondary,
+              ),
             ),
             AppSpacing.gapVerticalSm,
 
@@ -105,9 +96,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
               child: staffAsync.when(
                 data: (staffList) {
                   if (staffList.isEmpty) {
-                    return Center(
-                      child: Text(context.l10n.noStaffAvailable),
-                    );
+                    return Center(child: Text(context.l10n.noStaffAvailable));
                   }
                   return ListView.builder(
                     shrinkWrap: true,
@@ -118,27 +107,29 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                     },
                   );
                 },
-                loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(AppSpacing.lg),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-                error: (error, _) => Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        context.l10n.errorLoadingStaffList,
-                        style: TextStyle(color: AppColors.error),
+                loading:
+                    () => const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(AppSpacing.lg),
+                        child: CircularProgressIndicator(),
                       ),
-                      TextButton(
-                        onPressed: () => ref.invalidate(staffListProvider),
-                        child: Text(context.l10n.retry),
+                    ),
+                error:
+                    (error, _) => Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            context.l10n.errorLoadingStaffList,
+                            style: TextStyle(color: AppColors.error),
+                          ),
+                          TextButton(
+                            onPressed: () => ref.invalidate(staffListProvider),
+                            child: Text(context.l10n.retry),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
               ),
             ),
 
@@ -158,9 +149,10 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                 Expanded(
                   child: AppButton(
                     label: context.l10n.confirm,
-                    onPressed: _selectedUserId != null
-                        ? () => Navigator.pop(context, _selectedUserId)
-                        : null,
+                    onPressed:
+                        _selectedUserId != null
+                            ? () => Navigator.pop(context, _selectedUserId)
+                            : null,
                   ),
                 ),
               ],
@@ -189,9 +181,10 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
+          color:
+              isSelected
+                  ? AppColors.primary.withValues(alpha: 0.1)
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.divider,
@@ -200,9 +193,10 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: isSelected
-                  ? AppColors.primary
-                  : AppColors.textSecondary.withValues(alpha: 0.2),
+              backgroundColor:
+                  isSelected
+                      ? AppColors.primary
+                      : AppColors.textSecondary.withValues(alpha: 0.2),
               child: Icon(
                 Icons.person,
                 color: isSelected ? Colors.white : AppColors.textSecondary,
@@ -216,23 +210,19 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                   Text(
                     context.l10n.assignToSelf,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Text(
                     currentUser?.username ?? '',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
-            if (isSelected)
-              Icon(
-                Icons.check_circle,
-                color: AppColors.primary,
-              ),
+            if (isSelected) Icon(Icons.check_circle, color: AppColors.primary),
           ],
         ),
       ),
@@ -248,14 +238,13 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
           _selectedUserId = staff.id;
         });
       },
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       tileColor: isSelected ? AppColors.primary.withValues(alpha: 0.1) : null,
       leading: CircleAvatar(
-        backgroundColor: isSelected
-            ? AppColors.primary
-            : AppColors.textSecondary.withValues(alpha: 0.2),
+        backgroundColor:
+            isSelected
+                ? AppColors.primary
+                : AppColors.textSecondary.withValues(alpha: 0.2),
         child: Text(
           staff.displayName[0],
           style: TextStyle(
@@ -272,13 +261,14 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
       ),
       subtitle: Text(
         staff.roleDisplay ?? staff.role?.localizedName(context.l10n) ?? '',
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
       ),
-      trailing: isSelected
-          ? Icon(Icons.check_circle, color: AppColors.primary)
-          : null,
+      trailing:
+          isSelected
+              ? Icon(Icons.check_circle, color: AppColors.primary)
+              : null,
     );
   }
 }

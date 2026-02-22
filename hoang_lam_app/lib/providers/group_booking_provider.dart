@@ -16,67 +16,76 @@ final groupBookingRepositoryProvider = Provider<GroupBookingRepository>((ref) {
 // ============================================================
 
 /// Provider for all group bookings
-final groupBookingsProvider =
-    FutureProvider<List<GroupBooking>>((ref) async {
+final groupBookingsProvider = FutureProvider<List<GroupBooking>>((ref) async {
   final repository = ref.watch(groupBookingRepositoryProvider);
   return repository.getGroupBookings();
 });
 
 /// Provider for upcoming group bookings (next 7 days)
-final upcomingGroupBookingsProvider =
-    FutureProvider<List<GroupBooking>>((ref) async {
+final upcomingGroupBookingsProvider = FutureProvider<List<GroupBooking>>((
+  ref,
+) async {
   final repository = ref.watch(groupBookingRepositoryProvider);
   return repository.getUpcomingGroupBookings();
 });
 
 /// Provider for today's check-ins
-final todayGroupCheckInsProvider =
-    FutureProvider<List<GroupBooking>>((ref) async {
+final todayGroupCheckInsProvider = FutureProvider<List<GroupBooking>>((
+  ref,
+) async {
   final repository = ref.watch(groupBookingRepositoryProvider);
   return repository.getTodayCheckIns();
 });
 
 /// Provider for today's check-outs
-final todayGroupCheckOutsProvider =
-    FutureProvider<List<GroupBooking>>((ref) async {
+final todayGroupCheckOutsProvider = FutureProvider<List<GroupBooking>>((
+  ref,
+) async {
   final repository = ref.watch(groupBookingRepositoryProvider);
   return repository.getTodayCheckOuts();
 });
 
 /// Provider for active group bookings (confirmed or checked-in)
-final activeGroupBookingsProvider =
-    FutureProvider<List<GroupBooking>>((ref) async {
+final activeGroupBookingsProvider = FutureProvider<List<GroupBooking>>((
+  ref,
+) async {
   final repository = ref.watch(groupBookingRepositoryProvider);
   final allBookings = await repository.getGroupBookings();
   return allBookings
-      .where((b) =>
-          b.status == GroupBookingStatus.confirmed ||
-          b.status == GroupBookingStatus.checkedIn)
+      .where(
+        (b) =>
+            b.status == GroupBookingStatus.confirmed ||
+            b.status == GroupBookingStatus.checkedIn,
+      )
       .toList();
 });
 
 /// Provider for a specific group booking by ID
-final groupBookingByIdProvider =
-    FutureProvider.family<GroupBooking, int>((ref, id) async {
+final groupBookingByIdProvider = FutureProvider.family<GroupBooking, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(groupBookingRepositoryProvider);
   return repository.getGroupBooking(id);
 });
 
 /// Provider for filtered group bookings
 final filteredGroupBookingsProvider =
-    FutureProvider.family<List<GroupBooking>, GroupBookingFilter>(
-        (ref, filter) async {
-  final repository = ref.watch(groupBookingRepositoryProvider);
-  return repository.getGroupBookings(
-    status: filter.status,
-    checkInFrom: filter.checkInFrom,
-    checkInTo: filter.checkInTo,
-    checkOutFrom: filter.checkOutFrom,
-    checkOutTo: filter.checkOutTo,
-    search: filter.search,
-    roomId: filter.roomId,
-  );
-});
+    FutureProvider.family<List<GroupBooking>, GroupBookingFilter>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(groupBookingRepositoryProvider);
+      return repository.getGroupBookings(
+        status: filter.status,
+        checkInFrom: filter.checkInFrom,
+        checkInTo: filter.checkInTo,
+        checkOutFrom: filter.checkOutFrom,
+        checkOutTo: filter.checkOutTo,
+        search: filter.search,
+        roomId: filter.roomId,
+      );
+    });
 
 /// Filter model for group bookings
 @freezed
@@ -113,7 +122,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
   final Ref _ref;
 
   GroupBookingNotifier(this._repository, this._ref)
-      : super(const GroupBookingState());
+    : super(const GroupBookingState());
 
   /// Load all group bookings
   Future<void> loadBookings({
@@ -130,15 +139,9 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
         checkInFrom: checkInFrom,
         checkInTo: checkInTo,
       );
-      state = state.copyWith(
-        isLoading: false,
-        bookings: bookings,
-      );
+      state = state.copyWith(isLoading: false, bookings: bookings);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
@@ -152,19 +155,13 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(upcomingGroupBookingsProvider);
       return newBooking;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
 
   /// Update a group booking
-  Future<GroupBooking?> updateBooking(
-    int id,
-    GroupBookingUpdate update,
-  ) async {
+  Future<GroupBooking?> updateBooking(int id, GroupBookingUpdate update) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updatedBooking = await _repository.updateGroupBooking(id, update);
@@ -173,10 +170,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(groupBookingsProvider);
       return updatedBooking;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -192,10 +186,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(upcomingGroupBookingsProvider);
       return confirmedBooking;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -212,10 +203,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(activeGroupBookingsProvider);
       return checkedInBooking;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -232,10 +220,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(activeGroupBookingsProvider);
       return checkedOutBooking;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -255,10 +240,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(activeGroupBookingsProvider);
       return cancelledBooking;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -273,10 +255,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(groupBookingsProvider);
       return updatedBooking;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -291,10 +270,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(upcomingGroupBookingsProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
@@ -313,6 +289,6 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
 /// Provider for GroupBookingNotifier
 final groupBookingNotifierProvider =
     StateNotifierProvider<GroupBookingNotifier, GroupBookingState>((ref) {
-  final repository = ref.watch(groupBookingRepositoryProvider);
-  return GroupBookingNotifier(repository, ref);
-});
+      final repository = ref.watch(groupBookingRepositoryProvider);
+      return GroupBookingNotifier(repository, ref);
+    });

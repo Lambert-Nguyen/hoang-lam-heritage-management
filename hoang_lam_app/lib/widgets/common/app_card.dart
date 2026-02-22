@@ -29,19 +29,18 @@ class AppCard extends StatelessWidget {
       color: color,
       elevation: elevation,
       margin: margin ?? EdgeInsets.zero,
-      shape: borderRadius != null
-          ? RoundedRectangleBorder(borderRadius: borderRadius!)
-          : null,
-      child: Padding(
-        padding: padding ?? AppSpacing.paddingCard,
-        child: child,
-      ),
+      shape:
+          borderRadius != null
+              ? RoundedRectangleBorder(borderRadius: borderRadius!)
+              : null,
+      child: Padding(padding: padding ?? AppSpacing.paddingCard, child: child),
     );
 
     if (onTap != null) {
       return InkWell(
         onTap: onTap,
-        borderRadius: borderRadius ?? BorderRadius.circular(AppSpacing.radiusLg),
+        borderRadius:
+            borderRadius ?? BorderRadius.circular(AppSpacing.radiusLg),
         child: card,
       );
     }
@@ -100,10 +99,7 @@ class StatCard extends StatelessWidget {
           AppSpacing.gapVerticalXs,
           Text(
             label,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
           ),
         ],
       ),

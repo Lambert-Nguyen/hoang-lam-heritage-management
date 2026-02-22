@@ -82,7 +82,14 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
             onPressed: () => _navigateToForm(EntryType.expense),
             backgroundColor: AppColors.expense,
             icon: const Icon(Icons.remove, color: Colors.white),
-            label: Text(l10n.expense, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            label: Text(
+              l10n.expense,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           AppSpacing.gapVerticalMd,
           FloatingActionButton.extended(
@@ -90,7 +97,14 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
             onPressed: () => _navigateToForm(EntryType.income),
             backgroundColor: AppColors.income,
             icon: const Icon(Icons.add, color: Colors.white),
-            label: Text(l10n.income, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+            label: Text(
+              l10n.income,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -128,13 +142,14 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   void _showFilterDialog() {
     showModalBottomSheet(
       context: context,
-      builder: (context) => _FilterBottomSheet(
-        currentFilter: _filterType,
-        onFilterChanged: (type) {
-          setState(() => _filterType = type);
-          Navigator.pop(context);
-        },
-      ),
+      builder:
+          (context) => _FilterBottomSheet(
+            currentFilter: _filterType,
+            onFilterChanged: (type) {
+              setState(() => _filterType = type);
+              Navigator.pop(context);
+            },
+          ),
     );
   }
 
@@ -161,39 +176,43 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       padding: AppSpacing.paddingAll,
       child: summaryAsync.when(
         data: (summary) => _buildSummaryContent(l10n, summary),
-        loading: () => const Center(
-          child: Padding(
-            padding: EdgeInsets.all(AppSpacing.lg),
-            child: CircularProgressIndicator(color: AppColors.onPrimary),
-          ),
-        ),
-        error: (error, _) => Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Text(
-            '${l10n.dataLoadError}: $error',
-            style: const TextStyle(color: AppColors.onPrimary),
-          ),
-        ),
+        loading:
+            () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(AppSpacing.lg),
+                child: CircularProgressIndicator(color: AppColors.onPrimary),
+              ),
+            ),
+        error:
+            (error, _) => Padding(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              child: Text(
+                '${l10n.dataLoadError}: $error',
+                style: const TextStyle(color: AppColors.onPrimary),
+              ),
+            ),
       ),
     );
   }
 
-  Widget _buildSummaryContent(AppLocalizations l10n, MonthlyFinancialSummary summary) {
-    final profitMargin = summary.totalIncome > 0
-        ? (summary.netBalance / summary.totalIncome * 100)
-        : 0.0;
-    final profitRatio = summary.totalIncome > 0
-        ? (summary.netBalance / summary.totalIncome).clamp(0.0, 1.0)
-        : 0.0;
+  Widget _buildSummaryContent(
+    AppLocalizations l10n,
+    MonthlyFinancialSummary summary,
+  ) {
+    final profitMargin =
+        summary.totalIncome > 0
+            ? (summary.netBalance / summary.totalIncome * 100)
+            : 0.0;
+    final profitRatio =
+        summary.totalIncome > 0
+            ? (summary.netBalance / summary.totalIncome).clamp(0.0, 1.0)
+            : 0.0;
 
     return Column(
       children: [
         Text(
           _getMonthYearText(summary.month, summary.year),
-          style: const TextStyle(
-            color: AppColors.onPrimary,
-            fontSize: 14,
-          ),
+          style: const TextStyle(color: AppColors.onPrimary, fontSize: 14),
         ),
         AppSpacing.gapVerticalMd,
         Row(
@@ -233,7 +252,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
           child: LinearProgressIndicator(
             value: profitRatio,
             backgroundColor: AppColors.onPrimary.withValues(alpha: 0.2),
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.onPrimary),
+            valueColor: const AlwaysStoppedAnimation<Color>(
+              AppColors.onPrimary,
+            ),
             minHeight: 8,
           ),
         ),
@@ -271,7 +292,11 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         ),
         AppSpacing.gapVerticalXs,
         Text(
-          '${isIncome ? '+' : isProfit ? '' : '-'}${CurrencyFormatter.formatCompact(value)}',
+          '${isIncome
+              ? '+'
+              : isProfit
+              ? ''
+              : '-'}${CurrencyFormatter.formatCompact(value)}',
           style: const TextStyle(
             color: AppColors.onPrimary,
             fontSize: 18,
@@ -387,14 +412,17 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         );
       },
       loading: () => const LoadingIndicator(),
-      error: (error, stack) => ErrorDisplay(
-        message: '${context.l10n.dataLoadError}: $error',
-        onRetry: _refreshData,
-      ),
+      error:
+          (error, stack) => ErrorDisplay(
+            message: '${context.l10n.dataLoadError}: $error',
+            onRetry: _refreshData,
+          ),
     );
   }
 
-  Map<String, List<FinancialEntryListItem>> _groupEntriesByDate(List<FinancialEntryListItem> entries) {
+  Map<String, List<FinancialEntryListItem>> _groupEntriesByDate(
+    List<FinancialEntryListItem> entries,
+  ) {
     final groups = <String, List<FinancialEntryListItem>>{};
     for (final entry in entries) {
       final key = _getDateKey(entry.date);
@@ -410,11 +438,15 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     final l10n = context.l10n;
 
     if (dateOnly == today) return l10n.today;
-    if (dateOnly == today.subtract(const Duration(days: 1))) return l10n.yesterday;
+    if (dateOnly == today.subtract(const Duration(days: 1)))
+      return l10n.yesterday;
     return DateFormat('dd/MM/yyyy').format(date);
   }
 
-  Widget _buildTransactionCard(BuildContext context, FinancialEntryListItem entry) {
+  Widget _buildTransactionCard(
+    BuildContext context,
+    FinancialEntryListItem entry,
+  ) {
     final isIncome = entry.entryType == EntryType.income;
 
     return AppCard(
@@ -475,33 +507,35 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
 
   Future<void> _showEntryDetail(FinancialEntryListItem listItem) async {
     // Fetch full entry details
-    final entry = await ref.read(financialEntryByIdProvider(listItem.id).future);
+    final entry = await ref.read(
+      financialEntryByIdProvider(listItem.id).future,
+    );
     if (!mounted) return;
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => _EntryDetailSheet(
-        entry: entry,
-        onEdit: () {
-          Navigator.pop(context);
-          _editEntry(entry);
-        },
-        onDelete: () async {
-          Navigator.pop(context);
-          await _deleteEntry(entry);
-        },
-      ),
+      builder:
+          (context) => _EntryDetailSheet(
+            entry: entry,
+            onEdit: () {
+              Navigator.pop(context);
+              _editEntry(entry);
+            },
+            onDelete: () async {
+              Navigator.pop(context);
+              await _deleteEntry(entry);
+            },
+          ),
     );
   }
 
   Future<void> _editEntry(FinancialEntry entry) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (context) => FinanceFormScreen(
-          entryType: entry.entryType,
-          entry: entry,
-        ),
+        builder:
+            (context) =>
+                FinanceFormScreen(entryType: entry.entryType, entry: entry),
         fullscreenDialog: true,
       ),
     );
@@ -514,37 +548,38 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.confirmDelete),
-        content: Text('${l10n.areYouSure} "${entry.categoryName ?? ""}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.confirmDelete),
+            content: Text('${l10n.areYouSure} "${entry.categoryName ?? ""}"?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                child: Text(l10n.delete),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true) {
       try {
         await ref.read(financeNotifierProvider.notifier).deleteEntry(entry.id);
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.success)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.success)));
           _refreshData();
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }
@@ -572,22 +607,34 @@ class _FilterBottomSheet extends StatelessWidget {
         children: [
           Text(
             l10n.filter,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           _buildOption(context, null, l10n.all, Icons.list),
-          _buildOption(context, EntryType.income, l10n.income, Icons.arrow_downward),
-          _buildOption(context, EntryType.expense, l10n.expense, Icons.arrow_upward),
+          _buildOption(
+            context,
+            EntryType.income,
+            l10n.income,
+            Icons.arrow_downward,
+          ),
+          _buildOption(
+            context,
+            EntryType.expense,
+            l10n.expense,
+            Icons.arrow_upward,
+          ),
           AppSpacing.gapVerticalMd,
         ],
       ),
     );
   }
 
-  Widget _buildOption(BuildContext context, EntryType? type, String label, IconData icon) {
+  Widget _buildOption(
+    BuildContext context,
+    EntryType? type,
+    String label,
+    IconData icon,
+  ) {
     final isSelected = currentFilter == type;
 
     return ListTile(
@@ -602,7 +649,8 @@ class _FilterBottomSheet extends StatelessWidget {
           color: isSelected ? AppColors.primary : null,
         ),
       ),
-      trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
+      trailing:
+          isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
       onTap: () => onFilterChanged(type),
     );
   }
@@ -643,7 +691,8 @@ class _EntryDetailSheet extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  entry.categoryIcon ?? (isIncome ? Icons.arrow_downward : Icons.arrow_upward),
+                  entry.categoryIcon ??
+                      (isIncome ? Icons.arrow_downward : Icons.arrow_upward),
                   color: isIncome ? AppColors.income : AppColors.expense,
                   size: 24,
                 ),
@@ -683,9 +732,18 @@ class _EntryDetailSheet extends StatelessWidget {
           AppSpacing.gapVerticalLg,
 
           // Details
-          _buildDetailRow(context.l10n.description, entry.description.isNotEmpty ? entry.description : '-'),
-          _buildDetailRow(context.l10n.dateLabel, dateFormat.format(entry.entryDate)),
-          _buildDetailRow(context.l10n.paymentMethod, entry.paymentMethod.localizedName(context.l10n)),
+          _buildDetailRow(
+            context.l10n.description,
+            entry.description.isNotEmpty ? entry.description : '-',
+          ),
+          _buildDetailRow(
+            context.l10n.dateLabel,
+            dateFormat.format(entry.entryDate),
+          ),
+          _buildDetailRow(
+            context.l10n.paymentMethod,
+            entry.paymentMethod.localizedName(context.l10n),
+          ),
           if (entry.reference.isNotEmpty)
             _buildDetailRow(context.l10n.referenceCode, entry.reference),
           if (entry.notes.isNotEmpty)
@@ -700,9 +758,7 @@ class _EntryDetailSheet extends StatelessWidget {
                 child: OutlinedButton.icon(
                   onPressed: onEdit,
                   icon: const Icon(Icons.edit),
-                  label: Builder(
-                    builder: (context) => Text(context.l10n.edit),
-                  ),
+                  label: Builder(builder: (context) => Text(context.l10n.edit)),
                 ),
               ),
               AppSpacing.gapHorizontalMd,
@@ -711,7 +767,11 @@ class _EntryDetailSheet extends StatelessWidget {
                   onPressed: onDelete,
                   icon: const Icon(Icons.delete, color: AppColors.error),
                   label: Builder(
-                    builder: (context) => Text(context.l10n.delete, style: const TextStyle(color: AppColors.error)),
+                    builder:
+                        (context) => Text(
+                          context.l10n.delete,
+                          style: const TextStyle(color: AppColors.error),
+                        ),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.error),
@@ -742,12 +802,7 @@ class _EntryDetailSheet extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
+          Expanded(child: Text(value, style: const TextStyle(fontSize: 14))),
         ],
       ),
     );

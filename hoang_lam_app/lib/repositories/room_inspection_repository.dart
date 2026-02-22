@@ -7,7 +7,7 @@ class RoomInspectionRepository {
   final ApiClient _apiClient;
 
   RoomInspectionRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Room Inspections ====================
 
@@ -63,7 +63,10 @@ class RoomInspectionRepository {
   }
 
   /// Update an inspection
-  Future<RoomInspection> updateInspection(int id, RoomInspectionUpdate data) async {
+  Future<RoomInspection> updateInspection(
+    int id,
+    RoomInspectionUpdate data,
+  ) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       '${AppConstants.roomInspectionsEndpoint}$id/',
       data: data.toJson(),
@@ -85,7 +88,10 @@ class RoomInspectionRepository {
   }
 
   /// Complete an inspection
-  Future<RoomInspection> completeInspection(int id, CompleteInspection data) async {
+  Future<RoomInspection> completeInspection(
+    int id,
+    CompleteInspection data,
+  ) async {
     final response = await _apiClient.post<Map<String, dynamic>>(
       '${AppConstants.roomInspectionsEndpoint}$id/complete/',
       data: data.toJson(),
@@ -94,10 +100,11 @@ class RoomInspectionRepository {
   }
 
   /// Create inspection from checkout
-  Future<RoomInspection> createFromCheckout(int bookingId, {int? templateId}) async {
-    final data = <String, dynamic>{
-      'booking_id': bookingId,
-    };
+  Future<RoomInspection> createFromCheckout(
+    int bookingId, {
+    int? templateId,
+  }) async {
+    final data = <String, dynamic>{'booking_id': bookingId};
     if (templateId != null) {
       data['template_id'] = templateId;
     }
@@ -179,7 +186,9 @@ class RoomInspectionRepository {
   }
 
   /// Create a new template
-  Future<InspectionTemplate> createTemplate(InspectionTemplateCreate data) async {
+  Future<InspectionTemplate> createTemplate(
+    InspectionTemplateCreate data,
+  ) async {
     final response = await _apiClient.post<Map<String, dynamic>>(
       AppConstants.inspectionTemplatesEndpoint,
       data: data.toJson(),
@@ -188,7 +197,10 @@ class RoomInspectionRepository {
   }
 
   /// Update a template
-  Future<InspectionTemplate> updateTemplate(int id, Map<String, dynamic> data) async {
+  Future<InspectionTemplate> updateTemplate(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       '${AppConstants.inspectionTemplatesEndpoint}$id/',
       data: data,
@@ -202,7 +214,9 @@ class RoomInspectionRepository {
   }
 
   /// Get default templates by type
-  Future<List<InspectionTemplate>> getDefaultTemplates({InspectionType? type}) async {
+  Future<List<InspectionTemplate>> getDefaultTemplates({
+    InspectionType? type,
+  }) async {
     final queryParams = <String, dynamic>{};
     if (type != null) {
       queryParams['inspection_type'] = _typeToApi(type);
@@ -260,7 +274,9 @@ class RoomInspectionRepository {
       if (data.containsKey('results')) {
         final results = data['results'] as List<dynamic>;
         return results
-            .map((json) => RoomInspection.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) => RoomInspection.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       }
     }
@@ -285,7 +301,10 @@ class RoomInspectionRepository {
       if (data.containsKey('results')) {
         final results = data['results'] as List<dynamic>;
         return results
-            .map((json) => InspectionTemplate.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) =>
+                  InspectionTemplate.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       }
     }
@@ -293,7 +312,9 @@ class RoomInspectionRepository {
     // Handle non-paginated response
     if (data is List) {
       return data
-          .map((json) => InspectionTemplate.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => InspectionTemplate.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 

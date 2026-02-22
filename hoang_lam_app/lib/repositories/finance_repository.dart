@@ -7,7 +7,7 @@ class FinanceRepository {
   final ApiClient _apiClient;
 
   FinanceRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Financial Categories ====================
 
@@ -38,7 +38,9 @@ class FinanceRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => FinancialCategory.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => FinancialCategory.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -47,7 +49,10 @@ class FinanceRepository {
       if (dataMap.containsKey('results')) {
         final results = dataMap['results'] as List<dynamic>;
         return results
-            .map((json) => FinancialCategory.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) =>
+                  FinancialCategory.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       }
     }
@@ -139,7 +144,10 @@ class FinanceRepository {
   }
 
   /// Toggle category active status
-  Future<FinancialCategory> toggleCategoryActive(int id, {required bool isActive}) async {
+  Future<FinancialCategory> toggleCategoryActive(
+    int id, {
+    required bool isActive,
+  }) async {
     return updateCategory(id, isActive: isActive);
   }
 
@@ -189,7 +197,10 @@ class FinanceRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => FinancialEntryListItem.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) =>
+                FinancialEntryListItem.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -198,7 +209,10 @@ class FinanceRepository {
       if (dataMap.containsKey('results')) {
         final results = dataMap['results'] as List<dynamic>;
         return results
-            .map((json) => FinancialEntryListItem.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) =>
+                  FinancialEntryListItem.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       }
     }
@@ -235,7 +249,8 @@ class FinanceRepository {
     final data = {
       'entry_type': entry.entryType.toApiValue,
       'category': entry.category,
-      'amount': entry.amount.truncate(), // Send as integer (backend decimal_places=0)
+      'amount':
+          entry.amount.truncate(), // Send as integer (backend decimal_places=0)
       'currency': entry.currency,
       'exchange_rate': entry.exchangeRate,
       'date': entry.date.toIso8601String().split('T')[0],
@@ -265,16 +280,18 @@ class FinanceRepository {
     int? booking,
     String? receiptNumber,
   }) async {
-    return createEntry(FinancialEntryRequest(
-      entryType: EntryType.income,
-      category: category,
-      amount: amount,
-      date: date,
-      description: description,
-      paymentMethod: paymentMethod,
-      booking: booking,
-      receiptNumber: receiptNumber,
-    ));
+    return createEntry(
+      FinancialEntryRequest(
+        entryType: EntryType.income,
+        category: category,
+        amount: amount,
+        date: date,
+        description: description,
+        paymentMethod: paymentMethod,
+        booking: booking,
+        receiptNumber: receiptNumber,
+      ),
+    );
   }
 
   /// Create expense entry (convenience method)
@@ -286,23 +303,29 @@ class FinanceRepository {
     PaymentMethod paymentMethod = PaymentMethod.cash,
     String? receiptNumber,
   }) async {
-    return createEntry(FinancialEntryRequest(
-      entryType: EntryType.expense,
-      category: category,
-      amount: amount,
-      date: date,
-      description: description,
-      paymentMethod: paymentMethod,
-      receiptNumber: receiptNumber,
-    ));
+    return createEntry(
+      FinancialEntryRequest(
+        entryType: EntryType.expense,
+        category: category,
+        amount: amount,
+        date: date,
+        description: description,
+        paymentMethod: paymentMethod,
+        receiptNumber: receiptNumber,
+      ),
+    );
   }
 
   /// Update a financial entry
-  Future<FinancialEntry> updateEntry(int id, FinancialEntryRequest entry) async {
+  Future<FinancialEntry> updateEntry(
+    int id,
+    FinancialEntryRequest entry,
+  ) async {
     final data = {
       'entry_type': entry.entryType.toApiValue,
       'category': entry.category,
-      'amount': entry.amount.truncate(), // Send as integer (backend decimal_places=0)
+      'amount':
+          entry.amount.truncate(), // Send as integer (backend decimal_places=0)
       'currency': entry.currency,
       'exchange_rate': entry.exchangeRate,
       'date': entry.date.toIso8601String().split('T')[0],
@@ -552,7 +575,9 @@ class FinanceRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => OutstandingDeposit.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => OutstandingDeposit.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -704,7 +729,9 @@ class FinanceRepository {
   }
 
   /// Create a new exchange rate
-  Future<ExchangeRate> createExchangeRate(ExchangeRateCreateRequest request) async {
+  Future<ExchangeRate> createExchangeRate(
+    ExchangeRateCreateRequest request,
+  ) async {
     final data = {
       'from_currency': request.fromCurrency,
       'to_currency': request.toCurrency,
@@ -764,13 +791,13 @@ class FinanceRepository {
   // ==================== Receipts (Phase 2.8) ====================
 
   /// Generate receipt data for a booking
-  Future<ReceiptData> generateReceipt(int bookingId, {String currency = 'VND'}) async {
+  Future<ReceiptData> generateReceipt(
+    int bookingId, {
+    String currency = 'VND',
+  }) async {
     final response = await _apiClient.post<Map<String, dynamic>>(
       '${AppConstants.receiptsEndpoint}generate/',
-      data: {
-        'booking_id': bookingId,
-        'currency': currency,
-      },
+      data: {'booking_id': bookingId, 'currency': currency},
     );
     if (response.data == null) {
       throw Exception('Failed to generate receipt');

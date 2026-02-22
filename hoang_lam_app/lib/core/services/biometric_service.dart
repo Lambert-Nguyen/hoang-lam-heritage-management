@@ -61,9 +61,7 @@ class BiometricService {
   }
 
   /// Authenticate using biometrics
-  Future<bool> authenticate({
-    required String localizedReason,
-  }) async {
+  Future<bool> authenticate({required String localizedReason}) async {
     if (kIsWeb) return false;
     try {
       return await _localAuth.authenticate(

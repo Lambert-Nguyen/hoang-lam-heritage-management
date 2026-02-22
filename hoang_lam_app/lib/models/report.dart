@@ -42,7 +42,6 @@ extension ReportGroupByExtension on ReportGroupBy {
   /// Convert to API value
   String get toApiValue => name;
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case ReportGroupBy.day:
@@ -177,7 +176,6 @@ extension ReportTypeExtension on ReportType {
   /// Convert to API value
   String get toApiValue => name;
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case ReportType.occupancy:
@@ -230,7 +228,6 @@ extension ComparisonTypeExtension on ComparisonType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case ComparisonType.previousPeriod:
@@ -277,7 +274,6 @@ extension DemographicsGroupByExtension on DemographicsGroupBy {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case DemographicsGroupBy.nationality:
@@ -317,7 +313,9 @@ sealed class OccupancyReportRequest with _$OccupancyReportRequest {
   const factory OccupancyReportRequest({
     @JsonKey(name: 'start_date') required DateTime startDate,
     @JsonKey(name: 'end_date') required DateTime endDate,
-    @JsonKey(name: 'group_by') @Default(ReportGroupBy.day) ReportGroupBy groupBy,
+    @JsonKey(name: 'group_by')
+    @Default(ReportGroupBy.day)
+    ReportGroupBy groupBy,
     @JsonKey(name: 'room_type') int? roomType,
   }) = _OccupancyReportRequest;
 
@@ -325,11 +323,11 @@ sealed class OccupancyReportRequest with _$OccupancyReportRequest {
       _$OccupancyReportRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'start_date': _formatDate(startDate),
-        'end_date': _formatDate(endDate),
-        'group_by': groupBy.toApiValue,
-        if (roomType != null) 'room_type': roomType.toString(),
-      };
+    'start_date': _formatDate(startDate),
+    'end_date': _formatDate(endDate),
+    'group_by': groupBy.toApiValue,
+    if (roomType != null) 'room_type': roomType.toString(),
+  };
 }
 
 // ==================== REVENUE REPORT ====================
@@ -361,7 +359,9 @@ sealed class RevenueReportRequest with _$RevenueReportRequest {
   const factory RevenueReportRequest({
     @JsonKey(name: 'start_date') required DateTime startDate,
     @JsonKey(name: 'end_date') required DateTime endDate,
-    @JsonKey(name: 'group_by') @Default(ReportGroupBy.day) ReportGroupBy groupBy,
+    @JsonKey(name: 'group_by')
+    @Default(ReportGroupBy.day)
+    ReportGroupBy groupBy,
     int? category,
   }) = _RevenueReportRequest;
 
@@ -369,11 +369,11 @@ sealed class RevenueReportRequest with _$RevenueReportRequest {
       _$RevenueReportRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'start_date': _formatDate(startDate),
-        'end_date': _formatDate(endDate),
-        'group_by': groupBy.toApiValue,
-        if (category != null) 'category': category.toString(),
-      };
+    'start_date': _formatDate(startDate),
+    'end_date': _formatDate(endDate),
+    'group_by': groupBy.toApiValue,
+    if (category != null) 'category': category.toString(),
+  };
 }
 
 // ==================== KPI REPORT ====================
@@ -433,10 +433,10 @@ sealed class KPIReportRequest with _$KPIReportRequest {
       _$KPIReportRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'start_date': _formatDate(startDate),
-        'end_date': _formatDate(endDate),
-        'compare_previous': comparePrevious.toString(),
-      };
+    'start_date': _formatDate(startDate),
+    'end_date': _formatDate(endDate),
+    'compare_previous': comparePrevious.toString(),
+  };
 }
 
 // ==================== EXPENSE REPORT ====================
@@ -489,9 +489,9 @@ sealed class ExpenseReportRequest with _$ExpenseReportRequest {
       _$ExpenseReportRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'start_date': _formatDate(startDate),
-        'end_date': _formatDate(endDate),
-      };
+    'start_date': _formatDate(startDate),
+    'end_date': _formatDate(endDate),
+  };
 }
 
 // ==================== CHANNEL PERFORMANCE ====================
@@ -537,9 +537,9 @@ sealed class ChannelPerformanceRequest with _$ChannelPerformanceRequest {
       _$ChannelPerformanceRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'start_date': _formatDate(startDate),
-        'end_date': _formatDate(endDate),
-      };
+    'start_date': _formatDate(startDate),
+    'end_date': _formatDate(endDate),
+  };
 }
 
 // ==================== GUEST DEMOGRAPHICS ====================
@@ -578,10 +578,10 @@ sealed class GuestDemographicsRequest with _$GuestDemographicsRequest {
       _$GuestDemographicsRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'start_date': _formatDate(startDate),
-        'end_date': _formatDate(endDate),
-        'group_by': groupBy.toApiValue,
-      };
+    'start_date': _formatDate(startDate),
+    'end_date': _formatDate(endDate),
+    'group_by': groupBy.toApiValue,
+  };
 }
 
 // ==================== COMPARATIVE REPORT ====================
@@ -645,12 +645,12 @@ sealed class ComparativeReportRequest with _$ComparativeReportRequest {
       _$ComparativeReportRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'current_start': _formatDate(currentStart),
-        'current_end': _formatDate(currentEnd),
-        if (previousStart != null) 'previous_start': _formatDate(previousStart!),
-        if (previousEnd != null) 'previous_end': _formatDate(previousEnd!),
-        'comparison_type': comparisonType.toApiValue,
-      };
+    'current_start': _formatDate(currentStart),
+    'current_end': _formatDate(currentEnd),
+    if (previousStart != null) 'previous_start': _formatDate(previousStart!),
+    if (previousEnd != null) 'previous_end': _formatDate(previousEnd!),
+    'comparison_type': comparisonType.toApiValue,
+  };
 }
 
 // ==================== EXPORT REQUEST ====================
@@ -671,16 +671,15 @@ sealed class ExportReportRequest with _$ExportReportRequest {
       _$ExportReportRequestFromJson(json);
 
   Map<String, String> toQueryParams() => {
-        'report_type': reportType.toApiValue,
-        'start_date': _formatDate(startDate),
-        'end_date': _formatDate(endDate),
-        'format': format.toApiValue,
-      };
+    'report_type': reportType.toApiValue,
+    'start_date': _formatDate(startDate),
+    'end_date': _formatDate(endDate),
+    'format': format.toApiValue,
+  };
 
   /// Generate suggested filename
   String get suggestedFilename {
-    final dateRange =
-        '${_formatDate(startDate)}_to_${_formatDate(endDate)}';
+    final dateRange = '${_formatDate(startDate)}_to_${_formatDate(endDate)}';
     return '${reportType.toApiValue}_report_$dateRange.${format.fileExtension}';
   }
 }

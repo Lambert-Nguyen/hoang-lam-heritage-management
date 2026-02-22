@@ -59,7 +59,6 @@ extension UserRoleExtension on UserRole {
     return this != UserRole.housekeeping;
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case UserRole.owner:

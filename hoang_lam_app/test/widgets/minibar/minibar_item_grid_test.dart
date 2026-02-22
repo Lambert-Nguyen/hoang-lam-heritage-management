@@ -100,12 +100,13 @@ void main() {
       expect(find.byType(MinibarItemCard), findsNWidgets(4));
     });
 
-    testWidgets('calls onItemTap with correct item when tapped',
-        (tester) async {
+    testWidgets('calls onItemTap with correct item when tapped', (
+      tester,
+    ) async {
       MinibarItem? tappedItem;
-      await tester.pumpWidget(buildWidget(
-        onItemTap: (item) => tappedItem = item,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onItemTap: (item) => tappedItem = item),
+      );
       await tester.pumpAndSettle();
 
       // Tap on the first item (Coca Cola)
@@ -133,9 +134,9 @@ void main() {
 
     testWidgets('inactive item does not trigger onItemTap', (tester) async {
       MinibarItem? tappedItem;
-      await tester.pumpWidget(buildWidget(
-        onItemTap: (item) => tappedItem = item,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onItemTap: (item) => tappedItem = item),
+      );
       await tester.pumpAndSettle();
 
       // Tap on inactive item (Beer)

@@ -11,10 +11,11 @@ final nightAuditRepositoryProvider = Provider<NightAuditRepository>((ref) {
 });
 
 /// Provider for all night audits list
-final nightAuditsProvider = FutureProvider.autoDispose<List<NightAuditListItem>>((ref) async {
-  final repository = ref.watch(nightAuditRepositoryProvider);
-  return repository.getAudits();
-});
+final nightAuditsProvider =
+    FutureProvider.autoDispose<List<NightAuditListItem>>((ref) async {
+      final repository = ref.watch(nightAuditRepositoryProvider);
+      return repository.getAudits();
+    });
 
 /// Provider for today's night audit
 final todayAuditProvider = FutureProvider.autoDispose<NightAudit>((ref) async {
@@ -23,22 +24,29 @@ final todayAuditProvider = FutureProvider.autoDispose<NightAudit>((ref) async {
 });
 
 /// Provider for latest night audit
-final latestAuditProvider = FutureProvider.autoDispose<NightAudit?>((ref) async {
+final latestAuditProvider = FutureProvider.autoDispose<NightAudit?>((
+  ref,
+) async {
   final repository = ref.watch(nightAuditRepositoryProvider);
   return repository.getLatestAudit();
 });
 
 /// Provider for a single night audit by ID
-final nightAuditByIdProvider = FutureProvider.autoDispose.family<NightAudit, int>((ref, id) async {
-  final repository = ref.watch(nightAuditRepositoryProvider);
-  return repository.getAudit(id);
-});
+final nightAuditByIdProvider = FutureProvider.autoDispose
+    .family<NightAudit, int>((ref, id) async {
+      final repository = ref.watch(nightAuditRepositoryProvider);
+      return repository.getAudit(id);
+    });
 
 /// Provider for audits in a specific month
-final monthlyAuditsProvider = FutureProvider.autoDispose.family<List<NightAuditListItem>, NightAuditMonthYear>((ref, monthYear) async {
-  final repository = ref.watch(nightAuditRepositoryProvider);
-  return repository.getAuditsForMonth(monthYear.year, monthYear.month);
-});
+final monthlyAuditsProvider = FutureProvider.autoDispose
+    .family<List<NightAuditListItem>, NightAuditMonthYear>((
+      ref,
+      monthYear,
+    ) async {
+      final repository = ref.watch(nightAuditRepositoryProvider);
+      return repository.getAuditsForMonth(monthYear.year, monthYear.month);
+    });
 
 /// Helper class for month/year parameters (renamed to avoid conflict)
 class NightAuditMonthYear {
@@ -50,7 +58,9 @@ class NightAuditMonthYear {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is NightAuditMonthYear && year == other.year && month == other.month;
+      other is NightAuditMonthYear &&
+          year == other.year &&
+          month == other.month;
 
   @override
   int get hashCode => year.hashCode ^ month.hashCode;
@@ -74,7 +84,8 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
   final NightAuditRepository _repository;
   final Ref _ref;
 
-  NightAuditNotifier(this._repository, this._ref) : super(const NightAuditState());
+  NightAuditNotifier(this._repository, this._ref)
+    : super(const NightAuditState());
 
   /// Load all audits
   Future<void> loadAudits({
@@ -195,7 +206,8 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
 }
 
 /// Provider for NightAuditNotifier
-final nightAuditNotifierProvider = StateNotifierProvider<NightAuditNotifier, NightAuditState>((ref) {
-  final repository = ref.watch(nightAuditRepositoryProvider);
-  return NightAuditNotifier(repository, ref);
-});
+final nightAuditNotifierProvider =
+    StateNotifierProvider<NightAuditNotifier, NightAuditState>((ref) {
+      final repository = ref.watch(nightAuditRepositoryProvider);
+      return NightAuditNotifier(repository, ref);
+    });

@@ -7,7 +7,7 @@ class LostFoundRepository {
   final ApiClient _apiClient;
 
   LostFoundRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Lost & Found Items ====================
 
@@ -113,9 +113,7 @@ class LostFoundRepository {
 
   /// Delete a lost & found item
   Future<void> deleteItem(int id) async {
-    await _apiClient.delete<dynamic>(
-      '${AppConstants.lostFoundEndpoint}$id/',
-    );
+    await _apiClient.delete<dynamic>('${AppConstants.lostFoundEndpoint}$id/');
   }
 
   // ==================== Actions ====================
@@ -165,9 +163,7 @@ class LostFoundRepository {
     required String reason,
     String? notes,
   }) async {
-    final data = <String, dynamic>{
-      'reason': reason,
-    };
+    final data = <String, dynamic>{'reason': reason};
     if (notes != null) {
       data['notes'] = notes;
     }

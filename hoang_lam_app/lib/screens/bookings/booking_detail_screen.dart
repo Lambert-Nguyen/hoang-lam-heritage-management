@@ -11,7 +11,7 @@ import '../../widgets/bookings/early_late_fee_dialog.dart';
 import 'booking_form_screen.dart';
 
 /// Booking Detail Screen - Phase 1.9.7
-/// 
+///
 /// Displays comprehensive booking information:
 /// - Room details and status
 /// - Guest information
@@ -19,15 +19,12 @@ import 'booking_form_screen.dart';
 /// - Payment details (total, deposit, balance)
 /// - Booking source and special requests
 /// - Action buttons (edit, check-in, check-out, cancel)
-/// 
+///
 /// Follows design plan mockup from docs/HOANG_LAM_HERITAGE_MANAGEMENT_APP_DESIGN_PLAN.md
 class BookingDetailScreen extends ConsumerWidget {
   final int bookingId;
 
-  const BookingDetailScreen({
-    super.key,
-    required this.bookingId,
-  });
+  const BookingDetailScreen({super.key, required this.bookingId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,7 +35,8 @@ class BookingDetailScreen extends ConsumerWidget {
         title: Text(context.l10n.bookingDetails),
         actions: bookingAsync.whenOrNull(
           data: (booking) {
-            final isEditable = booking.status != BookingStatus.checkedOut &&
+            final isEditable =
+                booking.status != BookingStatus.checkedOut &&
                 booking.status != BookingStatus.cancelled &&
                 booking.status != BookingStatus.noShow;
             if (!isEditable) return <Widget>[];
@@ -64,24 +62,29 @@ class BookingDetailScreen extends ConsumerWidget {
       body: bookingAsync.when(
         data: (booking) => _buildContent(context, ref, booking),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                const SizedBox(height: 16),
-                Text('${context.l10n.error}: $error'),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text(context.l10n.goBack),
+        error:
+            (error, stack) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text('${context.l10n.error}: $error'),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(context.l10n.goBack),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
-          ),
-        ),
       ),
     );
   }
@@ -106,10 +109,11 @@ class BookingDetailScreen extends ConsumerWidget {
             child: Column(
               children: [
                 Text(
-                  booking.roomNumber ?? '${context.l10n.roomNumber} ${booking.room}',
+                  booking.roomNumber ??
+                      '${context.l10n.roomNumber} ${booking.room}',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 if (booking.roomTypeName != null) ...[
                   const SizedBox(height: 4),
@@ -132,7 +136,10 @@ class BookingDetailScreen extends ConsumerWidget {
               _buildInfoRow(context.l10n.name, booking.guestName),
               if (booking.guestPhone.isNotEmpty)
                 _buildInfoRow(context.l10n.phoneNumber, booking.guestPhone),
-              _buildInfoRow(context.l10n.guestCount, '${booking.guestCount} ${context.l10n.people}'),
+              _buildInfoRow(
+                context.l10n.guestCount,
+                '${booking.guestCount} ${context.l10n.people}',
+              ),
             ],
           ),
 
@@ -197,7 +204,8 @@ class BookingDetailScreen extends ConsumerWidget {
           ),
 
           // Early/Late Fees Section
-          if (booking.earlyCheckInFee > 0 || booking.lateCheckOutFee > 0 ||
+          if (booking.earlyCheckInFee > 0 ||
+              booking.lateCheckOutFee > 0 ||
               booking.status == BookingStatus.checkedIn ||
               booking.status == BookingStatus.confirmed)
             _buildSection(
@@ -237,7 +245,12 @@ class BookingDetailScreen extends ConsumerWidget {
                           booking.status == BookingStatus.confirmed)
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () => _handleRecordEarlyCheckIn(context, ref, booking),
+                            onPressed:
+                                () => _handleRecordEarlyCheckIn(
+                                  context,
+                                  ref,
+                                  booking,
+                                ),
                             icon: const Icon(Icons.login, size: 16),
                             label: Text(
                               context.l10n.earlyCheckIn,
@@ -254,7 +267,12 @@ class BookingDetailScreen extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () => _handleRecordLateCheckOut(context, ref, booking),
+                            onPressed:
+                                () => _handleRecordLateCheckOut(
+                                  context,
+                                  ref,
+                                  booking,
+                                ),
                             icon: const Icon(Icons.logout, size: 16),
                             label: Text(
                               context.l10n.lateCheckOut,
@@ -339,17 +357,15 @@ class BookingDetailScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             child: Text(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           const Divider(height: 1),
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
-              children: children,
-            ),
+            child: Column(children: children),
           ),
         ],
       ),
@@ -385,7 +401,8 @@ class BookingDetailScreen extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-                color: valueColor ?? (highlight ? AppColors.info : Colors.black87),
+                color:
+                    valueColor ?? (highlight ? AppColors.info : Colors.black87),
               ),
               textAlign: TextAlign.right,
             ),
@@ -395,7 +412,11 @@ class BookingDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, WidgetRef ref, Booking booking) {
+  Widget _buildActionButtons(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -444,7 +465,9 @@ class BookingDetailScreen extends ConsumerWidget {
 
         // Mark as no-show
         if (booking.status == BookingStatus.confirmed &&
-            DateTime.now().isAfter(booking.checkInDate.add(const Duration(hours: 24)))) ...[
+            DateTime.now().isAfter(
+              booking.checkInDate.add(const Duration(hours: 24)),
+            )) ...[
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: () => _handleNoShow(context, ref, booking),
@@ -502,23 +525,30 @@ class BookingDetailScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _handleCheckIn(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleCheckIn(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('${context.l10n.confirm} ${context.l10n.checkIn}'),
-        content: Text('${context.l10n.confirm} ${context.l10n.checkIn} ${booking.guestName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(context.l10n.cancel),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text('${context.l10n.confirm} ${context.l10n.checkIn}'),
+            content: Text(
+              '${context.l10n.confirm} ${context.l10n.checkIn} ${booking.guestName}?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(context.l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(context.l10n.checkIn),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(context.l10n.checkIn),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {
@@ -529,36 +559,45 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(allRoomsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.checkIn} ${context.l10n.success}')),
+            SnackBar(
+              content: Text('${context.l10n.checkIn} ${context.l10n.success}'),
+            ),
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }
   }
 
-  Future<void> _handleCheckOut(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleCheckOut(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('${context.l10n.confirm} ${context.l10n.checkOut}'),
-        content: Text('${context.l10n.confirm} ${context.l10n.checkOut} ${booking.guestName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(context.l10n.cancel),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text('${context.l10n.confirm} ${context.l10n.checkOut}'),
+            content: Text(
+              '${context.l10n.confirm} ${context.l10n.checkOut} ${booking.guestName}?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(context.l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                child: Text(context.l10n.checkOut),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(context.l10n.checkOut),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {
@@ -569,135 +608,165 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(allRoomsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.checkOut} ${context.l10n.success}')),
+            SnackBar(
+              content: Text('${context.l10n.checkOut} ${context.l10n.success}'),
+            ),
           );
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }
   }
 
-  Future<void> _handleCancel(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleCancel(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.cancel),
-        content: Text('${context.l10n.areYouSure} ${booking.guestName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(context.l10n.cancel),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(context.l10n.cancel),
+            content: Text('${context.l10n.areYouSure} ${booking.guestName}?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(context.l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
+                child: Text(context.l10n.confirm),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: Text(context.l10n.confirm),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {
       try {
-        await ref.read(bookingNotifierProvider.notifier).cancelBooking(bookingId);
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .cancelBooking(bookingId);
         ref.invalidate(bookingByIdProvider(bookingId));
         ref.invalidate(roomsProvider);
         ref.invalidate(allRoomsProvider);
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.success)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.success)));
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }
   }
 
-  Future<void> _handleNoShow(BuildContext context, WidgetRef ref, Booking booking) async {
+  Future<void> _handleNoShow(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.noShow),
-        content: Text('${context.l10n.noShow} ${booking.guestName}?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(context.l10n.cancel),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(context.l10n.noShow),
+            content: Text('${context.l10n.noShow} ${booking.guestName}?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(context.l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.warning,
+                ),
+                child: Text(context.l10n.confirm),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
-            child: Text(context.l10n.confirm),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {
       try {
-        await ref.read(bookingNotifierProvider.notifier).markAsNoShow(bookingId);
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .markAsNoShow(bookingId);
         ref.invalidate(bookingByIdProvider(bookingId));
         ref.invalidate(roomsProvider);
         ref.invalidate(allRoomsProvider);
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.success)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.success)));
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }
   }
 
-  Future<void> _showDeleteConfirmation(BuildContext context, WidgetRef ref) async {
+  Future<void> _showDeleteConfirmation(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.delete),
-        content: Text('${context.l10n.areYouSure}\n\n${context.l10n.actionCannotBeUndone}'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(context.l10n.cancel),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(context.l10n.delete),
+            content: Text(
+              '${context.l10n.areYouSure}\n\n${context.l10n.actionCannotBeUndone}',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(false),
+                child: Text(context.l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(ctx).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
+                child: Text(context.l10n.delete),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: Text(context.l10n.delete),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {
       try {
-        await ref.read(bookingNotifierProvider.notifier).deleteBooking(bookingId);
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .deleteBooking(bookingId);
         if (context.mounted) {
           Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(context.l10n.success)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.success)));
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }
@@ -710,17 +779,20 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => EarlyLateFeeDialog(
-        isEarlyCheckIn: true,
-        nightlyRate: booking.nightlyRate,
-        currentHours: booking.earlyCheckInHours,
-        currentFee: booking.earlyCheckInFee,
-      ),
+      builder:
+          (ctx) => EarlyLateFeeDialog(
+            isEarlyCheckIn: true,
+            nightlyRate: booking.nightlyRate,
+            currentHours: booking.earlyCheckInHours,
+            currentFee: booking.earlyCheckInFee,
+          ),
     );
 
     if (result != null && context.mounted) {
       try {
-        await ref.read(bookingNotifierProvider.notifier).recordEarlyCheckIn(
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .recordEarlyCheckIn(
               bookingId,
               hours: result['hours'] as double,
               fee: result['fee'] as int,
@@ -735,9 +807,9 @@ class BookingDetailScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }
@@ -750,17 +822,20 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (ctx) => EarlyLateFeeDialog(
-        isEarlyCheckIn: false,
-        nightlyRate: booking.nightlyRate,
-        currentHours: booking.lateCheckOutHours,
-        currentFee: booking.lateCheckOutFee,
-      ),
+      builder:
+          (ctx) => EarlyLateFeeDialog(
+            isEarlyCheckIn: false,
+            nightlyRate: booking.nightlyRate,
+            currentHours: booking.lateCheckOutHours,
+            currentFee: booking.lateCheckOutFee,
+          ),
     );
 
     if (result != null && context.mounted) {
       try {
-        await ref.read(bookingNotifierProvider.notifier).recordLateCheckOut(
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .recordLateCheckOut(
               bookingId,
               hours: result['hours'] as double,
               fee: result['fee'] as int,
@@ -775,9 +850,9 @@ class BookingDetailScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${context.l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
         }
       }
     }

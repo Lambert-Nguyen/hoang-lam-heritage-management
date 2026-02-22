@@ -6,7 +6,8 @@ import '../models/rate_plan.dart';
 class RatePlanRepository {
   final ApiClient _apiClient;
 
-  RatePlanRepository({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  RatePlanRepository({ApiClient? apiClient})
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Rate Plans ====================
 
@@ -38,7 +39,9 @@ class RatePlanRepository {
       if (dataMap.containsKey('results')) {
         final list = dataMap['results'] as List<dynamic>;
         return list
-            .map((json) => RatePlanListItem.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) => RatePlanListItem.fromJson(json as Map<String, dynamic>),
+            )
             .toList();
       }
     }
@@ -47,7 +50,9 @@ class RatePlanRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => RatePlanListItem.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => RatePlanListItem.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -67,7 +72,9 @@ class RatePlanRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => RatePlanListItem.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => RatePlanListItem.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -148,7 +155,11 @@ class RatePlanRepository {
       if (dataMap.containsKey('results')) {
         final list = dataMap['results'] as List<dynamic>;
         return list
-            .map((json) => DateRateOverrideListItem.fromJson(json as Map<String, dynamic>))
+            .map(
+              (json) => DateRateOverrideListItem.fromJson(
+                json as Map<String, dynamic>,
+              ),
+            )
             .toList();
       }
     }
@@ -157,7 +168,10 @@ class RatePlanRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => DateRateOverrideListItem.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) =>
+                DateRateOverrideListItem.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -187,7 +201,10 @@ class RatePlanRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => DateRateOverrideListItem.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) =>
+                DateRateOverrideListItem.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -206,7 +223,9 @@ class RatePlanRepository {
   }
 
   /// Create a new date rate override
-  Future<DateRateOverride> createDateRateOverride(DateRateOverrideCreateRequest request) async {
+  Future<DateRateOverride> createDateRateOverride(
+    DateRateOverrideCreateRequest request,
+  ) async {
     final response = await _apiClient.post<Map<String, dynamic>>(
       AppConstants.dateRateOverridesEndpoint,
       data: request.toJson(),
@@ -232,7 +251,9 @@ class RatePlanRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => DateRateOverride.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => DateRateOverride.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -240,7 +261,10 @@ class RatePlanRepository {
   }
 
   /// Update an existing date rate override
-  Future<DateRateOverride> updateDateRateOverride(int id, Map<String, dynamic> updates) async {
+  Future<DateRateOverride> updateDateRateOverride(
+    int id,
+    Map<String, dynamic> updates,
+  ) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       '${AppConstants.dateRateOverridesEndpoint}$id/',
       data: updates,

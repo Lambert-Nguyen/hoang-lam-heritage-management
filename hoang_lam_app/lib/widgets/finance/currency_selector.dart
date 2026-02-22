@@ -30,7 +30,9 @@ class CurrencyOption {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CurrencyOption && runtimeType == other.runtimeType && code == other.code;
+      other is CurrencyOption &&
+          runtimeType == other.runtimeType &&
+          code == other.code;
 
   @override
   int get hashCode => code.hashCode;
@@ -56,7 +58,7 @@ class CurrencySelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return DropdownButtonFormField<String>(
       value: selectedCurrency,
       decoration: InputDecoration(
@@ -64,39 +66,43 @@ class CurrencySelector extends StatelessWidget {
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
-      items: currencies.map((currency) {
-        return DropdownMenuItem<String>(
-          value: currency.code,
-          child: Row(
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  currency.symbol,
-                  style: TextStyle(
-                    color: theme.colorScheme.onPrimaryContainer,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+      items:
+          currencies.map((currency) {
+            return DropdownMenuItem<String>(
+              value: currency.code,
+              child: Row(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      currency.symbol,
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Text(currency.code),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(currency.code),
-            ],
-          ),
-        );
-      }).toList(),
-      onChanged: enabled ? (value) {
-        if (value != null && onChanged != null) {
-          onChanged!(value);
-        }
-      } : null,
+            );
+          }).toList(),
+      onChanged:
+          enabled
+              ? (value) {
+                if (value != null && onChanged != null) {
+                  onChanged!(value);
+                }
+              }
+              : null,
     );
   }
 }
@@ -128,44 +134,50 @@ class CompactCurrencySelector extends StatelessWidget {
       enabled: enabled,
       initialValue: selectedCurrency,
       onSelected: onChanged,
-      itemBuilder: (context) => currencies.map((currency) {
-        return PopupMenuItem<String>(
-          value: currency.code,
-          child: Row(
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: currency.code == selectedCurrency
-                      ? theme.colorScheme.primaryContainer
-                      : theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  currency.symbol,
-                  style: TextStyle(
-                    color: currency.code == selectedCurrency
-                        ? theme.colorScheme.onPrimaryContainer
-                        : theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+      itemBuilder:
+          (context) =>
+              currencies.map((currency) {
+                return PopupMenuItem<String>(
+                  value: currency.code,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color:
+                              currency.code == selectedCurrency
+                                  ? theme.colorScheme.primaryContainer
+                                  : theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          currency.symbol,
+                          style: TextStyle(
+                            color:
+                                currency.code == selectedCurrency
+                                    ? theme.colorScheme.onPrimaryContainer
+                                    : theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(currency.displayName),
+                    ],
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(currency.displayName),
-            ],
-          ),
-        );
-      }).toList(),
+                );
+              }).toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.5)),
+          border: Border.all(
+            color: theme.colorScheme.outline.withValues(alpha: 0.5),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -207,7 +219,7 @@ class ExchangeRateDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -249,10 +261,12 @@ class ExchangeRateDisplay extends StatelessWidget {
 
   String _formatRate(double rate) {
     if (rate >= 1000) {
-      return rate.toStringAsFixed(0).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (match) => '${match[1]},',
-      );
+      return rate
+          .toStringAsFixed(0)
+          .replaceAllMapped(
+            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (match) => '${match[1]},',
+          );
     }
     return rate.toStringAsFixed(2);
   }
@@ -282,7 +296,7 @@ class ConvertedAmountDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -352,18 +366,22 @@ class ConvertedAmountDisplay extends StatelessWidget {
   }
 
   String _formatAmount(double amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
-    );
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (match) => '${match[1]},',
+        );
   }
 
   String _formatRate(double rate) {
     if (rate >= 1000) {
-      return rate.toStringAsFixed(0).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (match) => '${match[1]},',
-      );
+      return rate
+          .toStringAsFixed(0)
+          .replaceAllMapped(
+            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (match) => '${match[1]},',
+          );
     }
     return rate.toStringAsFixed(4);
   }

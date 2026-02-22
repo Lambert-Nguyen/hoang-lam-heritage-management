@@ -11,7 +11,7 @@ import '../storage/hive_storage.dart';
 import 'connectivity_service.dart';
 
 /// Sync manager for offline operations
-/// 
+///
 /// This class handles:
 /// - Queueing operations when offline
 /// - Syncing operations when online
@@ -20,14 +20,14 @@ import 'connectivity_service.dart';
 class SyncManager {
   final Ref _ref;
   final _uuid = const Uuid();
-  
+
   StreamSubscription<ConnectivityStatus>? _connectivitySubscription;
   Timer? _retryTimer;
   bool _isSyncing = false;
-  
+
   static const int _maxRetries = 5;
   static const Duration _retryDelay = Duration(seconds: 30);
-  
+
   SyncManager(this._ref) {
     _init();
   }
@@ -35,7 +35,9 @@ class SyncManager {
   void _init() {
     // Listen to connectivity changes
     final connectivityService = _ref.read(connectivityServiceProvider);
-    _connectivitySubscription = connectivityService.statusStream.listen((status) {
+    _connectivitySubscription = connectivityService.statusStream.listen((
+      status,
+    ) {
       if (status == ConnectivityStatus.online) {
         // Device came online, start syncing
         syncPendingOperations();
@@ -67,18 +69,20 @@ class SyncManager {
   Future<List<OfflineOperation>> getPendingOperations() async {
     final box = await HiveStorage.pendingOperationsBox;
     final operations = <OfflineOperation>[];
-    
+
     for (final key in box.keys) {
       final json = box.get(key);
       if (json != null && json is Map) {
         try {
-          operations.add(OfflineOperation.fromJson(Map<String, dynamic>.from(json)));
+          operations.add(
+            OfflineOperation.fromJson(Map<String, dynamic>.from(json)),
+          );
         } catch (e) {
           // Skip invalid operations
         }
       }
     }
-    
+
     // Sort by created_at (oldest first)
     operations.sort((a, b) => a.createdAt.compareTo(b.createdAt));
     return operations;
@@ -93,18 +97,12 @@ class SyncManager {
   /// Sync all pending operations
   Future<SyncResult> syncPendingOperations() async {
     if (_isSyncing) {
-      return SyncResult(
-        success: false,
-        message: 'Sync already in progress',
-      );
+      return SyncResult(success: false, message: 'Sync already in progress');
     }
 
     final connectivityService = _ref.read(connectivityServiceProvider);
     if (!connectivityService.isOnline) {
-      return SyncResult(
-        success: false,
-        message: 'Device is offline',
-      );
+      return SyncResult(success: false, message: 'Device is offline');
     }
 
     _isSyncing = true;
@@ -114,7 +112,7 @@ class SyncManager {
 
     try {
       final operations = await getPendingOperations();
-      
+
       for (final operation in operations) {
         try {
           await _executeOperation(operation);
@@ -213,7 +211,9 @@ class SyncManager {
     throw UnimplementedError('Room sync not implemented');
   }
 
-  Future<void> _executeFinancialEntryOperation(OfflineOperation operation) async {
+  Future<void> _executeFinancialEntryOperation(
+    OfflineOperation operation,
+  ) async {
     // TODO: Implement financial entry sync
     throw UnimplementedError('FinancialEntry sync not implemented');
   }
@@ -257,9 +257,12 @@ class SyncManager {
   }
 
   /// Increment retry count for a failed operation
-  Future<void> _incrementRetryCount(OfflineOperation operation, String error) async {
+  Future<void> _incrementRetryCount(
+    OfflineOperation operation,
+    String error,
+  ) async {
     final newRetryCount = operation.retryCount + 1;
-    
+
     if (newRetryCount >= _maxRetries) {
       // Max retries reached, mark as permanently failed
       // TODO: Could move to a "dead letter" box for manual review

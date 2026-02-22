@@ -128,10 +128,9 @@ void main() {
 
     testWidgets('calls onClear when clear button tapped', (tester) async {
       bool cleared = false;
-      await tester.pumpWidget(buildWidget(
-        cartState: filledCartState,
-        onClear: () => cleared = true,
-      ));
+      await tester.pumpWidget(
+        buildWidget(cartState: filledCartState, onClear: () => cleared = true),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.delete_sweep));
@@ -161,11 +160,13 @@ void main() {
         guest: 1,
         room: 1,
       );
-      await tester.pumpWidget(buildWidget(
-        cartState: filledCartState,
-        booking: mockBooking,
-        onCheckout: () => checkedOut = true,
-      ));
+      await tester.pumpWidget(
+        buildWidget(
+          cartState: filledCartState,
+          booking: mockBooking,
+          onCheckout: () => checkedOut = true,
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.textContaining('Thanh toán'));
@@ -174,8 +175,7 @@ void main() {
       expect(checkedOut, isTrue);
     });
 
-    testWidgets('checkout button is disabled when no booking',
-        (tester) async {
+    testWidgets('checkout button is disabled when no booking', (tester) async {
       await tester.pumpWidget(buildWidget(cartState: filledCartState));
       await tester.pumpAndSettle();
 
@@ -184,8 +184,9 @@ void main() {
       // Tapping should not cause errors when disabled (button is disabled when no booking)
     });
 
-    testWidgets('displays booking info when booking is provided',
-        (tester) async {
+    testWidgets('displays booking info when booking is provided', (
+      tester,
+    ) async {
       final mockBooking = Booking(
         id: 1,
         roomNumber: '101',
@@ -198,10 +199,9 @@ void main() {
         room: 1,
       );
 
-      await tester.pumpWidget(buildWidget(
-        cartState: filledCartState,
-        booking: mockBooking,
-      ));
+      await tester.pumpWidget(
+        buildWidget(cartState: filledCartState, booking: mockBooking),
+      );
       await tester.pumpAndSettle();
 
       // Should show room number combined with guest name
@@ -212,13 +212,15 @@ void main() {
       int? updatedItemId;
       int? updatedQuantity;
 
-      await tester.pumpWidget(buildWidget(
-        cartState: filledCartState,
-        onUpdateQuantity: (id, qty) {
-          updatedItemId = id;
-          updatedQuantity = qty;
-        },
-      ));
+      await tester.pumpWidget(
+        buildWidget(
+          cartState: filledCartState,
+          onUpdateQuantity: (id, qty) {
+            updatedItemId = id;
+            updatedQuantity = qty;
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Find and tap increment button (add icon)
@@ -229,17 +231,21 @@ void main() {
       expect(updatedQuantity, equals(3)); // 2 + 1
     });
 
-    testWidgets('decrement button decreases quantity when qty > 1', (tester) async {
+    testWidgets('decrement button decreases quantity when qty > 1', (
+      tester,
+    ) async {
       int? updatedItemId;
       int? updatedQuantity;
 
-      await tester.pumpWidget(buildWidget(
-        cartState: filledCartState,
-        onUpdateQuantity: (id, qty) {
-          updatedItemId = id;
-          updatedQuantity = qty;
-        },
-      ));
+      await tester.pumpWidget(
+        buildWidget(
+          cartState: filledCartState,
+          onUpdateQuantity: (id, qty) {
+            updatedItemId = id;
+            updatedQuantity = qty;
+          },
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Find and tap decrement button (remove icon)
@@ -250,7 +256,9 @@ void main() {
       expect(updatedQuantity, equals(1)); // 2 - 1
     });
 
-    testWidgets('decrement button calls onRemoveItem when qty is 1', (tester) async {
+    testWidgets('decrement button calls onRemoveItem when qty is 1', (
+      tester,
+    ) async {
       // Cart item with quantity 1
       final singleItemState = MinibarCartState(
         items: [MinibarCartItem(item: mockItem, quantity: 1)],
@@ -261,10 +269,12 @@ void main() {
 
       int? removedItemId;
 
-      await tester.pumpWidget(buildWidget(
-        cartState: singleItemState,
-        onRemoveItem: (id) => removedItemId = id,
-      ));
+      await tester.pumpWidget(
+        buildWidget(
+          cartState: singleItemState,
+          onRemoveItem: (id) => removedItemId = id,
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Tap remove button (which triggers remove when qty is 1)

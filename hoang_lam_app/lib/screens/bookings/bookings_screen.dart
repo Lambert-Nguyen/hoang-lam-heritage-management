@@ -55,10 +55,10 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         children: [
           // Mini calendar
           _buildMiniCalendar(),
-          
+
           // Filter chips
           _buildFilterChips(),
-          
+
           // Search bar
           _buildSearchBar(),
 
@@ -69,7 +69,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
             child: bookingsAsync.when(
               data: (bookings) {
                 final filteredBookings = _applySearchFilter(bookings);
-                
+
                 if (filteredBookings.isEmpty) {
                   return _buildEmptyState();
                 }
@@ -81,7 +81,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemCount: filteredBookings.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    separatorBuilder:
+                        (context, index) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final booking = filteredBookings[index];
                       return BookingCard(
@@ -94,38 +95,40 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   ),
                 );
               },
-              loading: () => const Center(
-                child: CircularProgressIndicator(),
-              ),
-              error: (error, stack) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: AppColors.error,
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error:
+                  (error, stack) => Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: AppColors.error,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          context.l10n.dataLoadError,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          error.toString(),
+                          style: Theme.of(context).textTheme.bodySmall,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed:
+                              () => ref.invalidate(
+                                filteredBookingsProvider(filter),
+                              ),
+                          icon: const Icon(Icons.refresh),
+                          label: Text(context.l10n.retry),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      context.l10n.dataLoadError,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      error.toString(),
-                      style: Theme.of(context).textTheme.bodySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () => ref.invalidate(filteredBookingsProvider(filter)),
-                      icon: const Icon(Icons.refresh),
-                      label: Text(context.l10n.retry),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
             ),
           ),
         ],
@@ -158,9 +161,9 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
             children: [
               Text(
                 DateFormat('MMMM yyyy', 'vi').format(_selectedDate),
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               Row(
                 children: [
@@ -226,9 +229,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                   avatar: Icon(
                     status.icon,
                     size: 16,
-                    color: _selectedStatus == status
-                        ? Colors.white
-                        : status.color,
+                    color:
+                        _selectedStatus == status ? Colors.white : status.color,
                   ),
                 ),
               );
@@ -246,19 +248,18 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
         decoration: InputDecoration(
           hintText: context.l10n.searchGuestRoom,
           prefixIcon: const Icon(Icons.search),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    setState(() {
-                      _searchQuery = '';
-                    });
-                  },
-                )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          suffixIcon:
+              _searchQuery.isNotEmpty
+                  ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    },
+                  )
+                  : null,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16),
         ),
         onChanged: (value) {
@@ -275,24 +276,20 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.event_busy,
-            size: 64,
-            color: AppColors.textSecondary,
-          ),
+          Icon(Icons.event_busy, size: 64, color: AppColors.textSecondary),
           const SizedBox(height: 16),
           Text(
             context.l10n.noBookings,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           Text(
             context.l10n.noBookingsForFilter,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -313,96 +310,97 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.advancedFilter),
-        content: StatefulBuilder(
-          builder: (dialogContext, setDialogState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.status,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(context.l10n.advancedFilter),
+            content: StatefulBuilder(
+              builder: (dialogContext, setDialogState) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ChoiceChip(
-                      label: Text(context.l10n.all),
-                      selected: _selectedStatus == null,
-                      onSelected: (selected) {
-                        setDialogState(() {
-                          _selectedStatus = null;
-                        });
-                      },
+                    Text(
+                      context.l10n.status,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    ...BookingStatus.values.map((status) {
-                      return ChoiceChip(
-                        label: Text(status.localizedName(context.l10n)),
-                        selected: _selectedStatus == status,
-                        onSelected: (selected) {
-                          setDialogState(() {
-                            _selectedStatus = selected ? status : null;
-                          });
-                        },
-                      );
-                    }),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  context.l10n.bookingSource,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    ChoiceChip(
-                      label: Text(context.l10n.all),
-                      selected: _selectedSource == null,
-                      onSelected: (selected) {
-                        setDialogState(() {
-                          _selectedSource = null;
-                        });
-                      },
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        ChoiceChip(
+                          label: Text(context.l10n.all),
+                          selected: _selectedStatus == null,
+                          onSelected: (selected) {
+                            setDialogState(() {
+                              _selectedStatus = null;
+                            });
+                          },
+                        ),
+                        ...BookingStatus.values.map((status) {
+                          return ChoiceChip(
+                            label: Text(status.localizedName(context.l10n)),
+                            selected: _selectedStatus == status,
+                            onSelected: (selected) {
+                              setDialogState(() {
+                                _selectedStatus = selected ? status : null;
+                              });
+                            },
+                          );
+                        }),
+                      ],
                     ),
-                    ...BookingSource.values.map((source) {
-                      return ChoiceChip(
-                        label: Text(source.localizedName(context.l10n)),
-                        selected: _selectedSource == source,
-                        onSelected: (selected) {
-                          setDialogState(() {
-                            _selectedSource = selected ? source : null;
-                          });
-                        },
-                      );
-                    }),
+                    const SizedBox(height: 16),
+                    Text(
+                      context.l10n.bookingSource,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        ChoiceChip(
+                          label: Text(context.l10n.all),
+                          selected: _selectedSource == null,
+                          onSelected: (selected) {
+                            setDialogState(() {
+                              _selectedSource = null;
+                            });
+                          },
+                        ),
+                        ...BookingSource.values.map((source) {
+                          return ChoiceChip(
+                            label: Text(source.localizedName(context.l10n)),
+                            selected: _selectedSource == source,
+                            onSelected: (selected) {
+                              setDialogState(() {
+                                _selectedSource = selected ? source : null;
+                              });
+                            },
+                          );
+                        }),
+                      ],
+                    ),
                   ],
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _selectedStatus = null;
-                _selectedSource = null;
-              });
-              Navigator.pop(dialogContext);
-            },
-            child: Text(context.l10n.clearFilter),
+                );
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _selectedStatus = null;
+                    _selectedSource = null;
+                  });
+                  Navigator.pop(dialogContext);
+                },
+                child: Text(context.l10n.clearFilter),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(context.l10n.close),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(context.l10n.close),
-          ),
-        ],
-      ),
     ).then((_) {
       // Trigger rebuild after dialog closes
       setState(() {});
@@ -421,9 +419,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   void _navigateToCreateBooking() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const BookingFormScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const BookingFormScreen()),
     );
   }
 

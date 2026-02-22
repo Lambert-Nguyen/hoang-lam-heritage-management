@@ -105,8 +105,9 @@ void main() {
       expect(find.text('Đã thanh toán'), findsAtLeastNWidgets(1));
     });
 
-    testWidgets('displays unsettled status when balance is positive',
-        (tester) async {
+    testWidgets('displays unsettled status when balance is positive', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildWidget(summary: unsettledSummary));
       await tester.pumpAndSettle();
 
@@ -183,8 +184,9 @@ void main() {
       expect(statusFinder, findsAtLeastNWidgets(1));
     });
 
-    testWidgets('balance badge has correct color for unsettled',
-        (tester) async {
+    testWidgets('balance badge has correct color for unsettled', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildWidget(summary: unsettledSummary));
       await tester.pumpAndSettle();
 
@@ -193,8 +195,9 @@ void main() {
       expect(statusFinder, findsOneWidget);
     });
 
-    testWidgets('displays different guest info for different summary',
-        (tester) async {
+    testWidgets('displays different guest info for different summary', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildWidget(summary: unsettledSummary));
       await tester.pumpAndSettle();
 

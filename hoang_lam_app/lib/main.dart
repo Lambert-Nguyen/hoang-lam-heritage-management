@@ -33,17 +33,11 @@ void main() async {
 
     // Set status bar to transparent (nav bar color set dynamically in app builder)
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-      ),
+      const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
     );
   }
 
-  runApp(
-    const ProviderScope(
-      child: HoangLamApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: HoangLamApp()));
 }
 
 /// Main application widget
@@ -80,19 +74,21 @@ class HoangLamApp extends ConsumerWidget {
         // Set system nav bar color based on current theme brightness
         if (!kIsWeb) {
           final isDark = Theme.of(context).brightness == Brightness.dark;
-          SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-            statusBarIconBrightness:
-                isDark ? Brightness.light : Brightness.dark,
-            systemNavigationBarColor: isDark ? Colors.black : Colors.white,
-            systemNavigationBarIconBrightness:
-                isDark ? Brightness.light : Brightness.dark,
-          ));
+          SystemChrome.setSystemUIOverlayStyle(
+            SystemUiOverlayStyle(
+              statusBarIconBrightness:
+                  isDark ? Brightness.light : Brightness.dark,
+              systemNavigationBarColor: isDark ? Colors.black : Colors.white,
+              systemNavigationBarIconBrightness:
+                  isDark ? Brightness.light : Brightness.dark,
+            ),
+          );
         }
 
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            textScaler: TextScaler.linear(textScale),
-          ),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(textScale)),
           child: child ?? const SizedBox.shrink(),
         );
       },

@@ -92,7 +92,10 @@ sealed class NightAudit with _$NightAudit {
     @JsonKey(name: 'rooms_available') @Default(0) int roomsAvailable,
     @JsonKey(name: 'rooms_cleaning') @Default(0) int roomsCleaning,
     @JsonKey(name: 'rooms_maintenance') @Default(0) int roomsMaintenance,
-    @_StringOrNumToDouble() @JsonKey(name: 'occupancy_rate') @Default(0) double occupancyRate,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'occupancy_rate')
+    @Default(0)
+    double occupancyRate,
     // Booking statistics
     @JsonKey(name: 'check_ins_today') @Default(0) int checkInsToday,
     @JsonKey(name: 'check_outs_today') @Default(0) int checkOutsToday,
@@ -100,18 +103,48 @@ sealed class NightAudit with _$NightAudit {
     @Default(0) int cancellations,
     @JsonKey(name: 'new_bookings') @Default(0) int newBookings,
     // Financial summary
-    @_StringOrNumToDouble() @JsonKey(name: 'total_income') @Default(0) double totalIncome,
-    @_StringOrNumToDouble() @JsonKey(name: 'room_revenue') @Default(0) double roomRevenue,
-    @_StringOrNumToDouble() @JsonKey(name: 'other_revenue') @Default(0) double otherRevenue,
-    @_StringOrNumToDouble() @JsonKey(name: 'total_expense') @Default(0) double totalExpense,
-    @_StringOrNumToDouble() @JsonKey(name: 'net_revenue') @Default(0) double netRevenue,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'total_income')
+    @Default(0)
+    double totalIncome,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'room_revenue')
+    @Default(0)
+    double roomRevenue,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'other_revenue')
+    @Default(0)
+    double otherRevenue,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'total_expense')
+    @Default(0)
+    double totalExpense,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'net_revenue')
+    @Default(0)
+    double netRevenue,
     // Payment breakdown
-    @_StringOrNumToDouble() @JsonKey(name: 'cash_collected') @Default(0) double cashCollected,
-    @_StringOrNumToDouble() @JsonKey(name: 'bank_transfer_collected') @Default(0) double bankTransferCollected,
-    @_StringOrNumToDouble() @JsonKey(name: 'momo_collected') @Default(0) double momoCollected,
-    @_StringOrNumToDouble() @JsonKey(name: 'other_payments') @Default(0) double otherPayments,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'cash_collected')
+    @Default(0)
+    double cashCollected,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'bank_transfer_collected')
+    @Default(0)
+    double bankTransferCollected,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'momo_collected')
+    @Default(0)
+    double momoCollected,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'other_payments')
+    @Default(0)
+    double otherPayments,
     // Outstanding
-    @_StringOrNumToDouble() @JsonKey(name: 'pending_payments') @Default(0) double pendingPayments,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'pending_payments')
+    @Default(0)
+    double pendingPayments,
     @JsonKey(name: 'unpaid_bookings_count') @Default(0) int unpaidBookingsCount,
     // Notes
     @Default('') String notes,
@@ -140,10 +173,22 @@ sealed class NightAuditListItem with _$NightAuditListItem {
     @JsonKey(name: 'status_display') String? statusDisplay,
     @JsonKey(name: 'total_rooms') @Default(0) int totalRooms,
     @JsonKey(name: 'rooms_occupied') @Default(0) int roomsOccupied,
-    @_StringOrNumToDouble() @JsonKey(name: 'occupancy_rate') @Default(0) double occupancyRate,
-    @_StringOrNumToDouble() @JsonKey(name: 'total_income') @Default(0) double totalIncome,
-    @_StringOrNumToDouble() @JsonKey(name: 'total_expense') @Default(0) double totalExpense,
-    @_StringOrNumToDouble() @JsonKey(name: 'net_revenue') @Default(0) double netRevenue,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'occupancy_rate')
+    @Default(0)
+    double occupancyRate,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'total_income')
+    @Default(0)
+    double totalIncome,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'total_expense')
+    @Default(0)
+    double totalExpense,
+    @_StringOrNumToDouble()
+    @JsonKey(name: 'net_revenue')
+    @Default(0)
+    double netRevenue,
     @JsonKey(name: 'performed_by_name') String? performedByName,
     @JsonKey(name: 'performed_at') DateTime? performedAt,
   }) = _NightAuditListItem;

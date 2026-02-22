@@ -13,24 +13,21 @@ const _iOSOptions = IOSOptions(
   accessibility: KeychainAccessibility.first_unlock,
 );
 
-const _androidOptions = AndroidOptions(
-  encryptedSharedPreferences: true,
-);
+const _androidOptions = AndroidOptions(encryptedSharedPreferences: true);
 
 /// Repository for authentication operations
 class AuthRepository {
   final ApiClient _apiClient;
   final FlutterSecureStorage _secureStorage;
 
-  AuthRepository({
-    ApiClient? apiClient,
-    FlutterSecureStorage? secureStorage,
-  })  : _apiClient = apiClient ?? ApiClient(),
-        _secureStorage = secureStorage ??
-            const FlutterSecureStorage(
-              iOptions: _iOSOptions,
-              aOptions: _androidOptions,
-            );
+  AuthRepository({ApiClient? apiClient, FlutterSecureStorage? secureStorage})
+    : _apiClient = apiClient ?? ApiClient(),
+      _secureStorage =
+          secureStorage ??
+          const FlutterSecureStorage(
+            iOptions: _iOSOptions,
+            aOptions: _androidOptions,
+          );
 
   /// Login with username and password
   /// Returns [LoginResponse] with tokens and user data on success

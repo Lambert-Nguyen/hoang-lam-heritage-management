@@ -9,9 +9,7 @@ import 'package:hoang_lam_app/repositories/declaration_repository.dart';
 import 'package:hoang_lam_app/screens/declaration/declaration_export_screen.dart';
 
 void main() {
-  Widget createTestWidget({
-    List<Override> overrides = const [],
-  }) {
+  Widget createTestWidget({List<Override> overrides = const []}) {
     return ProviderScope(
       overrides: overrides,
       child: const MaterialApp(
@@ -44,8 +42,9 @@ void main() {
       expect(find.byIcon(Icons.info_outline), findsOneWidget);
     });
 
-    testWidgets('displays form type selection chips',
-        (WidgetTester tester) async {
+    testWidgets('displays form type selection chips', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -64,8 +63,9 @@ void main() {
       expect(find.text('Đến ngày'), findsOneWidget);
     });
 
-    testWidgets('displays quick select date buttons',
-        (WidgetTester tester) async {
+    testWidgets('displays quick select date buttons', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -75,8 +75,7 @@ void main() {
       expect(find.text('30 ngày qua'), findsOneWidget);
     });
 
-    testWidgets('displays format selection cards',
-        (WidgetTester tester) async {
+    testWidgets('displays format selection cards', (WidgetTester tester) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -124,8 +123,9 @@ void main() {
       expect(find.byIcon(Icons.description), findsOneWidget);
     });
 
-    testWidgets('shows loading state during export',
-        (WidgetTester tester) async {
+    testWidgets('shows loading state during export', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -141,8 +141,9 @@ void main() {
       expect(find.text('Đang xuất...'), findsOneWidget);
     });
 
-    testWidgets('shows exported file card on success',
-        (WidgetTester tester) async {
+    testWidgets('shows exported file card on success', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -161,8 +162,9 @@ void main() {
       expect(find.text('Chia sẻ'), findsOneWidget);
     });
 
-    testWidgets('shows calendar icons in date pickers',
-        (WidgetTester tester) async {
+    testWidgets('shows calendar icons in date pickers', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -170,8 +172,9 @@ void main() {
       expect(find.byIcon(Icons.calendar_today), findsNWidgets(2));
     });
 
-    testWidgets('hides form description when all is selected',
-        (WidgetTester tester) async {
+    testWidgets('hides form description when all is selected', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -181,8 +184,7 @@ void main() {
         findsNothing,
       );
       expect(
-        find.text(
-            'Phiếu khai báo tạm trú người nước ngoài (Thông tư 04/2015)'),
+        find.text('Phiếu khai báo tạm trú người nước ngoài (Thông tư 04/2015)'),
         findsNothing,
       );
     });
@@ -198,8 +200,7 @@ class _LoadingExportNotifier extends DeclarationExportNotifier {
 
 /// Fake notifier that returns success state
 class _SuccessExportNotifier extends DeclarationExportNotifier {
-  _SuccessExportNotifier(String filePath)
-      : super(DeclarationRepository()) {
+  _SuccessExportNotifier(String filePath) : super(DeclarationRepository()) {
     state = DeclarationExportState.success(filePath: filePath);
   }
 }

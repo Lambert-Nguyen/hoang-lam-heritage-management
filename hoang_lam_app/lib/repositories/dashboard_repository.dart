@@ -7,7 +7,7 @@ class DashboardRepository {
   final ApiClient _apiClient;
 
   DashboardRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   /// Get dashboard summary
   Future<DashboardSummary> getDashboardSummary() async {

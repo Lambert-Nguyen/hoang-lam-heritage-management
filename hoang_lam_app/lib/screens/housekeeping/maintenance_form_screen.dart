@@ -16,10 +16,7 @@ import '../../widgets/common/app_input.dart';
 class MaintenanceFormScreen extends ConsumerStatefulWidget {
   final MaintenanceRequest? request;
 
-  const MaintenanceFormScreen({
-    super.key,
-    this.request,
-  });
+  const MaintenanceFormScreen({super.key, this.request});
 
   bool get isEditing => request != null;
 
@@ -48,8 +45,8 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     _titleController.text = widget.request?.title ?? '';
     _descriptionController.text = widget.request?.description ?? '';
     if (widget.request?.estimatedCost != null) {
-      _estimatedCostController.text =
-          widget.request!.estimatedCost!.toStringAsFixed(0);
+      _estimatedCostController.text = widget.request!.estimatedCost!
+          .toStringAsFixed(0);
     }
   }
 
@@ -68,7 +65,9 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEditing ? l10n.editRequest : l10n.createMaintenanceRequest),
+        title: Text(
+          widget.isEditing ? l10n.editRequest : l10n.createMaintenanceRequest,
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -85,19 +84,20 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     Text(
                       l10n.room,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     roomsAsync.when(
                       data: (rooms) => _buildRoomDropdown(rooms),
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      error: (_, __) => Text(
-                        l10n.cannotLoadRoomList,
-                        style: TextStyle(color: AppColors.error),
-                      ),
+                      loading:
+                          () =>
+                              const Center(child: CircularProgressIndicator()),
+                      error:
+                          (_, __) => Text(
+                            l10n.cannotLoadRoomList,
+                            style: TextStyle(color: AppColors.error),
+                          ),
                     ),
                   ],
                 ),
@@ -112,8 +112,8 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     Text(
                       l10n.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     AppTextField(
@@ -139,8 +139,8 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     Text(
                       l10n.category,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     _buildCategorySelector(),
@@ -157,8 +157,8 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     Text(
                       l10n.priorityLevel,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     _buildPrioritySelector(),
@@ -175,8 +175,8 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     Text(
                       l10n.detailedDescription,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     AppTextField(
@@ -203,8 +203,8 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     Text(
                       l10n.estimatedCostOptional,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     AppTextField(
@@ -234,16 +234,20 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       ),
     );
   }
+
   Widget _buildRoomDropdown(List<Room> rooms) {
     final l10n = AppLocalizations.of(context)!;
     return AppDropdown<int>(
       value: _selectedRoomId,
-      items: rooms
-          .map((room) => DropdownMenuItem(
-                value: room.id,
-                child: Text('${l10n.room} ${room.number}'),
-              ))
-          .toList(),
+      items:
+          rooms
+              .map(
+                (room) => DropdownMenuItem(
+                  value: room.id,
+                  child: Text('${l10n.room} ${room.number}'),
+                ),
+              )
+              .toList(),
       onChanged: (value) {
         setState(() {
           _selectedRoomId = value;
@@ -257,117 +261,128 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
-      children: MaintenanceCategory.values.map((category) {
-        final isSelected = category == _selectedCategory;
-        return InkWell(
-          onTap: () {
-            setState(() {
-              _selectedCategory = category;
-            });
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? category.color.withValues(alpha: 0.2)
-                  : Colors.transparent,
+      children:
+          MaintenanceCategory.values.map((category) {
+            final isSelected = category == _selectedCategory;
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  _selectedCategory = category;
+                });
+              },
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? category.color : AppColors.divider,
-                width: isSelected ? 2 : 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  category.icon,
-                  size: 18,
-                  color:
-                      isSelected ? category.color : AppColors.textSecondary,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
                 ),
-                AppSpacing.gapHorizontalSm,
-                Text(
-                  category.localizedName(context.l10n),
-                  style: TextStyle(
-                    color:
-                        isSelected ? category.color : AppColors.textSecondary,
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
-                    fontSize: 13,
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? category.color.withValues(alpha: 0.2)
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? category.color : AppColors.divider,
+                    width: isSelected ? 2 : 1,
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      category.icon,
+                      size: 18,
+                      color:
+                          isSelected ? category.color : AppColors.textSecondary,
+                    ),
+                    AppSpacing.gapHorizontalSm,
+                    Text(
+                      category.localizedName(context.l10n),
+                      style: TextStyle(
+                        color:
+                            isSelected
+                                ? category.color
+                                : AppColors.textSecondary,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 
   Widget _buildPrioritySelector() {
     return Row(
-      children: MaintenancePriority.values.map((priority) {
-        final isSelected = priority == _selectedPriority;
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(
-              right: priority != MaintenancePriority.values.last
-                  ? AppSpacing.sm
-                  : 0,
-            ),
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _selectedPriority = priority;
-                });
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.all(AppSpacing.md),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? priority.color.withValues(alpha: 0.2)
-                      : Colors.transparent,
+      children:
+          MaintenancePriority.values.map((priority) {
+            final isSelected = priority == _selectedPriority;
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right:
+                      priority != MaintenancePriority.values.last
+                          ? AppSpacing.sm
+                          : 0,
+                ),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      _selectedPriority = priority;
+                    });
+                  },
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected ? priority.color : AppColors.divider,
-                    width: isSelected ? 2 : 1,
+                  child: Container(
+                    padding: const EdgeInsets.all(AppSpacing.md),
+                    decoration: BoxDecoration(
+                      color:
+                          isSelected
+                              ? priority.color.withValues(alpha: 0.2)
+                              : Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected ? priority.color : AppColors.divider,
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          priority.icon,
+                          size: 24,
+                          color:
+                              isSelected
+                                  ? priority.color
+                                  : AppColors.textSecondary,
+                        ),
+                        AppSpacing.gapVerticalXs,
+                        Text(
+                          priority.localizedName(context.l10n),
+                          style: TextStyle(
+                            color:
+                                isSelected
+                                    ? priority.color
+                                    : AppColors.textSecondary,
+                            fontWeight:
+                                isSelected
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                            fontSize: 12,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                child: Column(
-                  children: [
-                    Icon(
-                      priority.icon,
-                      size: 24,
-                      color: isSelected
-                          ? priority.color
-                          : AppColors.textSecondary,
-                    ),
-                    AppSpacing.gapVerticalXs,
-                    Text(
-                      priority.localizedName(context.l10n),
-                      style: TextStyle(
-                        color: isSelected
-                            ? priority.color
-                            : AppColors.textSecondary,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                        fontSize: 12,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
               ),
-            ),
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
     );
   }
 
@@ -378,9 +393,9 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     }
 
     if (_selectedRoomId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseSelectRoom)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseSelectRoom)));
       return;
     }
 
@@ -390,7 +405,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
 
     try {
       final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      
+
       int? estimatedCost;
       if (_estimatedCostController.text.isNotEmpty) {
         estimatedCost = int.tryParse(_estimatedCostController.text);

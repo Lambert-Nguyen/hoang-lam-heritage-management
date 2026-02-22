@@ -7,7 +7,7 @@ class MinibarRepository {
   final ApiClient _apiClient;
 
   MinibarRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Minibar Items ====================
 
@@ -89,9 +89,7 @@ class MinibarRepository {
     }
 
     if (response.data is List) {
-      return (response.data as List<dynamic>)
-          .map((e) => e.toString())
-          .toList();
+      return (response.data as List<dynamic>).map((e) => e.toString()).toList();
     }
 
     return [];
@@ -121,7 +119,10 @@ class MinibarRepository {
   }
 
   /// Update an existing minibar item
-  Future<MinibarItem> updateItem(int id, UpdateMinibarItemRequest request) async {
+  Future<MinibarItem> updateItem(
+    int id,
+    UpdateMinibarItemRequest request,
+  ) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       '${AppConstants.minibarItemsEndpoint}$id/',
       data: request.toJson(),
@@ -235,7 +236,8 @@ class MinibarRepository {
 
   /// Create multiple minibar sales at once
   Future<List<MinibarSale>> bulkCreateSales(
-      BulkCreateMinibarSaleRequest request) async {
+    BulkCreateMinibarSaleRequest request,
+  ) async {
     final response = await _apiClient.post<dynamic>(
       '${AppConstants.minibarSalesEndpoint}bulk_create/',
       data: {
@@ -259,7 +261,11 @@ class MinibarRepository {
   }
 
   /// Update a minibar sale
-  Future<MinibarSale> updateSale(int id, {int? quantity, bool? isCharged}) async {
+  Future<MinibarSale> updateSale(
+    int id, {
+    int? quantity,
+    bool? isCharged,
+  }) async {
     final data = <String, dynamic>{};
     if (quantity != null) data['quantity'] = quantity;
     if (isCharged != null) data['is_charged'] = isCharged;

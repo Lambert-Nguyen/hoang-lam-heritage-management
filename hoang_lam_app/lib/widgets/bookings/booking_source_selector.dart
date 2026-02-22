@@ -36,36 +36,29 @@ class BookingSourceSelector extends StatelessWidget {
       decoration: InputDecoration(
         labelText: showLabel ? context.l10n.bookingSource : null,
         hintText: hintText ?? context.l10n.selectBookingSourceHint,
-        prefixIcon: value != null
-            ? Icon(
-                value!.icon,
-                color: value!.color,
-              )
-            : const Icon(Icons.source),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        prefixIcon:
+            value != null
+                ? Icon(value!.icon, color: value!.color)
+                : const Icon(Icons.source),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
         ),
       ),
-      items: BookingSource.values.map((source) {
-        return DropdownMenuItem<BookingSource>(
-          value: source,
-          child: Row(
-            children: [
-              Icon(
-                source.icon,
-                size: 20,
-                color: source.color,
+      items:
+          BookingSource.values.map((source) {
+            return DropdownMenuItem<BookingSource>(
+              value: source,
+              child: Row(
+                children: [
+                  Icon(source.icon, size: 20, color: source.color),
+                  const SizedBox(width: 12),
+                  Text(source.localizedName(context.l10n)),
+                ],
               ),
-              const SizedBox(width: 12),
-              Text(source.localizedName(context.l10n)),
-            ],
-          ),
-        );
-      }).toList(),
+            );
+          }).toList(),
       onChanged: enabled ? onChanged : null,
       isExpanded: true,
     );
@@ -104,9 +97,7 @@ class BookingSourceChip extends StatelessWidget {
       onSelected: onTap != null ? (_) => onTap!() : null,
       backgroundColor: source.color.withValues(alpha: 0.1),
       selectedColor: source.color,
-      labelStyle: TextStyle(
-        color: selected ? Colors.white : null,
-      ),
+      labelStyle: TextStyle(color: selected ? Colors.white : null),
     );
   }
 }
@@ -131,10 +122,7 @@ class BookingSourceGrid extends StatelessWidget {
       children: [
         Text(
           context.l10n.bookingSource,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         GridView.builder(
@@ -156,9 +144,10 @@ class BookingSourceGrid extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? source.color.withValues(alpha: 0.15)
-                      : Colors.transparent,
+                  color:
+                      isSelected
+                          ? source.color.withValues(alpha: 0.15)
+                          : Colors.transparent,
                   border: Border.all(
                     color: isSelected ? source.color : AppColors.border,
                     width: isSelected ? 2 : 1,
@@ -175,7 +164,8 @@ class BookingSourceGrid extends StatelessWidget {
                     Icon(
                       source.icon,
                       size: 18,
-                      color: isSelected ? source.color : AppColors.textSecondary,
+                      color:
+                          isSelected ? source.color : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 6),
                     Flexible(
@@ -185,7 +175,10 @@ class BookingSourceGrid extends StatelessWidget {
                           fontSize: 12,
                           fontWeight:
                               isSelected ? FontWeight.w600 : FontWeight.normal,
-                          color: isSelected ? source.color : AppColors.textSecondary,
+                          color:
+                              isSelected
+                                  ? source.color
+                                  : AppColors.textSecondary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

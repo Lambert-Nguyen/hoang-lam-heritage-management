@@ -118,19 +118,38 @@ class DashboardOccupancyWidget extends StatelessWidget {
           ),
           AppSpacing.gapVerticalMd,
           // Room status breakdown
-          _buildStatusRow(l10n.available, roomStatus.available, AppColors.available),
+          _buildStatusRow(
+            l10n.available,
+            roomStatus.available,
+            AppColors.available,
+          ),
           AppSpacing.gapVerticalSm,
-          _buildStatusRow(l10n.occupied, roomStatus.occupied, AppColors.occupied),
+          _buildStatusRow(
+            l10n.occupied,
+            roomStatus.occupied,
+            AppColors.occupied,
+          ),
           AppSpacing.gapVerticalSm,
-          _buildStatusRow(l10n.cleaning, roomStatus.cleaning, AppColors.cleaning),
+          _buildStatusRow(
+            l10n.cleaning,
+            roomStatus.cleaning,
+            AppColors.cleaning,
+          ),
           if (roomStatus.maintenance > 0) ...[
             AppSpacing.gapVerticalSm,
             _buildStatusRow(
-                l10n.maintenance, roomStatus.maintenance, AppColors.maintenance),
+              l10n.maintenance,
+              roomStatus.maintenance,
+              AppColors.maintenance,
+            ),
           ],
           if (roomStatus.blocked > 0) ...[
             AppSpacing.gapVerticalSm,
-            _buildStatusRow(l10n.blocked, roomStatus.blocked, AppColors.blocked),
+            _buildStatusRow(
+              l10n.blocked,
+              roomStatus.blocked,
+              AppColors.blocked,
+            ),
           ],
         ],
       ),
@@ -143,26 +162,17 @@ class DashboardOccupancyWidget extends StatelessWidget {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         AppSpacing.gapHorizontalSm,
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
         ),
         const Spacer(),
         Text(
           count.toString(),
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ],
     );

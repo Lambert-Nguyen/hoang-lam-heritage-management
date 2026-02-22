@@ -16,21 +16,21 @@ final lostFoundRepositoryProvider = Provider<LostFoundRepository>((ref) {
 // ============================================================
 
 /// Provider for all lost & found items
-final lostFoundItemsProvider =
-    FutureProvider<List<LostFoundItem>>((ref) async {
+final lostFoundItemsProvider = FutureProvider<List<LostFoundItem>>((ref) async {
   final repository = ref.watch(lostFoundRepositoryProvider);
   return repository.getItems();
 });
 
 /// Provider for unclaimed items (found or stored)
-final unclaimedItemsProvider =
-    FutureProvider<List<LostFoundItem>>((ref) async {
+final unclaimedItemsProvider = FutureProvider<List<LostFoundItem>>((ref) async {
   final repository = ref.watch(lostFoundRepositoryProvider);
   final items = await repository.getItems();
   return items
-      .where((item) =>
-          item.status == LostFoundStatus.found ||
-          item.status == LostFoundStatus.stored)
+      .where(
+        (item) =>
+            item.status == LostFoundStatus.found ||
+            item.status == LostFoundStatus.stored,
+      )
       .toList();
 });
 
@@ -42,31 +42,36 @@ final recentItemsProvider = FutureProvider<List<LostFoundItem>>((ref) async {
 });
 
 /// Provider for a specific item by ID
-final lostFoundItemByIdProvider =
-    FutureProvider.family<LostFoundItem, int>((ref, id) async {
+final lostFoundItemByIdProvider = FutureProvider.family<LostFoundItem, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(lostFoundRepositoryProvider);
   return repository.getItem(id);
 });
 
 /// Provider for filtered lost & found items
 final filteredLostFoundItemsProvider =
-    FutureProvider.family<List<LostFoundItem>, LostFoundFilter>(
-        (ref, filter) async {
-  final repository = ref.watch(lostFoundRepositoryProvider);
-  return repository.getItems(
-    status: filter.status,
-    category: filter.category,
-    roomId: filter.roomId,
-    guestId: filter.guestId,
-    search: filter.search,
-    fromDate: filter.fromDate,
-    toDate: filter.toDate,
-  );
-});
+    FutureProvider.family<List<LostFoundItem>, LostFoundFilter>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(lostFoundRepositoryProvider);
+      return repository.getItems(
+        status: filter.status,
+        category: filter.category,
+        roomId: filter.roomId,
+        guestId: filter.guestId,
+        search: filter.search,
+        fromDate: filter.fromDate,
+        toDate: filter.toDate,
+      );
+    });
 
 /// Provider for lost & found statistics
-final lostFoundStatisticsProvider =
-    FutureProvider<LostFoundStatistics>((ref) async {
+final lostFoundStatisticsProvider = FutureProvider<LostFoundStatistics>((
+  ref,
+) async {
   final repository = ref.watch(lostFoundRepositoryProvider);
   return repository.getStatistics();
 });
@@ -107,7 +112,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
   final Ref _ref;
 
   LostFoundNotifier(this._repository, this._ref)
-      : super(const LostFoundState());
+    : super(const LostFoundState());
 
   /// Load all items
   Future<void> loadItems({
@@ -122,15 +127,9 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
         category: category,
         search: search,
       );
-      state = state.copyWith(
-        isLoading: false,
-        items: items,
-      );
+      state = state.copyWith(isLoading: false, items: items);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
@@ -154,10 +153,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return newItem;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -172,10 +168,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundItemsProvider);
       return updatedItem;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -194,10 +187,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return storedItem;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -221,10 +211,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return claimedItem;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -248,10 +235,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return disposedItem;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -266,10 +250,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
@@ -288,6 +269,6 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
 /// Provider for LostFoundNotifier
 final lostFoundNotifierProvider =
     StateNotifierProvider<LostFoundNotifier, LostFoundState>((ref) {
-  final repository = ref.watch(lostFoundRepositoryProvider);
-  return LostFoundNotifier(repository, ref);
-});
+      final repository = ref.watch(lostFoundRepositoryProvider);
+      return LostFoundNotifier(repository, ref);
+    });

@@ -130,9 +130,7 @@ void main() {
 
     testWidgets('calls onTap when card is tapped', (tester) async {
       var tapped = false;
-      await tester.pumpWidget(buildWidget(
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(buildWidget(onTap: () => tapped = true));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(TaskCard));
@@ -141,12 +139,11 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('shows assign button for pending tasks without assignee',
-        (tester) async {
+    testWidgets('shows assign button for pending tasks without assignee', (
+      tester,
+    ) async {
       var assignCalled = false;
-      await tester.pumpWidget(buildWidget(
-        onAssign: () => assignCalled = true,
-      ));
+      await tester.pumpWidget(buildWidget(onAssign: () => assignCalled = true));
       await tester.pumpAndSettle();
 
       expect(find.text('Phân công'), findsOneWidget);
@@ -157,8 +154,9 @@ void main() {
       expect(assignCalled, isTrue);
     });
 
-    testWidgets('shows complete button when canComplete is true',
-        (tester) async {
+    testWidgets('shows complete button when canComplete is true', (
+      tester,
+    ) async {
       final pendingTask = HousekeepingTask(
         id: 1,
         room: 101,
@@ -177,10 +175,9 @@ void main() {
       );
 
       var completeCalled = false;
-      await tester.pumpWidget(buildWidget(
-        task: pendingTask,
-        onComplete: () => completeCalled = true,
-      ));
+      await tester.pumpWidget(
+        buildWidget(task: pendingTask, onComplete: () => completeCalled = true),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Hoàn thành'), findsOneWidget);
@@ -191,8 +188,9 @@ void main() {
       expect(completeCalled, isTrue);
     });
 
-    testWidgets('does not show complete button for completed tasks',
-        (tester) async {
+    testWidgets('does not show complete button for completed tasks', (
+      tester,
+    ) async {
       final completedTask = HousekeepingTask(
         id: 1,
         room: 101,
@@ -210,18 +208,18 @@ void main() {
         completedAt: DateTime(2024, 1, 15),
       );
 
-      await tester.pumpWidget(buildWidget(
-        task: completedTask,
-        onComplete: () {},
-      ));
+      await tester.pumpWidget(
+        buildWidget(task: completedTask, onComplete: () {}),
+      );
       await tester.pumpAndSettle();
 
       // Status badge shows "Hoàn thành" but there's no TextButton with that text
       expect(find.widgetWithText(TextButton, 'Hoàn thành'), findsNothing);
     });
 
-    testWidgets('displays completed time when task is completed',
-        (tester) async {
+    testWidgets('displays completed time when task is completed', (
+      tester,
+    ) async {
       final completedTask = HousekeepingTask(
         id: 1,
         room: 101,
@@ -265,7 +263,7 @@ void main() {
         );
 
         await tester.pumpWidget(buildWidget(task: task));
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
         expect(find.text(taskType.displayName), findsOneWidget);
       }
@@ -288,11 +286,13 @@ void main() {
           createdAt: DateTime(2024, 1, 14),
           updatedAt: DateTime(2024, 1, 14),
           completedAt:
-              status == HousekeepingTaskStatus.completed ? DateTime.now() : null,
+              status == HousekeepingTaskStatus.completed
+                  ? DateTime.now()
+                  : null,
         );
 
         await tester.pumpWidget(buildWidget(task: task));
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
         expect(find.text(status.displayName), findsOneWidget);
       }

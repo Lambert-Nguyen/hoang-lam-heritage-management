@@ -66,7 +66,6 @@ extension CancellationPolicyExtension on CancellationPolicy {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case CancellationPolicy.free:
@@ -93,7 +92,8 @@ sealed class RatePlan with _$RatePlan {
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     @DecimalToDoubleConverter()
-    @JsonKey(name: 'base_rate') required double baseRate,
+    @JsonKey(name: 'base_rate')
+    required double baseRate,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
     @JsonKey(name: 'min_stay') @Default(1) int minStay,
     @JsonKey(name: 'max_stay') int? maxStay,
@@ -101,7 +101,8 @@ sealed class RatePlan with _$RatePlan {
     @JsonKey(name: 'cancellation_policy')
     @Default(CancellationPolicy.flexible)
     CancellationPolicy cancellationPolicy,
-    @JsonKey(name: 'cancellation_policy_display') String? cancellationPolicyDisplay,
+    @JsonKey(name: 'cancellation_policy_display')
+    String? cancellationPolicyDisplay,
     @JsonKey(name: 'valid_from') DateTime? validFrom,
     @JsonKey(name: 'valid_to') DateTime? validTo,
     @JsonKey(name: 'blackout_dates') @Default([]) List<String> blackoutDates,
@@ -125,7 +126,8 @@ sealed class RatePlanListItem with _$RatePlanListItem {
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     @DecimalToDoubleConverter()
-    @JsonKey(name: 'base_rate') required double baseRate,
+    @JsonKey(name: 'base_rate')
+    required double baseRate,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
     @JsonKey(name: 'min_stay') @Default(1) int minStay,
     @JsonKey(name: 'valid_from') DateTime? validFrom,
@@ -172,11 +174,12 @@ sealed class DateRateOverride with _$DateRateOverride {
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     required DateTime date,
-    @DecimalToDoubleConverter()
-    required double rate,
+    @DecimalToDoubleConverter() required double rate,
     @Default('') String reason,
     @JsonKey(name: 'closed_to_arrival') @Default(false) bool closedToArrival,
-    @JsonKey(name: 'closed_to_departure') @Default(false) bool closedToDeparture,
+    @JsonKey(name: 'closed_to_departure')
+    @Default(false)
+    bool closedToDeparture,
     @JsonKey(name: 'min_stay') int? minStay,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
@@ -194,11 +197,12 @@ sealed class DateRateOverrideListItem with _$DateRateOverrideListItem {
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     required DateTime date,
-    @DecimalToDoubleConverter()
-    required double rate,
+    @DecimalToDoubleConverter() required double rate,
     @Default('') String reason,
     @JsonKey(name: 'closed_to_arrival') @Default(false) bool closedToArrival,
-    @JsonKey(name: 'closed_to_departure') @Default(false) bool closedToDeparture,
+    @JsonKey(name: 'closed_to_departure')
+    @Default(false)
+    bool closedToDeparture,
   }) = _DateRateOverrideListItem;
 
   factory DateRateOverrideListItem.fromJson(Map<String, dynamic> json) =>
@@ -207,14 +211,17 @@ sealed class DateRateOverrideListItem with _$DateRateOverrideListItem {
 
 /// DateRateOverride create request
 @freezed
-sealed class DateRateOverrideCreateRequest with _$DateRateOverrideCreateRequest {
+sealed class DateRateOverrideCreateRequest
+    with _$DateRateOverrideCreateRequest {
   const factory DateRateOverrideCreateRequest({
     @JsonKey(name: 'room_type') required int roomType,
     required DateTime date,
     required double rate,
     @Default('') String reason,
     @JsonKey(name: 'closed_to_arrival') @Default(false) bool closedToArrival,
-    @JsonKey(name: 'closed_to_departure') @Default(false) bool closedToDeparture,
+    @JsonKey(name: 'closed_to_departure')
+    @Default(false)
+    bool closedToDeparture,
     @JsonKey(name: 'min_stay') int? minStay,
   }) = _DateRateOverrideCreateRequest;
 
@@ -224,7 +231,8 @@ sealed class DateRateOverrideCreateRequest with _$DateRateOverrideCreateRequest 
 
 /// DateRateOverride bulk create request
 @freezed
-sealed class DateRateOverrideBulkCreateRequest with _$DateRateOverrideBulkCreateRequest {
+sealed class DateRateOverrideBulkCreateRequest
+    with _$DateRateOverrideBulkCreateRequest {
   const factory DateRateOverrideBulkCreateRequest({
     @JsonKey(name: 'room_type') required int roomType,
     @JsonKey(name: 'start_date') required DateTime startDate,
@@ -232,10 +240,13 @@ sealed class DateRateOverrideBulkCreateRequest with _$DateRateOverrideBulkCreate
     required double rate,
     @Default('') String reason,
     @JsonKey(name: 'closed_to_arrival') @Default(false) bool closedToArrival,
-    @JsonKey(name: 'closed_to_departure') @Default(false) bool closedToDeparture,
+    @JsonKey(name: 'closed_to_departure')
+    @Default(false)
+    bool closedToDeparture,
     @JsonKey(name: 'min_stay') int? minStay,
   }) = _DateRateOverrideBulkCreateRequest;
 
-  factory DateRateOverrideBulkCreateRequest.fromJson(Map<String, dynamic> json) =>
-      _$DateRateOverrideBulkCreateRequestFromJson(json);
+  factory DateRateOverrideBulkCreateRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$DateRateOverrideBulkCreateRequestFromJson(json);
 }

@@ -16,10 +16,12 @@ class GroupBookingListScreen extends ConsumerStatefulWidget {
   const GroupBookingListScreen({super.key});
 
   @override
-  ConsumerState<GroupBookingListScreen> createState() => _GroupBookingListScreenState();
+  ConsumerState<GroupBookingListScreen> createState() =>
+      _GroupBookingListScreenState();
 }
 
-class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen> with SingleTickerProviderStateMixin {
+class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _searchQuery = '';
   GroupBookingStatus? _statusFilter;
@@ -39,10 +41,14 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
 
   GroupBookingStatus? _getStatusFromTabIndex(int index) {
     switch (index) {
-      case 1: return GroupBookingStatus.confirmed;
-      case 2: return GroupBookingStatus.checkedIn;
-      case 3: return GroupBookingStatus.checkedOut;
-      default: return null;
+      case 1:
+        return GroupBookingStatus.confirmed;
+      case 2:
+        return GroupBookingStatus.checkedIn;
+      case 3:
+        return GroupBookingStatus.checkedOut;
+      default:
+        return null;
     }
   }
 
@@ -63,7 +69,12 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
-          tabs: [Tab(text: l10n.all), Tab(text: l10n.confirmedStatus), Tab(text: l10n.checkedInStatus), Tab(text: l10n.checkedOutStatus)],
+          tabs: [
+            Tab(text: l10n.all),
+            Tab(text: l10n.confirmedStatus),
+            Tab(text: l10n.checkedInStatus),
+            Tab(text: l10n.checkedOutStatus),
+          ],
         ),
       ),
       body: Column(
@@ -74,7 +85,9 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
               decoration: InputDecoration(
                 hintText: l10n.search,
                 prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
               ),
               onChanged: (v) => setState(() => _searchQuery = v),
             ),
@@ -89,15 +102,23 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
                   child: ListView.builder(
                     padding: AppSpacing.paddingHorizontal,
                     itemCount: filtered.length,
-                    itemBuilder: (context, i) => _GroupBookingCard(
-                      booking: filtered[i],
-                      onTap: () => context.push('/group-bookings/${filtered[i].id}'),
-                    ),
+                    itemBuilder:
+                        (context, i) => _GroupBookingCard(
+                          booking: filtered[i],
+                          onTap:
+                              () => context.push(
+                                '/group-bookings/${filtered[i].id}',
+                              ),
+                        ),
                   ),
                 );
               },
               loading: () => const LoadingIndicator(),
-              error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(groupBookingsProvider)),
+              error:
+                  (e, _) => ErrorDisplay(
+                    message: '${l10n.error}: $e',
+                    onRetry: () => ref.invalidate(groupBookingsProvider),
+                  ),
             ),
           ),
         ],
@@ -112,7 +133,9 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
   List<GroupBooking> _filterBookings(List<GroupBooking> bookings) {
     return bookings.where((b) {
       if (_statusFilter != null && b.status != _statusFilter) return false;
-      if (_searchQuery.isNotEmpty && !b.name.toLowerCase().contains(_searchQuery.toLowerCase())) return false;
+      if (_searchQuery.isNotEmpty &&
+          !b.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        return false;
       return true;
     }).toList();
   }
@@ -122,9 +145,18 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.groups_outlined, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.5)),
+          Icon(
+            Icons.groups_outlined,
+            size: 64,
+            color: AppColors.textSecondary.withValues(alpha: 0.5),
+          ),
           const SizedBox(height: AppSpacing.md),
-          Text(context.l10n.noGroupBookings, style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary)),
+          Text(
+            context.l10n.noGroupBookings,
+            style: Theme.of(
+              context,
+            ).textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
+          ),
         ],
       ),
     );
@@ -149,45 +181,112 @@ class _GroupBookingCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Expanded(child: Text(booking.name, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold))),
+                  Expanded(
+                    child: Text(
+                      booking.name,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                    decoration: BoxDecoration(color: booking.status.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(booking.status.icon, size: 14, color: booking.status.color),
-                      const SizedBox(width: 4),
-                      Text(booking.status.localizedName(context.l10n), style: TextStyle(color: booking.status.color, fontSize: 12, fontWeight: FontWeight.w600)),
-                    ]),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: AppSpacing.xs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: booking.status.color.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          booking.status.icon,
+                          size: 14,
+                          color: booking.status.color,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          booking.status.localizedName(context.l10n),
+                          style: TextStyle(
+                            color: booking.status.color,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
               if (booking.contactName.isNotEmpty)
-                Row(children: [
-                  Icon(Icons.person, size: 16, color: AppColors.textSecondary),
-                  const SizedBox(width: 4),
-                  Text(booking.contactName, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
-                  if (booking.contactPhone.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    Icon(Icons.phone, size: 16, color: AppColors.textSecondary),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.person,
+                      size: 16,
+                      color: AppColors.textSecondary,
+                    ),
                     const SizedBox(width: 4),
-                    Text(booking.contactPhone, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      booking.contactName,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    if (booking.contactPhone.isNotEmpty) ...[
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.phone,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        booking.contactPhone,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
                   ],
-                ]),
+                ),
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
-                  _InfoChip(icon: Icons.calendar_today, label: _formatDateRange(booking.checkInDate, booking.checkOutDate)),
+                  _InfoChip(
+                    icon: Icons.calendar_today,
+                    label: _formatDateRange(
+                      booking.checkInDate,
+                      booking.checkOutDate,
+                    ),
+                  ),
                   const SizedBox(width: 8),
-                  _InfoChip(icon: Icons.meeting_room, label: '${booking.roomCount} ${context.l10n.roomsSuffix}'),
+                  _InfoChip(
+                    icon: Icons.meeting_room,
+                    label: '${booking.roomCount} ${context.l10n.roomsSuffix}',
+                  ),
                 ],
               ),
               const SizedBox(height: AppSpacing.sm),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${booking.guestCount} ${context.l10n.guestsSuffix}', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
-                  Text('${_formatCurrency(booking.totalAmount)}₫', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  Text(
+                    '${booking.guestCount} ${context.l10n.guestsSuffix}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                  Text(
+                    '${_formatCurrency(booking.totalAmount)}₫',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -208,7 +307,12 @@ class _GroupBookingCard extends StatelessWidget {
   }
 
   String _formatCurrency(double amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]}.');
+    return amount
+        .toStringAsFixed(0)
+        .replaceAllMapped(
+          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+          (m) => '${m[1]}.',
+        );
   }
 }
 
@@ -220,13 +324,27 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-      decoration: BoxDecoration(color: AppColors.surface, borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 14, color: AppColors.textSecondary),
-        const SizedBox(width: 4),
-        Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
-      ]),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: AppColors.textSecondary),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+          ),
+        ],
+      ),
     );
   }
 }

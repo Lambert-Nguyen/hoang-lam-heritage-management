@@ -49,27 +49,31 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
         onRefresh: _refreshData,
         child: todayAuditAsync.when(
           data: (audit) => _buildAuditContent(context, audit),
-          loading: () => LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: constraints.maxHeight,
-                child: const LoadingIndicator(),
+          loading:
+              () => LayoutBuilder(
+                builder:
+                    (context, constraints) => SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: constraints.maxHeight,
+                        child: const LoadingIndicator(),
+                      ),
+                    ),
               ),
-            ),
-          ),
-          error: (error, stack) => LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: constraints.maxHeight,
-                child: ErrorDisplay(
-                  message: '${l10n.auditLoadError}: $error',
-                  onRetry: _refreshData,
-                ),
+          error:
+              (error, stack) => LayoutBuilder(
+                builder:
+                    (context, constraints) => SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height: constraints.maxHeight,
+                        child: ErrorDisplay(
+                          message: '${l10n.auditLoadError}: $error',
+                          onRetry: _refreshData,
+                        ),
+                      ),
+                    ),
               ),
-            ),
-          ),
         ),
       ),
       bottomNavigationBar: todayAuditAsync.maybeWhen(
@@ -103,15 +107,16 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) => _AuditHistorySheet(
-          scrollController: scrollController,
-        ),
-      ),
+      builder:
+          (context) => DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.5,
+            maxChildSize: 0.9,
+            expand: false,
+            builder:
+                (context, scrollController) =>
+                    _AuditHistorySheet(scrollController: scrollController),
+          ),
     );
   }
 
@@ -169,9 +174,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
                 audit.performedByName != null
                     ? '${l10n.performedBy}: ${audit.performedByName}'
                     : l10n.notCompleted,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                ),
+                style: const TextStyle(color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -244,16 +247,40 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
           AppSpacing.gapVerticalMd,
           Row(
             children: [
-              _buildStatItem(context.l10n.totalRooms, audit.totalRooms.toString(), Icons.king_bed),
-              _buildStatItem(context.l10n.occupied, audit.roomsOccupied.toString(), Icons.person, color: AppColors.roomOccupied),
-              _buildStatItem(context.l10n.available, audit.roomsAvailable.toString(), Icons.check_circle, color: AppColors.roomAvailable),
+              _buildStatItem(
+                context.l10n.totalRooms,
+                audit.totalRooms.toString(),
+                Icons.king_bed,
+              ),
+              _buildStatItem(
+                context.l10n.occupied,
+                audit.roomsOccupied.toString(),
+                Icons.person,
+                color: AppColors.roomOccupied,
+              ),
+              _buildStatItem(
+                context.l10n.available,
+                audit.roomsAvailable.toString(),
+                Icons.check_circle,
+                color: AppColors.roomAvailable,
+              ),
             ],
           ),
           AppSpacing.gapVerticalSm,
           Row(
             children: [
-              _buildStatItem(context.l10n.cleaning, audit.roomsCleaning.toString(), Icons.cleaning_services, color: AppColors.roomCleaning),
-              _buildStatItem(context.l10n.maintenance, audit.roomsMaintenance.toString(), Icons.build, color: AppColors.roomMaintenance),
+              _buildStatItem(
+                context.l10n.cleaning,
+                audit.roomsCleaning.toString(),
+                Icons.cleaning_services,
+                color: AppColors.roomCleaning,
+              ),
+              _buildStatItem(
+                context.l10n.maintenance,
+                audit.roomsMaintenance.toString(),
+                Icons.build,
+                color: AppColors.roomMaintenance,
+              ),
               const Expanded(child: SizedBox()),
             ],
           ),
@@ -273,26 +300,48 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
               AppSpacing.gapHorizontalSm,
               Text(
                 context.l10n.bookingStatistics,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           AppSpacing.gapVerticalMd,
           Row(
             children: [
-              _buildStatItem('Check-in', audit.checkInsToday.toString(), Icons.login, color: AppColors.success),
-              _buildStatItem('Check-out', audit.checkOutsToday.toString(), Icons.logout, color: AppColors.info),
-              _buildStatItem(context.l10n.newBookings, audit.newBookings.toString(), Icons.add_circle, color: AppColors.primary),
+              _buildStatItem(
+                'Check-in',
+                audit.checkInsToday.toString(),
+                Icons.login,
+                color: AppColors.success,
+              ),
+              _buildStatItem(
+                'Check-out',
+                audit.checkOutsToday.toString(),
+                Icons.logout,
+                color: AppColors.info,
+              ),
+              _buildStatItem(
+                context.l10n.newBookings,
+                audit.newBookings.toString(),
+                Icons.add_circle,
+                color: AppColors.primary,
+              ),
             ],
           ),
           AppSpacing.gapVerticalSm,
           Row(
             children: [
-              _buildStatItem(context.l10n.noShows, audit.noShows.toString(), Icons.person_off, color: AppColors.warning),
-              _buildStatItem(context.l10n.cancellationsLabel, audit.cancellations.toString(), Icons.cancel, color: AppColors.error),
+              _buildStatItem(
+                context.l10n.noShows,
+                audit.noShows.toString(),
+                Icons.person_off,
+                color: AppColors.warning,
+              ),
+              _buildStatItem(
+                context.l10n.cancellationsLabel,
+                audit.cancellations.toString(),
+                Icons.cancel,
+                color: AppColors.error,
+              ),
               const Expanded(child: SizedBox()),
             ],
           ),
@@ -308,14 +357,14 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.account_balance_wallet, color: AppColors.primary),
+              const Icon(
+                Icons.account_balance_wallet,
+                color: AppColors.primary,
+              ),
               AppSpacing.gapHorizontalSm,
               Text(
                 context.l10n.financialOverview,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -372,18 +421,23 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
               AppSpacing.gapHorizontalSm,
               Text(
                 context.l10n.paymentDetails,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           AppSpacing.gapVerticalMd,
           _buildPaymentRow(context.l10n.cash, audit.cashCollected, Icons.money),
-          _buildPaymentRow(context.l10n.bankTransfer, audit.bankTransferCollected, Icons.account_balance),
+          _buildPaymentRow(
+            context.l10n.bankTransfer,
+            audit.bankTransferCollected,
+            Icons.account_balance,
+          ),
           _buildPaymentRow('MoMo', audit.momoCollected, Icons.phone_android),
-          _buildPaymentRow(context.l10n.otherPayment, audit.otherPayments, Icons.more_horiz),
+          _buildPaymentRow(
+            context.l10n.otherPayment,
+            audit.otherPayments,
+            Icons.more_horiz,
+          ),
         ],
       ),
     );
@@ -400,10 +454,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
               AppSpacing.gapHorizontalSm,
               Text(
                 context.l10n.notes,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -414,7 +465,12 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, {Color? color}) {
+  Widget _buildStatItem(
+    String label,
+    String value,
+    IconData icon, {
+    Color? color,
+  }) {
     return Expanded(
       child: Column(
         children: [
@@ -453,7 +509,8 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     Color textColor = color ?? AppColors.textPrimary;
     if (isIncome) textColor = AppColors.income;
     if (isExpense) textColor = AppColors.expense;
-    if (isProfit) textColor = amount >= 0 ? AppColors.income : AppColors.expense;
+    if (isProfit)
+      textColor = amount >= 0 ? AppColors.income : AppColors.expense;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
@@ -497,7 +554,11 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     );
   }
 
-  Widget? _buildBottomActions(BuildContext context, NightAudit audit, NightAuditState state) {
+  Widget? _buildBottomActions(
+    BuildContext context,
+    NightAudit audit,
+    NightAuditState state,
+  ) {
     if (audit.status == NightAuditStatus.closed) {
       return null;
     }
@@ -528,14 +589,19 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             flex: 2,
             child: ElevatedButton.icon(
               onPressed: state.isClosing ? null : () => _closeAudit(audit),
-              icon: state.isClosing
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.lock),
-              label: Text(state.isClosing ? context.l10n.closingAudit : context.l10n.closeAuditBtn),
+              icon:
+                  state.isClosing
+                      ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Icon(Icons.lock),
+              label: Text(
+                state.isClosing
+                    ? context.l10n.closingAudit
+                    : context.l10n.closeAuditBtn,
+              ),
             ),
           ),
         ],
@@ -547,19 +613,23 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     final audit = ref.read(todayAuditProvider).valueOrNull;
     if (audit == null) return;
 
-    final result = await ref.read(nightAuditNotifierProvider.notifier).recalculateAudit(audit.id);
+    final result = await ref
+        .read(nightAuditNotifierProvider.notifier)
+        .recalculateAudit(audit.id);
     if (!mounted) return;
 
     if (result != null) {
       ref.invalidate(todayAuditProvider);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.statsRecalculated)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.statsRecalculated)));
     } else {
       final error = ref.read(nightAuditNotifierProvider).error;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${context.l10n.recalculateError}: ${error ?? context.l10n.unknownError}'),
+          content: Text(
+            '${context.l10n.recalculateError}: ${error ?? context.l10n.unknownError}',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -569,38 +639,41 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
   Future<void> _closeAudit(NightAudit audit) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.closeAuditBtn),
-        content: Text(
-          context.l10n.closeAuditConfirmation,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(context.l10n.cancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(context.l10n.closeAuditBtn),
+            content: Text(context.l10n.closeAuditConfirmation),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(context.l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(context.l10n.closeAuditBtn),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(context.l10n.closeAuditBtn),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true) {
-      final result = await ref.read(nightAuditNotifierProvider.notifier).closeAudit(audit.id);
+      final result = await ref
+          .read(nightAuditNotifierProvider.notifier)
+          .closeAudit(audit.id);
       if (!mounted) return;
 
       if (result != null) {
         ref.invalidate(todayAuditProvider);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(context.l10n.auditClosed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.auditClosed)));
       } else {
         final error = ref.read(nightAuditNotifierProvider).error;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.closeAuditError}: ${error ?? context.l10n.unknownError}'),
+            content: Text(
+              '${context.l10n.closeAuditError}: ${error ?? context.l10n.unknownError}',
+            ),
             backgroundColor: AppColors.error,
           ),
         );
@@ -627,10 +700,7 @@ class _AuditHistorySheet extends ConsumerWidget {
             children: [
               Text(
                 context.l10n.auditHistory,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const Spacer(),
               IconButton(
@@ -645,9 +715,7 @@ class _AuditHistorySheet extends ConsumerWidget {
           child: auditsAsync.when(
             data: (audits) {
               if (audits.isEmpty) {
-                return Center(
-                  child: Text(context.l10n.noAuditsYet),
-                );
+                return Center(child: Text(context.l10n.noAuditsYet));
               }
               return ListView.builder(
                 controller: scrollController,
@@ -660,17 +728,21 @@ class _AuditHistorySheet extends ConsumerWidget {
               );
             },
             loading: () => const LoadingIndicator(),
-            error: (e, _) => ErrorDisplay(
-              message: '${context.l10n.loadHistoryError}: $e',
-              onRetry: () => ref.invalidate(nightAuditsProvider),
-            ),
+            error:
+                (e, _) => ErrorDisplay(
+                  message: '${context.l10n.loadHistoryError}: $e',
+                  onRetry: () => ref.invalidate(nightAuditsProvider),
+                ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildAuditHistoryItem(BuildContext context, NightAuditListItem audit) {
+  Widget _buildAuditHistoryItem(
+    BuildContext context,
+    NightAuditListItem audit,
+  ) {
     return AppCard(
       margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       onTap: () {
@@ -701,10 +773,7 @@ class _AuditHistorySheet extends ConsumerWidget {
                 ),
                 child: Text(
                   audit.status.localizedName(context.l10n),
-                  style: TextStyle(
-                    color: audit.status.color,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: audit.status.color, fontSize: 12),
                 ),
               ),
             ],
@@ -712,10 +781,22 @@ class _AuditHistorySheet extends ConsumerWidget {
           AppSpacing.gapVerticalSm,
           Row(
             children: [
-              _buildMiniStat(context.l10n.room, '${audit.roomsOccupied}/${audit.totalRooms}'),
-              _buildMiniStat(context.l10n.occupancy, '${audit.occupancyRate.toStringAsFixed(0)}%'),
-              _buildMiniStat(context.l10n.revenueShort, CurrencyFormatter.formatCompact(audit.totalIncome)),
-              _buildMiniStat(context.l10n.profitShort, CurrencyFormatter.formatCompact(audit.netRevenue)),
+              _buildMiniStat(
+                context.l10n.room,
+                '${audit.roomsOccupied}/${audit.totalRooms}',
+              ),
+              _buildMiniStat(
+                context.l10n.occupancy,
+                '${audit.occupancyRate.toStringAsFixed(0)}%',
+              ),
+              _buildMiniStat(
+                context.l10n.revenueShort,
+                CurrencyFormatter.formatCompact(audit.totalIncome),
+              ),
+              _buildMiniStat(
+                context.l10n.profitShort,
+                CurrencyFormatter.formatCompact(audit.netRevenue),
+              ),
             ],
           ),
         ],
@@ -737,10 +818,7 @@ class _AuditHistorySheet extends ConsumerWidget {
           ),
           Text(
             value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 13,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
           ),
         ],
       ),
@@ -750,33 +828,60 @@ class _AuditHistorySheet extends ConsumerWidget {
   void _showAuditDetailDialog(BuildContext context, NightAuditListItem audit) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Audit ${DateFormat('dd/MM/yyyy').format(audit.auditDate)}'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDetailRow(context.l10n.statusLabel, audit.status.localizedName(context.l10n)),
-              _buildDetailRow(context.l10n.room, '${audit.roomsOccupied}/${audit.totalRooms}'),
-              _buildDetailRow(context.l10n.occupancyRate, '${audit.occupancyRate.toStringAsFixed(1)}%'),
-              _buildDetailRow(context.l10n.totalIncome, CurrencyFormatter.format(audit.totalIncome)),
-              _buildDetailRow(context.l10n.totalExpense, CurrencyFormatter.format(audit.totalExpense)),
-              _buildDetailRow(context.l10n.netProfit, CurrencyFormatter.format(audit.netRevenue)),
-              if (audit.performedByName != null)
-                _buildDetailRow(context.l10n.performedBy, audit.performedByName!),
-              if (audit.performedAt != null)
-                _buildDetailRow(context.l10n.timeLabel, DateFormat('dd/MM/yyyy HH:mm').format(audit.performedAt!)),
+      builder:
+          (ctx) => AlertDialog(
+            title: Text(
+              'Audit ${DateFormat('dd/MM/yyyy').format(audit.auditDate)}',
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildDetailRow(
+                    context.l10n.statusLabel,
+                    audit.status.localizedName(context.l10n),
+                  ),
+                  _buildDetailRow(
+                    context.l10n.room,
+                    '${audit.roomsOccupied}/${audit.totalRooms}',
+                  ),
+                  _buildDetailRow(
+                    context.l10n.occupancyRate,
+                    '${audit.occupancyRate.toStringAsFixed(1)}%',
+                  ),
+                  _buildDetailRow(
+                    context.l10n.totalIncome,
+                    CurrencyFormatter.format(audit.totalIncome),
+                  ),
+                  _buildDetailRow(
+                    context.l10n.totalExpense,
+                    CurrencyFormatter.format(audit.totalExpense),
+                  ),
+                  _buildDetailRow(
+                    context.l10n.netProfit,
+                    CurrencyFormatter.format(audit.netRevenue),
+                  ),
+                  if (audit.performedByName != null)
+                    _buildDetailRow(
+                      context.l10n.performedBy,
+                      audit.performedByName!,
+                    ),
+                  if (audit.performedAt != null)
+                    _buildDetailRow(
+                      context.l10n.timeLabel,
+                      DateFormat('dd/MM/yyyy HH:mm').format(audit.performedAt!),
+                    ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(context.l10n.closeButton),
+              ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(context.l10n.closeButton),
-          ),
-        ],
-      ),
     );
   }
 

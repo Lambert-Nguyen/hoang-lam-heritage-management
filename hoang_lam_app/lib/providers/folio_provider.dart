@@ -11,35 +11,29 @@ part 'folio_provider.freezed.dart';
 // ==================== Folio Providers (Phase 3.6) ====================
 
 /// Provider for booking folio summary by booking ID
-final bookingFolioProvider =
-    FutureProvider.autoDispose.family<BookingFolioSummary, int>(
-  (ref, bookingId) async {
-    final repository = ref.watch(financeRepositoryProvider);
-    return repository.getBookingFolio(bookingId);
-  },
-);
+final bookingFolioProvider = FutureProvider.autoDispose
+    .family<BookingFolioSummary, int>((ref, bookingId) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getBookingFolio(bookingId);
+    });
 
 /// Provider for folio items by booking ID
-final folioItemsByBookingProvider =
-    FutureProvider.autoDispose.family<List<FolioItem>, int>(
-  (ref, bookingId) async {
-    final repository = ref.watch(financeRepositoryProvider);
-    return repository.getFolioItems(bookingId: bookingId);
-  },
-);
+final folioItemsByBookingProvider = FutureProvider.autoDispose
+    .family<List<FolioItem>, int>((ref, bookingId) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getFolioItems(bookingId: bookingId);
+    });
 
 /// Provider for folio items by type
-final folioItemsByTypeProvider =
-    FutureProvider.autoDispose.family<List<FolioItem>, FolioItemTypeFilter>(
-  (ref, filter) async {
-    final repository = ref.watch(financeRepositoryProvider);
-    return repository.getFolioItems(
-      bookingId: filter.bookingId,
-      itemType: filter.itemType,
-      includeVoided: filter.includeVoided,
-    );
-  },
-);
+final folioItemsByTypeProvider = FutureProvider.autoDispose
+    .family<List<FolioItem>, FolioItemTypeFilter>((ref, filter) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getFolioItems(
+        bookingId: filter.bookingId,
+        itemType: filter.itemType,
+        includeVoided: filter.includeVoided,
+      );
+    });
 
 /// Filter class for folio items by type
 @freezed
@@ -69,7 +63,8 @@ sealed class FolioState with _$FolioState {
   }) = _FolioState;
 
   /// Get active (non-voided) items
-  List<FolioItem> get activeItems => items.where((item) => !item.isVoided).toList();
+  List<FolioItem> get activeItems =>
+      items.where((item) => !item.isVoided).toList();
 
   /// Get items grouped by type
   Map<FolioItemType, List<FolioItem>> get itemsByType {
@@ -97,11 +92,7 @@ class FolioNotifier extends StateNotifier<FolioState> {
 
   /// Load folio for a booking
   Future<void> loadFolio(int bookingId) async {
-    state = state.copyWith(
-      bookingId: bookingId,
-      isLoading: true,
-      error: null,
-    );
+    state = state.copyWith(bookingId: bookingId, isLoading: true, error: null);
 
     try {
       final results = await Future.wait([
@@ -120,7 +111,10 @@ class FolioNotifier extends StateNotifier<FolioState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: _ref.read(l10nProvider).errorFolioLoad.replaceAll('{error}', e.toString()),
+        error: _ref
+            .read(l10nProvider)
+            .errorFolioLoad
+            .replaceAll('{error}', e.toString()),
       );
     }
   }
@@ -158,7 +152,10 @@ class FolioNotifier extends StateNotifier<FolioState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: _ref.read(l10nProvider).errorChargeAdd.replaceAll('{error}', e.toString()),
+        error: _ref
+            .read(l10nProvider)
+            .errorChargeAdd
+            .replaceAll('{error}', e.toString()),
       );
       return false;
     }
@@ -178,7 +175,10 @@ class FolioNotifier extends StateNotifier<FolioState> {
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        error: _ref.read(l10nProvider).errorChargeVoid.replaceAll('{error}', e.toString()),
+        error: _ref
+            .read(l10nProvider)
+            .errorChargeVoid
+            .replaceAll('{error}', e.toString()),
       );
       return false;
     }
@@ -193,6 +193,6 @@ class FolioNotifier extends StateNotifier<FolioState> {
 /// Provider for FolioNotifier
 final folioNotifierProvider =
     StateNotifierProvider.autoDispose<FolioNotifier, FolioState>((ref) {
-  final repository = ref.watch(financeRepositoryProvider);
-  return FolioNotifier(repository, ref);
-});
+      final repository = ref.watch(financeRepositoryProvider);
+      return FolioNotifier(repository, ref);
+    });

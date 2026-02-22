@@ -7,7 +7,7 @@ class GroupBookingRepository {
   final ApiClient _apiClient;
 
   GroupBookingRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Group Bookings ====================
 

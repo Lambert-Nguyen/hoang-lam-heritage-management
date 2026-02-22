@@ -8,7 +8,7 @@ import '../../providers/room_provider.dart';
 import '../../widgets/guests/guest_quick_search.dart';
 
 /// Booking Form Screen - Phase 1.9.6
-/// 
+///
 /// Form for creating new bookings or editing existing ones:
 /// - Room selection
 /// - Guest selection/creation
@@ -17,7 +17,7 @@ import '../../widgets/guests/guest_quick_search.dart';
 /// - Payment method and deposit
 /// - Booking source
 /// - Special requests and notes
-/// 
+///
 /// Validation:
 /// - Required fields
 /// - Date logic (check-out after check-in)
@@ -25,10 +25,7 @@ import '../../widgets/guests/guest_quick_search.dart';
 class BookingFormScreen extends ConsumerStatefulWidget {
   final Booking? booking; // null for new booking, provided for edit
 
-  const BookingFormScreen({
-    super.key,
-    this.booking,
-  });
+  const BookingFormScreen({super.key, this.booking});
 
   @override
   ConsumerState<BookingFormScreen> createState() => _BookingFormScreenState();
@@ -36,7 +33,7 @@ class BookingFormScreen extends ConsumerStatefulWidget {
 
 class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Form fields
   int? _selectedRoomId;
   int? _selectedGuestId;
@@ -79,10 +76,12 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.booking != null;
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(isEdit ? context.l10n.editBooking : context.l10n.createBooking),
+        title: Text(
+          isEdit ? context.l10n.editBooking : context.l10n.createBooking,
+        ),
       ),
       body: Form(
         key: _formKey,
@@ -139,9 +138,14 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
               ),
-              child: _isSubmitting
-                  ? const CircularProgressIndicator()
-                  : Text(isEdit ? context.l10n.update : context.l10n.createBooking),
+              child:
+                  _isSubmitting
+                      ? const CircularProgressIndicator()
+                      : Text(
+                        isEdit
+                            ? context.l10n.update
+                            : context.l10n.createBooking,
+                      ),
             ),
           ],
         ),
@@ -166,12 +170,15 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             border: const OutlineInputBorder(),
             prefixIcon: const Icon(Icons.hotel),
           ),
-          items: rooms.map((room) {
-            return DropdownMenuItem(
-              value: room.id,
-              child: Text('${room.number} - ${room.name ?? room.roomTypeName ?? ""}'),
-            );
-          }).toList(),
+          items:
+              rooms.map((room) {
+                return DropdownMenuItem(
+                  value: room.id,
+                  child: Text(
+                    '${room.number} - ${room.name ?? room.roomTypeName ?? ""}',
+                  ),
+                );
+              }).toList(),
           onChanged: (value) {
             setState(() {
               _selectedRoomId = value;
@@ -230,7 +237,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget _buildDateSection() {
     final theme = Theme.of(context);
     final nights = _checkOutDate.difference(_checkInDate).inDays;
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -240,11 +247,11 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             Text(
               context.l10n.bookingDates,
               style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 16),
-            
+
             // Check-in / Check-out date row
             Row(
               children: [
@@ -258,19 +265,23 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                     color: theme.colorScheme.primary,
                   ),
                 ),
-                
+
                 // Arrow and nights badge
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Column(
                     children: [
-                      Icon(Icons.arrow_forward, 
+                      Icon(
+                        Icons.arrow_forward,
                         color: theme.colorScheme.onSurfaceVariant,
                         size: 20,
                       ),
                       const SizedBox(height: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(12),
@@ -286,7 +297,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                     ],
                   ),
                 ),
-                
+
                 // Check-out
                 Expanded(
                   child: _buildDateCard(
@@ -313,7 +324,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     required Color color,
   }) {
     final theme = Theme.of(context);
-    
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -363,10 +374,12 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Future<void> _selectDate(BuildContext context, bool isCheckIn) async {
     final initialDate = isCheckIn ? _checkInDate : _checkOutDate;
-    final firstDate = isCheckIn
-        ? DateTime.now().subtract(const Duration(days: 30))
-        : _checkInDate.add(const Duration(days: 1));
-    final adjustedInitialDate = initialDate.isBefore(firstDate) ? firstDate : initialDate;
+    final firstDate =
+        isCheckIn
+            ? DateTime.now().subtract(const Duration(days: 30))
+            : _checkInDate.add(const Duration(days: 1));
+    final adjustedInitialDate =
+        initialDate.isBefore(firstDate) ? firstDate : initialDate;
 
     final date = await showDatePicker(
       context: context,
@@ -375,7 +388,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
       helpText: isCheckIn ? context.l10n.checkIn : context.l10n.checkOut,
     );
-    
+
     if (date != null) {
       setState(() {
         if (isCheckIn) {
@@ -429,7 +442,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       validator: (value) {
         if (value == null || value.isEmpty) return context.l10n.pleaseEnterRate;
         final number = double.tryParse(value);
-        if (number == null || number <= 0) return context.l10n.rateMustBePositive;
+        if (number == null || number <= 0)
+          return context.l10n.rateMustBePositive;
         return null;
       },
       onChanged: (value) {
@@ -466,9 +480,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             Text(
               currencyFormat.format(total),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           ],
         ),
@@ -484,12 +498,13 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         border: const OutlineInputBorder(),
         prefixIcon: const Icon(Icons.source),
       ),
-      items: BookingSource.values.map((source) {
-        return DropdownMenuItem(
-          value: source,
-          child: Text(_getBookingSourceLabel(source)),
-        );
-      }).toList(),
+      items:
+          BookingSource.values.map((source) {
+            return DropdownMenuItem(
+              value: source,
+              child: Text(_getBookingSourceLabel(source)),
+            );
+          }).toList(),
       onChanged: (value) {
         if (value != null) {
           setState(() {
@@ -508,12 +523,13 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         border: const OutlineInputBorder(),
         prefixIcon: const Icon(Icons.payment),
       ),
-      items: PaymentMethod.values.map((method) {
-        return DropdownMenuItem(
-          value: method,
-          child: Text(_getPaymentMethodLabel(method)),
-        );
-      }).toList(),
+      items:
+          PaymentMethod.values.map((method) {
+            return DropdownMenuItem(
+              value: method,
+              child: Text(_getPaymentMethodLabel(method)),
+            );
+          }).toList(),
       onChanged: (value) {
         if (value != null) {
           setState(() {
@@ -620,9 +636,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     }
 
     if (_selectedRoomId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.pleaseSelectRoom)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(context.l10n.pleaseSelectRoom)));
       return;
     }
 
@@ -635,7 +651,11 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
     if (!_checkOutDate.isAfter(_checkInDate)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${context.l10n.checkOut} must be after ${context.l10n.checkIn}')),
+        SnackBar(
+          content: Text(
+            '${context.l10n.checkOut} must be after ${context.l10n.checkIn}',
+          ),
+        ),
       );
       return;
     }
@@ -646,39 +666,49 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     if (_selectedRoomId != null && widget.booking == null) {
       try {
         final existingBookings = await ref.read(
-          bookingsByRoomProvider(BookingsByRoomParams(
-            roomId: _selectedRoomId!,
-            from: _checkInDate,
-            to: _checkOutDate,
-          )).future,
+          bookingsByRoomProvider(
+            BookingsByRoomParams(
+              roomId: _selectedRoomId!,
+              from: _checkInDate,
+              to: _checkOutDate,
+            ),
+          ).future,
         );
-        final overlapping = existingBookings.where((b) =>
-          b.status != BookingStatus.cancelled &&
-          b.status != BookingStatus.noShow &&
-          b.checkInDate.isBefore(_checkOutDate) &&
-          b.checkOutDate.isAfter(_checkInDate),
-        ).toList();
+        final overlapping =
+            existingBookings
+                .where(
+                  (b) =>
+                      b.status != BookingStatus.cancelled &&
+                      b.status != BookingStatus.noShow &&
+                      b.checkInDate.isBefore(_checkOutDate) &&
+                      b.checkOutDate.isAfter(_checkInDate),
+                )
+                .toList();
 
         if (overlapping.isNotEmpty && mounted) {
           final l10n = context.l10n;
           final proceed = await showDialog<bool>(
             context: context,
-            builder: (ctx) => AlertDialog(
-              title: Text(l10n.overlapWarningTitle),
-              content: Text(
-                l10n.overlapWarningMessage.replaceAll('{count}', overlapping.length.toString()),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(false),
-                  child: Text(context.l10n.cancel),
+            builder:
+                (ctx) => AlertDialog(
+                  title: Text(l10n.overlapWarningTitle),
+                  content: Text(
+                    l10n.overlapWarningMessage.replaceAll(
+                      '{count}',
+                      overlapping.length.toString(),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                      child: Text(context.l10n.cancel),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                      child: Text(context.l10n.confirm),
+                    ),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: () => Navigator.of(ctx).pop(true),
-                  child: Text(context.l10n.confirm),
-                ),
-              ],
-            ),
           );
           if (proceed != true) return;
         }
@@ -692,7 +722,6 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     });
 
     try {
-
       if (widget.booking == null) {
         // Create new booking
         final bookingCreate = BookingCreate(
@@ -709,7 +738,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           notes: _internalNotes.isEmpty ? '' : _internalNotes,
         );
 
-        await ref.read(bookingNotifierProvider.notifier).createBooking(bookingCreate);
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .createBooking(bookingCreate);
       } else {
         // Update existing booking
         final bookingUpdate = BookingUpdate(
@@ -726,10 +757,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           notes: _internalNotes.isEmpty ? '' : _internalNotes,
         );
 
-        await ref.read(bookingNotifierProvider.notifier).updateBooking(
-              widget.booking!.id,
-              bookingUpdate,
-            );
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .updateBooking(widget.booking!.id, bookingUpdate);
       }
 
       // Invalidate booking providers so lists/calendars refresh
@@ -751,9 +781,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
       }
     } finally {
       if (mounted) {

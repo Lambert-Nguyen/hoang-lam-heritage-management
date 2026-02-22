@@ -21,14 +21,15 @@ class RecordDepositDialog extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<RecordDepositDialog> createState() => _RecordDepositDialogState();
+  ConsumerState<RecordDepositDialog> createState() =>
+      _RecordDepositDialogState();
 }
 
 class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
-  
+
   PaymentMethod _selectedMethod = PaymentMethod.cash;
   bool _isLoading = false;
   String? _error;
@@ -58,7 +59,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
 
     try {
       final amount = double.parse(_amountController.text.replaceAll(',', ''));
-      
+
       final request = DepositRecordRequest(
         booking: widget.bookingId,
         amount: amount,
@@ -92,7 +93,8 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
           if (widget.roomNumber != null || widget.guestName != null)
             Text(
               [
-                if (widget.roomNumber != null) '${context.l10n.room} ${widget.roomNumber}',
+                if (widget.roomNumber != null)
+                  '${context.l10n.room} ${widget.roomNumber}',
                 if (widget.guestName != null) widget.guestName,
               ].join(' - '),
               style: theme.textTheme.bodySmall?.copyWith(
@@ -173,28 +175,26 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: PaymentMethod.values.take(6).map((method) {
-                  final isSelected = _selectedMethod == method;
-                  return ChoiceChip(
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _getMethodIcon(method),
-                          size: 16,
+                children:
+                    PaymentMethod.values.take(6).map((method) {
+                      final isSelected = _selectedMethod == method;
+                      return ChoiceChip(
+                        label: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(_getMethodIcon(method), size: 16),
+                            const SizedBox(width: 4),
+                            Text(_getMethodName(method)),
+                          ],
                         ),
-                        const SizedBox(width: 4),
-                        Text(_getMethodName(method)),
-                      ],
-                    ),
-                    selected: isSelected,
-                    onSelected: (selected) {
-                      if (selected) {
-                        setState(() => _selectedMethod = method);
-                      }
-                    },
-                  );
-                }).toList(),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          if (selected) {
+                            setState(() => _selectedMethod = method);
+                          }
+                        },
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
 
@@ -219,13 +219,14 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
         ),
         FilledButton(
           onPressed: _isLoading ? null : _submitDeposit,
-          child: _isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(context.l10n.recordLabel),
+          child:
+              _isLoading
+                  ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : Text(context.l10n.recordLabel),
         ),
       ],
     );
@@ -308,11 +309,12 @@ Future<Payment?> showRecordDepositDialog(
 }) async {
   return showDialog<Payment>(
     context: context,
-    builder: (context) => RecordDepositDialog(
-      bookingId: bookingId,
-      suggestedAmount: suggestedAmount,
-      roomNumber: roomNumber,
-      guestName: guestName,
-    ),
+    builder:
+        (context) => RecordDepositDialog(
+          bookingId: bookingId,
+          suggestedAmount: suggestedAmount,
+          roomNumber: roomNumber,
+          guestName: guestName,
+        ),
   );
 }

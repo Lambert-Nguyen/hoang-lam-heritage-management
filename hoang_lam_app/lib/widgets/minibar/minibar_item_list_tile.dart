@@ -30,9 +30,10 @@ class MinibarItemListTile extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: item.isActive
-            ? AppColors.primary.withValues(alpha: 0.1)
-            : AppColors.textSecondary.withValues(alpha: 0.1),
+        backgroundColor:
+            item.isActive
+                ? AppColors.primary.withValues(alpha: 0.1)
+                : AppColors.textSecondary.withValues(alpha: 0.1),
         child: Icon(
           Icons.local_bar,
           color: item.isActive ? AppColors.primary : AppColors.textSecondary,
@@ -46,9 +47,7 @@ class MinibarItemListTile extends StatelessWidget {
           color: item.isActive ? null : AppColors.textSecondary,
         ),
       ),
-      subtitle: item.category.isNotEmpty
-          ? Text(item.category)
-          : null,
+      subtitle: item.category.isNotEmpty ? Text(item.category) : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -59,15 +58,15 @@ class MinibarItemListTile extends StatelessWidget {
               Text(
                 currencyFormat.format(item.price),
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
               Text(
                 '${context.l10n.costAmount}: ${currencyFormat.format(item.cost)}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ),
@@ -75,11 +74,15 @@ class MinibarItemListTile extends StatelessWidget {
           IconButton(
             icon: Icon(
               item.isActive ? Icons.toggle_on : Icons.toggle_off,
-              color: item.isActive ? AppColors.success : AppColors.textSecondary,
+              color:
+                  item.isActive ? AppColors.success : AppColors.textSecondary,
               size: 32,
             ),
             onPressed: onToggleActive,
-            tooltip: item.isActive ? context.l10n.discontinued : context.l10n.activateLabel,
+            tooltip:
+                item.isActive
+                    ? context.l10n.discontinued
+                    : context.l10n.activateLabel,
           ),
         ],
       ),

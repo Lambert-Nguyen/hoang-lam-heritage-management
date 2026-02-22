@@ -9,7 +9,8 @@ import '../models/guest.dart';
 class GuestRepository {
   final ApiClient _apiClient;
 
-  GuestRepository({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  GuestRepository({ApiClient? apiClient})
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Guest CRUD ====================
 
@@ -59,15 +60,17 @@ class GuestRepository {
         }
       } else if (response.data is List) {
         final list = response.data as List<dynamic>;
-        guests = list
-            .map((json) => Guest.fromJson(json as Map<String, dynamic>))
-            .toList();
+        guests =
+            list
+                .map((json) => Guest.fromJson(json as Map<String, dynamic>))
+                .toList();
       } else {
         guests = [];
       }
 
       // Cache results on success (only for unfiltered default queries)
-      if (queryParams.isEmpty || (queryParams.length == 1 && queryParams.containsKey('ordering'))) {
+      if (queryParams.isEmpty ||
+          (queryParams.length == 1 && queryParams.containsKey('ordering'))) {
         await _cacheGuestList(guests);
       }
       await _cacheGuestsIndividually(guests);
@@ -153,10 +156,7 @@ class GuestRepository {
   }) async {
     final response = await _apiClient.post<dynamic>(
       '${AppConstants.guestsEndpoint}search/',
-      data: {
-        'query': query,
-        'search_by': searchBy,
-      },
+      data: {'query': query, 'search_by': searchBy},
     );
 
     if (response.data == null) {
@@ -273,13 +273,15 @@ class GuestRepository {
       data['id_number'] = guest.idNumber;
     }
     if (guest.idIssueDate != null) {
-      data['id_issue_date'] = guest.idIssueDate!.toIso8601String().split('T')[0];
+      data['id_issue_date'] =
+          guest.idIssueDate!.toIso8601String().split('T')[0];
     }
     if (guest.idIssuePlace.isNotEmpty) {
       data['id_issue_place'] = guest.idIssuePlace;
     }
     if (guest.dateOfBirth != null) {
-      data['date_of_birth'] = guest.dateOfBirth!.toIso8601String().split('T')[0];
+      data['date_of_birth'] =
+          guest.dateOfBirth!.toIso8601String().split('T')[0];
     }
     if (guest.gender != null) {
       data['gender'] = guest.gender!.name;

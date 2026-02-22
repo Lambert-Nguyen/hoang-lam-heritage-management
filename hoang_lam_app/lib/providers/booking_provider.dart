@@ -27,43 +27,59 @@ final activeBookingsProvider = FutureProvider<List<Booking>>((ref) async {
 });
 
 /// Provider for today's bookings
-final todayBookingsProvider = FutureProvider<TodayBookingsResponse>((ref) async {
+final todayBookingsProvider = FutureProvider<TodayBookingsResponse>((
+  ref,
+) async {
   final repository = ref.watch(bookingRepositoryProvider);
   return repository.getTodayBookings();
 });
 
 /// Provider for upcoming check-ins
-final upcomingCheckInsProvider = FutureProvider.family<List<Booking>, int>((ref, days) async {
+final upcomingCheckInsProvider = FutureProvider.family<List<Booking>, int>((
+  ref,
+  days,
+) async {
   final repository = ref.watch(bookingRepositoryProvider);
   return repository.getUpcomingCheckIns(days: days);
 });
 
 /// Provider for upcoming check-outs
-final upcomingCheckOutsProvider = FutureProvider.family<List<Booking>, int>((ref, days) async {
+final upcomingCheckOutsProvider = FutureProvider.family<List<Booking>, int>((
+  ref,
+  days,
+) async {
   final repository = ref.watch(bookingRepositoryProvider);
   return repository.getUpcomingCheckOuts(days: days);
 });
 
 /// Provider for a specific booking by ID
-final bookingByIdProvider = FutureProvider.family<Booking, int>((ref, id) async {
+final bookingByIdProvider = FutureProvider.family<Booking, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(bookingRepositoryProvider);
   return repository.getBooking(id);
 });
 
 /// Provider for bookings by room
 final bookingsByRoomProvider =
-    FutureProvider.family<List<Booking>, BookingsByRoomParams>((ref, params) async {
-  final repository = ref.watch(bookingRepositoryProvider);
-  return repository.getBookingsByRoom(
-    params.roomId,
-    from: params.from,
-    to: params.to,
-  );
-});
+    FutureProvider.family<List<Booking>, BookingsByRoomParams>((
+      ref,
+      params,
+    ) async {
+      final repository = ref.watch(bookingRepositoryProvider);
+      return repository.getBookingsByRoom(
+        params.roomId,
+        from: params.from,
+        to: params.to,
+      );
+    });
 
 /// Provider for bookings by guest
-final bookingsByGuestProvider =
-    FutureProvider.family<List<Booking>, int>((ref, guestId) async {
+final bookingsByGuestProvider = FutureProvider.family<List<Booking>, int>((
+  ref,
+  guestId,
+) async {
   final repository = ref.watch(bookingRepositoryProvider);
   return repository.getBookingsByGuest(guestId);
 });
@@ -71,27 +87,27 @@ final bookingsByGuestProvider =
 /// Provider for calendar bookings
 final calendarBookingsProvider =
     FutureProvider.family<List<Booking>, DateRange>((ref, dateRange) async {
-  final repository = ref.watch(bookingRepositoryProvider);
-  return repository.getCalendarBookings(
-    startDate: dateRange.start,
-    endDate: dateRange.end,
-  );
-});
+      final repository = ref.watch(bookingRepositoryProvider);
+      return repository.getCalendarBookings(
+        startDate: dateRange.start,
+        endDate: dateRange.end,
+      );
+    });
 
 /// Provider for filtered bookings
 final filteredBookingsProvider =
     FutureProvider.family<List<Booking>, BookingFilter>((ref, filter) async {
-  final repository = ref.watch(bookingRepositoryProvider);
-  return repository.getBookings(
-    status: filter.status?.toApiValue,
-    roomId: filter.roomId,
-    guestId: filter.guestId,
-    source: filter.source?.toApiValue,
-    checkInFrom: filter.startDate,
-    checkInTo: filter.endDate,
-    ordering: filter.ordering,
-  );
-});
+      final repository = ref.watch(bookingRepositoryProvider);
+      return repository.getBookings(
+        status: filter.status?.toApiValue,
+        roomId: filter.roomId,
+        guestId: filter.guestId,
+        source: filter.source?.toApiValue,
+        checkInFrom: filter.startDate,
+        checkInTo: filter.endDate,
+        ordering: filter.ordering,
+      );
+    });
 
 /// Parameters for getting bookings by room
 @freezed
@@ -109,7 +125,8 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   final Ref _ref;
   BookingFilter? _currentFilter;
 
-  BookingNotifier(this._repository, this._ref) : super(const AsyncValue.loading()) {
+  BookingNotifier(this._repository, this._ref)
+    : super(const AsyncValue.loading()) {
     loadBookings();
   }
 
@@ -344,9 +361,9 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
 /// Provider for BookingNotifier
 final bookingNotifierProvider =
     StateNotifierProvider<BookingNotifier, AsyncValue<List<Booking>>>((ref) {
-  final repository = ref.watch(bookingRepositoryProvider);
-  return BookingNotifier(repository, ref);
-});
+      final repository = ref.watch(bookingRepositoryProvider);
+      return BookingNotifier(repository, ref);
+    });
 
 /// Provider for getting booking statistics
 final bookingStatsProvider = Provider<BookingStats>((ref) {
@@ -359,13 +376,16 @@ final bookingStatsProvider = Provider<BookingStats>((ref) {
 
       return BookingStats(
         totalBookings: bookings.length,
-        activeBookings: bookings
-            .where((b) =>
-                b.status == BookingStatus.confirmed ||
-                b.status == BookingStatus.checkedIn)
-            .length,
-        todayCheckIns: bookings
-            .where((b) {
+        activeBookings:
+            bookings
+                .where(
+                  (b) =>
+                      b.status == BookingStatus.confirmed ||
+                      b.status == BookingStatus.checkedIn,
+                )
+                .length,
+        todayCheckIns:
+            bookings.where((b) {
               final checkInDate = DateTime(
                 b.checkInDate.year,
                 b.checkInDate.month,
@@ -374,10 +394,9 @@ final bookingStatsProvider = Provider<BookingStats>((ref) {
               return checkInDate.isAtSameMomentAs(today) &&
                   (b.status == BookingStatus.confirmed ||
                       b.status == BookingStatus.pending);
-            })
-            .length,
-        todayCheckOuts: bookings
-            .where((b) {
+            }).length,
+        todayCheckOuts:
+            bookings.where((b) {
               final checkOutDate = DateTime(
                 b.checkOutDate.year,
                 b.checkOutDate.month,
@@ -385,32 +404,31 @@ final bookingStatsProvider = Provider<BookingStats>((ref) {
               );
               return checkOutDate.isAtSameMomentAs(today) &&
                   b.status == BookingStatus.checkedIn;
-            })
-            .length,
-        pendingBookings: bookings
-            .where((b) => b.status == BookingStatus.pending)
-            .length,
-        cancelledBookings: bookings
-            .where((b) => b.status == BookingStatus.cancelled)
-            .length,
+            }).length,
+        pendingBookings:
+            bookings.where((b) => b.status == BookingStatus.pending).length,
+        cancelledBookings:
+            bookings.where((b) => b.status == BookingStatus.cancelled).length,
       );
     },
-    loading: () => const BookingStats(
-      totalBookings: 0,
-      activeBookings: 0,
-      todayCheckIns: 0,
-      todayCheckOuts: 0,
-      pendingBookings: 0,
-      cancelledBookings: 0,
-    ),
-    error: (_, __) => const BookingStats(
-      totalBookings: 0,
-      activeBookings: 0,
-      todayCheckIns: 0,
-      todayCheckOuts: 0,
-      pendingBookings: 0,
-      cancelledBookings: 0,
-    ),
+    loading:
+        () => const BookingStats(
+          totalBookings: 0,
+          activeBookings: 0,
+          todayCheckIns: 0,
+          todayCheckOuts: 0,
+          pendingBookings: 0,
+          cancelledBookings: 0,
+        ),
+    error:
+        (_, __) => const BookingStats(
+          totalBookings: 0,
+          activeBookings: 0,
+          todayCheckIns: 0,
+          todayCheckOuts: 0,
+          pendingBookings: 0,
+          cancelledBookings: 0,
+        ),
   );
 });
 

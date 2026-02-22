@@ -11,10 +11,7 @@ import '../../providers/room_provider.dart';
 class RoomStatusDialog extends ConsumerStatefulWidget {
   final Room room;
 
-  const RoomStatusDialog({
-    super.key,
-    required this.room,
-  });
+  const RoomStatusDialog({super.key, required this.room});
 
   /// Show the dialog and return the new RoomStatus on success, or null on cancel/failure
   static Future<RoomStatus?> show(BuildContext context, Room room) {
@@ -35,7 +32,12 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
 
   /// Valid status transitions: from -> list of allowed targets
   static const Map<RoomStatus, List<RoomStatus>> _validTransitions = {
-    RoomStatus.available: [RoomStatus.occupied, RoomStatus.cleaning, RoomStatus.maintenance, RoomStatus.blocked],
+    RoomStatus.available: [
+      RoomStatus.occupied,
+      RoomStatus.cleaning,
+      RoomStatus.maintenance,
+      RoomStatus.blocked,
+    ],
     RoomStatus.occupied: [RoomStatus.cleaning, RoomStatus.available],
     RoomStatus.cleaning: [RoomStatus.available, RoomStatus.maintenance],
     RoomStatus.maintenance: [RoomStatus.available, RoomStatus.blocked],
@@ -82,9 +84,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(context.l10n.updateStatus),
-          ),
+          Expanded(child: Text(context.l10n.updateStatus)),
         ],
       ),
       content: SingleChildScrollView(
@@ -96,9 +96,9 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
             Text(
               '${context.l10n.currentStatusLabel}: ${widget.room.status.localizedName(context.l10n)}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: widget.room.status.color,
-                    fontWeight: FontWeight.w500,
-                  ),
+                color: widget.room.status.color,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: AppSpacing.lg),
 
@@ -117,16 +117,20 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                 child: Material(
-                  color: isSelected
-                      ? status.color.withAlpha(30)
-                      : Colors.transparent,
+                  color:
+                      isSelected
+                          ? status.color.withAlpha(30)
+                          : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   child: InkWell(
-                    onTap: _isLoading ? null : () {
-                      setState(() {
-                        _selectedStatus = status;
-                      });
-                    },
+                    onTap:
+                        _isLoading
+                            ? null
+                            : () {
+                              setState(() {
+                                _selectedStatus = status;
+                              });
+                            },
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -135,11 +139,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
-                            status.icon,
-                            color: status.color,
-                            size: 24,
-                          ),
+                          Icon(status.icon, color: status.color, size: 24),
                           const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Column(
@@ -148,30 +148,27 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
                                 Text(
                                   status.localizedName(context.l10n),
                                   style: TextStyle(
-                                    fontWeight: isSelected
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
+                                    fontWeight:
+                                        isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
                                     color: status.color,
                                   ),
                                 ),
                                 if (isCurrentStatus)
                                   Text(
                                     context.l10n.currentLabel,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                          color: AppColors.textSecondary,
-                                        ),
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
                                   ),
                               ],
                             ),
                           ),
                           if (isSelected)
-                            Icon(
-                              Icons.check_circle,
-                              color: status.color,
-                            ),
+                            Icon(Icons.check_circle, color: status.color),
                         ],
                       ),
                     ),
@@ -202,16 +199,18 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
           child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
-          onPressed: _isLoading || _selectedStatus == widget.room.status
-              ? null
-              : _updateStatus,
-          child: _isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(context.l10n.update),
+          onPressed:
+              _isLoading || _selectedStatus == widget.room.status
+                  ? null
+                  : _updateStatus,
+          child:
+              _isLoading
+                  ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : Text(context.l10n.update),
         ),
       ],
     );
@@ -259,10 +258,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
 class QuickStatusBottomSheet extends ConsumerWidget {
   final Room room;
 
-  const QuickStatusBottomSheet({
-    super.key,
-    required this.room,
-  });
+  const QuickStatusBottomSheet({super.key, required this.room});
 
   static Future<RoomStatus?> show(BuildContext context, Room room) {
     return showModalBottomSheet<RoomStatus>(
@@ -301,15 +297,15 @@ class QuickStatusBottomSheet extends ConsumerWidget {
             // Title
             Text(
               '${context.l10n.room} ${room.number}',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             Text(
               '${context.l10n.currentStatusLabel}: ${room.status.localizedName(context.l10n)}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: room.status.color,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: room.status.color),
             ),
             const SizedBox(height: AppSpacing.md),
 
@@ -317,27 +313,30 @@ class QuickStatusBottomSheet extends ConsumerWidget {
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
-              children: RoomStatus.values.map((status) {
-                final isCurrentStatus = room.status == status;
+              children:
+                  RoomStatus.values.map((status) {
+                    final isCurrentStatus = room.status == status;
 
-                return ActionChip(
-                  avatar: Icon(
-                    status.icon,
-                    size: 18,
-                    color: isCurrentStatus ? Colors.white : status.color,
-                  ),
-                  label: Text(status.localizedName(context.l10n)),
-                  backgroundColor: isCurrentStatus
-                      ? status.color
-                      : status.color.withAlpha(30),
-                  labelStyle: TextStyle(
-                    color: isCurrentStatus ? Colors.white : status.color,
-                  ),
-                  onPressed: isCurrentStatus
-                      ? null
-                      : () => Navigator.pop(context, status),
-                );
-              }).toList(),
+                    return ActionChip(
+                      avatar: Icon(
+                        status.icon,
+                        size: 18,
+                        color: isCurrentStatus ? Colors.white : status.color,
+                      ),
+                      label: Text(status.localizedName(context.l10n)),
+                      backgroundColor:
+                          isCurrentStatus
+                              ? status.color
+                              : status.color.withAlpha(30),
+                      labelStyle: TextStyle(
+                        color: isCurrentStatus ? Colors.white : status.color,
+                      ),
+                      onPressed:
+                          isCurrentStatus
+                              ? null
+                              : () => Navigator.pop(context, status),
+                    );
+                  }).toList(),
             ),
             const SizedBox(height: AppSpacing.md),
           ],

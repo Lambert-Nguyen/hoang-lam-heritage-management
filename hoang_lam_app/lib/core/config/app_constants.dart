@@ -60,7 +60,8 @@ class AppConstants {
   // Phase 5: Notifications & Messaging
   static const String notificationsEndpoint = '/notifications/';
   static const String deviceTokenEndpoint = '/devices/token/';
-  static const String notificationPreferencesEndpoint = '/notifications/preferences/';
+  static const String notificationPreferencesEndpoint =
+      '/notifications/preferences/';
   static const String messageTemplatesEndpoint = '/message-templates/';
   static const String guestMessagesEndpoint = '/guest-messages/';
 

@@ -47,15 +47,19 @@ final guestByIdProvider = FutureProvider.family<Guest, int>((ref, id) async {
 });
 
 /// Provider for guest history by ID
-final guestHistoryProvider =
-    FutureProvider.family<GuestHistoryResponse, int>((ref, guestId) async {
+final guestHistoryProvider = FutureProvider.family<GuestHistoryResponse, int>((
+  ref,
+  guestId,
+) async {
   final repository = ref.watch(guestRepositoryProvider);
   return repository.getGuestHistory(guestId);
 });
 
 /// Provider for filtered guests
-final filteredGuestsProvider =
-    FutureProvider.family<List<Guest>, GuestFilter>((ref, filter) async {
+final filteredGuestsProvider = FutureProvider.family<List<Guest>, GuestFilter>((
+  ref,
+  filter,
+) async {
   final repository = ref.watch(guestRepositoryProvider);
   return repository.getGuests(
     search: filter.search,
@@ -68,16 +72,18 @@ final filteredGuestsProvider =
 /// Provider for guest search
 final guestSearchProvider =
     FutureProvider.family<List<Guest>, GuestSearchParams>((ref, params) async {
-  final repository = ref.watch(guestRepositoryProvider);
-  return repository.searchGuests(
-    query: params.query,
-    searchBy: params.searchBy,
-  );
-});
+      final repository = ref.watch(guestRepositoryProvider);
+      return repository.searchGuests(
+        query: params.query,
+        searchBy: params.searchBy,
+      );
+    });
 
 /// Provider for guests by nationality
-final guestsByNationalityProvider =
-    FutureProvider.family<List<Guest>, String>((ref, nationality) async {
+final guestsByNationalityProvider = FutureProvider.family<List<Guest>, String>((
+  ref,
+  nationality,
+) async {
   final repository = ref.watch(guestRepositoryProvider);
   return repository.getGuestsByNationality(nationality);
 });
@@ -118,7 +124,8 @@ class GuestNotifier extends StateNotifier<GuestState> {
   final GuestRepository _repository;
   final Ref _ref;
 
-  GuestNotifier(this._repository, this._ref) : super(const GuestState.initial());
+  GuestNotifier(this._repository, this._ref)
+    : super(const GuestState.initial());
 
   bool _isNetworkError(Object e) {
     return e is DioException &&
@@ -153,9 +160,7 @@ class GuestNotifier extends StateNotifier<GuestState> {
   /// Search guests
   Future<void> searchGuests(String query, {String searchBy = 'all'}) async {
     if (query.trim().length < 2) {
-      state = GuestState.error(
-        message: _ref.read(l10nProvider).searchMinChars,
-      );
+      state = GuestState.error(message: _ref.read(l10nProvider).searchMinChars);
       return;
     }
 
@@ -287,9 +292,10 @@ class GuestNotifier extends StateNotifier<GuestState> {
       // Update local guest list state if currently loaded
       state.whenOrNull(
         loaded: (guests) {
-          final updatedList = guests.map((g) {
-            return g.id == guestId ? updatedGuest : g;
-          }).toList();
+          final updatedList =
+              guests.map((g) {
+                return g.id == guestId ? updatedGuest : g;
+              }).toList();
           state = GuestState.loaded(guests: updatedList);
         },
       );
@@ -343,7 +349,8 @@ class GuestNotifier extends StateNotifier<GuestState> {
     if (message.contains('phone') && message.contains('digits')) {
       return l10n.errorPhoneDigits;
     }
-    if (message.contains('không thể xóa') || message.contains('cannot delete')) {
+    if (message.contains('không thể xóa') ||
+        message.contains('cannot delete')) {
       return l10n.errorCannotDeleteGuest;
     }
     if (message.contains('not found') || message.contains('404')) {
@@ -354,7 +361,9 @@ class GuestNotifier extends StateNotifier<GuestState> {
 }
 
 /// Provider for guest state notifier
-final guestStateProvider = StateNotifierProvider<GuestNotifier, GuestState>((ref) {
+final guestStateProvider = StateNotifierProvider<GuestNotifier, GuestState>((
+  ref,
+) {
   final repository = ref.watch(guestRepositoryProvider);
   return GuestNotifier(repository, ref);
 });

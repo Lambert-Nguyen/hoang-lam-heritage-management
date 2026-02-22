@@ -10,7 +10,7 @@ class BookingRepository {
   final ApiClient _apiClient;
 
   BookingRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Booking CRUD ====================
 
@@ -84,15 +84,17 @@ class BookingRepository {
         }
       } else if (response.data is List) {
         final list = response.data as List<dynamic>;
-        bookings = list
-            .map((json) => Booking.fromJson(json as Map<String, dynamic>))
-            .toList();
+        bookings =
+            list
+                .map((json) => Booking.fromJson(json as Map<String, dynamic>))
+                .toList();
       } else {
         bookings = [];
       }
 
       // Cache results on success (only for unfiltered default queries)
-      if (queryParams.isEmpty || (queryParams.length == 1 && queryParams.containsKey('ordering'))) {
+      if (queryParams.isEmpty ||
+          (queryParams.length == 1 && queryParams.containsKey('ordering'))) {
         await _cacheBookingList(bookings);
       }
       await _cacheBookingsIndividually(bookings);
@@ -131,7 +133,8 @@ class BookingRepository {
     final data = booking.toJson();
     // Backend expects YYYY-MM-DD for DateField, not ISO 8601 with time
     data['check_in_date'] = booking.checkInDate.toIso8601String().split('T')[0];
-    data['check_out_date'] = booking.checkOutDate.toIso8601String().split('T')[0];
+    data['check_out_date'] =
+        booking.checkOutDate.toIso8601String().split('T')[0];
     // Backend requires total_amount
     data['total_amount'] = booking.totalAmount;
     final response = await _apiClient.post<Map<String, dynamic>>(
@@ -149,14 +152,19 @@ class BookingRepository {
     final data = booking.toJson();
     // Backend expects YYYY-MM-DD for DateField, not ISO 8601 with time
     if (booking.checkInDate != null) {
-      data['check_in_date'] = booking.checkInDate!.toIso8601String().split('T')[0];
+      data['check_in_date'] =
+          booking.checkInDate!.toIso8601String().split('T')[0];
     }
     if (booking.checkOutDate != null) {
-      data['check_out_date'] = booking.checkOutDate!.toIso8601String().split('T')[0];
+      data['check_out_date'] =
+          booking.checkOutDate!.toIso8601String().split('T')[0];
     }
     // Recalculate total_amount if nightly_rate and dates are present
-    if (booking.nightlyRate != null && booking.checkInDate != null && booking.checkOutDate != null) {
-      final nights = booking.checkOutDate!.difference(booking.checkInDate!).inDays;
+    if (booking.nightlyRate != null &&
+        booking.checkInDate != null &&
+        booking.checkOutDate != null) {
+      final nights =
+          booking.checkOutDate!.difference(booking.checkInDate!).inDays;
       data['total_amount'] = booking.nightlyRate! * nights;
     }
     final response = await _apiClient.put<Map<String, dynamic>>(
@@ -212,10 +220,7 @@ class BookingRepository {
   // ==================== Check-in/Check-out ====================
 
   /// Check-in a booking
-  Future<Booking> checkIn(
-    int id, {
-    String? actualCheckInNotes,
-  }) async {
+  Future<Booking> checkIn(int id, {String? actualCheckInNotes}) async {
     final data = <String, dynamic>{};
     if (actualCheckInNotes != null) {
       data['actual_check_in_notes'] = actualCheckInNotes;
@@ -352,13 +357,16 @@ class BookingRepository {
 
   /// Get all active bookings (confirmed or checked-in)
   Future<List<Booking>> getActiveBookings() async {
-    return getBookings(
-      ordering: '-check_in_date',
-    ).then((bookings) => bookings
-        .where((b) =>
-            b.status == BookingStatus.confirmed ||
-            b.status == BookingStatus.checkedIn)
-        .toList());
+    return getBookings(ordering: '-check_in_date').then(
+      (bookings) =>
+          bookings
+              .where(
+                (b) =>
+                    b.status == BookingStatus.confirmed ||
+                    b.status == BookingStatus.checkedIn,
+              )
+              .toList(),
+    );
   }
 
   /// Get upcoming check-ins
@@ -413,10 +421,7 @@ class BookingRepository {
   }
 
   /// Cancel a booking
-  Future<Booking> cancelBooking(
-    int id, {
-    String? cancellationReason,
-  }) async {
+  Future<Booking> cancelBooking(int id, {String? cancellationReason}) async {
     return updateBookingStatus(
       id,
       BookingStatus.cancelled,
@@ -425,15 +430,8 @@ class BookingRepository {
   }
 
   /// Mark as no-show
-  Future<Booking> markAsNoShow(
-    int id, {
-    String? notes,
-  }) async {
-    return updateBookingStatus(
-      id,
-      BookingStatus.noShow,
-      notes: notes,
-    );
+  Future<Booking> markAsNoShow(int id, {String? notes}) async {
+    return updateBookingStatus(id, BookingStatus.noShow, notes: notes);
   }
 
   // ==================== Cache Helpers ====================

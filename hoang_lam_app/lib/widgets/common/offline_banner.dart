@@ -8,11 +8,7 @@ class OfflineBanner extends StatelessWidget {
   final bool isVisible;
   final VoidCallback? onRetry;
 
-  const OfflineBanner({
-    super.key,
-    this.isVisible = true,
-    this.onRetry,
-  });
+  const OfflineBanner({super.key, this.isVisible = true, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +33,7 @@ class OfflineBanner extends StatelessWidget {
           Expanded(
             child: Text(
               context.l10n.offlineSyncMessage,
-              style: TextStyle(
-                color: AppColors.onOffline,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: AppColors.onOffline, fontSize: 14),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -130,11 +123,7 @@ class EmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: AppColors.textHint,
-            ),
+            Icon(icon, size: 64, color: AppColors.textHint),
             AppSpacing.gapVerticalMd,
             Text(
               title,
@@ -149,19 +138,13 @@ class EmptyState extends StatelessWidget {
               AppSpacing.gapVerticalSm,
               Text(
                 subtitle!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textHint,
-                ),
+                style: const TextStyle(fontSize: 14, color: AppColors.textHint),
                 textAlign: TextAlign.center,
               ),
             ],
             if (actionLabel != null && onAction != null) ...[
               AppSpacing.gapVerticalLg,
-              ElevatedButton(
-                onPressed: onAction,
-                child: Text(actionLabel!),
-              ),
+              ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
             ],
           ],
         ),
@@ -175,11 +158,7 @@ class ErrorState extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const ErrorState({
-    super.key,
-    required this.message,
-    this.onRetry,
-  });
+  const ErrorState({super.key, required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -189,11 +168,7 @@ class ErrorState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: AppColors.error),
             AppSpacing.gapVerticalMd,
             Text(
               message,

@@ -15,7 +15,8 @@ class DecimalToIntConverter implements JsonConverter<int, dynamic> {
   int fromJson(dynamic json) {
     if (json == null) return 0;
     if (json is num) return json.toInt();
-    if (json is String) return int.tryParse(json) ?? double.tryParse(json)?.toInt() ?? 0;
+    if (json is String)
+      return int.tryParse(json) ?? double.tryParse(json)?.toInt() ?? 0;
     return 0;
   }
 
@@ -31,7 +32,8 @@ class NullableDecimalToIntConverter implements JsonConverter<int?, dynamic> {
   int? fromJson(dynamic json) {
     if (json == null) return null;
     if (json is num) return json.toInt();
-    if (json is String) return int.tryParse(json) ?? double.tryParse(json)?.toInt();
+    if (json is String)
+      return int.tryParse(json) ?? double.tryParse(json)?.toInt();
     return null;
   }
 
@@ -123,7 +125,6 @@ extension RoomStatusExtension on RoomStatus {
     return this == RoomStatus.cleaning || this == RoomStatus.blocked;
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case RoomStatus.available:
@@ -147,13 +148,14 @@ sealed class RoomType with _$RoomType {
     required int id,
     required String name,
     @JsonKey(name: 'name_en') String? nameEn,
-    @DecimalToIntConverter()
-    @JsonKey(name: 'base_rate') required int baseRate,
+    @DecimalToIntConverter() @JsonKey(name: 'base_rate') required int baseRate,
     // Hourly booking fields
     @NullableDecimalToIntConverter()
-    @JsonKey(name: 'hourly_rate') int? hourlyRate,
+    @JsonKey(name: 'hourly_rate')
+    int? hourlyRate,
     @NullableDecimalToIntConverter()
-    @JsonKey(name: 'first_hour_rate') int? firstHourRate,
+    @JsonKey(name: 'first_hour_rate')
+    int? firstHourRate,
     @JsonKey(name: 'allows_hourly') @Default(true) bool allowsHourly,
     @JsonKey(name: 'min_hours') @Default(2) int minHours,
     // Guest capacity
@@ -178,18 +180,13 @@ sealed class RoomType with _$RoomType {
   }
 
   /// Get formatted base rate
-  String get formattedBaseRate => '${baseRate.toString().replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-        (Match m) => '${m[1]}.',
-      )}đ';
+  String get formattedBaseRate =>
+      '${baseRate.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}đ';
 
   /// Get formatted hourly rate
   String? get formattedHourlyRate {
     if (hourlyRate == null) return null;
-    return '${hourlyRate.toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]}.',
-        )}đ/giờ';
+    return '${hourlyRate.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}đ/giờ';
   }
 }
 
@@ -209,8 +206,7 @@ sealed class Room with _$Room {
     @Default([]) List<String> amenities,
     String? notes,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
-    @NullableDecimalToIntConverter()
-    @JsonKey(name: 'base_rate') int? baseRate,
+    @NullableDecimalToIntConverter() @JsonKey(name: 'base_rate') int? baseRate,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _Room;
@@ -236,10 +232,7 @@ sealed class Room with _$Room {
   /// Get formatted base rate from room type
   String get formattedRate {
     final rate = baseRate ?? roomTypeDetails?.baseRate ?? 0;
-    return '${rate.toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]}.',
-        )}đ';
+    return '${rate.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}đ';
   }
 }
 

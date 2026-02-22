@@ -18,7 +18,9 @@ final ratePlansProvider = FutureProvider<List<RatePlanListItem>>((ref) async {
 });
 
 /// Provider for active rate plans only
-final activeRatePlansProvider = FutureProvider<List<RatePlanListItem>>((ref) async {
+final activeRatePlansProvider = FutureProvider<List<RatePlanListItem>>((
+  ref,
+) async {
   final repository = ref.watch(ratePlanRepositoryProvider);
   return repository.getRatePlans(isActive: true);
 });
@@ -26,47 +28,51 @@ final activeRatePlansProvider = FutureProvider<List<RatePlanListItem>>((ref) asy
 /// Provider for rate plans by room type
 final ratePlansByRoomTypeProvider =
     FutureProvider.family<List<RatePlanListItem>, int>((ref, roomTypeId) async {
-  final repository = ref.watch(ratePlanRepositoryProvider);
-  return repository.getRatePlansByRoomType(roomTypeId);
-});
+      final repository = ref.watch(ratePlanRepositoryProvider);
+      return repository.getRatePlansByRoomType(roomTypeId);
+    });
 
 /// Provider for a specific rate plan by ID
-final ratePlanByIdProvider =
-    FutureProvider.family<RatePlan, int>((ref, id) async {
+final ratePlanByIdProvider = FutureProvider.family<RatePlan, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(ratePlanRepositoryProvider);
   return repository.getRatePlan(id);
 });
 
 /// Provider for filtered rate plans
 final filteredRatePlansProvider =
-    FutureProvider.family<List<RatePlanListItem>, RatePlanFilter>(
-        (ref, filter) async {
-  final repository = ref.watch(ratePlanRepositoryProvider);
-  return repository.getRatePlans(
-    roomTypeId: filter.roomTypeId,
-    isActive: filter.isActive,
-  );
-});
+    FutureProvider.family<List<RatePlanListItem>, RatePlanFilter>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(ratePlanRepositoryProvider);
+      return repository.getRatePlans(
+        roomTypeId: filter.roomTypeId,
+        isActive: filter.isActive,
+      );
+    });
 
 /// Rate plan filter for querying rate plans
 @freezed
 sealed class RatePlanFilter with _$RatePlanFilter {
-  const factory RatePlanFilter({
-    int? roomTypeId,
-    bool? isActive,
-  }) = _RatePlanFilter;
+  const factory RatePlanFilter({int? roomTypeId, bool? isActive}) =
+      _RatePlanFilter;
 }
 
 /// Provider for all date rate overrides
 final dateRateOverridesProvider =
     FutureProvider<List<DateRateOverrideListItem>>((ref) async {
-  final repository = ref.watch(ratePlanRepositoryProvider);
-  return repository.getDateRateOverrides();
-});
+      final repository = ref.watch(ratePlanRepositoryProvider);
+      return repository.getDateRateOverrides();
+    });
 
 /// Provider for date rate overrides by room type and date range
 final dateRateOverridesByRoomTypeProvider = FutureProvider.family<
-    List<DateRateOverrideListItem>, DateRateOverrideFilter>((ref, filter) async {
+  List<DateRateOverrideListItem>,
+  DateRateOverrideFilter
+>((ref, filter) async {
   final repository = ref.watch(ratePlanRepositoryProvider);
   return repository.getDateRateOverridesByRoomType(
     filter.roomTypeId,
@@ -78,9 +84,9 @@ final dateRateOverridesByRoomTypeProvider = FutureProvider.family<
 /// Provider for a specific date rate override by ID
 final dateRateOverrideByIdProvider =
     FutureProvider.family<DateRateOverride, int>((ref, id) async {
-  final repository = ref.watch(ratePlanRepositoryProvider);
-  return repository.getDateRateOverride(id);
-});
+      final repository = ref.watch(ratePlanRepositoryProvider);
+      return repository.getDateRateOverride(id);
+    });
 
 /// Date rate override filter for querying overrides
 @freezed
@@ -93,12 +99,13 @@ sealed class DateRateOverrideFilter with _$DateRateOverrideFilter {
 }
 
 /// State notifier for managing rate plan operations
-class RatePlanNotifier extends StateNotifier<AsyncValue<List<RatePlanListItem>>> {
+class RatePlanNotifier
+    extends StateNotifier<AsyncValue<List<RatePlanListItem>>> {
   final RatePlanRepository _repository;
   final Ref _ref;
 
   RatePlanNotifier(this._repository, this._ref)
-      : super(const AsyncValue.loading()) {
+    : super(const AsyncValue.loading()) {
     loadRatePlans();
   }
 
@@ -136,10 +143,11 @@ class RatePlanNotifier extends StateNotifier<AsyncValue<List<RatePlanListItem>>>
 /// Provider for RatePlanNotifier
 final ratePlanNotifierProvider =
     StateNotifierProvider<RatePlanNotifier, AsyncValue<List<RatePlanListItem>>>(
-        (ref) {
-  final repository = ref.watch(ratePlanRepositoryProvider);
-  return RatePlanNotifier(repository, ref);
-});
+      (ref) {
+        final repository = ref.watch(ratePlanRepositoryProvider);
+        return RatePlanNotifier(repository, ref);
+      },
+    );
 
 /// State notifier for managing date rate override operations
 class DateRateOverrideNotifier
@@ -148,7 +156,7 @@ class DateRateOverrideNotifier
   final Ref _ref;
 
   DateRateOverrideNotifier(this._repository, this._ref)
-      : super(const AsyncValue.loading());
+    : super(const AsyncValue.loading());
 
   Future<void> loadOverrides({
     int? roomTypeId,
@@ -169,21 +177,25 @@ class DateRateOverrideNotifier
   }
 
   Future<DateRateOverride> createOverride(
-      DateRateOverrideCreateRequest request) async {
+    DateRateOverrideCreateRequest request,
+  ) async {
     final override = await _repository.createDateRateOverride(request);
     await loadOverrides();
     return override;
   }
 
   Future<List<DateRateOverride>> bulkCreateOverrides(
-      DateRateOverrideBulkCreateRequest request) async {
+    DateRateOverrideBulkCreateRequest request,
+  ) async {
     final overrides = await _repository.bulkCreateDateRateOverrides(request);
     await loadOverrides();
     return overrides;
   }
 
   Future<DateRateOverride> updateOverride(
-      int id, Map<String, dynamic> updates) async {
+    int id,
+    Map<String, dynamic> updates,
+  ) async {
     final override = await _repository.updateDateRateOverride(id, updates);
     await loadOverrides();
     return override;
@@ -197,7 +209,9 @@ class DateRateOverrideNotifier
 
 /// Provider for DateRateOverrideNotifier
 final dateRateOverrideNotifierProvider = StateNotifierProvider<
-    DateRateOverrideNotifier, AsyncValue<List<DateRateOverrideListItem>>>((ref) {
+  DateRateOverrideNotifier,
+  AsyncValue<List<DateRateOverrideListItem>>
+>((ref) {
   final repository = ref.watch(ratePlanRepositoryProvider);
   return DateRateOverrideNotifier(repository, ref);
 });

@@ -11,11 +11,7 @@ class MinibarItemCard extends StatelessWidget {
   final MinibarItem item;
   final VoidCallback? onTap;
 
-  const MinibarItemCard({
-    super.key,
-    required this.item,
-    this.onTap,
-  });
+  const MinibarItemCard({super.key, required this.item, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +27,10 @@ class MinibarItemCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: item.isActive
-              ? Colors.transparent
-              : AppColors.error.withValues(alpha: 0.3),
+          color:
+              item.isActive
+                  ? Colors.transparent
+                  : AppColors.error.withValues(alpha: 0.3),
           width: item.isActive ? 0 : 1,
         ),
       ),
@@ -52,8 +49,9 @@ class MinibarItemCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(AppSpacing.lg),
                         decoration: BoxDecoration(
-                          color: _getCategoryColor(item.category)
-                              .withValues(alpha: 0.1),
+                          color: _getCategoryColor(
+                            item.category,
+                          ).withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -70,8 +68,8 @@ class MinibarItemCard extends StatelessWidget {
                   Text(
                     item.name,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -85,8 +83,9 @@ class MinibarItemCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: _getCategoryColor(item.category)
-                            .withValues(alpha: 0.1),
+                        color: _getCategoryColor(
+                          item.category,
+                        ).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -103,9 +102,9 @@ class MinibarItemCard extends StatelessWidget {
                   Text(
                     currencyFormat.format(item.price),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),

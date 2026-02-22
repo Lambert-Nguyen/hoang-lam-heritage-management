@@ -9,11 +9,7 @@ class MinibarItemGrid extends StatelessWidget {
   final List<MinibarItem> items;
   final void Function(MinibarItem item)? onItemTap;
 
-  const MinibarItemGrid({
-    super.key,
-    required this.items,
-    this.onItemTap,
-  });
+  const MinibarItemGrid({super.key, required this.items, this.onItemTap});
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +24,7 @@ class MinibarItemGrid extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return MinibarItemCard(
-          item: item,
-          onTap: () => onItemTap?.call(item),
-        );
+        return MinibarItemCard(item: item, onTap: () => onItemTap?.call(item));
       },
     );
   }

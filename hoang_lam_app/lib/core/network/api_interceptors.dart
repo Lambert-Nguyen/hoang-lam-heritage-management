@@ -24,7 +24,10 @@ class AuthInterceptor extends Interceptor {
   AuthInterceptor(this._dio);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     // Skip auth for login and refresh endpoints
     if (_isAuthEndpoint(options.path)) {
       debugPrint('[AuthInterceptor] Skipping auth for: ${options.path}');
@@ -33,7 +36,9 @@ class AuthInterceptor extends Interceptor {
 
     try {
       final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
-      debugPrint('[AuthInterceptor] Token read result: ${accessToken != null ? "found" : "null"}');
+      debugPrint(
+        '[AuthInterceptor] Token read result: ${accessToken != null ? "found" : "null"}',
+      );
       if (accessToken != null) {
         options.headers['Authorization'] = 'Bearer $accessToken';
       }
@@ -53,9 +58,12 @@ class AuthInterceptor extends Interceptor {
           final success = await _refreshCompleter!.future;
           if (success) {
             // Retry with new token
-            final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
+            final accessToken = await _storage.read(
+              key: AppConstants.accessTokenKey,
+            );
             if (accessToken != null) {
-              err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
+              err.requestOptions.headers['Authorization'] =
+                  'Bearer $accessToken';
               final response = await _dio.fetch(err.requestOptions);
               return handler.resolve(response);
             }
@@ -75,7 +83,9 @@ class AuthInterceptor extends Interceptor {
 
           if (refreshed) {
             // Retry the original request
-            final accessToken = await _storage.read(key: AppConstants.accessTokenKey);
+            final accessToken = await _storage.read(
+              key: AppConstants.accessTokenKey,
+            );
             err.requestOptions.headers['Authorization'] = 'Bearer $accessToken';
             final response = await _dio.fetch(err.requestOptions);
             return handler.resolve(response);
@@ -96,7 +106,9 @@ class AuthInterceptor extends Interceptor {
 
   Future<bool> _refreshToken() async {
     try {
-      final refreshToken = await _storage.read(key: AppConstants.refreshTokenKey);
+      final refreshToken = await _storage.read(
+        key: AppConstants.refreshTokenKey,
+      );
       if (refreshToken == null) return false;
 
       final response = await _dio.post(
@@ -155,7 +167,7 @@ class LoggingInterceptor extends Interceptor {
   /// Sanitize request data to hide passwords
   dynamic _sanitizeData(dynamic data) {
     if (data == null) return null;
-    
+
     if (data is Map<String, dynamic>) {
       final sanitized = Map<String, dynamic>.from(data);
       // Hide password fields
@@ -173,7 +185,7 @@ class LoggingInterceptor extends Interceptor {
       }
       return sanitized;
     }
-    
+
     return data;
   }
 
@@ -195,7 +207,9 @@ class LoggingInterceptor extends Interceptor {
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (EnvConfig.current.enableLogging) {
       debugPrint('┌─────────────────────────────────────────────────────────');
-      debugPrint('│ RESPONSE: ${response.statusCode} ${response.requestOptions.uri}');
+      debugPrint(
+        '│ RESPONSE: ${response.statusCode} ${response.requestOptions.uri}',
+      );
       // Don't log response data as it may contain tokens
       debugPrint('│ Data: <response data hidden for security>');
       debugPrint('└─────────────────────────────────────────────────────────');

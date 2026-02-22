@@ -85,14 +85,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     // Watch auth state - router will handle redirects automatically
     final authState = ref.watch(authStateProvider);
     debugPrint('[SplashScreen] Current auth state: $authState');
-    
+
     // No manual navigation needed - router's redirect handles it
     authState.maybeWhen(
       authenticated: (_) {
-        debugPrint('[SplashScreen] Authenticated - router will redirect to home');
+        debugPrint(
+          '[SplashScreen] Authenticated - router will redirect to home',
+        );
       },
       unauthenticated: () {
-        debugPrint('[SplashScreen] Unauthenticated - router will redirect to login');
+        debugPrint(
+          '[SplashScreen] Unauthenticated - router will redirect to login',
+        );
       },
       orElse: () {
         debugPrint('[SplashScreen] Still loading: $authState');

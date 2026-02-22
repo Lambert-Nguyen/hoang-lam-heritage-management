@@ -89,50 +89,60 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/room-types/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getRoomTypes();
 
       expect(result.length, 2);
       expect(result[0].name, 'Single');
       expect(result[1].name, 'Double');
-      verify(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).called(1);
+      verify(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).called(1);
     });
 
-    test('getRoomTypes with isActive filter should pass query parameter',
-        () async {
-      final mockResponse = Response(
-        data: {
-          'count': 1,
-          'next': null,
-          'previous': null,
-          'results': [
-            _createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
-          ],
-        },
-        statusCode: 200,
-        requestOptions: RequestOptions(path: '/api/v1/room-types/'),
-      );
+    test(
+      'getRoomTypes with isActive filter should pass query parameter',
+      () async {
+        final mockResponse = Response(
+          data: {
+            'count': 1,
+            'next': null,
+            'previous': null,
+            'results': [
+              _createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
+            ],
+          },
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/api/v1/room-types/'),
+        );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+        when(
+          mockApiClient.get<Map<String, dynamic>>(
+            any,
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
-      final result = await repository.getRoomTypes(isActive: true);
+        final result = await repository.getRoomTypes(isActive: true);
 
-      expect(result.length, 1);
-      verify(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: {'is_active': 'true'},
-      )).called(1);
-    });
+        expect(result.length, 1);
+        verify(
+          mockApiClient.get<Map<String, dynamic>>(
+            any,
+            queryParameters: {'is_active': 'true'},
+          ),
+        ).called(1);
+      },
+    );
 
     test('getRoomType should return single room type', () async {
       final mockResponse = Response(
@@ -141,8 +151,9 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/room-types/1/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(any))
-          .thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(any),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getRoomType(1);
 
@@ -158,23 +169,17 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/room-types/'),
       );
 
-      when(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).thenAnswer((_) async => mockResponse);
 
-      final roomType = RoomType(
-        id: 1,
-        name: 'Single',
-        baseRate: 300000,
-      );
+      final roomType = RoomType(id: 1, name: 'Single', baseRate: 300000);
       final result = await repository.createRoomType(roomType);
 
       expect(result.name, 'Single');
-      verify(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).called(1);
+      verify(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).called(1);
     });
   });
 
@@ -194,20 +199,24 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/rooms/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getRooms();
 
       expect(result.length, 2);
       expect(result[0].number, '101');
       expect(result[1].number, '102');
-      verify(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).called(1);
+      verify(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).called(1);
     });
 
     test('getRooms with filters should pass query parameters', () async {
@@ -224,10 +233,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/rooms/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getRooms(
         status: RoomStatus.available,
@@ -236,14 +247,16 @@ void main() {
       );
 
       expect(result.length, 1);
-      verify(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: {
-          'status': 'available',
-          'room_type': '1',
-          'floor': '1',
-        },
-      )).called(1);
+      verify(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: {
+            'status': 'available',
+            'room_type': '1',
+            'floor': '1',
+          },
+        ),
+      ).called(1);
     });
 
     test('getRoom should return single room', () async {
@@ -253,8 +266,9 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/rooms/1/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(any))
-          .thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(any),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getRoom(1);
 
@@ -270,24 +284,17 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/rooms/'),
       );
 
-      when(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).thenAnswer((_) async => mockResponse);
 
-      final room = Room(
-        id: 1,
-        number: '101',
-        roomTypeId: 1,
-        floor: 1,
-      );
+      final room = Room(id: 1, number: '101', roomTypeId: 1, floor: 1);
       final result = await repository.createRoom(room);
 
       expect(result.number, '101');
-      verify(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).called(1);
+      verify(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).called(1);
     });
 
     test('updateRoomStatus should call update-status endpoint', () async {
@@ -302,10 +309,9 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/rooms/1/update-status/'),
       );
 
-      when(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = RoomStatusUpdateRequest(
         status: RoomStatus.cleaning,
@@ -314,14 +320,12 @@ void main() {
       final result = await repository.updateRoomStatus(1, request);
 
       expect(result.status, RoomStatus.cleaning);
-      verify(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).called(1);
+      verify(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).called(1);
     });
 
-    test('checkAvailability should call check-availability endpoint',
-        () async {
+    test('checkAvailability should call check-availability endpoint', () async {
       final mockResponse = Response(
         data: {
           'available_rooms': [
@@ -332,14 +336,14 @@ void main() {
           'check_out': '2024-01-05',
         },
         statusCode: 200,
-        requestOptions:
-            RequestOptions(path: '/api/v1/rooms/check-availability/'),
+        requestOptions: RequestOptions(
+          path: '/api/v1/rooms/check-availability/',
+        ),
       );
 
-      when(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = RoomAvailabilityRequest(
         checkIn: DateTime(2024, 1, 1),
@@ -349,10 +353,9 @@ void main() {
 
       expect(result.totalAvailable, 1);
       expect(result.availableRooms.length, 1);
-      verify(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).called(1);
+      verify(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).called(1);
     });
 
     test('getAvailableRooms should return available rooms', () async {
@@ -367,14 +370,14 @@ void main() {
           'check_out': '2024-01-05',
         },
         statusCode: 200,
-        requestOptions:
-            RequestOptions(path: '/api/v1/rooms/check-availability/'),
+        requestOptions: RequestOptions(
+          path: '/api/v1/rooms/check-availability/',
+        ),
       );
 
-      when(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getAvailableRooms(
         checkIn: DateTime(2024, 1, 1),
@@ -382,10 +385,9 @@ void main() {
       );
 
       expect(result.length, 2);
-      verify(mockApiClient.post<Map<String, dynamic>>(
-        any,
-        data: anyNamed('data'),
-      )).called(1);
+      verify(
+        mockApiClient.post<Map<String, dynamic>>(any, data: anyNamed('data')),
+      ).called(1);
     });
 
     test('deleteRoom should call delete endpoint', () async {
@@ -404,37 +406,43 @@ void main() {
   });
 
   group('RoomRepository - Grouping and Aggregation', () {
-    test('getRoomsGroupedByFloor should return rooms grouped by floor',
-        () async {
-      final mockResponse = Response(
-        data: {
-          'count': 2,
-          'next': null,
-          'previous': null,
-          'results': [
-            _createRoomJson(id: 1, number: '101', roomTypeId: 1, floor: 1),
-            _createRoomJson(id: 2, number: '201', roomTypeId: 2, floor: 2),
-          ],
-        },
-        statusCode: 200,
-        requestOptions: RequestOptions(path: '/api/v1/rooms/'),
-      );
+    test(
+      'getRoomsGroupedByFloor should return rooms grouped by floor',
+      () async {
+        final mockResponse = Response(
+          data: {
+            'count': 2,
+            'next': null,
+            'previous': null,
+            'results': [
+              _createRoomJson(id: 1, number: '101', roomTypeId: 1, floor: 1),
+              _createRoomJson(id: 2, number: '201', roomTypeId: 2, floor: 2),
+            ],
+          },
+          statusCode: 200,
+          requestOptions: RequestOptions(path: '/api/v1/rooms/'),
+        );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+        when(
+          mockApiClient.get<Map<String, dynamic>>(
+            any,
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
-      final result = await repository.getRoomsGroupedByFloor();
+        final result = await repository.getRoomsGroupedByFloor();
 
-      expect(result.length, 2); // 2 floors
-      expect(result[1]!.length, 1); // 1 room on floor 1
-      expect(result[2]!.length, 1); // 1 room on floor 2
-      verify(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).called(1);
-    });
+        expect(result.length, 2); // 2 floors
+        expect(result[1]!.length, 1); // 1 room on floor 1
+        expect(result[2]!.length, 1); // 1 room on floor 2
+        verify(
+          mockApiClient.get<Map<String, dynamic>>(
+            any,
+            queryParameters: anyNamed('queryParameters'),
+          ),
+        ).called(1);
+      },
+    );
 
     test('getRoomStatusCounts should return counts by status', () async {
       final mockResponse = Response(
@@ -467,19 +475,23 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/rooms/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getRoomStatusCounts();
 
       expect(result[RoomStatus.available], 2); // 2 available rooms
       expect(result[RoomStatus.occupied], 1); // 1 occupied room
-      verify(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).called(1);
+      verify(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).called(1);
     });
   });
 }

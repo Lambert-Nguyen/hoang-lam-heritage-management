@@ -14,19 +14,25 @@ final financeRepositoryProvider = Provider<FinanceRepository>((ref) {
 // ==================== Category Providers ====================
 
 /// Provider for all financial categories
-final financialCategoriesProvider = FutureProvider<List<FinancialCategory>>((ref) async {
+final financialCategoriesProvider = FutureProvider<List<FinancialCategory>>((
+  ref,
+) async {
   final repository = ref.watch(financeRepositoryProvider);
   return repository.getCategories();
 });
 
 /// Provider for income categories
-final incomeCategoriesProvider = FutureProvider<List<FinancialCategory>>((ref) async {
+final incomeCategoriesProvider = FutureProvider<List<FinancialCategory>>((
+  ref,
+) async {
   final repository = ref.watch(financeRepositoryProvider);
   return repository.getIncomeCategories();
 });
 
 /// Provider for expense categories
-final expenseCategoriesProvider = FutureProvider<List<FinancialCategory>>((ref) async {
+final expenseCategoriesProvider = FutureProvider<List<FinancialCategory>>((
+  ref,
+) async {
   final repository = ref.watch(financeRepositoryProvider);
   return repository.getExpenseCategories();
 });
@@ -34,108 +40,102 @@ final expenseCategoriesProvider = FutureProvider<List<FinancialCategory>>((ref) 
 // ==================== Entry Providers ====================
 
 /// Provider for all financial entries
-final financialEntriesProvider = FutureProvider.autoDispose<List<FinancialEntryListItem>>((ref) async {
-  final repository = ref.watch(financeRepositoryProvider);
-  return repository.getEntries();
-});
+final financialEntriesProvider =
+    FutureProvider.autoDispose<List<FinancialEntryListItem>>((ref) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getEntries();
+    });
 
 /// Provider for recent entries (last 7 days)
-final recentEntriesProvider = FutureProvider.autoDispose<List<FinancialEntryListItem>>((ref) async {
-  final repository = ref.watch(financeRepositoryProvider);
-  return repository.getRecentEntries(days: 7);
-});
+final recentEntriesProvider =
+    FutureProvider.autoDispose<List<FinancialEntryListItem>>((ref) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getRecentEntries(days: 7);
+    });
 
 /// Provider for filtered entries
-final filteredEntriesProvider =
-    FutureProvider.autoDispose.family<List<FinancialEntryListItem>, FinancialEntryFilter>(
-  (ref, filter) async {
-    final repository = ref.watch(financeRepositoryProvider);
-    return repository.getEntriesWithFilter(filter);
-  },
-);
+final filteredEntriesProvider = FutureProvider.autoDispose
+    .family<List<FinancialEntryListItem>, FinancialEntryFilter>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getEntriesWithFilter(filter);
+    });
 
 /// Provider for a specific entry by ID
-final financialEntryByIdProvider =
-    FutureProvider.autoDispose.family<FinancialEntry, int>((ref, id) async {
-  final repository = ref.watch(financeRepositoryProvider);
-  return repository.getEntry(id);
-});
+final financialEntryByIdProvider = FutureProvider.autoDispose
+    .family<FinancialEntry, int>((ref, id) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getEntry(id);
+    });
 
 /// Provider for income entries
-final incomeEntriesProvider =
-    FutureProvider.autoDispose.family<List<FinancialEntryListItem>, DateRange?>(
-  (ref, dateRange) async {
-    final repository = ref.watch(financeRepositoryProvider);
-    return repository.getIncomeEntries(
-      dateFrom: dateRange?.start,
-      dateTo: dateRange?.end,
-    );
-  },
-);
+final incomeEntriesProvider = FutureProvider.autoDispose
+    .family<List<FinancialEntryListItem>, DateRange?>((ref, dateRange) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getIncomeEntries(
+        dateFrom: dateRange?.start,
+        dateTo: dateRange?.end,
+      );
+    });
 
 /// Provider for expense entries
-final expenseEntriesProvider =
-    FutureProvider.autoDispose.family<List<FinancialEntryListItem>, DateRange?>(
-  (ref, dateRange) async {
-    final repository = ref.watch(financeRepositoryProvider);
-    return repository.getExpenseEntries(
-      dateFrom: dateRange?.start,
-      dateTo: dateRange?.end,
-    );
-  },
-);
+final expenseEntriesProvider = FutureProvider.autoDispose
+    .family<List<FinancialEntryListItem>, DateRange?>((ref, dateRange) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getExpenseEntries(
+        dateFrom: dateRange?.start,
+        dateTo: dateRange?.end,
+      );
+    });
 
 // ==================== Summary Providers ====================
 
 /// Provider for today's summary
 final todayFinancialSummaryProvider =
     FutureProvider.autoDispose<DailyFinancialSummary>((ref) async {
-  final repository = ref.watch(financeRepositoryProvider);
-  return repository.getTodaySummary();
-});
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getTodaySummary();
+    });
 
 /// Provider for daily summary by date
-final dailyFinancialSummaryProvider =
-    FutureProvider.autoDispose.family<DailyFinancialSummary, DateTime?>((ref, date) async {
-  final repository = ref.watch(financeRepositoryProvider);
-  return repository.getDailySummary(date: date);
-});
+final dailyFinancialSummaryProvider = FutureProvider.autoDispose
+    .family<DailyFinancialSummary, DateTime?>((ref, date) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getDailySummary(date: date);
+    });
 
 /// Provider for current month summary
 final currentMonthSummaryProvider =
     FutureProvider.autoDispose<MonthlyFinancialSummary>((ref) async {
-  final repository = ref.watch(financeRepositoryProvider);
-  return repository.getCurrentMonthSummary();
-});
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getCurrentMonthSummary();
+    });
 
 /// Provider for monthly summary by year/month
-final monthlyFinancialSummaryProvider =
-    FutureProvider.autoDispose.family<MonthlyFinancialSummary, MonthYear>((ref, monthYear) async {
-  final repository = ref.watch(financeRepositoryProvider);
-  return repository.getMonthlySummary(
-    year: monthYear.year,
-    month: monthYear.month,
-  );
-});
+final monthlyFinancialSummaryProvider = FutureProvider.autoDispose
+    .family<MonthlyFinancialSummary, MonthYear>((ref, monthYear) async {
+      final repository = ref.watch(financeRepositoryProvider);
+      return repository.getMonthlySummary(
+        year: monthYear.year,
+        month: monthYear.month,
+      );
+    });
 
 // ==================== Helper Classes ====================
 
 /// Date range for filtering
 @freezed
 sealed class DateRange with _$DateRange {
-  const factory DateRange({
-    required DateTime start,
-    required DateTime end,
-  }) = _DateRange;
+  const factory DateRange({required DateTime start, required DateTime end}) =
+      _DateRange;
 }
 
 /// Month and year for monthly queries
 @freezed
 sealed class MonthYear with _$MonthYear {
-  const factory MonthYear({
-    required int year,
-    required int month,
-  }) = _MonthYear;
+  const factory MonthYear({required int year, required int month}) = _MonthYear;
 }
 
 // ==================== State Notifier for Finance Management ====================
@@ -173,9 +173,9 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
   int _currentMonth;
 
   FinanceNotifier(this._repository)
-      : _currentYear = DateTime.now().year,
-        _currentMonth = DateTime.now().month,
-        super(const FinanceState(isLoading: true)) {
+    : _currentYear = DateTime.now().year,
+      _currentMonth = DateTime.now().month,
+      super(const FinanceState(isLoading: true)) {
     _loadInitialData();
   }
 
@@ -209,10 +209,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
         isLoading: false,
       );
     } catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        error: error.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: error.toString());
     }
   }
 
@@ -234,15 +231,9 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
         paymentMethod: state.filter.paymentMethod,
       );
 
-      state = state.copyWith(
-        entries: entries,
-        isLoading: false,
-      );
+      state = state.copyWith(entries: entries, isLoading: false);
     } catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        error: error.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: error.toString());
     }
   }
 
@@ -275,16 +266,10 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
         monthlySummary: summary,
         entries: entries,
         isLoading: false,
-        filter: state.filter.copyWith(
-          dateFrom: dateFrom,
-          dateTo: dateTo,
-        ),
+        filter: state.filter.copyWith(dateFrom: dateFrom, dateTo: dateTo),
       );
     } catch (error) {
-      state = state.copyWith(
-        isLoading: false,
-        error: error.toString(),
-      );
+      state = state.copyWith(isLoading: false, error: error.toString());
     }
   }
 
@@ -318,9 +303,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
 
   /// Filter by entry type
   Future<void> filterByType(EntryType? type) async {
-    state = state.copyWith(
-      filter: state.filter.copyWith(entryType: type),
-    );
+    state = state.copyWith(filter: state.filter.copyWith(entryType: type));
     await loadEntries();
   }
 
@@ -382,7 +365,10 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
   }
 
   /// Update entry
-  Future<FinancialEntry> updateEntry(int id, FinancialEntryRequest request) async {
+  Future<FinancialEntry> updateEntry(
+    int id,
+    FinancialEntryRequest request,
+  ) async {
     final entry = await _repository.updateEntry(id, request);
     await refresh();
     return entry;
@@ -398,6 +384,6 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
 /// Provider for FinanceNotifier
 final financeNotifierProvider =
     StateNotifierProvider<FinanceNotifier, FinanceState>((ref) {
-  final repository = ref.watch(financeRepositoryProvider);
-  return FinanceNotifier(repository);
-});
+      final repository = ref.watch(financeRepositoryProvider);
+      return FinanceNotifier(repository);
+    });

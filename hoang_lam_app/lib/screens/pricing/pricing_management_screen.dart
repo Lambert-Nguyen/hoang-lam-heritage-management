@@ -241,7 +241,9 @@ class _RatePlanCard extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      plan.isActive ? context.l10n.isActive : context.l10n.pausedStatus,
+                      plan.isActive
+                          ? context.l10n.isActive
+                          : context.l10n.pausedStatus,
                       style: TextStyle(
                         color:
                             plan.isActive
@@ -267,7 +269,10 @@ class _RatePlanCard extends ConsumerWidget {
                     Expanded(
                       child: _InfoChip(
                         icon: Icons.nights_stay,
-                        label: context.l10n.minNightsStayDisplay.replaceAll('{count}', '${plan.minStay}'),
+                        label: context.l10n.minNightsStayDisplay.replaceAll(
+                          '{count}',
+                          '${plan.minStay}',
+                        ),
                       ),
                     ),
                   if (plan.includesBreakfast)
@@ -310,9 +315,15 @@ class _RatePlanCard extends ConsumerWidget {
     if (from != null && to != null) {
       return '${dateFormat.format(from)} - ${dateFormat.format(to)}';
     } else if (from != null) {
-      return context.l10n.fromDateDisplay.replaceAll('{date}', dateFormat.format(from));
+      return context.l10n.fromDateDisplay.replaceAll(
+        '{date}',
+        dateFormat.format(from),
+      );
     } else if (to != null) {
-      return context.l10n.toDateDisplay.replaceAll('{date}', dateFormat.format(to));
+      return context.l10n.toDateDisplay.replaceAll(
+        '{date}',
+        dateFormat.format(to),
+      );
     }
     return '';
   }
@@ -368,9 +379,7 @@ class _DateOverridesTab extends ConsumerWidget {
         // Group by room type
         final groupedByRoomType = <int, List<DateRateOverrideListItem>>{};
         for (final item in filtered) {
-          groupedByRoomType
-              .putIfAbsent(item.roomType, () => [])
-              .add(item);
+          groupedByRoomType.putIfAbsent(item.roomType, () => []).add(item);
         }
 
         return RefreshIndicator(

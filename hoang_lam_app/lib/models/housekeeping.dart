@@ -99,7 +99,6 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case HousekeepingTaskType.checkoutClean:
@@ -200,7 +199,6 @@ extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
       this == HousekeepingTaskStatus.inProgress;
   bool get canVerify => this == HousekeepingTaskStatus.completed;
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case HousekeepingTaskStatus.pending:
@@ -296,7 +294,6 @@ extension MaintenancePriorityExtension on MaintenancePriority {
         return 'urgent';
     }
   }
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -429,7 +426,6 @@ extension MaintenanceStatusExtension on MaintenanceStatus {
   bool get isActive =>
       this != MaintenanceStatus.completed &&
       this != MaintenanceStatus.cancelled;
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -575,7 +571,6 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case MaintenanceCategory.electrical:
@@ -636,7 +631,9 @@ sealed class HousekeepingTask with _$HousekeepingTask {
         status == HousekeepingTaskStatus.verified) {
       return false;
     }
-    return scheduledDate.isBefore(DateTime.now().subtract(const Duration(days: 1)));
+    return scheduledDate.isBefore(
+      DateTime.now().subtract(const Duration(days: 1)),
+    );
   }
 
   /// Check if task is scheduled for today
@@ -766,7 +763,8 @@ sealed class MaintenanceRequestUpdate with _$MaintenanceRequestUpdate {
     @JsonKey(name: 'assigned_to', includeIfNull: false) int? assignedTo,
     @JsonKey(name: 'estimated_cost', includeIfNull: false) int? estimatedCost,
     @JsonKey(name: 'actual_cost', includeIfNull: false) int? actualCost,
-    @JsonKey(name: 'resolution_notes', includeIfNull: false) String? resolutionNotes,
+    @JsonKey(name: 'resolution_notes', includeIfNull: false)
+    String? resolutionNotes,
   }) = _MaintenanceRequestUpdate;
 
   factory MaintenanceRequestUpdate.fromJson(Map<String, dynamic> json) =>
@@ -775,7 +773,8 @@ sealed class MaintenanceRequestUpdate with _$MaintenanceRequestUpdate {
 
 /// List response for MaintenanceRequest
 @freezed
-sealed class MaintenanceRequestListResponse with _$MaintenanceRequestListResponse {
+sealed class MaintenanceRequestListResponse
+    with _$MaintenanceRequestListResponse {
   const factory MaintenanceRequestListResponse({
     required int count,
     String? next,

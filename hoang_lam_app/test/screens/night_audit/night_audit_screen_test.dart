@@ -45,9 +45,7 @@ void main() {
     );
   });
 
-  Widget createTestWidget({
-    required List<Override> overrides,
-  }) {
+  Widget createTestWidget({required List<Override> overrides}) {
     return ProviderScope(
       overrides: overrides,
       child: const MaterialApp(
@@ -65,15 +63,14 @@ void main() {
   }
 
   group('NightAuditScreen', () {
-    testWidgets('shows loading indicator while fetching audit',
-        (WidgetTester tester) async {
+    testWidgets('shows loading indicator while fetching audit', (
+      WidgetTester tester,
+    ) async {
       final completer = Completer<NightAudit>();
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
-            todayAuditProvider.overrideWith(
-              (ref) => completer.future,
-            ),
+            todayAuditProvider.overrideWith((ref) => completer.future),
           ],
         ),
       );
@@ -85,8 +82,9 @@ void main() {
       completer.complete(mockAudit);
     });
 
-    testWidgets('displays audit content when data loads',
-        (WidgetTester tester) async {
+    testWidgets('displays audit content when data loads', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -174,8 +172,9 @@ void main() {
       expect(find.text('MoMo'), findsOneWidget);
     });
 
-    testWidgets('shows status badge for draft audit',
-        (WidgetTester tester) async {
+    testWidgets('shows status badge for draft audit', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -201,8 +200,9 @@ void main() {
       expect(find.textContaining('Admin'), findsOneWidget);
     });
 
-    testWidgets('shows not completed when no performer',
-        (WidgetTester tester) async {
+    testWidgets('shows not completed when no performer', (
+      WidgetTester tester,
+    ) async {
       final unperformedAudit = mockAudit.copyWith(performedByName: null);
       await tester.pumpWidget(
         createTestWidget(
@@ -216,8 +216,9 @@ void main() {
       expect(find.text('Chưa hoàn thành'), findsOneWidget);
     });
 
-    testWidgets('shows bottom action buttons for draft audit',
-        (WidgetTester tester) async {
+    testWidgets('shows bottom action buttons for draft audit', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -232,8 +233,9 @@ void main() {
       expect(find.text('Đóng kiểm toán'), findsOneWidget);
     });
 
-    testWidgets('hides bottom actions for closed audit',
-        (WidgetTester tester) async {
+    testWidgets('hides bottom actions for closed audit', (
+      WidgetTester tester,
+    ) async {
       final closedAudit = mockAudit.copyWith(status: NightAuditStatus.closed);
       await tester.pumpWidget(
         createTestWidget(
@@ -263,10 +265,10 @@ void main() {
       expect(find.text('Đã đóng'), findsOneWidget);
     });
 
-    testWidgets('shows notes section when notes present',
-        (WidgetTester tester) async {
-      final auditWithNotes =
-          mockAudit.copyWith(notes: 'Test audit notes');
+    testWidgets('shows notes section when notes present', (
+      WidgetTester tester,
+    ) async {
+      final auditWithNotes = mockAudit.copyWith(notes: 'Test audit notes');
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -280,8 +282,9 @@ void main() {
       expect(find.text('Test audit notes'), findsOneWidget);
     });
 
-    testWidgets('hides notes section when notes empty',
-        (WidgetTester tester) async {
+    testWidgets('hides notes section when notes empty', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -296,8 +299,9 @@ void main() {
       expect(find.byIcon(Icons.note), findsNothing);
     });
 
-    testWidgets('shows pending payments when present',
-        (WidgetTester tester) async {
+    testWidgets('shows pending payments when present', (
+      WidgetTester tester,
+    ) async {
       final auditWithPending = mockAudit.copyWith(
         pendingPayments: 3000000,
         unpaidBookingsCount: 3,
@@ -305,8 +309,7 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
-            todayAuditProvider
-                .overrideWith((ref) async => auditWithPending),
+            todayAuditProvider.overrideWith((ref) async => auditWithPending),
           ],
         ),
       );
@@ -316,8 +319,7 @@ void main() {
       expect(find.text(CurrencyFormatter.format(3000000)), findsOneWidget);
     });
 
-    testWidgets('shows error display on failure',
-        (WidgetTester tester) async {
+    testWidgets('shows error display on failure', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -345,8 +347,7 @@ void main() {
       expect(find.byIcon(Icons.history), findsOneWidget);
     });
 
-    testWidgets('has calendar button in app bar',
-        (WidgetTester tester) async {
+    testWidgets('has calendar button in app bar', (WidgetTester tester) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -359,8 +360,9 @@ void main() {
       expect(find.byIcon(Icons.calendar_today), findsOneWidget);
     });
 
-    testWidgets('shows room revenue and other revenue sub-items',
-        (WidgetTester tester) async {
+    testWidgets('shows room revenue and other revenue sub-items', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -374,14 +376,16 @@ void main() {
       expect(find.textContaining('Doanh thu khác'), findsOneWidget);
     });
 
-    testWidgets('shows cleaning and maintenance room stats',
-        (WidgetTester tester) async {
+    testWidgets('shows cleaning and maintenance room stats', (
+      WidgetTester tester,
+    ) async {
       final auditWithMaintenance = mockAudit.copyWith(roomsMaintenance: 2);
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
-            todayAuditProvider
-                .overrideWith((ref) async => auditWithMaintenance),
+            todayAuditProvider.overrideWith(
+              (ref) async => auditWithMaintenance,
+            ),
           ],
         ),
       );
@@ -391,8 +395,9 @@ void main() {
       expect(find.text('Bảo trì'), findsOneWidget);
     });
 
-    testWidgets('shows no-shows and cancellations',
-        (WidgetTester tester) async {
+    testWidgets('shows no-shows and cancellations', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         createTestWidget(
           overrides: [
@@ -406,8 +411,7 @@ void main() {
       expect(find.text('Hủy'), findsOneWidget);
     });
 
-    testWidgets('shows 100% occupancy correctly',
-        (WidgetTester tester) async {
+    testWidgets('shows 100% occupancy correctly', (WidgetTester tester) async {
       final fullAudit = mockAudit.copyWith(
         occupancyRate: 100.0,
         roomsOccupied: 10,

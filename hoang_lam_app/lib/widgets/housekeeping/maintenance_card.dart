@@ -62,9 +62,9 @@ class MaintenanceCard extends StatelessWidget {
                     child: Text(
                       'P.${request.roomNumber ?? request.room}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   AppSpacing.gapHorizontalSm,
@@ -84,9 +84,9 @@ class MaintenanceCard extends StatelessWidget {
               // Title
               Text(
                 request.title,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -106,8 +106,8 @@ class MaintenanceCard extends StatelessWidget {
                   Text(
                     request.category.localizedName(context.l10n),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: request.category.color,
-                        ),
+                      color: request.category.color,
+                    ),
                   ),
                   AppSpacing.gapHorizontalMd,
 
@@ -123,8 +123,8 @@ class MaintenanceCard extends StatelessWidget {
                         ? dateFormat.format(request.createdAt!)
                         : 'N/A',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
 
                   const Spacer(),
@@ -141,8 +141,8 @@ class MaintenanceCard extends StatelessWidget {
                       child: Text(
                         request.assignedToName ?? 'ID: ${request.assignedTo}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                          color: AppColors.textSecondary,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -159,9 +159,9 @@ class MaintenanceCard extends StatelessWidget {
                       child: Text(
                         context.l10n.unassigned,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.warning,
-                              fontSize: 10,
-                            ),
+                          color: AppColors.warning,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ],
@@ -174,17 +174,16 @@ class MaintenanceCard extends StatelessWidget {
                 Text(
                   request.description,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontStyle: FontStyle.italic,
-                      ),
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
 
               // Quick actions
-              if (request.status.canAssign ||
-                  request.status.canComplete) ...[
+              if (request.status.canAssign || request.status.canComplete) ...[
                 AppSpacing.gapVerticalSm,
                 const Divider(height: 1),
                 AppSpacing.gapVerticalSm,
@@ -242,26 +241,20 @@ class _StatusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: status.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: status.color.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: status.color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            status.icon,
-            size: 12,
-            color: status.color,
-          ),
+          Icon(status.icon, size: 12, color: status.color),
           AppSpacing.gapHorizontalXs,
           Text(
             status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: status.color,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                ),
+              color: status.color,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
           ),
         ],
       ),
@@ -288,19 +281,15 @@ class _PriorityBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            priority.icon,
-            size: 12,
-            color: priority.color,
-          ),
+          Icon(priority.icon, size: 12, color: priority.color),
           AppSpacing.gapHorizontalXs,
           Text(
             priority.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: priority.color,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                ),
+              color: priority.color,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
           ),
         ],
       ),

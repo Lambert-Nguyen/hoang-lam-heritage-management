@@ -32,10 +32,7 @@ class FolioSummaryWidget extends StatelessWidget {
               children: [
                 CircleAvatar(
                   backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                  child: const Icon(
-                    Icons.person,
-                    color: AppColors.primary,
-                  ),
+                  child: const Icon(Icons.person, color: AppColors.primary),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -79,10 +76,14 @@ class FolioSummaryWidget extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: balanceColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: balanceColor.withValues(alpha: 0.5)),
+                    border: Border.all(
+                      color: balanceColor.withValues(alpha: 0.5),
+                    ),
                   ),
                   child: Text(
-                    isSettled ? context.l10n.paid : context.l10n.outstandingBalance,
+                    isSettled
+                        ? context.l10n.paid
+                        : context.l10n.outstandingBalance,
                     style: TextStyle(
                       color: balanceColor,
                       fontWeight: FontWeight.w600,
@@ -220,11 +221,7 @@ class FolioSummaryWidget extends StatelessWidget {
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 20,
-          color: color,
-        ),
+        Icon(icon, size: 20, color: color),
         const SizedBox(width: 8),
         Expanded(
           child: Text(

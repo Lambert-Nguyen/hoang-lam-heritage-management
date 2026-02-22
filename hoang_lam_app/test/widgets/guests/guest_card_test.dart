@@ -40,14 +40,14 @@ void main() {
     bool showBookingCount = true,
   }) {
     return MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('vi'),
       home: Scaffold(
         body: Center(
           child: GuestCard(
@@ -98,14 +98,18 @@ void main() {
       expect(find.text('Việt Nam'), findsOneWidget);
     });
 
-    testWidgets('displays booking count when showBookingCount is true', (tester) async {
+    testWidgets('displays booking count when showBookingCount is true', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.text('3 lần'), findsOneWidget);
     });
 
-    testWidgets('hides booking count when showBookingCount is false', (tester) async {
+    testWidgets('hides booking count when showBookingCount is false', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildTestWidget(showBookingCount: false));
       await tester.pumpAndSettle();
 
@@ -127,10 +131,9 @@ void main() {
     });
 
     testWidgets('hides VIP badge when showVipBadge is false', (tester) async {
-      await tester.pumpWidget(buildTestWidget(
-        guest: vipGuest,
-        showVipBadge: false,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(guest: vipGuest, showVipBadge: false),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('VIP'), findsNothing);
@@ -153,9 +156,7 @@ void main() {
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
 
-      await tester.pumpWidget(buildTestWidget(
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(buildTestWidget(onTap: () => tapped = true));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(GuestCard));
@@ -167,9 +168,9 @@ void main() {
     testWidgets('calls onLongPress when long pressed', (tester) async {
       var longPressed = false;
 
-      await tester.pumpWidget(buildTestWidget(
-        onLongPress: () => longPressed = true,
-      ));
+      await tester.pumpWidget(
+        buildTestWidget(onLongPress: () => longPressed = true),
+      );
       await tester.pumpAndSettle();
 
       await tester.longPress(find.byType(GuestCard));
@@ -272,9 +273,7 @@ void main() {
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
 
-      await tester.pumpWidget(buildCompactWidget(
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(buildCompactWidget(onTap: () => tapped = true));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(GuestCompactCard));

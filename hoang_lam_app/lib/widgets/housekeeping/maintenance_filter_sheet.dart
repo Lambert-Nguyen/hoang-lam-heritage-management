@@ -67,9 +67,9 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
               children: [
                 Text(
                   context.l10n.filterMaintenanceRequests,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: _clearFilters,
@@ -91,9 +91,9 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                   Text(
                     context.l10n.status,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   AppSpacing.gapVerticalSm,
                   Wrap(
@@ -122,9 +122,9 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                   Text(
                     context.l10n.priorityLevel,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   AppSpacing.gapVerticalSm,
                   Wrap(
@@ -142,8 +142,9 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                           icon: priority.icon,
                           color: priority.color,
                           isSelected: _selectedPriority == priority,
-                          onTap: () =>
-                              setState(() => _selectedPriority = priority),
+                          onTap:
+                              () =>
+                                  setState(() => _selectedPriority = priority),
                         );
                       }),
                     ],
@@ -154,9 +155,9 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                   Text(
                     context.l10n.category,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textSecondary,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   AppSpacing.gapVerticalSm,
                   Wrap(
@@ -174,8 +175,9 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
                           icon: category.icon,
                           color: category.color,
                           isSelected: _selectedCategory == category,
-                          onTap: () =>
-                              setState(() => _selectedCategory = category),
+                          onTap:
+                              () =>
+                                  setState(() => _selectedCategory = category),
                         );
                       }),
                     ],
@@ -219,12 +221,14 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected
-              ? (color ?? AppColors.primary).withValues(alpha: 0.15)
-              : Colors.transparent,
+          color:
+              isSelected
+                  ? (color ?? AppColors.primary).withValues(alpha: 0.15)
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? (color ?? AppColors.primary) : AppColors.divider,
+            color:
+                isSelected ? (color ?? AppColors.primary) : AppColors.divider,
           ),
         ),
         child: Row(
@@ -234,18 +238,20 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
               Icon(
                 icon,
                 size: 16,
-                color: isSelected
-                    ? (color ?? AppColors.primary)
-                    : AppColors.textSecondary,
+                color:
+                    isSelected
+                        ? (color ?? AppColors.primary)
+                        : AppColors.textSecondary,
               ),
               AppSpacing.gapHorizontalXs,
             ],
             Text(
               label,
               style: TextStyle(
-                color: isSelected
-                    ? (color ?? AppColors.primary)
-                    : AppColors.textSecondary,
+                color:
+                    isSelected
+                        ? (color ?? AppColors.primary)
+                        : AppColors.textSecondary,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 fontSize: 13,
               ),
@@ -265,11 +271,13 @@ class _MaintenanceFilterSheetState extends State<MaintenanceFilterSheet> {
   }
 
   void _applyFilters() {
-    widget.onApply(MaintenanceRequestFilter(
-      status: _selectedStatus,
-      priority: _selectedPriority,
-      category: _selectedCategory,
-    ));
+    widget.onApply(
+      MaintenanceRequestFilter(
+        status: _selectedStatus,
+        priority: _selectedPriority,
+        category: _selectedCategory,
+      ),
+    );
     Navigator.pop(context);
   }
 }

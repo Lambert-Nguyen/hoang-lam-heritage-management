@@ -92,7 +92,6 @@ extension NotificationTypeExtension on NotificationType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case NotificationType.bookingCreated:
@@ -123,7 +122,8 @@ extension NotificationTypeExtension on NotificationType {
 sealed class AppNotification with _$AppNotification {
   const factory AppNotification({
     required int id,
-    @JsonKey(name: 'notification_type') required NotificationType notificationType,
+    @JsonKey(name: 'notification_type')
+    required NotificationType notificationType,
     @JsonKey(name: 'notification_type_display') String? notificationTypeDisplay,
     required String title,
     required String body,
@@ -179,7 +179,9 @@ sealed class DeviceTokenRequest with _$DeviceTokenRequest {
 @freezed
 sealed class NotificationPreferences with _$NotificationPreferences {
   const factory NotificationPreferences({
-    @JsonKey(name: 'receive_notifications') @Default(true) bool receiveNotifications,
+    @JsonKey(name: 'receive_notifications')
+    @Default(true)
+    bool receiveNotifications,
   }) = _NotificationPreferences;
 
   factory NotificationPreferences.fromJson(Map<String, dynamic> json) =>

@@ -16,8 +16,9 @@ final housekeepingRepositoryProvider = Provider<HousekeepingRepository>((ref) {
 // ============================================================
 
 /// Provider for all housekeeping tasks
-final housekeepingTasksProvider =
-    FutureProvider<List<HousekeepingTask>>((ref) async {
+final housekeepingTasksProvider = FutureProvider<List<HousekeepingTask>>((
+  ref,
+) async {
   final repository = ref.watch(housekeepingRepositoryProvider);
   return repository.getTasks();
 });
@@ -35,25 +36,29 @@ final myTasksProvider = FutureProvider<List<HousekeepingTask>>((ref) async {
 });
 
 /// Provider for a specific task by ID
-final taskByIdProvider =
-    FutureProvider.family<HousekeepingTask, int>((ref, id) async {
+final taskByIdProvider = FutureProvider.family<HousekeepingTask, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(housekeepingRepositoryProvider);
   return repository.getTask(id);
 });
 
 /// Provider for filtered housekeeping tasks
 final filteredTasksProvider =
-    FutureProvider.family<List<HousekeepingTask>, HousekeepingTaskFilter>(
-        (ref, filter) async {
-  final repository = ref.watch(housekeepingRepositoryProvider);
-  return repository.getTasks(
-    roomId: filter.roomId,
-    status: filter.status,
-    taskType: filter.taskType,
-    assignedTo: filter.assignedTo,
-    scheduledDate: filter.scheduledDate,
-  );
-});
+    FutureProvider.family<List<HousekeepingTask>, HousekeepingTaskFilter>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(housekeepingRepositoryProvider);
+      return repository.getTasks(
+        roomId: filter.roomId,
+        status: filter.status,
+        taskType: filter.taskType,
+        assignedTo: filter.assignedTo,
+        scheduledDate: filter.scheduledDate,
+      );
+    });
 
 /// Filter model for housekeeping tasks
 @freezed
@@ -72,22 +77,25 @@ sealed class HousekeepingTaskFilter with _$HousekeepingTaskFilter {
 // ============================================================
 
 /// Provider for all maintenance requests
-final maintenanceRequestsProvider =
-    FutureProvider<List<MaintenanceRequest>>((ref) async {
+final maintenanceRequestsProvider = FutureProvider<List<MaintenanceRequest>>((
+  ref,
+) async {
   final repository = ref.watch(housekeepingRepositoryProvider);
   return repository.getMaintenanceRequests();
 });
 
 /// Provider for urgent maintenance requests
-final urgentRequestsProvider =
-    FutureProvider<List<MaintenanceRequest>>((ref) async {
+final urgentRequestsProvider = FutureProvider<List<MaintenanceRequest>>((
+  ref,
+) async {
   final repository = ref.watch(housekeepingRepositoryProvider);
   return repository.getUrgentRequests();
 });
 
 /// Provider for current user's assigned maintenance requests
-final myMaintenanceRequestsProvider =
-    FutureProvider<List<MaintenanceRequest>>((ref) async {
+final myMaintenanceRequestsProvider = FutureProvider<List<MaintenanceRequest>>((
+  ref,
+) async {
   final repository = ref.watch(housekeepingRepositoryProvider);
   return repository.getMyMaintenanceRequests();
 });
@@ -95,22 +103,25 @@ final myMaintenanceRequestsProvider =
 /// Provider for a specific maintenance request by ID
 final maintenanceRequestByIdProvider =
     FutureProvider.family<MaintenanceRequest, int>((ref, id) async {
-  final repository = ref.watch(housekeepingRepositoryProvider);
-  return repository.getMaintenanceRequest(id);
-});
+      final repository = ref.watch(housekeepingRepositoryProvider);
+      return repository.getMaintenanceRequest(id);
+    });
 
 /// Provider for filtered maintenance requests
-final filteredMaintenanceRequestsProvider = FutureProvider.family<
-    List<MaintenanceRequest>, MaintenanceRequestFilter>((ref, filter) async {
-  final repository = ref.watch(housekeepingRepositoryProvider);
-  return repository.getMaintenanceRequests(
-    roomId: filter.roomId,
-    status: filter.status,
-    priority: filter.priority,
-    category: filter.category,
-    assignedTo: filter.assignedTo,
-  );
-});
+final filteredMaintenanceRequestsProvider =
+    FutureProvider.family<List<MaintenanceRequest>, MaintenanceRequestFilter>((
+      ref,
+      filter,
+    ) async {
+      final repository = ref.watch(housekeepingRepositoryProvider);
+      return repository.getMaintenanceRequests(
+        roomId: filter.roomId,
+        status: filter.status,
+        priority: filter.priority,
+        category: filter.category,
+        assignedTo: filter.assignedTo,
+      );
+    });
 
 /// Filter model for maintenance requests
 @freezed
@@ -147,7 +158,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
   final Ref _ref;
 
   HousekeepingNotifier(this._repository, this._ref)
-      : super(const HousekeepingState());
+    : super(const HousekeepingState());
 
   // ==================== Task Operations ====================
 
@@ -170,10 +181,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       );
       state = state.copyWith(isLoading: false, tasks: tasks);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
@@ -189,16 +197,16 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return newTask;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
 
   /// Update an existing task
-  Future<HousekeepingTask?> updateTask(int taskId, HousekeepingTaskUpdate update) async {
+  Future<HousekeepingTask?> updateTask(
+    int taskId,
+    HousekeepingTaskUpdate update,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updatedTask = await _repository.updateTask(taskId, update);
@@ -206,10 +214,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -223,10 +228,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -240,10 +242,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -257,10 +256,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -277,18 +273,16 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
 
   void _updateTaskInList(HousekeepingTask updatedTask) {
-    final updatedTasks = state.tasks.map((t) {
-      return t.id == updatedTask.id ? updatedTask : t;
-    }).toList();
+    final updatedTasks =
+        state.tasks.map((t) {
+          return t.id == updatedTask.id ? updatedTask : t;
+        }).toList();
     state = state.copyWith(isLoading: false, tasks: updatedTasks);
   }
 
@@ -313,16 +307,14 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       );
       state = state.copyWith(isLoading: false, requests: requests);
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
   /// Create a new maintenance request
   Future<MaintenanceRequest?> createMaintenanceRequest(
-      MaintenanceRequestCreate request) async {
+    MaintenanceRequestCreate request,
+  ) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final newRequest = await _repository.createMaintenanceRequest(request);
@@ -333,10 +325,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return newRequest;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -356,10 +345,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -381,10 +367,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -406,10 +389,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -429,10 +409,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -441,16 +418,14 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
   Future<MaintenanceRequest?> resumeMaintenanceRequest(int requestId) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
-      final updatedRequest =
-          await _repository.resumeMaintenanceRequest(requestId);
+      final updatedRequest = await _repository.resumeMaintenanceRequest(
+        requestId,
+      );
       _updateRequestInList(updatedRequest);
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -470,10 +445,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return null;
     }
   }
@@ -490,18 +462,16 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return true;
     } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        errorMessage: e.toString(),
-      );
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
       return false;
     }
   }
 
   void _updateRequestInList(MaintenanceRequest updatedRequest) {
-    final updatedRequests = state.requests.map((r) {
-      return r.id == updatedRequest.id ? updatedRequest : r;
-    }).toList();
+    final updatedRequests =
+        state.requests.map((r) {
+          return r.id == updatedRequest.id ? updatedRequest : r;
+        }).toList();
     state = state.copyWith(isLoading: false, requests: updatedRequests);
   }
 
@@ -536,6 +506,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
 /// Provider for HousekeepingNotifier
 final housekeepingNotifierProvider =
     StateNotifierProvider<HousekeepingNotifier, HousekeepingState>((ref) {
-  final repository = ref.watch(housekeepingRepositoryProvider);
-  return HousekeepingNotifier(repository, ref);
-});
+      final repository = ref.watch(housekeepingRepositoryProvider);
+      return HousekeepingNotifier(repository, ref);
+    });

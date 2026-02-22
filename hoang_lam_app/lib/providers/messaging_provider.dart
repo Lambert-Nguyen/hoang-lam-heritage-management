@@ -15,58 +15,56 @@ final messagingRepositoryProvider = Provider<MessagingRepository>((ref) {
 /// Provider for all message templates
 final messageTemplatesProvider =
     FutureProvider.autoDispose<List<MessageTemplate>>((ref) async {
-  final repository = ref.watch(messagingRepositoryProvider);
-  return repository.getTemplates();
-});
+      final repository = ref.watch(messagingRepositoryProvider);
+      return repository.getTemplates();
+    });
 
 /// Provider for active templates only
 final activeTemplatesProvider =
     FutureProvider.autoDispose<List<MessageTemplate>>((ref) async {
-  final repository = ref.watch(messagingRepositoryProvider);
-  return repository.getTemplates(isActive: true);
-});
+      final repository = ref.watch(messagingRepositoryProvider);
+      return repository.getTemplates(isActive: true);
+    });
 
 /// Provider for templates filtered by channel
-final templatesByChannelProvider =
-    FutureProvider.autoDispose.family<List<MessageTemplate>, String>(
-        (ref, channel) async {
-  final repository = ref.watch(messagingRepositoryProvider);
-  return repository.getTemplates(channel: channel, isActive: true);
-});
+final templatesByChannelProvider = FutureProvider.autoDispose
+    .family<List<MessageTemplate>, String>((ref, channel) async {
+      final repository = ref.watch(messagingRepositoryProvider);
+      return repository.getTemplates(channel: channel, isActive: true);
+    });
 
 /// Provider for a single template
-final templateByIdProvider =
-    FutureProvider.autoDispose.family<MessageTemplate, int>((ref, id) async {
-  final repository = ref.watch(messagingRepositoryProvider);
-  return repository.getTemplate(id);
-});
+final templateByIdProvider = FutureProvider.autoDispose
+    .family<MessageTemplate, int>((ref, id) async {
+      final repository = ref.watch(messagingRepositoryProvider);
+      return repository.getTemplate(id);
+    });
 
 // ============================================================
 // Guest Message Providers
 // ============================================================
 
 /// Provider for all guest messages
-final guestMessagesProvider =
-    FutureProvider.autoDispose<List<GuestMessage>>((ref) async {
+final guestMessagesProvider = FutureProvider.autoDispose<List<GuestMessage>>((
+  ref,
+) async {
   final repository = ref.watch(messagingRepositoryProvider);
   return repository.getMessages();
 });
 
 /// Provider for messages for a specific guest
-final guestMessagesByGuestProvider =
-    FutureProvider.autoDispose.family<List<GuestMessage>, int>(
-        (ref, guestId) async {
-  final repository = ref.watch(messagingRepositoryProvider);
-  return repository.getMessages(guestId: guestId);
-});
+final guestMessagesByGuestProvider = FutureProvider.autoDispose
+    .family<List<GuestMessage>, int>((ref, guestId) async {
+      final repository = ref.watch(messagingRepositoryProvider);
+      return repository.getMessages(guestId: guestId);
+    });
 
 /// Provider for messages for a specific booking
-final guestMessagesByBookingProvider =
-    FutureProvider.autoDispose.family<List<GuestMessage>, int>(
-        (ref, bookingId) async {
-  final repository = ref.watch(messagingRepositoryProvider);
-  return repository.getMessages(bookingId: bookingId);
-});
+final guestMessagesByBookingProvider = FutureProvider.autoDispose
+    .family<List<GuestMessage>, int>((ref, bookingId) async {
+      final repository = ref.watch(messagingRepositoryProvider);
+      return repository.getMessages(bookingId: bookingId);
+    });
 
 // ============================================================
 // Messaging Notifier (for mutations)
@@ -78,7 +76,7 @@ class MessagingNotifier extends StateNotifier<AsyncValue<void>> {
   final Ref _ref;
 
   MessagingNotifier(this._repository, this._ref)
-      : super(const AsyncValue.data(null));
+    : super(const AsyncValue.data(null));
 
   /// Send a message using a template
   Future<GuestMessage?> sendFromTemplate({
@@ -173,8 +171,9 @@ class MessagingNotifier extends StateNotifier<AsyncValue<void>> {
 
 /// Provider for MessagingNotifier
 final messagingNotifierProvider =
-    StateNotifierProvider.autoDispose<MessagingNotifier, AsyncValue<void>>(
-        (ref) {
-  final repository = ref.watch(messagingRepositoryProvider);
-  return MessagingNotifier(repository, ref);
-});
+    StateNotifierProvider.autoDispose<MessagingNotifier, AsyncValue<void>>((
+      ref,
+    ) {
+      final repository = ref.watch(messagingRepositoryProvider);
+      return MessagingNotifier(repository, ref);
+    });

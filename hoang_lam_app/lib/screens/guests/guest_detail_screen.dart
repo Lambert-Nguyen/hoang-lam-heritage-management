@@ -17,10 +17,7 @@ import 'guest_form_screen.dart';
 class GuestDetailScreen extends ConsumerStatefulWidget {
   final Guest guest;
 
-  const GuestDetailScreen({
-    super.key,
-    required this.guest,
-  });
+  const GuestDetailScreen({super.key, required this.guest});
 
   @override
   ConsumerState<GuestDetailScreen> createState() => _GuestDetailScreenState();
@@ -80,10 +77,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         },
         body: TabBarView(
           controller: _tabController,
-          children: [
-            _buildInfoTab(),
-            _buildHistoryTab(),
-          ],
+          children: [_buildInfoTab(), _buildHistoryTab()],
         ),
       ),
     );
@@ -130,9 +124,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                   Text(
                     _guest.fullName,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                   if (_guest.isVip) ...[
                     AppSpacing.gapHorizontalSm,
@@ -168,8 +162,8 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               Text(
                 _guest.formattedPhone,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
               ),
             ],
           ),
@@ -221,9 +215,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         children: [
           Text(
             context.l10n.contactInfo,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
@@ -243,9 +237,11 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             _buildInfoRow(
               Icons.location_on,
               context.l10n.address,
-              [_guest.address, _guest.city, _guest.country]
-                  .where((s) => s.isNotEmpty)
-                  .join(', '),
+              [
+                _guest.address,
+                _guest.city,
+                _guest.country,
+              ].where((s) => s.isNotEmpty).join(', '),
             ),
         ],
       ),
@@ -259,9 +255,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         children: [
           Text(
             context.l10n.identityDocument,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
@@ -300,9 +296,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         children: [
           Text(
             context.l10n.personalInfo,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
@@ -336,7 +332,8 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
 
   Widget _buildStatsSection() {
     final historyAsync = ref.watch(guestHistoryProvider(_guest.id));
-    final totalSpent = historyAsync.whenOrNull(data: (history) => history.totalSpent) ?? 0;
+    final totalSpent =
+        historyAsync.whenOrNull(data: (history) => history.totalSpent) ?? 0;
     return GuestStatsSummary(
       totalStays: _guest.totalStays,
       totalBookings: _guest.bookingCount,
@@ -356,9 +353,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               AppSpacing.gapHorizontalSm,
               Text(
                 context.l10n.internalNotes,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -378,9 +375,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       children: [
         Text(
           context.l10n.edit,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         AppSpacing.gapVerticalMd,
         Row(
@@ -396,7 +393,10 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             AppSpacing.gapHorizontalMd,
             Expanded(
               child: AppButton(
-                label: _guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
+                label:
+                    _guest.isVip
+                        ? context.l10n.removeVip
+                        : context.l10n.markVip,
                 icon: _guest.isVip ? Icons.star_border : Icons.star,
                 isOutlined: true,
                 backgroundColor: AppColors.warning,
@@ -421,27 +421,19 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: AppColors.textSecondary,
-          ),
+          Icon(icon, size: 20, color: AppColors.textSecondary),
           AppSpacing.gapHorizontalSm,
           SizedBox(
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-              ),
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
           if (onCopy != null)
@@ -449,10 +441,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               icon: const Icon(Icons.copy, size: 18),
               color: AppColors.textHint,
               onPressed: onCopy,
-              constraints: const BoxConstraints(
-                minWidth: 32,
-                minHeight: 32,
-              ),
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
               padding: EdgeInsets.zero,
             ),
         ],
@@ -483,24 +472,22 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
     try {
       final launched = await launchUrl(uri);
       if (!launched && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.call}: $phone')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.call}: $phone')));
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.call}: $phone')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.call}: $phone')));
       }
     }
   }
 
   Future<void> _navigateToEdit() async {
     final result = await Navigator.of(context).push<Guest>(
-      MaterialPageRoute(
-        builder: (_) => GuestFormScreen(guest: _guest),
-      ),
+      MaterialPageRoute(builder: (_) => GuestFormScreen(guest: _guest)),
     );
     if (result != null && mounted) {
       setState(() {
@@ -512,8 +499,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   }
 
   Future<void> _toggleVipStatus() async {
-    final result =
-        await ref.read(guestStateProvider.notifier).toggleVipStatus(_guest.id);
+    final result = await ref
+        .read(guestStateProvider.notifier)
+        .toggleVipStatus(_guest.id);
     if (result != null && mounted) {
       setState(() {
         _guest = result;
@@ -536,92 +524,98 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   void _showMoreActions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.edit),
-              title: Text(context.l10n.editInfo),
-              onTap: () {
-                Navigator.pop(context);
-                _navigateToEdit();
-              },
-            ),
-            ListTile(
-              leading: Icon(
-                _guest.isVip ? Icons.star_border : Icons.star,
-                color: AppColors.warning,
-              ),
-              title: Text(_guest.isVip ? context.l10n.removeVip : context.l10n.markVip),
-              onTap: () {
-                Navigator.pop(context);
-                _toggleVipStatus();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.phone),
-              title: Text(context.l10n.call),
-              onTap: () {
-                Navigator.pop(context);
-                _launchPhone(_guest.phone);
-              },
-            ),
-            if (_guest.bookingCount == 0)
-              ListTile(
-                leading: const Icon(Icons.delete, color: AppColors.error),
-                title: Text(
-                  context.l10n.deleteGuest,
-                  style: const TextStyle(color: AppColors.error),
+      builder:
+          (context) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: Text(context.l10n.editInfo),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToEdit();
+                  },
                 ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showDeleteConfirmation();
-                },
-              ),
-          ],
-        ),
-      ),
+                ListTile(
+                  leading: Icon(
+                    _guest.isVip ? Icons.star_border : Icons.star,
+                    color: AppColors.warning,
+                  ),
+                  title: Text(
+                    _guest.isVip
+                        ? context.l10n.removeVip
+                        : context.l10n.markVip,
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _toggleVipStatus();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.phone),
+                  title: Text(context.l10n.call),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _launchPhone(_guest.phone);
+                  },
+                ),
+                if (_guest.bookingCount == 0)
+                  ListTile(
+                    leading: const Icon(Icons.delete, color: AppColors.error),
+                    title: Text(
+                      context.l10n.deleteGuest,
+                      style: const TextStyle(color: AppColors.error),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _showDeleteConfirmation();
+                    },
+                  ),
+              ],
+            ),
+          ),
     );
   }
 
   void _showDeleteConfirmation() {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.confirmDelete),
-        content: Text(
-          '${context.l10n.confirmDeleteGuest} "${_guest.fullName}"?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(context.l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              final success = await ref
-                  .read(guestStateProvider.notifier)
-                  .deleteGuest(_guest.id);
-              if (success && mounted) {
-                ref.invalidate(guestsProvider);
-                Navigator.of(this.context).pop();
-                ScaffoldMessenger.of(this.context).showSnackBar(
-                  SnackBar(
-                    content: Text(context.l10n.guestDeleted),
-                    backgroundColor: AppColors.success,
-                  ),
-                );
-              }
-            },
-            child: Text(
-              context.l10n.delete,
-              style: const TextStyle(color: AppColors.error),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(context.l10n.confirmDelete),
+            content: Text(
+              '${context.l10n.confirmDeleteGuest} "${_guest.fullName}"?',
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(context.l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  final success = await ref
+                      .read(guestStateProvider.notifier)
+                      .deleteGuest(_guest.id);
+                  if (success && mounted) {
+                    ref.invalidate(guestsProvider);
+                    Navigator.of(this.context).pop();
+                    ScaffoldMessenger.of(this.context).showSnackBar(
+                      SnackBar(
+                        content: Text(context.l10n.guestDeleted),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  context.l10n.delete,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

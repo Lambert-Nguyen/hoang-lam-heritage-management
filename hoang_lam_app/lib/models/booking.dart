@@ -171,7 +171,6 @@ extension BookingStatusExtension on BookingStatus {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case BookingStatus.pending:
@@ -332,20 +331,19 @@ extension BookingSourceExtension on BookingSource {
 
   /// Whether this source is from an OTA
   bool get isOta => [
-        BookingSource.bookingCom,
-        BookingSource.agoda,
-        BookingSource.airbnb,
-        BookingSource.traveloka,
-        BookingSource.otherOta,
-      ].contains(this);
+    BookingSource.bookingCom,
+    BookingSource.agoda,
+    BookingSource.airbnb,
+    BookingSource.traveloka,
+    BookingSource.otherOta,
+  ].contains(this);
 
   /// Whether this source is direct booking
   bool get isDirect => [
-        BookingSource.walkIn,
-        BookingSource.phone,
-        BookingSource.website,
-      ].contains(this);
-
+    BookingSource.walkIn,
+    BookingSource.phone,
+    BookingSource.website,
+  ].contains(this);
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -467,7 +465,6 @@ extension PaymentMethodExtension on PaymentMethod {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case PaymentMethod.cash:
@@ -533,7 +530,6 @@ extension BookingTypeExtension on BookingType {
         return const Color(0xFF00BCD4); // Cyan
     }
   }
-
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
@@ -603,7 +599,9 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'ota_reference') @Default('') String otaReference,
 
     // Booking type (hourly/overnight)
-    @JsonKey(name: 'booking_type') @Default(BookingType.overnight) BookingType bookingType,
+    @JsonKey(name: 'booking_type')
+    @Default(BookingType.overnight)
+    BookingType bookingType,
     @JsonKey(name: 'booking_type_display') String? bookingTypeDisplay,
     @JsonKey(name: 'is_hourly') @Default(false) bool isHourly,
 
@@ -613,10 +611,18 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'expected_check_out_time') DateTime? expectedCheckOutTime,
 
     // Early/Late check fees
-    @JsonKey(name: 'early_check_in_fee', fromJson: _safeInt) @Default(0) int earlyCheckInFee,
-    @JsonKey(name: 'late_check_out_fee', fromJson: _safeInt) @Default(0) int lateCheckOutFee,
-    @JsonKey(name: 'early_check_in_hours', fromJson: _safeDouble) @Default(0) double earlyCheckInHours,
-    @JsonKey(name: 'late_check_out_hours', fromJson: _safeDouble) @Default(0) double lateCheckOutHours,
+    @JsonKey(name: 'early_check_in_fee', fromJson: _safeInt)
+    @Default(0)
+    int earlyCheckInFee,
+    @JsonKey(name: 'late_check_out_fee', fromJson: _safeInt)
+    @Default(0)
+    int lateCheckOutFee,
+    @JsonKey(name: 'early_check_in_hours', fromJson: _safeDouble)
+    @Default(0)
+    double earlyCheckInHours,
+    @JsonKey(name: 'late_check_out_hours', fromJson: _safeDouble)
+    @Default(0)
+    double lateCheckOutHours,
 
     // Pricing
     @JsonKey(name: 'nightly_rate', fromJson: _safeInt) required int nightlyRate,
@@ -624,10 +630,16 @@ sealed class Booking with _$Booking {
     @Default('VND') String currency,
 
     // Payment
-    @JsonKey(name: 'deposit_amount', fromJson: _safeInt) @Default(0) int depositAmount,
+    @JsonKey(name: 'deposit_amount', fromJson: _safeInt)
+    @Default(0)
+    int depositAmount,
     @JsonKey(name: 'deposit_paid') @Default(false) bool depositPaid,
-    @JsonKey(name: 'additional_charges', fromJson: _safeInt) @Default(0) int additionalCharges,
-    @JsonKey(name: 'payment_method') @Default(PaymentMethod.cash) PaymentMethod paymentMethod,
+    @JsonKey(name: 'additional_charges', fromJson: _safeInt)
+    @Default(0)
+    int additionalCharges,
+    @JsonKey(name: 'payment_method')
+    @Default(PaymentMethod.cash)
+    PaymentMethod paymentMethod,
     @JsonKey(name: 'is_paid') @Default(false) bool isPaid,
 
     // Notes
@@ -646,7 +658,8 @@ sealed class Booking with _$Booking {
 
   const Booking._();
 
-  factory Booking.fromJson(Map<String, dynamic> json) => _$BookingFromJson(json);
+  factory Booking.fromJson(Map<String, dynamic> json) =>
+      _$BookingFromJson(json);
 
   /// Create a new booking for the form
   factory Booking.create({
@@ -690,14 +703,19 @@ sealed class Booking with _$Booking {
   int get calculatedNights => checkOutDate.difference(checkInDate).inDays;
 
   /// Calculate balance due (including early/late fees)
-  int get calculatedBalanceDue => 
-      totalAmount + additionalCharges + earlyCheckInFee + lateCheckOutFee - depositAmount;
+  int get calculatedBalanceDue =>
+      totalAmount +
+      additionalCharges +
+      earlyCheckInFee +
+      lateCheckOutFee -
+      depositAmount;
 
   /// Total fees (early + late)
   int get totalFees => earlyCheckInFee + lateCheckOutFee;
 
   /// Get guest name (from details, list field, or fallback)
-  String get guestName => guestDetails?.fullName ?? guestNameField ?? 'Khách #$guest';
+  String get guestName =>
+      guestDetails?.fullName ?? guestNameField ?? 'Khách #$guest';
 
   /// Get guest phone (from details, list field, or empty)
   String get guestPhone => guestDetails?.phone ?? guestPhoneField ?? '';
@@ -706,8 +724,16 @@ sealed class Booking with _$Booking {
   bool get isToday {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final checkIn = DateTime(checkInDate.year, checkInDate.month, checkInDate.day);
-    final checkOut = DateTime(checkOutDate.year, checkOutDate.month, checkOutDate.day);
+    final checkIn = DateTime(
+      checkInDate.year,
+      checkInDate.month,
+      checkInDate.day,
+    );
+    final checkOut = DateTime(
+      checkOutDate.year,
+      checkOutDate.month,
+      checkOutDate.day,
+    );
     return today.isAtSameMomentAs(checkIn) ||
         (today.isAfter(checkIn) && today.isBefore(checkOut));
   }
@@ -716,7 +742,11 @@ sealed class Booking with _$Booking {
   bool get checkInDueToday {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final checkIn = DateTime(checkInDate.year, checkInDate.month, checkInDate.day);
+    final checkIn = DateTime(
+      checkInDate.year,
+      checkInDate.month,
+      checkInDate.day,
+    );
     return checkIn.isAtSameMomentAs(today) && status.canCheckIn;
   }
 
@@ -724,8 +754,13 @@ sealed class Booking with _$Booking {
   bool get checkOutDueToday {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final checkOut = DateTime(checkOutDate.year, checkOutDate.month, checkOutDate.day);
-    return checkOut.isAtSameMomentAs(today) && status == BookingStatus.checkedIn;
+    final checkOut = DateTime(
+      checkOutDate.year,
+      checkOutDate.month,
+      checkOutDate.day,
+    );
+    return checkOut.isAtSameMomentAs(today) &&
+        status == BookingStatus.checkedIn;
   }
 
   /// Check if booking overlaps with a date range
@@ -877,10 +912,8 @@ sealed class BookingFilter with _$BookingFilter {
 /// Date range for calendar queries
 @freezed
 sealed class DateRange with _$DateRange {
-  const factory DateRange({
-    required DateTime start,
-    required DateTime end,
-  }) = _DateRange;
+  const factory DateRange({required DateTime start, required DateTime end}) =
+      _DateRange;
 
   const DateRange._();
 
@@ -913,7 +946,7 @@ sealed class BookingCreate with _$BookingCreate {
     @JsonKey(name: 'deposit_paid') @Default(false) bool depositPaid,
     @JsonKey(name: 'payment_method')
     @Default(PaymentMethod.cash)
-        PaymentMethod paymentMethod,
+    PaymentMethod paymentMethod,
     @Default('') String notes,
     @JsonKey(name: 'special_requests') @Default('') String specialRequests,
   }) = _BookingCreate;
@@ -924,7 +957,8 @@ sealed class BookingCreate with _$BookingCreate {
   const BookingCreate._();
 
   /// Convert to JSON for API
-  Map<String, dynamic> toJson() => _$BookingCreateToJson(this as _BookingCreate);
+  Map<String, dynamic> toJson() =>
+      _$BookingCreateToJson(this as _BookingCreate);
 
   /// Calculate total amount
   int get totalAmount {
@@ -960,7 +994,8 @@ sealed class BookingUpdate with _$BookingUpdate {
     @JsonKey(includeIfNull: false) int? room,
     @JsonKey(includeIfNull: false) int? guest,
     @JsonKey(name: 'check_in_date', includeIfNull: false) DateTime? checkInDate,
-    @JsonKey(name: 'check_out_date', includeIfNull: false) DateTime? checkOutDate,
+    @JsonKey(name: 'check_out_date', includeIfNull: false)
+    DateTime? checkOutDate,
     @JsonKey(name: 'guest_count', includeIfNull: false) int? guestCount,
     @JsonKey(includeIfNull: false) BookingStatus? status,
     @JsonKey(includeIfNull: false) BookingSource? source,
@@ -968,11 +1003,14 @@ sealed class BookingUpdate with _$BookingUpdate {
     @JsonKey(name: 'nightly_rate', includeIfNull: false) int? nightlyRate,
     @JsonKey(name: 'deposit_amount', includeIfNull: false) int? depositAmount,
     @JsonKey(name: 'deposit_paid', includeIfNull: false) bool? depositPaid,
-    @JsonKey(name: 'additional_charges', includeIfNull: false) int? additionalCharges,
-    @JsonKey(name: 'payment_method', includeIfNull: false) PaymentMethod? paymentMethod,
+    @JsonKey(name: 'additional_charges', includeIfNull: false)
+    int? additionalCharges,
+    @JsonKey(name: 'payment_method', includeIfNull: false)
+    PaymentMethod? paymentMethod,
     @JsonKey(name: 'is_paid', includeIfNull: false) bool? isPaid,
     @JsonKey(includeIfNull: false) String? notes,
-    @JsonKey(name: 'special_requests', includeIfNull: false) String? specialRequests,
+    @JsonKey(name: 'special_requests', includeIfNull: false)
+    String? specialRequests,
   }) = _BookingUpdate;
 
   factory BookingUpdate.fromJson(Map<String, dynamic> json) =>
@@ -981,7 +1019,8 @@ sealed class BookingUpdate with _$BookingUpdate {
   const BookingUpdate._();
 
   /// Convert to JSON for API
-  Map<String, dynamic> toJson() => _$BookingUpdateToJson(this as _BookingUpdate);
+  Map<String, dynamic> toJson() =>
+      _$BookingUpdateToJson(this as _BookingUpdate);
 
   /// Create from Booking model (for editing)
   factory BookingUpdate.fromBooking(Booking booking) {

@@ -6,7 +6,8 @@ import '../models/room.dart';
 class RoomRepository {
   final ApiClient _apiClient;
 
-  RoomRepository({ApiClient? apiClient}) : _apiClient = apiClient ?? ApiClient();
+  RoomRepository({ApiClient? apiClient})
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Room Types ====================
 
@@ -35,7 +36,7 @@ class RoomRepository {
         return listResponse.results;
       }
     }
-    
+
     // Non-paginated response (list directly)
     if (response.data is List) {
       final list = response.data as List<dynamic>;
@@ -186,7 +187,10 @@ class RoomRepository {
   }
 
   /// Update room status
-  Future<Room> updateRoomStatus(int roomId, RoomStatusUpdateRequest request) async {
+  Future<Room> updateRoomStatus(
+    int roomId,
+    RoomStatusUpdateRequest request,
+  ) async {
     final response = await _apiClient.post<Map<String, dynamic>>(
       '${AppConstants.roomsEndpoint}$roomId/update-status/',
       data: request.toJson(),

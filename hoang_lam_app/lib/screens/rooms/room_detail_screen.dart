@@ -18,10 +18,7 @@ import 'room_form_screen.dart';
 class RoomDetailScreen extends ConsumerStatefulWidget {
   final Room room;
 
-  const RoomDetailScreen({
-    super.key,
-    required this.room,
-  });
+  const RoomDetailScreen({super.key, required this.room});
 
   @override
   ConsumerState<RoomDetailScreen> createState() => _RoomDetailScreenState();
@@ -49,7 +46,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${result.localizedName(context.l10n)}'),
+          content: Text(
+            '${context.l10n.roomUpdated} ${_room.number}: ${result.localizedName(context.l10n)}',
+          ),
           backgroundColor: AppColors.success,
         ),
       );
@@ -60,7 +59,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.roomWithNumber.replaceAll('{number}', _room.number)),
+        title: Text(
+          context.l10n.roomWithNumber.replaceAll('{number}', _room.number),
+        ),
         actions: [
           AppIconButton(
             icon: Icons.edit,
@@ -74,7 +75,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                 // Refresh data after edit
                 ref.invalidate(roomsProvider);
                 ref.invalidate(roomByIdProvider(_room.id));
-                final updatedRoom = await ref.read(roomByIdProvider(_room.id).future);
+                final updatedRoom = await ref.read(
+                  roomByIdProvider(_room.id).future,
+                );
                 if (mounted) {
                   setState(() {
                     _room = updatedRoom;
@@ -131,25 +134,18 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       decoration: BoxDecoration(
         color: _room.status.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        border: Border.all(
-          color: _room.status.color,
-          width: 2,
-        ),
+        border: Border.all(color: _room.status.color, width: 2),
       ),
       child: Column(
         children: [
-          Icon(
-            _room.status.icon,
-            size: 48,
-            color: _room.status.color,
-          ),
+          Icon(_room.status.icon, size: 48, color: _room.status.color),
           AppSpacing.gapVerticalMd,
           Text(
             _room.status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: _room.status.color,
-                ),
+              fontWeight: FontWeight.bold,
+              color: _room.status.color,
+            ),
           ),
           AppSpacing.gapVerticalSm,
           OutlinedButton.icon(
@@ -173,9 +169,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
         children: [
           Text(
             context.l10n.roomInfo,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           AppSpacing.gapVerticalMd,
           _buildInfoRow(
@@ -214,27 +210,19 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: AppColors.textSecondary,
-          ),
+          Icon(icon, size: 20, color: AppColors.textSecondary),
           AppSpacing.gapHorizontalSm,
           SizedBox(
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
-              ),
+              style: const TextStyle(color: AppColors.textSecondary),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
         ],
@@ -248,9 +236,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       children: [
         Text(
           context.l10n.changeStatus,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         AppSpacing.gapVerticalMd,
         Wrap(
@@ -294,10 +282,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   Future<void> _quickStatusChange(RoomStatus newStatus) async {
     if (_room.status == newStatus) return;
 
-    final success = await ref.read(roomStateProvider.notifier).updateRoomStatus(
-      _room.id,
-      newStatus,
-    );
+    final success = await ref
+        .read(roomStateProvider.notifier)
+        .updateRoomStatus(_room.id, newStatus);
 
     if (success && mounted) {
       setState(() {
@@ -308,7 +295,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${context.l10n.roomUpdated} ${_room.number}: ${newStatus.localizedName(context.l10n)}'),
+          content: Text(
+            '${context.l10n.roomUpdated} ${_room.number}: ${newStatus.localizedName(context.l10n)}',
+          ),
           backgroundColor: AppColors.success,
         ),
       );
@@ -326,9 +315,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               AppSpacing.gapHorizontalSm,
               Text(
                 context.l10n.roomNotes,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -357,10 +346,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                   color: AppColors.occupied.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
-                child: const Icon(
-                  Icons.person,
-                  color: AppColors.occupied,
-                ),
+                child: const Icon(Icons.person, color: AppColors.occupied),
               ),
               AppSpacing.gapHorizontalMd,
               Expanded(
@@ -370,8 +356,8 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                     Text(
                       context.l10n.hasGuests,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       context.l10n.viewBookingDetails,
@@ -380,10 +366,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                   ],
                 ),
               ),
-              const Icon(
-                Icons.chevron_right,
-                color: AppColors.textHint,
-              ),
+              const Icon(Icons.chevron_right, color: AppColors.textHint),
             ],
           ),
         ],
@@ -400,9 +383,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           children: [
             Text(
               context.l10n.history,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             TextButton(
               onPressed: () {
@@ -448,15 +431,16 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               child: AppButton(
                 label: context.l10n.bookRoom,
                 icon: Icons.book_online,
-                onPressed: _room.status == RoomStatus.available
-                    ? () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const BookingFormScreen(),
-                          ),
-                        );
-                      }
-                    : null,
+                onPressed:
+                    _room.status == RoomStatus.available
+                        ? () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const BookingFormScreen(),
+                            ),
+                          );
+                        }
+                        : null,
               ),
             ),
           ],
@@ -491,7 +475,8 @@ class _QuickActionChip extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
+          color:
+              isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           border: Border.all(
             color: isSelected ? color : AppColors.divider,

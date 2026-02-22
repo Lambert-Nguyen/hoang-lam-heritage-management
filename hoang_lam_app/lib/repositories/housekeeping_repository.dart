@@ -7,7 +7,7 @@ class HousekeepingRepository {
   final ApiClient _apiClient;
 
   HousekeepingRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Housekeeping Tasks ====================
 
@@ -60,7 +60,9 @@ class HousekeepingRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => HousekeepingTask.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => HousekeepingTask.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -91,7 +93,10 @@ class HousekeepingRepository {
   }
 
   /// Update an existing task
-  Future<HousekeepingTask> updateTask(int id, HousekeepingTaskUpdate update) async {
+  Future<HousekeepingTask> updateTask(
+    int id,
+    HousekeepingTaskUpdate update,
+  ) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       '${AppConstants.housekeepingTasksEndpoint}$id/',
       data: update.toJson(),
@@ -156,7 +161,9 @@ class HousekeepingRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => HousekeepingTask.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => HousekeepingTask.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -176,7 +183,9 @@ class HousekeepingRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => HousekeepingTask.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => HousekeepingTask.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -233,7 +242,9 @@ class HousekeepingRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => MaintenanceRequest.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => MaintenanceRequest.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -253,7 +264,8 @@ class HousekeepingRepository {
 
   /// Create a new maintenance request
   Future<MaintenanceRequest> createMaintenanceRequest(
-      MaintenanceRequestCreate request) async {
+    MaintenanceRequestCreate request,
+  ) async {
     final response = await _apiClient.post<Map<String, dynamic>>(
       AppConstants.maintenanceRequestsEndpoint,
       data: request.toJson(),
@@ -266,7 +278,9 @@ class HousekeepingRepository {
 
   /// Update an existing maintenance request
   Future<MaintenanceRequest> updateMaintenanceRequest(
-      int id, MaintenanceRequestUpdate update) async {
+    int id,
+    MaintenanceRequestUpdate update,
+  ) async {
     final response = await _apiClient.patch<Map<String, dynamic>>(
       '${AppConstants.maintenanceRequestsEndpoint}$id/',
       data: update.toJson(),
@@ -381,7 +395,9 @@ class HousekeepingRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => MaintenanceRequest.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => MaintenanceRequest.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 
@@ -401,7 +417,9 @@ class HousekeepingRepository {
     if (response.data is List) {
       final list = response.data as List<dynamic>;
       return list
-          .map((json) => MaintenanceRequest.fromJson(json as Map<String, dynamic>))
+          .map(
+            (json) => MaintenanceRequest.fromJson(json as Map<String, dynamic>),
+          )
           .toList();
     }
 

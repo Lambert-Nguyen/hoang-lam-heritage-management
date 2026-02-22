@@ -51,7 +51,9 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final errorMessage = await ref.read(authStateProvider.notifier).changePassword(
+      final errorMessage = await ref
+          .read(authStateProvider.notifier)
+          .changePassword(
             oldPassword: _oldPasswordController.text,
             newPassword: _newPasswordController.text,
             confirmPassword: _confirmPasswordController.text,
@@ -117,19 +119,12 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: AppColors.info,
-                        size: 20,
-                      ),
+                      Icon(Icons.info_outline, color: AppColors.info, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           context.l10n.newPasswordMinLength,
-                          style: TextStyle(
-                            color: AppColors.info,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: AppColors.info, fontSize: 14),
                         ),
                       ),
                     ],
@@ -146,7 +141,8 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                       color: AppColors.success.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: AppColors.success.withValues(alpha: 0.3)),
+                        color: AppColors.success.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -179,7 +175,8 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                       color: AppColors.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: AppColors.error.withValues(alpha: 0.3)),
+                        color: AppColors.error.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Row(
                       children: [
@@ -220,7 +217,9 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                           : Icons.visibility_off_outlined,
                     ),
                     onPressed: () {
-                      setState(() => _obscureOldPassword = !_obscureOldPassword);
+                      setState(
+                        () => _obscureOldPassword = !_obscureOldPassword,
+                      );
                     },
                   ),
                   validator: (value) {
@@ -249,7 +248,9 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                           : Icons.visibility_off_outlined,
                     ),
                     onPressed: () {
-                      setState(() => _obscureNewPassword = !_obscureNewPassword);
+                      setState(
+                        () => _obscureNewPassword = !_obscureNewPassword,
+                      );
                     },
                   ),
                   validator: (value) {
@@ -285,7 +286,9 @@ class _PasswordChangeScreenState extends ConsumerState<PasswordChangeScreen> {
                     ),
                     onPressed: () {
                       setState(
-                          () => _obscureConfirmPassword = !_obscureConfirmPassword);
+                        () =>
+                            _obscureConfirmPassword = !_obscureConfirmPassword,
+                      );
                     },
                   ),
                   validator: (value) {

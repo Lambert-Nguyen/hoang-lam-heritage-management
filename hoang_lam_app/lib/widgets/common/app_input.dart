@@ -268,9 +268,8 @@ class DatePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final displayValue = value != null
-        ? '${value!.day}/${value!.month}/${value!.year}'
-        : '';
+    final displayValue =
+        value != null ? '${value!.day}/${value!.month}/${value!.year}' : '';
 
     return AppTextField(
       label: label,

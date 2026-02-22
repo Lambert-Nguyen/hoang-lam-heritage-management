@@ -24,28 +24,28 @@ void main() {
         locale: const Locale('vi'),
         home: Scaffold(
           body: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) => TaskFilterSheet(
-                    initialFilter: initialFilter,
-                    onApply: onApply,
-                  ),
-                );
-              },
-              child: const Text('Open Filter'),
-            ),
+            builder:
+                (context) => ElevatedButton(
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder:
+                          (_) => TaskFilterSheet(
+                            initialFilter: initialFilter,
+                            onApply: onApply,
+                          ),
+                    );
+                  },
+                  child: const Text('Open Filter'),
+                ),
           ),
         ),
       );
     }
 
     testWidgets('displays filter sheet when opened', (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -55,11 +55,10 @@ void main() {
       expect(find.text('Lọc công việc'), findsOneWidget);
     });
 
-    testWidgets('displays status filter section with all statuses',
-        (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+    testWidgets('displays status filter section with all statuses', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -73,11 +72,10 @@ void main() {
       }
     });
 
-    testWidgets('displays task type filter section with all types',
-        (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+    testWidgets('displays task type filter section with all types', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -92,9 +90,7 @@ void main() {
     });
 
     testWidgets('displays date filter section', (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -105,9 +101,7 @@ void main() {
     });
 
     testWidgets('displays quick date filter buttons', (tester) async {
-      await tester.pumpWidget(buildWidget(
-        onApply: (_) {},
-      ));
+      await tester.pumpWidget(buildWidget(onApply: (_) {}));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -120,16 +114,18 @@ void main() {
 
     testWidgets('selects status filter and applies', (tester) async {
       HousekeepingTaskFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onApply: (filter) => appliedFilter = filter),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
 
       // Tap on inProgress status (displayName is 'Đang làm')
-      await tester.tap(find.text(HousekeepingTaskStatus.inProgress.displayName));
+      await tester.tap(
+        find.text(HousekeepingTaskStatus.inProgress.displayName),
+      );
       await tester.pump();
 
       await tester.tap(find.text('Áp dụng'));
@@ -141,9 +137,9 @@ void main() {
 
     testWidgets('selects task type filter and applies', (tester) async {
       HousekeepingTaskFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      await tester.pumpWidget(
+        buildWidget(onApply: (filter) => appliedFilter = filter),
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));
@@ -160,16 +156,19 @@ void main() {
       expect(appliedFilter!.taskType, equals(HousekeepingTaskType.deepClean));
     });
 
-    testWidgets('clears all filters when reset button is tapped',
-        (tester) async {
+    testWidgets('clears all filters when reset button is tapped', (
+      tester,
+    ) async {
       HousekeepingTaskFilter? appliedFilter;
-      await tester.pumpWidget(buildWidget(
-        initialFilter: HousekeepingTaskFilter(
-          status: HousekeepingTaskStatus.pending,
-          taskType: HousekeepingTaskType.checkoutClean,
+      await tester.pumpWidget(
+        buildWidget(
+          initialFilter: HousekeepingTaskFilter(
+            status: HousekeepingTaskStatus.pending,
+            taskType: HousekeepingTaskType.checkoutClean,
+          ),
+          onApply: (filter) => appliedFilter = filter,
         ),
-        onApply: (filter) => appliedFilter = filter,
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Open Filter'));

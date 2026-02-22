@@ -90,13 +90,9 @@ class _EarlyLateFeeDialogState extends State<EarlyLateFeeDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final title = widget.isEarlyCheckIn
-        ? l10n.earlyCheckIn
-        : l10n.lateCheckOut;
+    final title = widget.isEarlyCheckIn ? l10n.earlyCheckIn : l10n.lateCheckOut;
     final icon = widget.isEarlyCheckIn ? Icons.login : Icons.logout;
-    final color = widget.isEarlyCheckIn
-        ? AppColors.success
-        : AppColors.warning;
+    final color = widget.isEarlyCheckIn ? AppColors.success : AppColors.warning;
 
     return AlertDialog(
       title: Row(
@@ -148,23 +144,27 @@ class _EarlyLateFeeDialogState extends State<EarlyLateFeeDialog> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: _presetHours.map((h) {
-                  final isSelected =
-                      _hoursController.text == h.toString();
-                  return ChoiceChip(
-                    label: Text('${h.toStringAsFixed(h == h.roundToDouble() ? 0 : 1)}h'),
-                    selected: isSelected,
-                    selectedColor: color.withValues(alpha: 0.2),
-                    onSelected: (_) => _selectPresetHours(h),
-                  );
-                }).toList(),
+                children:
+                    _presetHours.map((h) {
+                      final isSelected = _hoursController.text == h.toString();
+                      return ChoiceChip(
+                        label: Text(
+                          '${h.toStringAsFixed(h == h.roundToDouble() ? 0 : 1)}h',
+                        ),
+                        selected: isSelected,
+                        selectedColor: color.withValues(alpha: 0.2),
+                        onSelected: (_) => _selectPresetHours(h),
+                      );
+                    }).toList(),
               ),
               const SizedBox(height: 16),
 
               // Hours input
               TextFormField(
                 controller: _hoursController,
-                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: l10n.numberOfHours,
                   hintText: '1.0 - 24.0',

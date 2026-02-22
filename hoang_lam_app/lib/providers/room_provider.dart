@@ -37,8 +37,9 @@ final roomsByFloorProvider = FutureProvider<Map<int, List<Room>>>((ref) async {
 });
 
 /// Provider for room status counts (for dashboard stats)
-final roomStatusCountsProvider =
-    FutureProvider<Map<RoomStatus, int>>((ref) async {
+final roomStatusCountsProvider = FutureProvider<Map<RoomStatus, int>>((
+  ref,
+) async {
   final repository = ref.watch(roomRepositoryProvider);
   return repository.getRoomStatusCounts();
 });
@@ -50,15 +51,19 @@ final roomByIdProvider = FutureProvider.family<Room, int>((ref, id) async {
 });
 
 /// Provider for a specific room type by ID
-final roomTypeByIdProvider =
-    FutureProvider.family<RoomType, int>((ref, id) async {
+final roomTypeByIdProvider = FutureProvider.family<RoomType, int>((
+  ref,
+  id,
+) async {
   final repository = ref.watch(roomRepositoryProvider);
   return repository.getRoomType(id);
 });
 
 /// Provider for filtered rooms
-final filteredRoomsProvider =
-    FutureProvider.family<List<Room>, RoomFilter>((ref, filter) async {
+final filteredRoomsProvider = FutureProvider.family<List<Room>, RoomFilter>((
+  ref,
+  filter,
+) async {
   final repository = ref.watch(roomRepositoryProvider);
   return repository.getRooms(
     status: filter.status,
@@ -71,15 +76,14 @@ final filteredRoomsProvider =
 
 /// Provider for available rooms in a date range
 final availableRoomsProvider =
-    FutureProvider.family<List<Room>, AvailabilityFilter>(
-        (ref, filter) async {
-  final repository = ref.watch(roomRepositoryProvider);
-  return repository.getAvailableRooms(
-    checkIn: filter.checkIn,
-    checkOut: filter.checkOut,
-    roomTypeId: filter.roomTypeId,
-  );
-});
+    FutureProvider.family<List<Room>, AvailabilityFilter>((ref, filter) async {
+      final repository = ref.watch(roomRepositoryProvider);
+      return repository.getAvailableRooms(
+        checkIn: filter.checkIn,
+        checkOut: filter.checkOut,
+        roomTypeId: filter.roomTypeId,
+      );
+    });
 
 /// Room filter for querying rooms
 @freezed
@@ -141,8 +145,11 @@ class RoomNotifier extends StateNotifier<RoomState> {
   }
 
   /// Update room status
-  Future<bool> updateRoomStatus(int roomId, RoomStatus newStatus,
-      {String? notes}) async {
+  Future<bool> updateRoomStatus(
+    int roomId,
+    RoomStatus newStatus, {
+    String? notes,
+  }) async {
     try {
       await _repository.updateRoomStatus(
         roomId,
@@ -227,7 +234,8 @@ class RoomNotifier extends StateNotifier<RoomState> {
     if (message.contains('đã tồn tại') || message.contains('duplicate')) {
       return l10n.errorRoomExists;
     }
-    if (message.contains('không thể xóa') || message.contains('cannot delete')) {
+    if (message.contains('không thể xóa') ||
+        message.contains('cannot delete')) {
       return l10n.errorCannotDeleteRoom;
     }
     return l10n.errorGeneric;

@@ -73,7 +73,6 @@ extension InspectionStatusX on InspectionStatus {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case InspectionStatus.pending:
@@ -166,7 +165,6 @@ extension InspectionTypeX on InspectionType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case InspectionType.checkout:
@@ -222,7 +220,9 @@ sealed class RoomInspection with _$RoomInspection {
     @JsonKey(name: 'inspector_name') String? inspectorName,
     required InspectionStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
-    @JsonKey(name: 'checklist_items') @Default([]) List<ChecklistItem> checklistItems,
+    @JsonKey(name: 'checklist_items')
+    @Default([])
+    List<ChecklistItem> checklistItems,
     @JsonKey(name: 'total_items') @Default(0) int totalItems,
     @JsonKey(name: 'passed_items') @Default(0) int passedItems,
     @Default(0.0) double score,
@@ -251,7 +251,9 @@ sealed class RoomInspectionCreate with _$RoomInspectionCreate {
     @JsonKey(name: 'inspection_type') required InspectionType inspectionType,
     @JsonKey(name: 'scheduled_date') required String scheduledDate,
     int? inspector,
-    @JsonKey(name: 'checklist_items') @Default([]) List<ChecklistItem> checklistItems,
+    @JsonKey(name: 'checklist_items')
+    @Default([])
+    List<ChecklistItem> checklistItems,
     @Default('') String notes,
     @JsonKey(name: 'template_id') int? templateId,
   }) = _RoomInspectionCreate;
@@ -287,7 +289,8 @@ sealed class RoomInspectionUpdate with _$RoomInspectionUpdate {
 @freezed
 sealed class CompleteInspection with _$CompleteInspection {
   const factory CompleteInspection({
-    @JsonKey(name: 'checklist_items') required List<ChecklistItem> checklistItems,
+    @JsonKey(name: 'checklist_items')
+    required List<ChecklistItem> checklistItems,
     @Default([]) List<String> images,
     @Default('') String notes,
     @JsonKey(name: 'action_required') @Default('') String actionRequired,
@@ -367,14 +370,20 @@ sealed class InspectionTemplateCreate with _$InspectionTemplateCreate {
 sealed class InspectionStatistics with _$InspectionStatistics {
   const factory InspectionStatistics({
     @JsonKey(name: 'total_inspections') @Default(0) int totalInspections,
-    @JsonKey(name: 'completed_inspections') @Default(0) int completedInspections,
+    @JsonKey(name: 'completed_inspections')
+    @Default(0)
+    int completedInspections,
     @JsonKey(name: 'pending_inspections') @Default(0) int pendingInspections,
     @JsonKey(name: 'requires_action') @Default(0) int requiresAction,
     @JsonKey(name: 'average_score') @Default(0.0) double averageScore,
     @JsonKey(name: 'total_issues') @Default(0) int totalIssues,
     @JsonKey(name: 'critical_issues') @Default(0) int criticalIssues,
-    @JsonKey(name: 'inspections_by_type') @Default({}) Map<String, int> inspectionsByType,
-    @JsonKey(name: 'inspections_by_room') @Default([]) List<Map<String, dynamic>> inspectionsByRoom,
+    @JsonKey(name: 'inspections_by_type')
+    @Default({})
+    Map<String, int> inspectionsByType,
+    @JsonKey(name: 'inspections_by_room')
+    @Default([])
+    List<Map<String, dynamic>> inspectionsByRoom,
   }) = _InspectionStatistics;
 
   factory InspectionStatistics.fromJson(Map<String, dynamic> json) =>
@@ -431,5 +440,12 @@ class InspectionCategories {
     }
   }
 
-  static List<String> get all => [bedroom, bathroom, amenities, electronics, safety, general];
+  static List<String> get all => [
+    bedroom,
+    bathroom,
+    amenities,
+    electronics,
+    safety,
+    general,
+  ];
 }

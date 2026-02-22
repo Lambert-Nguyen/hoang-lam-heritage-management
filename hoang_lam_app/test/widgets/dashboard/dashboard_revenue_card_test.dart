@@ -23,14 +23,14 @@ void main() {
     testWidgets('displays revenue correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -53,14 +53,14 @@ void main() {
     testWidgets('calculates net profit correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -82,14 +82,14 @@ void main() {
     testWidgets('handles zero revenue', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -104,21 +104,21 @@ void main() {
       expect(find.text(CurrencyFormatter.formatVND(0)), findsOneWidget);
     });
 
-    testWidgets('handles null revenue and expense', (WidgetTester tester) async {
+    testWidgets('handles null revenue and expense', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
-            body: DashboardRevenueCard(
-              todaySummary: mockTodaySummary,
-            ),
+            body: DashboardRevenueCard(todaySummary: mockTodaySummary),
           ),
         ),
       );
@@ -130,14 +130,14 @@ void main() {
     testWidgets('displays negative net correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -159,14 +159,14 @@ void main() {
     testWidgets('shows trending up icon', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -180,17 +180,19 @@ void main() {
       expect(find.byIcon(Icons.trending_up), findsOneWidget);
     });
 
-    testWidgets('does not show expense text when expense is zero', (WidgetTester tester) async {
+    testWidgets('does not show expense text when expense is zero', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,
@@ -208,14 +210,14 @@ void main() {
     testWidgets('formats large numbers correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('vi'),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
           home: Scaffold(
             body: DashboardRevenueCard(
               todaySummary: mockTodaySummary,

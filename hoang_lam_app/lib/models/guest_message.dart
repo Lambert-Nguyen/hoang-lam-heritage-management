@@ -90,7 +90,6 @@ extension MessageStatusExtension on MessageStatus {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case MessageStatus.draft:
@@ -155,7 +154,6 @@ extension MessageTemplateTypeExtension on MessageTemplateType {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case MessageTemplateType.bookingConfirmation:
@@ -187,7 +185,9 @@ sealed class MessageTemplate with _$MessageTemplate {
     required String body,
     required MessageChannel channel,
     @JsonKey(name: 'is_active') @Default(true) bool isActive,
-    @JsonKey(name: 'available_variables') @Default([]) List<String> availableVariables,
+    @JsonKey(name: 'available_variables')
+    @Default([])
+    List<String> availableVariables,
     @JsonKey(name: 'created_at') DateTime? createdAt,
     @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _MessageTemplate;

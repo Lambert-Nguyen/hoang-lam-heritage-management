@@ -65,10 +65,11 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
                 // Category filter
                 categoriesAsync.when(
                   data: (categories) => _buildCategoryFilter(categories),
-                  loading: () => const SizedBox(
-                    height: 48,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                  loading:
+                      () => const SizedBox(
+                        height: 48,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
                   error: (_, __) => const SizedBox.shrink(),
                 ),
                 const Divider(height: 1),
@@ -82,11 +83,12 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
                   child: itemsAsync.when(
                     data: (items) => _buildItemGrid(items),
                     loading: () => const LoadingIndicator(),
-                    error: (error, _) => EmptyState(
-                      icon: Icons.error_outline,
-                      title: l10n.error,
-                      subtitle: error.toString(),
-                    ),
+                    error:
+                        (error, _) => EmptyState(
+                          icon: Icons.error_outline,
+                          title: l10n.error,
+                          subtitle: error.toString(),
+                        ),
                   ),
                 ),
               ],
@@ -129,9 +131,10 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
             child: todayBookingsAsync.when(
               data: (response) {
                 // Combine check-ins to get currently checked-in bookings
-                final checkedInBookings = response.checkIns
-                    .where((b) => b.status == BookingStatus.checkedIn)
-                    .toList();
+                final checkedInBookings =
+                    response.checkIns
+                        .where((b) => b.status == BookingStatus.checkedIn)
+                        .toList();
                 return DropdownButtonFormField<Booking>(
                   value: _selectedBooking,
                   hint: Text(AppLocalizations.of(context)!.selectBooking),
@@ -142,25 +145,30 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
                       vertical: AppSpacing.sm,
                     ),
                   ),
-                  items: checkedInBookings.map((booking) {
-                    return DropdownMenuItem(
-                      value: booking,
-                      child: Text(
-                        'P.${booking.roomNumber} - ${booking.guestName}',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    );
-                  }).toList(),
+                  items:
+                      checkedInBookings.map((booking) {
+                        return DropdownMenuItem(
+                          value: booking,
+                          child: Text(
+                            'P.${booking.roomNumber} - ${booking.guestName}',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList(),
                   onChanged: (booking) {
                     setState(() => _selectedBooking = booking);
                     if (booking != null) {
-                      ref.read(minibarCartProvider.notifier).setBooking(booking.id);
+                      ref
+                          .read(minibarCartProvider.notifier)
+                          .setBooking(booking.id);
                     }
                   },
                 );
               },
               loading: () => const LinearProgressIndicator(),
-              error: (_, __) => Text(AppLocalizations.of(context)!.bookingListLoadError),
+              error:
+                  (_, __) =>
+                      Text(AppLocalizations.of(context)!.bookingListLoadError),
             ),
           ),
         ],
@@ -208,15 +216,16 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           hintText: l10n.searchProductHint,
           prefixIcon: const Icon(Icons.search),
           border: const OutlineInputBorder(),
-          suffixIcon: _searchController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {});
-                  },
-                )
-              : null,
+          suffixIcon:
+              _searchController.text.isNotEmpty
+                  ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {});
+                    },
+                  )
+                  : null,
         ),
         onChanged: (_) => setState(() {}),
       ),
@@ -228,18 +237,18 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
     // Filter by category
     var filteredItems = items;
     if (_selectedCategory != null) {
-      filteredItems = items
-          .where((item) => item.category == _selectedCategory)
-          .toList();
+      filteredItems =
+          items.where((item) => item.category == _selectedCategory).toList();
     }
 
     // Filter by search
     if (_searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
-      filteredItems = filteredItems.where((item) {
-        return item.name.toLowerCase().contains(query) ||
-            item.category.toLowerCase().contains(query);
-      }).toList();
+      filteredItems =
+          filteredItems.where((item) {
+            return item.name.toLowerCase().contains(query) ||
+                item.category.toLowerCase().contains(query);
+          }).toList();
     }
 
     if (filteredItems.isEmpty) {
@@ -250,10 +259,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
       );
     }
 
-    return MinibarItemGrid(
-      items: filteredItems,
-      onItemTap: _handleAddToCart,
-    );
+    return MinibarItemGrid(items: filteredItems, onItemTap: _handleAddToCart);
   }
 
   void _handleAddToCart(MinibarItem item) {
@@ -282,21 +288,22 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
     final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.clearCartTitle),
-        content: Text(l10n.clearCartConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.clearCartTitle),
+            content: Text(l10n.clearCartConfirm),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                child: Text(l10n.delete),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true) {
@@ -314,39 +321,41 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
     // Show confirmation dialog
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.confirmCheckout),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${l10n.roomLabel}: ${_selectedBooking!.roomNumber}'),
-            Text('${l10n.guestNameLabel}: ${_selectedBooking!.guestName}'),
-            const SizedBox(height: 8),
-            Text(
-              '${l10n.totalLabel}: ${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(cartState.totalAmount)}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.confirmCheckout),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('${l10n.roomLabel}: ${_selectedBooking!.roomNumber}'),
+                Text('${l10n.guestNameLabel}: ${_selectedBooking!.guestName}'),
+                const SizedBox(height: 8),
+                Text(
+                  '${l10n.totalLabel}: ${NumberFormat.currency(locale: 'vi_VN', symbol: '₫', decimalDigits: 0).format(cartState.totalAmount)}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.confirm),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.confirm),
-          ),
-        ],
-      ),
     );
 
     if (confirmed != true || !mounted) return;
 
     // Create sales using processCart
     try {
-      final success = await ref.read(minibarCartProvider.notifier).processCart();
+      final success =
+          await ref.read(minibarCartProvider.notifier).processCart();
 
       if (mounted) {
         if (success) {
@@ -361,7 +370,9 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           final errorMessage = ref.read(minibarCartProvider).errorMessage;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${l10n.error}: ${errorMessage ?? l10n.unknownError}'),
+              content: Text(
+                '${l10n.error}: ${errorMessage ?? l10n.unknownError}',
+              ),
               backgroundColor: AppColors.error,
             ),
           );

@@ -63,9 +63,9 @@ class TaskCard extends StatelessWidget {
                     child: Text(
                       'P.${task.roomNumber ?? task.room}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   AppSpacing.gapHorizontalSm,
@@ -91,10 +91,12 @@ class TaskCard extends StatelessWidget {
                         AppSpacing.gapHorizontalXs,
                         Text(
                           task.taskType.localizedName(context.l10n),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: task.taskType.color,
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.copyWith(
+                            color: task.taskType.color,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -122,8 +124,8 @@ class TaskCard extends StatelessWidget {
                   Text(
                     dateFormat.format(task.scheduledDate),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   AppSpacing.gapHorizontalMd,
 
@@ -139,8 +141,8 @@ class TaskCard extends StatelessWidget {
                       child: Text(
                         task.assignedToName ?? 'ID: ${task.assignedTo}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                          color: AppColors.textSecondary,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -157,9 +159,9 @@ class TaskCard extends StatelessWidget {
                       child: Text(
                         context.l10n.unassigned,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.warning,
-                              fontSize: 10,
-                            ),
+                          color: AppColors.warning,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                     const Spacer(),
@@ -175,9 +177,9 @@ class TaskCard extends StatelessWidget {
                     AppSpacing.gapHorizontalXs,
                     Text(
                       timeFormat.format(task.completedAt!),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.success,
-                          ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: AppColors.success),
                     ),
                   ],
                 ],
@@ -189,24 +191,25 @@ class TaskCard extends StatelessWidget {
                 Text(
                   task.notes!,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                        fontStyle: FontStyle.italic,
-                      ),
+                    color: AppColors.textSecondary,
+                    fontStyle: FontStyle.italic,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
 
               // Quick actions
-              if (task.status.canAssign ||
-                  task.status.canComplete) ...[
+              if (task.status.canAssign || task.status.canComplete) ...[
                 AppSpacing.gapVerticalSm,
                 const Divider(height: 1),
                 AppSpacing.gapVerticalSm,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    if (task.status.canAssign && task.assignedTo == null && onAssign != null)
+                    if (task.status.canAssign &&
+                        task.assignedTo == null &&
+                        onAssign != null)
                       TextButton.icon(
                         onPressed: onAssign,
                         icon: const Icon(Icons.person_add, size: 16),
@@ -255,26 +258,20 @@ class _StatusBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: status.color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: status.color.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: status.color.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            status.icon,
-            size: 12,
-            color: status.color,
-          ),
+          Icon(status.icon, size: 12, color: status.color),
           AppSpacing.gapHorizontalXs,
           Text(
             status.localizedName(context.l10n),
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: status.color,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                ),
+              color: status.color,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
           ),
         ],
       ),

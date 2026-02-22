@@ -6,7 +6,7 @@ class NightAuditRepository {
   final ApiClient _apiClient;
 
   NightAuditRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   /// Get the base endpoint for night audits
   String get _endpoint => '/night-audits/';
@@ -35,13 +35,20 @@ class NightAuditRepository {
     );
 
     final results = response.data['results'] as List? ?? response.data as List;
-    return results.map((json) => NightAuditListItem.fromJson(json as Map<String, dynamic>)).toList();
+    return results
+        .map(
+          (json) => NightAuditListItem.fromJson(json as Map<String, dynamic>),
+        )
+        .toList();
   }
 
   /// Get audits for a specific month
-  Future<List<NightAuditListItem>> getAuditsForMonth(int year, int month) async {
+  Future<List<NightAuditListItem>> getAuditsForMonth(
+    int year,
+    int month,
+  ) async {
     final startDate = DateTime(year, month, 1);
-    final endDate = DateTime(year, month + 1, 0);  // Last day of month
+    final endDate = DateTime(year, month + 1, 0); // Last day of month
     return getAudits(dateFrom: startDate, dateTo: endDate);
   }
 
@@ -53,10 +60,7 @@ class NightAuditRepository {
 
   /// Create/generate a new night audit for a specific date
   Future<NightAudit> createAudit(NightAuditRequest request) async {
-    final response = await _apiClient.post(
-      _endpoint,
-      data: request.toJson(),
-    );
+    final response = await _apiClient.post(_endpoint, data: request.toJson());
     return NightAudit.fromJson(response.data as Map<String, dynamic>);
   }
 

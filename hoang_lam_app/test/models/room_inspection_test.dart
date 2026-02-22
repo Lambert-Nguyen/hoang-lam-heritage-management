@@ -30,10 +30,7 @@ void main() {
 
   group('ChecklistItem', () {
     test('can be created with required fields', () {
-      final item = ChecklistItem(
-        category: 'bedroom',
-        item: 'Check bed sheets',
-      );
+      final item = ChecklistItem(category: 'bedroom', item: 'Check bed sheets');
 
       expect(item.category, 'bedroom');
       expect(item.item, 'Check bed sheets');

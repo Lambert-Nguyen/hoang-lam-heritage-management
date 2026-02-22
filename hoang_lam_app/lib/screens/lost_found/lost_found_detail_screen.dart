@@ -18,7 +18,8 @@ class LostFoundDetailScreen extends ConsumerStatefulWidget {
   const LostFoundDetailScreen({super.key, required this.itemId});
 
   @override
-  ConsumerState<LostFoundDetailScreen> createState() => _LostFoundDetailScreenState();
+  ConsumerState<LostFoundDetailScreen> createState() =>
+      _LostFoundDetailScreenState();
 }
 
 class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
@@ -34,27 +35,67 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         title: Text(l10n.lostAndFound),
         actions: [
           itemAsync.whenOrNull(
-            data: (item) => PopupMenuButton<String>(
-              onSelected: (value) => _handleMenuAction(value, item),
-              itemBuilder: (context) => [
-                PopupMenuItem(value: 'edit', child: ListTile(leading: const Icon(Icons.edit), title: Text(l10n.edit), contentPadding: EdgeInsets.zero)),
-                if (item.status == LostFoundStatus.found)
-                  PopupMenuItem(value: 'store', child: ListTile(leading: const Icon(Icons.archive), title: Text(context.l10n.storeInStorage), contentPadding: EdgeInsets.zero)),
-                if (item.status == LostFoundStatus.found || item.status == LostFoundStatus.stored)
-                  PopupMenuItem(value: 'claim', child: ListTile(leading: const Icon(Icons.check_circle), title: Text(context.l10n.itemClaimed), contentPadding: EdgeInsets.zero)),
-                if (item.status == LostFoundStatus.stored)
-                  PopupMenuItem(value: 'dispose', child: ListTile(leading: const Icon(Icons.delete_forever), title: Text(context.l10n.disposeItem), contentPadding: EdgeInsets.zero)),
-              ],
-            ),
-          ) ?? const SizedBox.shrink(),
+                data:
+                    (item) => PopupMenuButton<String>(
+                      onSelected: (value) => _handleMenuAction(value, item),
+                      itemBuilder:
+                          (context) => [
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: ListTile(
+                                leading: const Icon(Icons.edit),
+                                title: Text(l10n.edit),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                            if (item.status == LostFoundStatus.found)
+                              PopupMenuItem(
+                                value: 'store',
+                                child: ListTile(
+                                  leading: const Icon(Icons.archive),
+                                  title: Text(context.l10n.storeInStorage),
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            if (item.status == LostFoundStatus.found ||
+                                item.status == LostFoundStatus.stored)
+                              PopupMenuItem(
+                                value: 'claim',
+                                child: ListTile(
+                                  leading: const Icon(Icons.check_circle),
+                                  title: Text(context.l10n.itemClaimed),
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                            if (item.status == LostFoundStatus.stored)
+                              PopupMenuItem(
+                                value: 'dispose',
+                                child: ListTile(
+                                  leading: const Icon(Icons.delete_forever),
+                                  title: Text(context.l10n.disposeItem),
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ),
+                          ],
+                    ),
+              ) ??
+              const SizedBox.shrink(),
         ],
       ),
       body: itemAsync.when(
         data: (item) => _buildContent(item),
         loading: () => const LoadingIndicator(),
-        error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(lostFoundItemByIdProvider(widget.itemId))),
+        error:
+            (e, _) => ErrorDisplay(
+              message: '${l10n.error}: $e',
+              onRetry:
+                  () =>
+                      ref.invalidate(lostFoundItemByIdProvider(widget.itemId)),
+            ),
       ),
-      bottomNavigationBar: itemAsync.whenOrNull(data: (item) => _buildBottomBar(item)),
+      bottomNavigationBar: itemAsync.whenOrNull(
+        data: (item) => _buildBottomBar(item),
+      ),
     );
   }
 
@@ -67,31 +108,71 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-                decoration: BoxDecoration(color: item.status.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(item.status.icon, size: 16, color: item.status.color),
-                  const SizedBox(width: 4),
-                  Text(item.status.localizedName(context.l10n), style: TextStyle(color: item.status.color, fontWeight: FontWeight.bold)),
-                ]),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  color: item.status.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(item.status.icon, size: 16, color: item.status.color),
+                    const SizedBox(width: 4),
+                    Text(
+                      item.status.localizedName(context.l10n),
+                      style: TextStyle(
+                        color: item.status.color,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(width: AppSpacing.sm),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
-                decoration: BoxDecoration(color: item.category.color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
-                child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Icon(item.category.icon, size: 16, color: item.category.color),
-                  const SizedBox(width: 4),
-                  Text(item.category.localizedName(context.l10n), style: TextStyle(color: item.category.color)),
-                ]),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                decoration: BoxDecoration(
+                  color: item.category.color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      item.category.icon,
+                      size: 16,
+                      color: item.category.color,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      item.category.localizedName(context.l10n),
+                      style: TextStyle(color: item.category.color),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(item.itemName, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            item.itemName,
+            style: Theme.of(
+              context,
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: AppSpacing.md),
           if (item.description.isNotEmpty) ...[
-            _SectionCard(title: context.l10n.description, icon: Icons.description, child: Text(item.description)),
+            _SectionCard(
+              title: context.l10n.description,
+              icon: Icons.description,
+              child: Text(item.description),
+            ),
             const SizedBox(height: AppSpacing.md),
           ],
           _SectionCard(
@@ -100,9 +181,18 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (item.roomNumber != null) _InfoRow(label: context.l10n.room, value: item.roomNumber!),
-                if (item.foundLocation.isNotEmpty) _InfoRow(label: context.l10n.foundLocationLabel, value: item.foundLocation),
-                if (item.storageLocation.isNotEmpty) _InfoRow(label: context.l10n.storageLocationLabel, value: item.storageLocation),
+                if (item.roomNumber != null)
+                  _InfoRow(label: context.l10n.room, value: item.roomNumber!),
+                if (item.foundLocation.isNotEmpty)
+                  _InfoRow(
+                    label: context.l10n.foundLocationLabel,
+                    value: item.foundLocation,
+                  ),
+                if (item.storageLocation.isNotEmpty)
+                  _InfoRow(
+                    label: context.l10n.storageLocationLabel,
+                    value: item.storageLocation,
+                  ),
               ],
             ),
           ),
@@ -113,8 +203,15 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _InfoRow(label: context.l10n.foundDateLabel, value: _formatDate(item.foundDate)),
-                if (item.claimedDate != null) _InfoRow(label: context.l10n.claimedDate, value: _formatDate(item.claimedDate!)),
+                _InfoRow(
+                  label: context.l10n.foundDateLabel,
+                  value: _formatDate(item.foundDate),
+                ),
+                if (item.claimedDate != null)
+                  _InfoRow(
+                    label: context.l10n.claimedDate,
+                    value: _formatDate(item.claimedDate!),
+                  ),
               ],
             ),
           ),
@@ -127,7 +224,13 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _InfoRow(label: context.l10n.name, value: item.guestName!),
-                  _InfoRow(label: context.l10n.guestContacted, value: item.guestContacted ? context.l10n.yesLabel : context.l10n.notYetLabel),
+                  _InfoRow(
+                    label: context.l10n.guestContacted,
+                    value:
+                        item.guestContacted
+                            ? context.l10n.yesLabel
+                            : context.l10n.notYetLabel,
+                  ),
                 ],
               ),
             ),
@@ -137,7 +240,13 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
             _SectionCard(
               title: context.l10n.estimatedValueVnd,
               icon: Icons.attach_money,
-              child: Text('${item.estimatedValue!.toStringAsFixed(0)}₫', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)),
+              child: Text(
+                '${item.estimatedValue!.toStringAsFixed(0)}₫',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
             ),
           ],
           const SizedBox(height: AppSpacing.xl),
@@ -147,7 +256,9 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Widget _buildBottomBar(LostFoundItem item) {
-    if (item.status == LostFoundStatus.claimed || item.status == LostFoundStatus.donated || item.status == LostFoundStatus.disposed) {
+    if (item.status == LostFoundStatus.claimed ||
+        item.status == LostFoundStatus.donated ||
+        item.status == LostFoundStatus.disposed) {
       return const SizedBox.shrink();
     }
     return SafeArea(
@@ -156,10 +267,24 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         child: Row(
           children: [
             if (item.status == LostFoundStatus.found) ...[
-              Expanded(child: AppButton(label: context.l10n.storeInStorage, onPressed: _isLoading ? null : () => _storeItem(item), isOutlined: true, icon: Icons.archive)),
+              Expanded(
+                child: AppButton(
+                  label: context.l10n.storeInStorage,
+                  onPressed: _isLoading ? null : () => _storeItem(item),
+                  isOutlined: true,
+                  icon: Icons.archive,
+                ),
+              ),
               const SizedBox(width: AppSpacing.md),
             ],
-            Expanded(child: AppButton(label: context.l10n.itemClaimed, onPressed: _isLoading ? null : () => _claimItem(item), icon: Icons.check_circle, isLoading: _isLoading)),
+            Expanded(
+              child: AppButton(
+                label: context.l10n.itemClaimed,
+                onPressed: _isLoading ? null : () => _claimItem(item),
+                icon: Icons.check_circle,
+                isLoading: _isLoading,
+              ),
+            ),
           ],
         ),
       ),
@@ -180,13 +305,20 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Future<void> _storeItem(LostFoundItem item) async {
-    final location = await _showInputDialog(context.l10n.storageLocationLabel, context.l10n.storageLocationHint);
+    final location = await _showInputDialog(
+      context.l10n.storageLocationLabel,
+      context.l10n.storageLocationHint,
+    );
     if (location == null) return;
     setState(() => _isLoading = true);
     try {
-      final result = await ref.read(lostFoundNotifierProvider.notifier).storeItem(item.id, storageLocation: location);
+      final result = await ref
+          .read(lostFoundNotifierProvider.notifier)
+          .storeItem(item.id, storageLocation: location);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.storedSuccess)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.storedSuccess)));
         ref.invalidate(lostFoundItemByIdProvider(widget.itemId));
       }
     } finally {
@@ -195,13 +327,20 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Future<void> _claimItem(LostFoundItem item) async {
-    final confirmed = await _showConfirmDialog(context.l10n.confirm, context.l10n.confirmGuestClaimed);
+    final confirmed = await _showConfirmDialog(
+      context.l10n.confirm,
+      context.l10n.confirmGuestClaimed,
+    );
     if (confirmed != true) return;
     setState(() => _isLoading = true);
     try {
-      final result = await ref.read(lostFoundNotifierProvider.notifier).claimItem(item.id);
+      final result = await ref
+          .read(lostFoundNotifierProvider.notifier)
+          .claimItem(item.id);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.claimedSuccess)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.claimedSuccess)));
         ref.invalidate(lostFoundItemByIdProvider(widget.itemId));
       }
     } finally {
@@ -210,13 +349,20 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Future<void> _disposeItem(LostFoundItem item) async {
-    final reason = await _showInputDialog(context.l10n.disposeReasonTitle, context.l10n.disposeReasonHint);
+    final reason = await _showInputDialog(
+      context.l10n.disposeReasonTitle,
+      context.l10n.disposeReasonHint,
+    );
     if (reason == null || reason.isEmpty) return;
     setState(() => _isLoading = true);
     try {
-      final result = await ref.read(lostFoundNotifierProvider.notifier).disposeItem(item.id, reason: reason);
+      final result = await ref
+          .read(lostFoundNotifierProvider.notifier)
+          .disposeItem(item.id, reason: reason);
       if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.l10n.disposedSuccess)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(context.l10n.disposedSuccess)));
         ref.invalidate(lostFoundItemByIdProvider(widget.itemId));
       }
     } finally {
@@ -228,14 +374,24 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextField(controller: controller, decoration: InputDecoration(hintText: hint)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.cancel)),
-          ElevatedButton(onPressed: () => Navigator.pop(context, controller.text), child: Text(AppLocalizations.of(context)!.save)),
-        ],
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: Text(title),
+            content: TextField(
+              controller: controller,
+              decoration: InputDecoration(hintText: hint),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(AppLocalizations.of(context)!.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, controller.text),
+                child: Text(AppLocalizations.of(context)!.save),
+              ),
+            ],
+          ),
     ).then((result) {
       controller.dispose();
       return result;
@@ -245,14 +401,21 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   Future<bool?> _showConfirmDialog(String title, String content) {
     return showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(content),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppLocalizations.of(context)!.cancel)),
-          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: Text(AppLocalizations.of(context)!.confirm)),
-        ],
-      ),
+      builder:
+          (context) => AlertDialog(
+            title: Text(title),
+            content: Text(content),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(AppLocalizations.of(context)!.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(AppLocalizations.of(context)!.confirm),
+              ),
+            ],
+          ),
     );
   }
 
@@ -270,7 +433,11 @@ class _SectionCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final Widget child;
-  const _SectionCard({required this.title, required this.icon, required this.child});
+  const _SectionCard({
+    required this.title,
+    required this.icon,
+    required this.child,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -280,11 +447,19 @@ class _SectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(children: [
-              Icon(icon, size: 18, color: AppColors.textSecondary),
-              const SizedBox(width: AppSpacing.sm),
-              Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w600)),
-            ]),
+            Row(
+              children: [
+                Icon(icon, size: 18, color: AppColors.textSecondary),
+                const SizedBox(width: AppSpacing.sm),
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.sm),
             child,
           ],
@@ -305,8 +480,23 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 120, child: Text(label, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary))),
-          Expanded(child: Text(value, style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500))),
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+            ),
+          ),
         ],
       ),
     );

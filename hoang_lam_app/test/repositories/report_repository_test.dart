@@ -198,10 +198,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = OccupancyReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -228,10 +230,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = OccupancyReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -252,10 +256,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = OccupancyReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -279,10 +285,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/revenue/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = RevenueReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -300,19 +308,18 @@ void main() {
     test('getRevenueReport includes minibar revenue', () async {
       final mockResponse = Response(
         data: [
-          _createRevenueReportJson(
-            date: '2024-01-01',
-            minibarRevenue: 75000,
-          ),
+          _createRevenueReportJson(date: '2024-01-01', minibarRevenue: 75000),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/revenue/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = RevenueReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -333,10 +340,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/kpi/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = KPIReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -363,10 +372,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/kpi/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = KPIReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -392,10 +403,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/kpi/'),
       );
 
-      when(mockApiClient.get<Map<String, dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<Map<String, dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = KPIReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -421,10 +434,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/expenses/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = ExpenseReportRequest(
         startDate: DateTime(2024, 1, 1),
@@ -450,10 +465,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/channels/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = ChannelPerformanceRequest(
         startDate: DateTime(2024, 1, 1),
@@ -479,10 +496,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/channels/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = ChannelPerformanceRequest(
         startDate: DateTime(2024, 1, 1),
@@ -499,19 +518,28 @@ void main() {
       final mockResponse = Response(
         data: [
           _createChannelPerformanceJson(
-              source: 'direct', totalRevenue: 30000000),
-          _createChannelPerformanceJson(source: 'agoda', totalRevenue: 20000000),
+            source: 'direct',
+            totalRevenue: 30000000,
+          ),
           _createChannelPerformanceJson(
-              source: 'booking_com', totalRevenue: 25000000),
+            source: 'agoda',
+            totalRevenue: 20000000,
+          ),
+          _createChannelPerformanceJson(
+            source: 'booking_com',
+            totalRevenue: 25000000,
+          ),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/channels/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getTopChannels(
         DateTime(2024, 1, 1),
@@ -536,10 +564,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/demographics/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = GuestDemographicsRequest(
         startDate: DateTime(2024, 1, 1),
@@ -565,10 +595,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/demographics/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getTopNationalities(
         DateTime(2024, 1, 1),
@@ -593,10 +625,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/comparative/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = ComparativeReportRequest(
         currentStart: DateTime(2024, 1, 1),
@@ -613,16 +647,21 @@ void main() {
     test('ComparativeReport improved helper works correctly', () async {
       final mockResponse = Response(
         data: [
-          _createComparativeReportJson(metric: 'revenue', changePercentage: -5.0),
+          _createComparativeReportJson(
+            metric: 'revenue',
+            changePercentage: -5.0,
+          ),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/comparative/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = ComparativeReportRequest(
         currentStart: DateTime(2024, 1, 1),
@@ -646,10 +685,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/comparative/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final request = ComparativeReportRequest(
         currentStart: DateTime(2024, 1, 1),
@@ -676,10 +717,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getAverageOccupancy(
         DateTime(2024, 1, 1),
@@ -696,10 +739,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getAverageOccupancy(
         DateTime(2024, 1, 1),
@@ -719,10 +764,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/revenue/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getTotalRevenue(
         DateTime(2024, 1, 1),
@@ -742,10 +789,12 @@ void main() {
         requestOptions: RequestOptions(path: '/api/v1/reports/expenses/'),
       );
 
-      when(mockApiClient.get<List<dynamic>>(
-        any,
-        queryParameters: anyNamed('queryParameters'),
-      )).thenAnswer((_) async => mockResponse);
+      when(
+        mockApiClient.get<List<dynamic>>(
+          any,
+          queryParameters: anyNamed('queryParameters'),
+        ),
+      ).thenAnswer((_) async => mockResponse);
 
       final result = await repository.getTotalExpenses(
         DateTime(2024, 1, 1),

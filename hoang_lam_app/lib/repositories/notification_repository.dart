@@ -7,7 +7,7 @@ class NotificationRepository {
   final ApiClient _apiClient;
 
   NotificationRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   // ==================== Notifications ====================
 
@@ -89,11 +89,7 @@ class NotificationRepository {
   }) async {
     await _apiClient.post<Map<String, dynamic>>(
       AppConstants.deviceTokenEndpoint,
-      data: {
-        'token': token,
-        'platform': platform,
-        'device_name': deviceName,
-      },
+      data: {'token': token, 'platform': platform, 'device_name': deviceName},
     );
   }
 

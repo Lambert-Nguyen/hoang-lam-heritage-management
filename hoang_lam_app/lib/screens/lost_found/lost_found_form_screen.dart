@@ -19,7 +19,8 @@ class LostFoundFormScreen extends ConsumerStatefulWidget {
   bool get isEditing => itemId != null;
 
   @override
-  ConsumerState<LostFoundFormScreen> createState() => _LostFoundFormScreenState();
+  ConsumerState<LostFoundFormScreen> createState() =>
+      _LostFoundFormScreenState();
 }
 
 class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
@@ -70,7 +71,8 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
     _descriptionController.text = item.description;
     _foundLocationController.text = item.foundLocation;
     _storageLocationController.text = item.storageLocation;
-    _estimatedValueController.text = item.estimatedValue?.toStringAsFixed(0) ?? '';
+    _estimatedValueController.text =
+        item.estimatedValue?.toStringAsFixed(0) ?? '';
     _notesController.text = item.notes;
     _contactNotesController.text = item.contactNotes;
     _selectedCategory = item.category;
@@ -93,14 +95,18 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
             return _buildForm();
           },
           loading: () => const LoadingIndicator(),
-          error: (e, _) => ErrorDisplay(message: '${l10n.error}: $e', onRetry: () => ref.invalidate(lostFoundItemByIdProvider(widget.itemId!))),
+          error:
+              (e, _) => ErrorDisplay(
+                message: '${l10n.error}: $e',
+                onRetry:
+                    () => ref.invalidate(
+                      lostFoundItemByIdProvider(widget.itemId!),
+                    ),
+              ),
         ),
       );
     }
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.add)),
-      body: _buildForm(),
-    );
+    return Scaffold(appBar: AppBar(title: Text(l10n.add)), body: _buildForm());
   }
 
   Widget _buildForm() {
@@ -123,23 +129,57 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                       controller: _itemNameController,
                       label: l10n.itemNameLabel,
                       hint: l10n.itemNameHint,
-                      validator: (v) => v == null || v.isEmpty ? l10n.pleaseEnterName : null,
+                      validator:
+                          (v) =>
+                              v == null || v.isEmpty
+                                  ? l10n.pleaseEnterName
+                                  : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    AppTextField(controller: _descriptionController, label: l10n.description, hint: l10n.describeIssueHint, maxLines: 3),
+                    AppTextField(
+                      controller: _descriptionController,
+                      label: l10n.description,
+                      hint: l10n.describeIssueHint,
+                      maxLines: 3,
+                    ),
                     const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<LostFoundCategory>(
                       value: _selectedCategory,
-                      decoration: InputDecoration(labelText: l10n.category, border: const OutlineInputBorder()),
-                      items: LostFoundCategory.values.map((c) => DropdownMenuItem(value: c, child: Row(children: [Icon(c.icon, size: 20, color: c.color), const SizedBox(width: 8), Text(c.localizedName(context.l10n))]))).toList(),
-                      onChanged: (v) { if (v != null) setState(() => _selectedCategory = v); },
+                      decoration: InputDecoration(
+                        labelText: l10n.category,
+                        border: const OutlineInputBorder(),
+                      ),
+                      items:
+                          LostFoundCategory.values
+                              .map(
+                                (c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Row(
+                                    children: [
+                                      Icon(c.icon, size: 20, color: c.color),
+                                      const SizedBox(width: 8),
+                                      Text(c.localizedName(context.l10n)),
+                                    ],
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (v) {
+                        if (v != null) setState(() => _selectedCategory = v);
+                      },
                     ),
                     const SizedBox(height: AppSpacing.md),
                     InkWell(
                       onTap: _selectDate,
                       child: InputDecorator(
-                        decoration: InputDecoration(labelText: l10n.foundDateLabel, border: const OutlineInputBorder(), suffixIcon: const Icon(Icons.calendar_today)),
-                        child: Text('${_foundDate.day}/${_foundDate.month}/${_foundDate.year}'),
+                        decoration: InputDecoration(
+                          labelText: l10n.foundDateLabel,
+                          border: const OutlineInputBorder(),
+                          suffixIcon: const Icon(Icons.calendar_today),
+                        ),
+                        child: Text(
+                          '${_foundDate.day}/${_foundDate.month}/${_foundDate.year}',
+                        ),
                       ),
                     ),
                   ],
@@ -158,10 +198,18 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                       controller: _foundLocationController,
                       label: l10n.foundLocationLabel,
                       hint: l10n.foundLocationHint,
-                      validator: (v) => v == null || v.isEmpty ? l10n.pleaseEnterValue : null,
+                      validator:
+                          (v) =>
+                              v == null || v.isEmpty
+                                  ? l10n.pleaseEnterValue
+                                  : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    AppTextField(controller: _storageLocationController, label: l10n.storageLocationLabel, hint: l10n.storageLocationHint),
+                    AppTextField(
+                      controller: _storageLocationController,
+                      label: l10n.storageLocationLabel,
+                      hint: l10n.storageLocationHint,
+                    ),
                   ],
                 ),
               ),
@@ -174,8 +222,18 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                 padding: AppSpacing.paddingCard,
                 child: Column(
                   children: [
-                    SwitchListTile(title: Text(l10n.guestContacted), value: _guestContacted, onChanged: (v) => setState(() => _guestContacted = v), contentPadding: EdgeInsets.zero),
-                    if (_guestContacted) AppTextField(controller: _contactNotesController, label: l10n.contactNotes, maxLines: 2),
+                    SwitchListTile(
+                      title: Text(l10n.guestContacted),
+                      value: _guestContacted,
+                      onChanged: (v) => setState(() => _guestContacted = v),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    if (_guestContacted)
+                      AppTextField(
+                        controller: _contactNotesController,
+                        label: l10n.contactNotes,
+                        maxLines: 2,
+                      ),
                   ],
                 ),
               ),
@@ -188,9 +246,17 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                 padding: AppSpacing.paddingCard,
                 child: Column(
                   children: [
-                    AppTextField(controller: _estimatedValueController, label: l10n.estimatedValueVnd, keyboardType: TextInputType.number),
+                    AppTextField(
+                      controller: _estimatedValueController,
+                      label: l10n.estimatedValueVnd,
+                      keyboardType: TextInputType.number,
+                    ),
                     const SizedBox(height: AppSpacing.md),
-                    AppTextField(controller: _notesController, label: l10n.notes, maxLines: 3),
+                    AppTextField(
+                      controller: _notesController,
+                      label: l10n.notes,
+                      maxLines: 3,
+                    ),
                   ],
                 ),
               ),
@@ -213,7 +279,12 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
   }
 
   Future<void> _selectDate() async {
-    final picked = await showDatePicker(context: context, initialDate: _foundDate, firstDate: DateTime(2020), lastDate: DateTime.now());
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _foundDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+    );
     if (picked != null) setState(() => _foundDate = picked);
   }
 
@@ -241,7 +312,9 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
         if (result != null && mounted) {
           final l10n = context.l10n;
           ref.invalidate(lostFoundItemsProvider);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.itemUpdated)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.itemUpdated)));
           context.pop();
         }
       } else {
@@ -261,12 +334,17 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
         if (result != null && mounted) {
           final l10n = context.l10n;
           ref.invalidate(lostFoundItemsProvider);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.itemCreated)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.itemCreated)));
           context.pop();
         }
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+      if (mounted)
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -279,6 +357,11 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold));
+    return Text(
+      title,
+      style: Theme.of(
+        context,
+      ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+    );
   }
 }

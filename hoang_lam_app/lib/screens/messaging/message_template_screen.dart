@@ -32,7 +32,9 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final templatesAsync = ref.watch(templatesByChannelProvider(_selectedChannel.apiValue));
+    final templatesAsync = ref.watch(
+      templatesByChannelProvider(_selectedChannel.apiValue),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -106,7 +108,11 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.article_outlined, size: 64, color: AppColors.mutedAccent),
+                        const Icon(
+                          Icons.article_outlined,
+                          size: 64,
+                          color: AppColors.mutedAccent,
+                        ),
                         const SizedBox(height: 16),
                         Text(l10n.noMessagingTemplates),
                         const SizedBox(height: 16),
@@ -122,13 +128,12 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
 
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                  itemCount: templates.length + 1, // +1 for custom message option
+                  itemCount:
+                      templates.length + 1, // +1 for custom message option
                   itemBuilder: (context, index) {
                     if (index == templates.length) {
                       return ListTile(
-                        leading: const CircleAvatar(
-                          child: Icon(Icons.edit),
-                        ),
+                        leading: const CircleAvatar(child: Icon(Icons.edit)),
                         title: Text(l10n.writeCustomMessage),
                         subtitle: Text(l10n.writeCustomMessageDescription),
                         trailing: const Icon(Icons.chevron_right),
@@ -155,11 +160,13 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
 
   Future<void> _onTemplateSelected(MessageTemplate template) async {
     // Preview the template
-    final preview = await ref.read(messagingNotifierProvider.notifier).previewTemplate(
-      templateId: template.id,
-      guestId: widget.guestId,
-      bookingId: widget.bookingId,
-    );
+    final preview = await ref
+        .read(messagingNotifierProvider.notifier)
+        .previewTemplate(
+          templateId: template.id,
+          guestId: widget.guestId,
+          bookingId: widget.bookingId,
+        );
 
     if (!mounted || preview == null) return;
 
@@ -199,65 +206,69 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(isCustom ? l10n.writeCustomMessage : l10n.messagePreview),
-        content: SingleChildScrollView(
-          child: SizedBox(
-            width: double.maxFinite,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (recipientAddress != null && recipientAddress.isNotEmpty) ...[
-                  Text(
-                    '${l10n.recipient}: $recipientAddress',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(
+              isCustom ? l10n.writeCustomMessage : l10n.messagePreview,
+            ),
+            content: SingleChildScrollView(
+              child: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (recipientAddress != null &&
+                        recipientAddress.isNotEmpty) ...[
+                      Text(
+                        '${l10n.recipient}: $recipientAddress',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-                TextField(
-                  controller: subjectController,
-                  decoration: InputDecoration(
-                    labelText: l10n.subject,
-                    border: const OutlineInputBorder(),
-                  ),
-                  maxLines: 1,
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+                    TextField(
+                      controller: subjectController,
+                      decoration: InputDecoration(
+                        labelText: l10n.subject,
+                        border: const OutlineInputBorder(),
+                      ),
+                      maxLines: 1,
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: bodyController,
+                      decoration: InputDecoration(
+                        labelText: l10n.messageContent,
+                        border: const OutlineInputBorder(),
+                      ),
+                      maxLines: 8,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: bodyController,
-                  decoration: InputDecoration(
-                    labelText: l10n.messageContent,
-                    border: const OutlineInputBorder(),
-                  ),
-                  maxLines: 8,
-                ),
-              ],
+              ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton.icon(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  await _sendMessage(
+                    subject: subjectController.text,
+                    body: bodyController.text,
+                    channel: channel,
+                    templateId: templateId,
+                  );
+                },
+                icon: const Icon(Icons.send, size: 18),
+                label: Text(l10n.send),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton.icon(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await _sendMessage(
-                subject: subjectController.text,
-                body: bodyController.text,
-                channel: channel,
-                templateId: templateId,
-              );
-            },
-            icon: const Icon(Icons.send, size: 18),
-            label: Text(l10n.send),
-          ),
-        ],
-      ),
     ).then((_) {
       subjectController.dispose();
       bodyController.dispose();
@@ -274,28 +285,33 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
 
     GuestMessage? result;
     if (templateId != null) {
-      result = await ref.read(messagingNotifierProvider.notifier).sendFromTemplate(
-        templateId: templateId,
-        guestId: widget.guestId,
-        bookingId: widget.bookingId,
-        subject: subject,
-        body: body,
-        channel: channel.apiValue,
-      );
+      result = await ref
+          .read(messagingNotifierProvider.notifier)
+          .sendFromTemplate(
+            templateId: templateId,
+            guestId: widget.guestId,
+            bookingId: widget.bookingId,
+            subject: subject,
+            body: body,
+            channel: channel.apiValue,
+          );
     } else {
-      result = await ref.read(messagingNotifierProvider.notifier).sendCustomMessage(
-        guestId: widget.guestId,
-        bookingId: widget.bookingId,
-        channel: channel.apiValue,
-        subject: subject,
-        body: body,
-      );
+      result = await ref
+          .read(messagingNotifierProvider.notifier)
+          .sendCustomMessage(
+            guestId: widget.guestId,
+            bookingId: widget.bookingId,
+            channel: channel.apiValue,
+            subject: subject,
+            body: body,
+          );
     }
 
     if (!mounted) return;
 
     if (result != null) {
-      final isSuccess = result.status == MessageStatus.sent ||
+      final isSuccess =
+          result.status == MessageStatus.sent ||
           result.status == MessageStatus.delivered;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

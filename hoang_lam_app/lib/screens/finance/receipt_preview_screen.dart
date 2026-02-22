@@ -24,7 +24,8 @@ class ReceiptPreviewScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ReceiptPreviewScreen> createState() => _ReceiptPreviewScreenState();
+  ConsumerState<ReceiptPreviewScreen> createState() =>
+      _ReceiptPreviewScreenState();
 }
 
 class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
@@ -84,15 +85,23 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
     buffer.writeln('${l10n.checkIn}: ${_formatDate(receipt.checkInDate)}');
     buffer.writeln('${l10n.checkOut}: ${_formatDate(receipt.checkOutDate)}');
     buffer.writeln('${l10n.nights}: ${receipt.numberOfNights}');
-    buffer.writeln('${l10n.ratePerNight}: ${_formatAmount(receipt.nightlyRate)}');
+    buffer.writeln(
+      '${l10n.ratePerNight}: ${_formatAmount(receipt.nightlyRate)}',
+    );
     buffer.writeln();
     buffer.writeln('--- ${l10n.expense} ---');
     buffer.writeln('${l10n.room}: ${_formatAmount(receipt.roomCharges)}');
     if (receipt.additionalCharges > 0) {
-      buffer.writeln('${l10n.total}: ${_formatAmount(receipt.additionalCharges)}');
+      buffer.writeln(
+        '${l10n.total}: ${_formatAmount(receipt.additionalCharges)}',
+      );
     }
-    buffer.writeln('${l10n.totalAmount}: ${_formatAmount(receipt.totalAmount)}');
-    buffer.writeln('${l10n.depositPaid}: ${_formatAmount(receipt.depositPaid)}');
+    buffer.writeln(
+      '${l10n.totalAmount}: ${_formatAmount(receipt.totalAmount)}',
+    );
+    buffer.writeln(
+      '${l10n.depositPaid}: ${_formatAmount(receipt.depositPaid)}',
+    );
     buffer.writeln('${l10n.balanceDue}: ${_formatAmount(receipt.balanceDue)}');
 
     return buffer.toString();
@@ -104,7 +113,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
     try {
       final receiptText = _buildReceiptText();
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/receipt_${_receipt!.receiptNumber}.txt');
+      final file = File(
+        '${directory.path}/receipt_${_receipt!.receiptNumber}.txt',
+      );
       await file.writeAsString(receiptText);
 
       if (mounted) {
@@ -114,9 +125,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
       }
     }
   }
@@ -127,7 +138,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
     try {
       final receiptText = _buildReceiptText();
       final directory = await getTemporaryDirectory();
-      final file = File('${directory.path}/receipt_${_receipt!.receiptNumber}.txt');
+      final file = File(
+        '${directory.path}/receipt_${_receipt!.receiptNumber}.txt',
+      );
       await file.writeAsString(receiptText);
 
       await SharePlus.instance.share(
@@ -138,9 +151,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
       }
     }
   }
@@ -200,16 +213,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: theme.colorScheme.error,
-            ),
+            Icon(Icons.error_outline, size: 64, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text(
-              l10n.dataLoadError,
-              style: theme.textTheme.titleMedium,
-            ),
+            Text(l10n.dataLoadError, style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(
               _error!,
@@ -286,7 +292,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: theme.colorScheme.primaryContainer,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(8),
+              ),
             ),
             child: Column(
               children: [
@@ -314,7 +322,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
                 Text(
                   '${l10n.selectDate}: ${_formatDate(receipt.receiptDate)}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                    color: theme.colorScheme.onPrimaryContainer.withValues(
+                      alpha: 0.8,
+                    ),
                   ),
                 ),
               ],
@@ -335,19 +345,41 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
                 ]),
                 const Divider(height: 24),
                 _buildInfoSection(theme, l10n.bookingInfo, [
-                  _buildInfoRow('${l10n.checkIn}:', _formatDate(receipt.checkInDate)),
-                  _buildInfoRow('${l10n.checkOut}:', _formatDate(receipt.checkOutDate)),
+                  _buildInfoRow(
+                    '${l10n.checkIn}:',
+                    _formatDate(receipt.checkInDate),
+                  ),
+                  _buildInfoRow(
+                    '${l10n.checkOut}:',
+                    _formatDate(receipt.checkOutDate),
+                  ),
                   _buildInfoRow('${l10n.nights}:', '${receipt.numberOfNights}'),
-                  _buildInfoRow('${l10n.ratePerNight}:', _formatAmount(receipt.nightlyRate)),
+                  _buildInfoRow(
+                    '${l10n.ratePerNight}:',
+                    _formatAmount(receipt.nightlyRate),
+                  ),
                 ]),
                 const Divider(height: 24),
                 _buildInfoSection(theme, l10n.expense, [
-                  _buildInfoRow('${l10n.room}:', _formatAmount(receipt.roomCharges)),
+                  _buildInfoRow(
+                    '${l10n.room}:',
+                    _formatAmount(receipt.roomCharges),
+                  ),
                   if (receipt.additionalCharges > 0)
-                    _buildInfoRow('${l10n.total}:', _formatAmount(receipt.additionalCharges)),
+                    _buildInfoRow(
+                      '${l10n.total}:',
+                      _formatAmount(receipt.additionalCharges),
+                    ),
                   const Divider(height: 8),
-                  _buildInfoRow('${l10n.totalAmount}:', _formatAmount(receipt.totalAmount), bold: true),
-                  _buildInfoRow('${l10n.depositPaid}:', _formatAmount(receipt.depositPaid)),
+                  _buildInfoRow(
+                    '${l10n.totalAmount}:',
+                    _formatAmount(receipt.totalAmount),
+                    bold: true,
+                  ),
+                  _buildInfoRow(
+                    '${l10n.depositPaid}:',
+                    _formatAmount(receipt.depositPaid),
+                  ),
                   _buildInfoRow(
                     '${l10n.balanceDue}:',
                     _formatAmount(receipt.balanceDue),
@@ -364,7 +396,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(8)),
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(8),
+              ),
             ),
             child: Text(
               l10n.success,
@@ -380,7 +414,11 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
     );
   }
 
-  Widget _buildInfoSection(ThemeData theme, String title, List<Widget> children) {
+  Widget _buildInfoSection(
+    ThemeData theme,
+    String title,
+    List<Widget> children,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -397,29 +435,33 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value, {bool bold = false, bool highlight = false}) {
-    return Builder(builder: (context) {
-      final theme = Theme.of(context);
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.bodyMedium,
-            ),
-            Text(
-              value,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: bold ? FontWeight.bold : null,
-                color: highlight ? AppColors.error : null,
+  Widget _buildInfoRow(
+    String label,
+    String value, {
+    bool bold = false,
+    bool highlight = false,
+  }) {
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(label, style: theme.textTheme.bodyMedium),
+              Text(
+                value,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: bold ? FontWeight.bold : null,
+                  color: highlight ? AppColors.error : null,
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    });
+            ],
+          ),
+        );
+      },
+    );
   }
 
   String _formatDate(DateTime date) {
@@ -428,9 +470,6 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
 
   String _formatAmount(double amount) {
     final symbol = _selectedCurrency == 'VND' ? '₫' : _selectedCurrency;
-    return '${amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (match) => '${match[1]},',
-    )} $symbol';
+    return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (match) => '${match[1]},')} $symbol';
   }
 }

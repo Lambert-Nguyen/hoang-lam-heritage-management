@@ -84,7 +84,6 @@ extension GroupBookingStatusX on GroupBookingStatus {
     }
   }
 
-
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case GroupBookingStatus.tentative:

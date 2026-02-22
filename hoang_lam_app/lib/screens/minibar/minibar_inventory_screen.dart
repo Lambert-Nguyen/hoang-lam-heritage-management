@@ -55,26 +55,21 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: [
-            Tab(text: l10n.productTab),
-            Tab(text: l10n.history),
-          ],
+          tabs: [Tab(text: l10n.productTab), Tab(text: l10n.history)],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          _buildItemsTab(),
-          _buildSalesHistoryTab(),
-        ],
+        children: [_buildItemsTab(), _buildSalesHistoryTab()],
       ),
-      floatingActionButton: _tabController.index == 0
-          ? FloatingActionButton(
-              onPressed: _addNewItem,
-              tooltip: AppLocalizations.of(context)!.addProduct,
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButton:
+          _tabController.index == 0
+              ? FloatingActionButton(
+                onPressed: _addNewItem,
+                tooltip: AppLocalizations.of(context)!.addProduct,
+                child: const Icon(Icons.add),
+              )
+              : null,
     );
   }
 
@@ -101,15 +96,16 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
               hintText: AppLocalizations.of(context)!.searchProducts,
               prefixIcon: const Icon(Icons.search),
               border: const OutlineInputBorder(),
-              suffixIcon: _searchController.text.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {});
-                      },
-                    )
-                  : null,
+              suffixIcon:
+                  _searchController.text.isNotEmpty
+                      ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {});
+                        },
+                      )
+                      : null,
             ),
             onChanged: (_) => setState(() {}),
           ),
@@ -120,11 +116,12 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
           child: itemsAsync.when(
             data: (items) => _buildItemsList(items),
             loading: () => const LoadingIndicator(),
-            error: (error, _) => EmptyState(
-              icon: Icons.error_outline,
-              title: context.l10n.error,
-              subtitle: error.toString(),
-            ),
+            error:
+                (error, _) => EmptyState(
+                  icon: Icons.error_outline,
+                  title: context.l10n.error,
+                  subtitle: error.toString(),
+                ),
           ),
         ),
       ],
@@ -172,10 +169,11 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     // Filter by search
     if (_searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
-      filteredItems = filteredItems.where((item) {
-        return item.name.toLowerCase().contains(query) ||
-            item.category.toLowerCase().contains(query);
-      }).toList();
+      filteredItems =
+          filteredItems.where((item) {
+            return item.name.toLowerCase().contains(query) ||
+                item.category.toLowerCase().contains(query);
+          }).toList();
     }
 
     if (filteredItems.isEmpty) {
@@ -189,7 +187,8 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     // Group by category
     final groupedItems = <String, List<MinibarItem>>{};
     for (final item in filteredItems) {
-      final category = item.category.isNotEmpty ? item.category : context.l10n.otherCategory;
+      final category =
+          item.category.isNotEmpty ? item.category : context.l10n.otherCategory;
       groupedItems.putIfAbsent(category, () => []).add(item);
     }
 
@@ -217,15 +216,15 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
                     Text(
                       category,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapHorizontalSm,
                     Text(
                       '(${categoryItems.length})',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -294,10 +293,8 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
                       children: [
                         Text(
                           date,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         Text(
                           NumberFormat.currency(
@@ -305,20 +302,19 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
                             symbol: '₫',
                             decimalDigits: 0,
                           ).format(totalAmount),
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          style: Theme.of(
+                            context,
+                          ).textTheme.titleMedium?.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
                   ),
 
                   // Sales list
-                  ...dateSales.map(
-                    (sale) => _buildSaleListTile(sale),
-                  ),
+                  ...dateSales.map((sale) => _buildSaleListTile(sale)),
                 ],
               );
             },
@@ -326,11 +322,12 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
         );
       },
       loading: () => const LoadingIndicator(),
-      error: (error, _) => EmptyState(
-        icon: Icons.error_outline,
-        title: context.l10n.error,
-        subtitle: error.toString(),
-      ),
+      error:
+          (error, _) => EmptyState(
+            icon: Icons.error_outline,
+            title: context.l10n.error,
+            subtitle: error.toString(),
+          ),
     );
   }
 
@@ -344,9 +341,10 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: sale.isCharged
-            ? AppColors.success.withValues(alpha: 0.1)
-            : AppColors.warning.withValues(alpha: 0.1),
+        backgroundColor:
+            sale.isCharged
+                ? AppColors.success.withValues(alpha: 0.1)
+                : AppColors.warning.withValues(alpha: 0.1),
         child: Icon(
           sale.isCharged ? Icons.check : Icons.pending,
           color: sale.isCharged ? AppColors.success : AppColors.warning,
@@ -367,10 +365,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
           if (sale.isCharged)
             Text(
               context.l10n.charged,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.success,
-              ),
+              style: TextStyle(fontSize: 12, color: AppColors.success),
             ),
         ],
       ),
@@ -381,9 +376,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
   void _addNewItem() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const MinibarItemFormScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const MinibarItemFormScreen()),
     );
   }
 
@@ -412,56 +405,65 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
   void _showSaleDetails(MinibarSale sale) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(sale.itemName ?? context.l10n.saleDetails),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDetailRow(context.l10n.roomLabel, sale.bookingRoomNumber ?? '-'),
-            _buildDetailRow(context.l10n.guestLabel, sale.bookingGuestName ?? '-'),
-            _buildDetailRow(context.l10n.quantity, '${sale.quantity}'),
-            _buildDetailRow(
-              context.l10n.unitPrice,
-              NumberFormat.currency(
-                locale: 'vi_VN',
-                symbol: '₫',
-                decimalDigits: 0,
-              ).format(sale.unitPrice),
+      builder:
+          (context) => AlertDialog(
+            title: Text(sale.itemName ?? context.l10n.saleDetails),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDetailRow(
+                  context.l10n.roomLabel,
+                  sale.bookingRoomNumber ?? '-',
+                ),
+                _buildDetailRow(
+                  context.l10n.guestLabel,
+                  sale.bookingGuestName ?? '-',
+                ),
+                _buildDetailRow(context.l10n.quantity, '${sale.quantity}'),
+                _buildDetailRow(
+                  context.l10n.unitPrice,
+                  NumberFormat.currency(
+                    locale: 'vi_VN',
+                    symbol: '₫',
+                    decimalDigits: 0,
+                  ).format(sale.unitPrice),
+                ),
+                _buildDetailRow(
+                  context.l10n.totalPrice,
+                  NumberFormat.currency(
+                    locale: 'vi_VN',
+                    symbol: '₫',
+                    decimalDigits: 0,
+                  ).format(sale.total),
+                ),
+                _buildDetailRow(
+                  context.l10n.statusLabel,
+                  sale.isCharged
+                      ? context.l10n.charged
+                      : context.l10n.notCharged,
+                ),
+                _buildDetailRow(
+                  context.l10n.timeLabel,
+                  DateFormat('HH:mm dd/MM/yyyy').format(sale.date),
+                ),
+              ],
             ),
-            _buildDetailRow(
-              context.l10n.totalPrice,
-              NumberFormat.currency(
-                locale: 'vi_VN',
-                symbol: '₫',
-                decimalDigits: 0,
-              ).format(sale.total),
-            ),
-            _buildDetailRow(
-              context.l10n.statusLabel,
-              sale.isCharged ? context.l10n.charged : context.l10n.notCharged,
-            ),
-            _buildDetailRow(
-              context.l10n.timeLabel,
-              DateFormat('HH:mm dd/MM/yyyy').format(sale.date),
-            ),
-          ],
-        ),
-        actions: [
-          if (!sale.isCharged)
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-                await _markSaleCharged(sale);
-              },
-              child: Text(context.l10n.markAsCharged),
-            ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(context.l10n.closeButton),
+            actions: [
+              if (!sale.isCharged)
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await _markSaleCharged(sale);
+                  },
+                  child: Text(context.l10n.markAsCharged),
+                ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(context.l10n.closeButton),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -471,10 +473,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(color: AppColors.textSecondary),
-          ),
+          Text(label, style: const TextStyle(color: AppColors.textSecondary)),
           Text(value, style: const TextStyle(fontWeight: FontWeight.w500)),
         ],
       ),

@@ -12,10 +12,7 @@ import '../../models/finance.dart';
 class FinanceChart extends ConsumerWidget {
   final List<DailyTotals> dailyTotals;
 
-  const FinanceChart({
-    super.key,
-    required this.dailyTotals,
-  });
+  const FinanceChart({super.key, required this.dailyTotals});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,10 +45,7 @@ class FinanceChart extends ConsumerWidget {
               AppSpacing.gapHorizontalSm,
               Text(
                 context.l10n.incomeExpenseChart,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -71,14 +65,15 @@ class FinanceChart extends ConsumerWidget {
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (group) =>
-                        AppColors.surface.withValues(alpha: 0.9),
+                    getTooltipColor:
+                        (group) => AppColors.surface.withValues(alpha: 0.9),
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final isIncome = rodIndex == 0;
                       return BarTooltipItem(
                         '${isIncome ? context.l10n.incomeLabel : context.l10n.expenseShort}: ${_formatCurrency(rod.toY)}',
                         TextStyle(
-                          color: isIncome ? AppColors.income : AppColors.expense,
+                          color:
+                              isIncome ? AppColors.income : AppColors.expense,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -133,10 +128,11 @@ class FinanceChart extends ConsumerWidget {
                   show: true,
                   drawVerticalLine: false,
                   horizontalInterval: _getMaxY(weeklyData) / 4,
-                  getDrawingHorizontalLine: (value) => FlLine(
-                    color: AppColors.border.withValues(alpha: 0.5),
-                    strokeWidth: 1,
-                  ),
+                  getDrawingHorizontalLine:
+                      (value) => FlLine(
+                        color: AppColors.border.withValues(alpha: 0.5),
+                        strokeWidth: 1,
+                      ),
                 ),
                 barGroups: _buildBarGroups(weeklyData),
               ),
@@ -174,10 +170,7 @@ class FinanceChart extends ConsumerWidget {
         AppSpacing.gapHorizontalXs,
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],
     );
@@ -196,7 +189,7 @@ class FinanceChart extends ConsumerWidget {
     for (final summary in sorted) {
       final date = DateTime.tryParse(summary.day);
       if (date == null) continue;
-      
+
       final weekNum = _getWeekOfMonth(date);
       if (!weekMap.containsKey(weekNum)) {
         weekMap[weekNum] = _WeeklyData(

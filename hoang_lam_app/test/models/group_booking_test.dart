@@ -221,10 +221,7 @@ void main() {
 
   group('GroupBookingUpdate', () {
     test('toJson includes only set fields', () {
-      final update = GroupBookingUpdate(
-        name: 'Updated Name',
-        guestCount: 8,
-      );
+      final update = GroupBookingUpdate(name: 'Updated Name', guestCount: 8);
 
       final json = update.toJson();
       expect(json['name'], 'Updated Name');

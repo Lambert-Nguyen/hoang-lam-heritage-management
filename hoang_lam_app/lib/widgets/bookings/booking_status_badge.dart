@@ -4,7 +4,7 @@ import '../../models/booking.dart';
 import '../../core/theme/app_colors.dart';
 
 /// Booking Status Badge Widget - Displays booking status with color coding
-/// 
+///
 /// Status colors:
 /// - Pending: Orange (awaiting confirmation/payment)
 /// - Confirmed: Blue (confirmed, not yet checked in)
@@ -38,11 +38,7 @@ class BookingStatusBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            statusInfo.icon,
-            size: compact ? 12 : 14,
-            color: Colors.white,
-          ),
+          Icon(statusInfo.icon, size: compact ? 12 : 14, color: Colors.white),
           if (!compact) ...[
             const SizedBox(width: 4),
             Text(
@@ -59,7 +55,10 @@ class BookingStatusBadge extends StatelessWidget {
     );
   }
 
-  ({String label, IconData icon, Color color}) _getStatusInfo(BuildContext context, BookingStatus status) {
+  ({String label, IconData icon, Color color}) _getStatusInfo(
+    BuildContext context,
+    BookingStatus status,
+  ) {
     switch (status) {
       case BookingStatus.pending:
         return (
@@ -105,10 +104,7 @@ class BookingStatusBadge extends StatelessWidget {
 class BookingStatusChip extends StatelessWidget {
   final BookingStatus status;
 
-  const BookingStatusChip({
-    super.key,
-    required this.status,
-  });
+  const BookingStatusChip({super.key, required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -123,11 +119,7 @@ class BookingStatusChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            statusInfo.icon,
-            size: 24,
-            color: Colors.white,
-          ),
+          Icon(statusInfo.icon, size: 24, color: Colors.white),
           const SizedBox(width: 8),
           Text(
             statusInfo.label.toUpperCase(),
@@ -142,7 +134,10 @@ class BookingStatusChip extends StatelessWidget {
     );
   }
 
-  ({String label, IconData icon, Color color}) _getStatusInfo(BuildContext context, BookingStatus status) {
+  ({String label, IconData icon, Color color}) _getStatusInfo(
+    BuildContext context,
+    BookingStatus status,
+  ) {
     switch (status) {
       case BookingStatus.pending:
         return (

@@ -18,10 +18,7 @@ import '../../widgets/common/app_text_field.dart';
 class TaskFormScreen extends ConsumerStatefulWidget {
   final HousekeepingTask? task;
 
-  const TaskFormScreen({
-    super.key,
-    this.task,
-  });
+  const TaskFormScreen({super.key, this.task});
 
   bool get isEditing => task != null;
 
@@ -77,19 +74,20 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                     Text(
                       l10n.room,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     roomsAsync.when(
                       data: (rooms) => _buildRoomDropdown(rooms),
-                      loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      error: (_, __) => Text(
-                        l10n.cannotLoadRoomList,
-                        style: TextStyle(color: AppColors.error),
-                      ),
+                      loading:
+                          () =>
+                              const Center(child: CircularProgressIndicator()),
+                      error:
+                          (_, __) => Text(
+                            l10n.cannotLoadRoomList,
+                            style: TextStyle(color: AppColors.error),
+                          ),
                     ),
                   ],
                 ),
@@ -104,8 +102,8 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                     Text(
                       l10n.taskType,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     _buildTaskTypeSelector(),
@@ -122,8 +120,8 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                     Text(
                       l10n.scheduledDate,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     _buildDatePicker(),
@@ -140,8 +138,8 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                     Text(
                       l10n.notes,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     AppSpacing.gapVerticalMd,
                     AppTextField(
@@ -174,12 +172,15 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     final l10n = AppLocalizations.of(context)!;
     return AppDropdown<int>(
       value: _selectedRoomId,
-      items: rooms
-          .map((room) => DropdownMenuItem(
-                value: room.id,
-                child: Text('${l10n.room} ${room.number}'),
-              ))
-          .toList(),
+      items:
+          rooms
+              .map(
+                (room) => DropdownMenuItem(
+                  value: room.id,
+                  child: Text('${l10n.room} ${room.number}'),
+                ),
+              )
+              .toList(),
       onChanged: (value) {
         setState(() {
           _selectedRoomId = value;
@@ -199,51 +200,55 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
-      children: HousekeepingTaskType.values.map((type) {
-        final isSelected = type == _selectedTaskType;
-        return InkWell(
-          onTap: () {
-            setState(() {
-              _selectedTaskType = type;
-            });
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? type.color.withValues(alpha: 0.2)
-                  : Colors.transparent,
+      children:
+          HousekeepingTaskType.values.map((type) {
+            final isSelected = type == _selectedTaskType;
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  _selectedTaskType = type;
+                });
+              },
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? type.color : AppColors.divider,
-                width: isSelected ? 2 : 1,
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  type.icon,
-                  size: 20,
-                  color: isSelected ? type.color : AppColors.textSecondary,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
                 ),
-                AppSpacing.gapHorizontalSm,
-                Text(
-                  type.localizedName(context.l10n),
-                  style: TextStyle(
-                    color: isSelected ? type.color : AppColors.textSecondary,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? type.color.withValues(alpha: 0.2)
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected ? type.color : AppColors.divider,
+                    width: isSelected ? 2 : 1,
                   ),
                 ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      type.icon,
+                      size: 20,
+                      color: isSelected ? type.color : AppColors.textSecondary,
+                    ),
+                    AppSpacing.gapHorizontalSm,
+                    Text(
+                      type.localizedName(context.l10n),
+                      style: TextStyle(
+                        color:
+                            isSelected ? type.color : AppColors.textSecondary,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 
@@ -261,20 +266,14 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
         ),
         child: Row(
           children: [
-            Icon(
-              Icons.calendar_today,
-              color: AppColors.primary,
-            ),
+            Icon(Icons.calendar_today, color: AppColors.primary),
             AppSpacing.gapHorizontalMd,
             Text(
               dateFormat.format(_selectedDate),
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const Spacer(),
-            Icon(
-              Icons.arrow_drop_down,
-              color: AppColors.textSecondary,
-            ),
+            Icon(Icons.arrow_drop_down, color: AppColors.textSecondary),
           ],
         ),
       ),
@@ -303,9 +302,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
 
     if (_selectedRoomId == null) {
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseSelectRoom)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseSelectRoom)));
       return;
     }
 
@@ -318,13 +317,15 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
 
       HousekeepingTask? result;
       // Format date as YYYY-MM-DD string for API
-      final formattedDate = '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
+      final formattedDate =
+          '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}';
 
       if (widget.isEditing) {
         result = await notifier.updateTask(
           widget.task!.id,
           HousekeepingTaskUpdate(
-            notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+            notes:
+                _notesController.text.isNotEmpty ? _notesController.text : null,
           ),
         );
       } else {
@@ -333,7 +334,8 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
             room: _selectedRoomId!,
             taskType: _selectedTaskType.apiValue,
             scheduledDate: formattedDate,
-            notes: _notesController.text.isNotEmpty ? _notesController.text : null,
+            notes:
+                _notesController.text.isNotEmpty ? _notesController.text : null,
           ),
         );
       }
@@ -348,9 +350,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              widget.isEditing
-                  ? l10n.taskUpdated
-                  : l10n.newTaskCreated,
+              widget.isEditing ? l10n.taskUpdated : l10n.newTaskCreated,
             ),
           ),
         );

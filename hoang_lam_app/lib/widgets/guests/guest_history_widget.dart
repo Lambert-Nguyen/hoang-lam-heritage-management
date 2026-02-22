@@ -62,9 +62,9 @@ class GuestHistoryWidget extends ConsumerWidget {
         AppSpacing.gapHorizontalSm,
         Text(
           context.l10n.bookingHistory,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         const Spacer(),
         Container(
@@ -76,9 +76,9 @@ class GuestHistoryWidget extends ConsumerWidget {
           child: Text(
             '${history.totalBookings} ${context.l10n.timesCount}',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ],
@@ -94,17 +94,13 @@ class GuestHistoryWidget extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          Icon(
-            Icons.hotel_outlined,
-            size: 48,
-            color: AppColors.textHint,
-          ),
+          Icon(Icons.hotel_outlined, size: 48, color: AppColors.textHint),
           AppSpacing.gapVerticalSm,
           Text(
             context.l10n.noHistory,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -124,9 +120,9 @@ class GuestHistoryWidget extends ConsumerWidget {
           AppSpacing.gapVerticalSm,
           Text(
             context.l10n.dataLoadError,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.error,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.error),
           ),
           AppSpacing.gapVerticalSm,
           TextButton.icon(
@@ -164,8 +160,10 @@ class _BookingHistoryCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
@@ -173,9 +171,9 @@ class _BookingHistoryCard extends StatelessWidget {
                   child: Text(
                     '${context.l10n.room} ${booking.roomNumber}',
                     style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 AppSpacing.gapHorizontalSm,
@@ -183,8 +181,8 @@ class _BookingHistoryCard extends StatelessWidget {
                   Text(
                     booking.roomTypeName!,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 const Spacer(),
                 _buildStatusBadge(context),
@@ -205,8 +203,10 @@ class _BookingHistoryCard extends StatelessWidget {
                 ),
                 AppSpacing.gapHorizontalSm,
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surfaceVariant,
                     borderRadius: BorderRadius.circular(4),
@@ -214,9 +214,9 @@ class _BookingHistoryCard extends StatelessWidget {
                   child: Text(
                     '$nights ${context.l10n.nights}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
-                        ),
+                      color: AppColors.textSecondary,
+                      fontSize: 11,
+                    ),
                   ),
                 ),
               ],
@@ -227,15 +227,17 @@ class _BookingHistoryCard extends StatelessWidget {
                 Text(
                   _formatCurrency(booking.totalAmount),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const Spacer(),
                 if (booking.isPaid)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.successBackground,
                       borderRadius: BorderRadius.circular(12),
@@ -243,23 +245,26 @@ class _BookingHistoryCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.check_circle,
-                            size: 14, color: AppColors.success),
+                        const Icon(
+                          Icons.check_circle,
+                          size: 14,
+                          color: AppColors.success,
+                        ),
                         AppSpacing.gapHorizontalXs,
                         Text(
                           context.l10n.paid,
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: AppColors.success,
-                                  ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: AppColors.success),
                         ),
                       ],
                     ),
                   )
                 else
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.warningBackground,
                       borderRadius: BorderRadius.circular(12),
@@ -267,15 +272,16 @@ class _BookingHistoryCard extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.pending,
-                            size: 14, color: AppColors.warning),
+                        const Icon(
+                          Icons.pending,
+                          size: 14,
+                          color: AppColors.warning,
+                        ),
                         AppSpacing.gapHorizontalXs,
                         Text(
                           context.l10n.unpaid,
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: AppColors.warning,
-                                  ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: AppColors.warning),
                         ),
                       ],
                     ),
@@ -299,14 +305,17 @@ class _BookingHistoryCard extends StatelessWidget {
       child: Text(
         booking.statusDisplay ?? statusInfo.label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: statusInfo.color,
-              fontWeight: FontWeight.w500,
-            ),
+          color: statusInfo.color,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
 
-  ({Color color, String label}) _getStatusInfo(BuildContext context, String status) {
+  ({Color color, String label}) _getStatusInfo(
+    BuildContext context,
+    String status,
+  ) {
     switch (status) {
       case 'pending':
         return (color: AppColors.warning, label: context.l10n.statusPending);
@@ -315,7 +324,10 @@ class _BookingHistoryCard extends StatelessWidget {
       case 'checked_in':
         return (color: AppColors.success, label: context.l10n.statusCheckedIn);
       case 'checked_out':
-        return (color: AppColors.textSecondary, label: context.l10n.statusCheckedOut);
+        return (
+          color: AppColors.textSecondary,
+          label: context.l10n.statusCheckedOut,
+        );
       case 'cancelled':
         return (color: AppColors.error, label: context.l10n.statusCancelled);
       case 'no_show':
@@ -327,9 +339,9 @@ class _BookingHistoryCard extends StatelessWidget {
 
   String _formatCurrency(int amount) {
     final formatted = amount.toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (Match m) => '${m[1]}.',
-        );
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match m) => '${m[1]}.',
+    );
     return '${formatted}đ';
   }
 }
@@ -361,13 +373,11 @@ class GuestStatsSummary extends StatelessWidget {
   }
 
   /// Convenience constructor that accepts a guest directly
-  GuestStatsSummary.guest({
-    super.key,
-    required Guest guest,
-  })  : totalStays = guest.totalStays,
-        totalBookings = guest.bookingCount,
-        totalSpent = 0,
-        isVip = guest.isVip;
+  GuestStatsSummary.guest({super.key, required Guest guest})
+    : totalStays = guest.totalStays,
+      totalBookings = guest.bookingCount,
+      totalSpent = 0,
+      isVip = guest.isVip;
 
   @override
   Widget build(BuildContext context) {
@@ -428,26 +438,22 @@ class GuestStatsSummary extends StatelessWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: valueColor ?? AppColors.textPrimary,
-              ),
+            fontWeight: FontWeight.bold,
+            color: valueColor ?? AppColors.textPrimary,
+          ),
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
   }
 
   Widget _buildDivider() {
-    return Container(
-      height: 40,
-      width: 1,
-      color: AppColors.divider,
-    );
+    return Container(height: 40, width: 1, color: AppColors.divider);
   }
 
   String _formatCurrency(int amount) {

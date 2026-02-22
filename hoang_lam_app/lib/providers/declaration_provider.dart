@@ -27,7 +27,7 @@ class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
   final DeclarationRepository _repository;
 
   DeclarationExportNotifier(this._repository)
-      : super(const DeclarationExportState.initial());
+    : super(const DeclarationExportState.initial());
 
   /// Export declaration for date range
   Future<void> export({
@@ -47,9 +47,7 @@ class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
       );
       state = DeclarationExportState.success(filePath: filePath);
     } catch (e) {
-      state = DeclarationExportState.error(
-        message: e.toString(),
-      );
+      state = DeclarationExportState.error(message: e.toString());
     }
   }
 
@@ -61,8 +59,9 @@ class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
 
 /// Provider for declaration export notifier
 final declarationExportProvider =
-    StateNotifierProvider<DeclarationExportNotifier, DeclarationExportState>(
-        (ref) {
-  final repository = ref.watch(declarationRepositoryProvider);
-  return DeclarationExportNotifier(repository);
-});
+    StateNotifierProvider<DeclarationExportNotifier, DeclarationExportState>((
+      ref,
+    ) {
+      final repository = ref.watch(declarationRepositoryProvider);
+      return DeclarationExportNotifier(repository);
+    });

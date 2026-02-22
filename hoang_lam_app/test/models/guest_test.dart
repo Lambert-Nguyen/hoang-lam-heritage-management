@@ -164,8 +164,10 @@ void main() {
       );
 
       final now = DateTime.now();
-      final expectedAge = now.year - 1990 -
-        (now.month < 6 || (now.month == 6 && now.day < 15) ? 1 : 0);
+      final expectedAge =
+          now.year -
+          1990 -
+          (now.month < 6 || (now.month == 6 && now.day < 15) ? 1 : 0);
 
       expect(guestWithBirthday.age, expectedAge);
     });
@@ -179,20 +181,12 @@ void main() {
     });
 
     test('formattedPhone formats 11-digit phone correctly', () {
-      const guest11Digit = Guest(
-        id: 2,
-        fullName: 'Test',
-        phone: '02812345678',
-      );
+      const guest11Digit = Guest(id: 2, fullName: 'Test', phone: '02812345678');
       expect(guest11Digit.formattedPhone, '0281 2345 678');
     });
 
     test('formattedPhone returns original for non-standard length', () {
-      const guestShortPhone = Guest(
-        id: 2,
-        fullName: 'Test',
-        phone: '123',
-      );
+      const guestShortPhone = Guest(id: 2, fullName: 'Test', phone: '123');
       expect(guestShortPhone.formattedPhone, '123');
     });
 
@@ -274,16 +268,8 @@ void main() {
         'next': 'http://api.com/guests?page=2',
         'previous': null,
         'results': [
-          {
-            'id': 1,
-            'full_name': 'Guest 1',
-            'phone': '0901111111',
-          },
-          {
-            'id': 2,
-            'full_name': 'Guest 2',
-            'phone': '0902222222',
-          },
+          {'id': 1, 'full_name': 'Guest 1', 'phone': '0901111111'},
+          {'id': 2, 'full_name': 'Guest 2', 'phone': '0902222222'},
         ],
       };
 
@@ -299,10 +285,7 @@ void main() {
 
   group('GuestSearchRequest', () {
     test('creates from constructor', () {
-      const request = GuestSearchRequest(
-        query: 'test',
-        searchBy: 'name',
-      );
+      const request = GuestSearchRequest(query: 'test', searchBy: 'name');
 
       expect(request.query, 'test');
       expect(request.searchBy, 'name');
@@ -342,11 +325,7 @@ void main() {
   group('GuestHistoryResponse', () {
     test('deserializes from JSON', () {
       final json = {
-        'guest': {
-          'id': 1,
-          'full_name': 'Test Guest',
-          'phone': '0901234567',
-        },
+        'guest': {'id': 1, 'full_name': 'Test Guest', 'phone': '0901234567'},
         'bookings': [
           {
             'id': 1,

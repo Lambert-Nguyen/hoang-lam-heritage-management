@@ -27,52 +27,53 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final child = isLoading
-        ? SizedBox(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                isOutlined ? AppColors.primary : AppColors.onPrimary,
+    final child =
+        isLoading
+            ? SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  isOutlined ? AppColors.primary : AppColors.onPrimary,
+                ),
               ),
-            ),
-          )
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: AppSpacing.iconMd),
-                AppSpacing.gapHorizontalSm,
+            )
+            : Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null) ...[
+                  Icon(icon, size: AppSpacing.iconMd),
+                  AppSpacing.gapHorizontalSm,
+                ],
+                Text(label),
               ],
-              Text(label),
-            ],
-          );
+            );
 
-    final button = isOutlined
-        ? OutlinedButton(
-            onPressed: isLoading ? null : onPressed,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: foregroundColor,
-              side: backgroundColor != null
-                  ? BorderSide(color: backgroundColor!)
-                  : null,
-            ),
-            child: child,
-          )
-        : ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: backgroundColor,
-              foregroundColor: foregroundColor,
-            ),
-            child: child,
-          );
+    final button =
+        isOutlined
+            ? OutlinedButton(
+              onPressed: isLoading ? null : onPressed,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: foregroundColor,
+                side:
+                    backgroundColor != null
+                        ? BorderSide(color: backgroundColor!)
+                        : null,
+              ),
+              child: child,
+            )
+            : ElevatedButton(
+              onPressed: isLoading ? null : onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: backgroundColor,
+                foregroundColor: foregroundColor,
+              ),
+              child: child,
+            );
 
-    return width != null
-        ? SizedBox(width: width, child: button)
-        : button;
+    return width != null ? SizedBox(width: width, child: button) : button;
   }
 }
 

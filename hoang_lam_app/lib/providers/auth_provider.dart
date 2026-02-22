@@ -17,8 +17,7 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 /// Provider for authentication state
-final authStateProvider =
-    StateNotifierProvider<AuthNotifier, AuthState>((ref) {
+final authStateProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return AuthNotifier(repository, ref);
 });
@@ -26,28 +25,19 @@ final authStateProvider =
 /// Provider for current user
 final currentUserProvider = Provider<User?>((ref) {
   final authState = ref.watch(authStateProvider);
-  return authState.maybeWhen(
-    authenticated: (user) => user,
-    orElse: () => null,
-  );
+  return authState.maybeWhen(authenticated: (user) => user, orElse: () => null);
 });
 
 /// Provider for checking if user is authenticated
 final isAuthenticatedProvider = Provider<bool>((ref) {
   final authState = ref.watch(authStateProvider);
-  return authState.maybeWhen(
-    authenticated: (_) => true,
-    orElse: () => false,
-  );
+  return authState.maybeWhen(authenticated: (_) => true, orElse: () => false);
 });
 
 /// Provider for checking if auth is loading
 final isAuthLoadingProvider = Provider<bool>((ref) {
   final authState = ref.watch(authStateProvider);
-  return authState.maybeWhen(
-    loading: () => true,
-    orElse: () => false,
-  );
+  return authState.maybeWhen(loading: () => true, orElse: () => false);
 });
 
 /// Provider for staff list
@@ -78,12 +68,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       // Add timeout to prevent hanging on simulator
       debugPrint('[AuthProvider] Checking isAuthenticated...');
-      final isAuthenticated = await _repository
-          .isAuthenticated()
-          .timeout(const Duration(seconds: 5), onTimeout: () {
-        debugPrint('[AuthProvider] isAuthenticated timed out!');
-        return false;
-      });
+      final isAuthenticated = await _repository.isAuthenticated().timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          debugPrint('[AuthProvider] isAuthenticated timed out!');
+          return false;
+        },
+      );
       debugPrint('[AuthProvider] isAuthenticated: $isAuthenticated');
 
       if (!isAuthenticated) {
@@ -102,7 +93,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final cachedUser = await _repository.getCachedUser();
       if (cachedUser != null) {
         state = AuthState.authenticated(user: cachedUser);
-        
+
         // Start session timer
         _startSessionTimer(accessToken);
 
@@ -115,7 +106,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       try {
         final user = await _repository.getCurrentUser();
         state = AuthState.authenticated(user: user);
-        
+
         // Start session timer
         _startSessionTimer(accessToken);
       } catch (e) {
@@ -136,7 +127,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final request = LoginRequest(username: username, password: password);
       final response = await _repository.login(request);
       state = AuthState.authenticated(user: response.user);
-      
+
       // Start session timer for auto-logout
       _startSessionTimer(response.access);
     } catch (e) {
@@ -301,7 +292,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final appException = error.error as AppException;
       return appException.message; // Already Vietnamese
     }
-    
+
     // Fallback for non-DioException errors
     final message = error.toString().toLowerCase();
     if (message.contains('authentication') ||

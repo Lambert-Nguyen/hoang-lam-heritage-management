@@ -76,20 +76,14 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
-      expect(
-        find.text(MaintenancePriority.medium.displayName),
-        findsOneWidget,
-      );
+      expect(find.text(MaintenancePriority.medium.displayName), findsOneWidget);
     });
 
     testWidgets('displays pending status using displayName', (tester) async {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
-      expect(
-        find.text(MaintenanceStatus.pending.displayName),
-        findsOneWidget,
-      );
+      expect(find.text(MaintenanceStatus.pending.displayName), findsOneWidget);
     });
 
     testWidgets('displays category icon', (tester) async {
@@ -109,9 +103,7 @@ void main() {
 
     testWidgets('calls onTap when card is tapped', (tester) async {
       var tapped = false;
-      await tester.pumpWidget(buildWidget(
-        onTap: () => tapped = true,
-      ));
+      await tester.pumpWidget(buildWidget(onTap: () => tapped = true));
       await tester.pumpAndSettle();
 
       await tester.tap(find.byType(MaintenanceCard));
@@ -120,12 +112,11 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('shows assign button for pending requests without assignee',
-        (tester) async {
+    testWidgets('shows assign button for pending requests without assignee', (
+      tester,
+    ) async {
       var assignCalled = false;
-      await tester.pumpWidget(buildWidget(
-        onAssign: () => assignCalled = true,
-      ));
+      await tester.pumpWidget(buildWidget(onAssign: () => assignCalled = true));
       await tester.pumpAndSettle();
 
       expect(find.text('Phân công'), findsOneWidget);
@@ -136,8 +127,9 @@ void main() {
       expect(assignCalled, isTrue);
     });
 
-    testWidgets('shows complete button for in-progress requests',
-        (tester) async {
+    testWidgets('shows complete button for in-progress requests', (
+      tester,
+    ) async {
       final inProgressRequest = MaintenanceRequest(
         id: 1,
         room: 201,
@@ -159,10 +151,12 @@ void main() {
       );
 
       var completeCalled = false;
-      await tester.pumpWidget(buildWidget(
-        request: inProgressRequest,
-        onComplete: () => completeCalled = true,
-      ));
+      await tester.pumpWidget(
+        buildWidget(
+          request: inProgressRequest,
+          onComplete: () => completeCalled = true,
+        ),
+      );
       await tester.pumpAndSettle();
 
       // The complete button shows text "Hoàn thành"
@@ -174,8 +168,9 @@ void main() {
       expect(completeCalled, isTrue);
     });
 
-    testWidgets('does not show complete button for completed requests',
-        (tester) async {
+    testWidgets('does not show complete button for completed requests', (
+      tester,
+    ) async {
       final completedRequest = MaintenanceRequest(
         id: 1,
         room: 201,
@@ -196,10 +191,9 @@ void main() {
         completedAt: DateTime(2024, 1, 17),
       );
 
-      await tester.pumpWidget(buildWidget(
-        request: completedRequest,
-        onComplete: () {},
-      ));
+      await tester.pumpWidget(
+        buildWidget(request: completedRequest, onComplete: () {}),
+      );
       await tester.pumpAndSettle();
 
       // Status badge shows "Hoàn thành" but the TextButton should not exist
@@ -230,10 +224,7 @@ void main() {
       await tester.pumpWidget(buildWidget(request: urgentRequest));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text(MaintenancePriority.urgent.displayName),
-        findsOneWidget,
-      );
+      expect(find.text(MaintenancePriority.urgent.displayName), findsOneWidget);
     });
 
     testWidgets('displays all priority levels correctly', (tester) async {
@@ -259,7 +250,7 @@ void main() {
         );
 
         await tester.pumpWidget(buildWidget(request: request));
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
         expect(find.text(priority.displayName), findsOneWidget);
       }
@@ -284,13 +275,14 @@ void main() {
           resolutionNotes: null,
           createdAt: DateTime(2024, 1, 15),
           updatedAt: DateTime(2024, 1, 15),
-          completedAt: status == MaintenanceStatus.completed
-              ? DateTime(2024, 1, 16)
-              : null,
+          completedAt:
+              status == MaintenanceStatus.completed
+                  ? DateTime(2024, 1, 16)
+                  : null,
         );
 
         await tester.pumpWidget(buildWidget(request: request));
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
         expect(find.text(status.displayName), findsOneWidget);
       }

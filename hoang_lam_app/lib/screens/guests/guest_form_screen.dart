@@ -15,10 +15,7 @@ import '../../widgets/common/app_input.dart';
 class GuestFormScreen extends ConsumerStatefulWidget {
   final Guest? guest;
 
-  const GuestFormScreen({
-    super.key,
-    this.guest,
-  });
+  const GuestFormScreen({super.key, this.guest});
 
   @override
   ConsumerState<GuestFormScreen> createState() => _GuestFormScreenState();
@@ -59,14 +56,19 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
     _phoneController = TextEditingController(text: guest?.phone ?? '');
     _emailController = TextEditingController(text: guest?.email ?? '');
     _idNumberController = TextEditingController(text: guest?.idNumber ?? '');
-    _idIssuePlaceController =
-        TextEditingController(text: guest?.idIssuePlace ?? '');
+    _idIssuePlaceController = TextEditingController(
+      text: guest?.idIssuePlace ?? '',
+    );
     _addressController = TextEditingController(text: guest?.address ?? '');
     _cityController = TextEditingController(text: guest?.city ?? '');
     _notesController = TextEditingController(text: guest?.notes ?? '');
 
-    _dateOfBirthController = TextEditingController(text: _formatDateValue(guest?.dateOfBirth));
-    _idIssueDateController = TextEditingController(text: _formatDateValue(guest?.idIssueDate));
+    _dateOfBirthController = TextEditingController(
+      text: _formatDateValue(guest?.dateOfBirth),
+    );
+    _idIssueDateController = TextEditingController(
+      text: _formatDateValue(guest?.idIssueDate),
+    );
 
     _idType = guest?.idType ?? IDType.cccd;
     _nationality = guest?.nationality ?? 'Vietnam';
@@ -95,7 +97,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? context.l10n.editGuestTitle : context.l10n.addGuest),
+        title: Text(
+          _isEditing ? context.l10n.editGuestTitle : context.l10n.addGuest,
+        ),
         actions: [
           if (_isEditing)
             AppIconButton(
@@ -155,15 +159,18 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
       children: [
         Text(
           title,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
         ),
         if (isRequired) ...[
           AppSpacing.gapHorizontalXs,
           const Text(
             '*',
-            style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: AppColors.error,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ],
@@ -219,20 +226,21 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             label: context.l10n.documentType,
             value: _idType,
             prefixIcon: _idType.icon,
-            items: IDType.values
-                .map(
-                  (type) => DropdownMenuItem(
-                    value: type,
-                    child: Row(
-                      children: [
-                        Icon(type.icon, size: 20),
-                        AppSpacing.gapHorizontalSm,
-                        Text(type.fullDisplayName),
-                      ],
-                    ),
-                  ),
-                )
-                .toList(),
+            items:
+                IDType.values
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type,
+                        child: Row(
+                          children: [
+                            Icon(type.icon, size: 20),
+                            AppSpacing.gapHorizontalSm,
+                            Text(type.fullDisplayName),
+                          ],
+                        ),
+                      ),
+                    )
+                    .toList(),
             onChanged: (value) {
               if (value != null) {
                 setState(() => _idType = value);
@@ -247,9 +255,10 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             label: context.l10n.documentNumber,
             prefixIcon: Icons.numbers,
             textInputAction: TextInputAction.next,
-            keyboardType: _idType == IDType.passport
-                ? TextInputType.text
-                : TextInputType.number,
+            keyboardType:
+                _idType == IDType.passport
+                    ? TextInputType.text
+                    : TextInputType.number,
             inputFormatters: [
               if (_idType != IDType.passport)
                 FilteringTextInputFormatter.digitsOnly,
@@ -276,14 +285,16 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             lastDate: DateTime.now(),
             firstDate: DateTime(1950),
             controller: _idIssueDateController,
-            onChanged: (date) => setState(() {
-              _idIssueDate = date;
-              _idIssueDateController.text = _formatDateValue(date);
-            }),
-            onClear: () => setState(() {
-              _idIssueDate = null;
-              _idIssueDateController.text = '';
-            }),
+            onChanged:
+                (date) => setState(() {
+                  _idIssueDate = date;
+                  _idIssueDateController.text = _formatDateValue(date);
+                }),
+            onClear:
+                () => setState(() {
+                  _idIssueDate = null;
+                  _idIssueDateController.text = '';
+                }),
           ),
         ],
       ),
@@ -303,7 +314,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             textInputAction: TextInputAction.next,
             validator: (value) {
               if (value != null && value.isNotEmpty) {
-                final emailRegex = RegExp(r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,63}$');
+                final emailRegex = RegExp(
+                  r'^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,63}$',
+                );
                 if (!emailRegex.hasMatch(value)) {
                   return context.l10n.invalidEmail;
                 }
@@ -358,14 +371,16 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             lastDate: DateTime.now(),
             firstDate: DateTime(1920),
             controller: _dateOfBirthController,
-            onChanged: (date) => setState(() {
-              _dateOfBirth = date;
-              _dateOfBirthController.text = _formatDateValue(date);
-            }),
-            onClear: () => setState(() {
-              _dateOfBirth = null;
-              _dateOfBirthController.text = '';
-            }),
+            onChanged:
+                (date) => setState(() {
+                  _dateOfBirth = date;
+                  _dateOfBirthController.text = _formatDateValue(date);
+                }),
+            onClear:
+                () => setState(() {
+                  _dateOfBirth = null;
+                  _dateOfBirthController.text = '';
+                }),
           ),
         ],
       ),
@@ -428,7 +443,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             onTap: () async {
               final picked = await showDatePicker(
                 context: context,
-                initialDate: value ?? DateTime.now().subtract(const Duration(days: 365 * 30)),
+                initialDate:
+                    value ??
+                    DateTime.now().subtract(const Duration(days: 365 * 30)),
                 firstDate: firstDate,
                 lastDate: lastDate,
                 locale: const Locale('vi'),
@@ -483,7 +500,10 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             Expanded(
               flex: 2,
               child: AppButton(
-                label: _isEditing ? context.l10n.saveChanges : context.l10n.addGuest,
+                label:
+                    _isEditing
+                        ? context.l10n.saveChanges
+                        : context.l10n.addGuest,
                 icon: _isEditing ? Icons.save : Icons.person_add,
                 isLoading: _isLoading,
                 onPressed: _submitForm,
@@ -509,9 +529,10 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         phone: _phoneController.text.trim(),
         email: _emailController.text.trim(),
         idType: _idType,
-        idNumber: _idNumberController.text.trim().isEmpty
-            ? null
-            : _idNumberController.text.trim(),
+        idNumber:
+            _idNumberController.text.trim().isEmpty
+                ? null
+                : _idNumberController.text.trim(),
         idIssueDate: _idIssueDate,
         idIssuePlace: _idIssuePlaceController.text.trim(),
         nationality: _nationality,
@@ -602,7 +623,9 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
       _customNationality = widget.value;
       _showCustomInput = true;
     }
-    _customNationalityController = TextEditingController(text: _customNationality ?? '');
+    _customNationalityController = TextEditingController(
+      text: _customNationality ?? '',
+    );
   }
 
   @override
@@ -644,7 +667,8 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
 
     return AppDropdown<String>(
       label: widget.label ?? context.l10n.nationality,
-      value: Nationalities.common.contains(widget.value) ? widget.value : 'Other',
+      value:
+          Nationalities.common.contains(widget.value) ? widget.value : 'Other',
       prefixIcon: Icons.flag,
       items: [
         ...Nationalities.common.map(

@@ -40,9 +40,7 @@ class MinibarCartPanel extends StatelessWidget {
         // Header
         Container(
           padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: const BoxDecoration(
-            color: AppColors.primary,
-          ),
+          decoration: const BoxDecoration(color: AppColors.primary),
           child: Row(
             children: [
               const Icon(Icons.shopping_cart, color: Colors.white),
@@ -95,35 +93,36 @@ class MinibarCartPanel extends StatelessWidget {
 
         // Cart items
         Expanded(
-          child: cartState.items.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.shopping_cart_outlined,
-                        size: 48,
-                        color: AppColors.textSecondary,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        context.l10n.emptyCart,
-                        style: const TextStyle(
+          child:
+              cartState.items.isEmpty
+                  ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 48,
                           color: AppColors.textSecondary,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text(
+                          context.l10n.emptyCart,
+                          style: const TextStyle(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                  : ListView.separated(
+                    padding: const EdgeInsets.all(AppSpacing.sm),
+                    itemCount: cartState.items.length,
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final cartItem = cartState.items[index];
+                      return _buildCartItem(context, cartItem, currencyFormat);
+                    },
                   ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  itemCount: cartState.items.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final cartItem = cartState.items[index];
-                    return _buildCartItem(context, cartItem, currencyFormat);
-                  },
-                ),
         ),
 
         // Summary and checkout
@@ -147,10 +146,7 @@ class MinibarCartPanel extends StatelessWidget {
                 children: [
                   Text(
                     '${context.l10n.total}:',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                   Text(
                     currencyFormat.format(cartState.totalAmount),
@@ -168,9 +164,10 @@ class MinibarCartPanel extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed: cartState.items.isNotEmpty && booking != null
-                      ? onCheckout
-                      : null,
+                  onPressed:
+                      cartState.items.isNotEmpty && booking != null
+                          ? onCheckout
+                          : null,
                   icon: const Icon(Icons.point_of_sale),
                   label: Padding(
                     padding: const EdgeInsets.all(AppSpacing.sm),
@@ -224,25 +221,29 @@ class MinibarCartPanel extends StatelessWidget {
             children: [
               _buildQuantityButton(
                 icon: Icons.remove,
-                onPressed: cartItem.quantity > 1
-                    ? () => onUpdateQuantity?.call(
-                        cartItem.item.id, cartItem.quantity - 1)
-                    : () => onRemoveItem?.call(cartItem.item.id),
+                onPressed:
+                    cartItem.quantity > 1
+                        ? () => onUpdateQuantity?.call(
+                          cartItem.item.id,
+                          cartItem.quantity - 1,
+                        )
+                        : () => onRemoveItem?.call(cartItem.item.id),
               ),
               Container(
                 constraints: const BoxConstraints(minWidth: 32),
                 alignment: Alignment.center,
                 child: Text(
                   '${cartItem.quantity}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               _buildQuantityButton(
                 icon: Icons.add,
-                onPressed: () => onUpdateQuantity?.call(
-                    cartItem.item.id, cartItem.quantity + 1),
+                onPressed:
+                    () => onUpdateQuantity?.call(
+                      cartItem.item.id,
+                      cartItem.quantity + 1,
+                    ),
               ),
             ],
           ),
@@ -253,9 +254,7 @@ class MinibarCartPanel extends StatelessWidget {
             child: Text(
               currencyFormat.format(cartItem.total),
               textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ],

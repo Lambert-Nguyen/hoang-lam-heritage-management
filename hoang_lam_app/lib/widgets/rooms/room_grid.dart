@@ -13,11 +13,7 @@ class RoomGrid extends ConsumerWidget {
   final Function(Room room)? onRoomTap;
   final Function(Room room)? onRoomLongPress;
 
-  const RoomGrid({
-    super.key,
-    this.onRoomTap,
-    this.onRoomLongPress,
-  });
+  const RoomGrid({super.key, this.onRoomTap, this.onRoomLongPress});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,23 +27,23 @@ class RoomGrid extends ConsumerWidget {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: roomsByFloor.entries.map((entry) {
-            return _FloorSection(
-              floor: entry.key,
-              rooms: entry.value,
-              onRoomTap: onRoomTap,
-              onRoomLongPress: onRoomLongPress,
-            );
-          }).toList(),
+          children:
+              roomsByFloor.entries.map((entry) {
+                return _FloorSection(
+                  floor: entry.key,
+                  rooms: entry.value,
+                  onRoomTap: onRoomTap,
+                  onRoomLongPress: onRoomLongPress,
+                );
+              }).toList(),
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
-      ),
-      error: (error, stack) => _ErrorWidget(
-        message: context.l10n.cannotLoadRoomList,
-        onRetry: () => ref.refresh(roomsByFloorProvider),
-      ),
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error:
+          (error, stack) => _ErrorWidget(
+            message: context.l10n.cannotLoadRoomList,
+            onRetry: () => ref.refresh(roomsByFloorProvider),
+          ),
     );
   }
 }
@@ -80,9 +76,9 @@ class _FloorSection extends StatelessWidget {
           child: Text(
             '${context.l10n.floor} $floor',
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textSecondary,
-                ),
+              fontWeight: FontWeight.bold,
+              color: AppColors.textSecondary,
+            ),
           ),
         ),
         // Room cards
@@ -91,14 +87,17 @@ class _FloorSection extends StatelessWidget {
           child: Wrap(
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
-            children: rooms.map((room) {
-              return RoomStatusCard(
-                room: room,
-                onTap: onRoomTap != null ? () => onRoomTap!(room) : null,
-                onLongPress:
-                    onRoomLongPress != null ? () => onRoomLongPress!(room) : null,
-              );
-            }).toList(),
+            children:
+                rooms.map((room) {
+                  return RoomStatusCard(
+                    room: room,
+                    onTap: onRoomTap != null ? () => onRoomTap!(room) : null,
+                    onLongPress:
+                        onRoomLongPress != null
+                            ? () => onRoomLongPress!(room)
+                            : null,
+                  );
+                }).toList(),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -125,9 +124,9 @@ class _EmptyRoomGrid extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             context.l10n.noRoomsYet,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -140,10 +139,7 @@ class _ErrorWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
 
-  const _ErrorWidget({
-    required this.message,
-    this.onRetry,
-  });
+  const _ErrorWidget({required this.message, this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -159,9 +155,9 @@ class _ErrorWidget extends StatelessWidget {
           const SizedBox(height: AppSpacing.md),
           Text(
             message,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
           if (onRetry != null) ...[
@@ -189,26 +185,27 @@ class RoomStatusLegend extends StatelessWidget {
       child: Wrap(
         spacing: AppSpacing.lg,
         runSpacing: AppSpacing.sm,
-        children: RoomStatus.values.map((status) {
-          return Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 12,
-                height: 12,
-                decoration: BoxDecoration(
-                  color: status.color,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.xs),
-              Text(
-                status.localizedName(context.l10n),
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          );
-        }).toList(),
+        children:
+            RoomStatus.values.map((status) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: status.color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
+                  Text(
+                    status.localizedName(context.l10n),
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              );
+            }).toList(),
       ),
     );
   }
@@ -235,16 +232,13 @@ class RoomStatusSummary extends ConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.hotel,
-                      color: AppColors.primary,
-                    ),
+                    Icon(Icons.hotel, color: AppColors.primary),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       context.l10n.roomStatus,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -276,12 +270,13 @@ class RoomStatusSummary extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Card(
-        child: Padding(
-          padding: EdgeInsets.all(AppSpacing.md),
-          child: Center(child: CircularProgressIndicator()),
-        ),
-      ),
+      loading:
+          () => const Card(
+            child: Padding(
+              padding: EdgeInsets.all(AppSpacing.md),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+          ),
       error: (_, __) => const SizedBox.shrink(),
     );
   }
@@ -305,15 +300,15 @@ class _StatItem extends StatelessWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );

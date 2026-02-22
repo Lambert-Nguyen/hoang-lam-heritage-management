@@ -57,9 +57,7 @@ void main() {
 
     setUp(() {
       container = ProviderContainer(
-        overrides: [
-          guestRepositoryProvider.overrideWithValue(mockRepository),
-        ],
+        overrides: [guestRepositoryProvider.overrideWithValue(mockRepository)],
       );
     });
 
@@ -69,12 +67,14 @@ void main() {
 
     group('loadGuests', () {
       test('should load guests successfully', () async {
-        when(mockRepository.getGuests(
-          search: anyNamed('search'),
-          isVip: anyNamed('isVip'),
-          nationality: anyNamed('nationality'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => testGuests);
+        when(
+          mockRepository.getGuests(
+            search: anyNamed('search'),
+            isVip: anyNamed('isVip'),
+            nationality: anyNamed('nationality'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => testGuests);
 
         final notifier = container.read(guestStateProvider.notifier);
         await notifier.loadGuests();
@@ -94,12 +94,14 @@ void main() {
       });
 
       test('should filter by VIP status', () async {
-        when(mockRepository.getGuests(
-          search: anyNamed('search'),
-          isVip: true,
-          nationality: anyNamed('nationality'),
-          ordering: anyNamed('ordering'),
-        )).thenAnswer((_) async => [testGuests[1]]);
+        when(
+          mockRepository.getGuests(
+            search: anyNamed('search'),
+            isVip: true,
+            nationality: anyNamed('nationality'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenAnswer((_) async => [testGuests[1]]);
 
         final notifier = container.read(guestStateProvider.notifier);
         await notifier.loadGuests(isVip: true);
@@ -118,12 +120,14 @@ void main() {
       });
 
       test('should set error state on failure', () async {
-        when(mockRepository.getGuests(
-          search: anyNamed('search'),
-          isVip: anyNamed('isVip'),
-          nationality: anyNamed('nationality'),
-          ordering: anyNamed('ordering'),
-        )).thenThrow(Exception('Network error'));
+        when(
+          mockRepository.getGuests(
+            search: anyNamed('search'),
+            isVip: anyNamed('isVip'),
+            nationality: anyNamed('nationality'),
+            ordering: anyNamed('ordering'),
+          ),
+        ).thenThrow(Exception('Network error'));
 
         final notifier = container.read(guestStateProvider.notifier);
         await notifier.loadGuests();
@@ -143,10 +147,9 @@ void main() {
 
     group('searchGuests', () {
       test('should search guests successfully', () async {
-        when(mockRepository.searchGuests(
-          query: 'Nguyen',
-          searchBy: 'all',
-        )).thenAnswer((_) async => [testGuests[0]]);
+        when(
+          mockRepository.searchGuests(query: 'Nguyen', searchBy: 'all'),
+        ).thenAnswer((_) async => [testGuests[0]]);
 
         final notifier = container.read(guestStateProvider.notifier);
         await notifier.searchGuests('Nguyen');
@@ -180,10 +183,12 @@ void main() {
         );
 
         // Should NOT call repository
-        verifyNever(mockRepository.searchGuests(
-          query: anyNamed('query'),
-          searchBy: anyNamed('searchBy'),
-        ));
+        verifyNever(
+          mockRepository.searchGuests(
+            query: anyNamed('query'),
+            searchBy: anyNamed('searchBy'),
+          ),
+        );
       });
     });
 
@@ -195,8 +200,7 @@ void main() {
           phone: '0923456789',
         );
 
-        when(mockRepository.createGuest(any))
-            .thenAnswer((_) async => newGuest);
+        when(mockRepository.createGuest(any)).thenAnswer((_) async => newGuest);
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.createGuest(newGuest);
@@ -220,15 +224,14 @@ void main() {
       });
 
       test('should return null on duplicate phone', () async {
-        when(mockRepository.createGuest(any))
-            .thenThrow(Exception('phone already exists'));
+        when(
+          mockRepository.createGuest(any),
+        ).thenThrow(Exception('phone already exists'));
 
         final notifier = container.read(guestStateProvider.notifier);
-        final result = await notifier.createGuest(Guest(
-          id: 0,
-          fullName: 'Test',
-          phone: '0901234567',
-        ));
+        final result = await notifier.createGuest(
+          Guest(id: 0, fullName: 'Test', phone: '0901234567'),
+        );
 
         expect(result, isNull);
       });
@@ -243,8 +246,9 @@ void main() {
           isVip: true,
         );
 
-        when(mockRepository.updateGuest(any))
-            .thenAnswer((_) async => updatedGuest);
+        when(
+          mockRepository.updateGuest(any),
+        ).thenAnswer((_) async => updatedGuest);
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.updateGuest(updatedGuest);
@@ -255,15 +259,14 @@ void main() {
       });
 
       test('should return null on update failure', () async {
-        when(mockRepository.updateGuest(any))
-            .thenThrow(Exception('Validation error'));
+        when(
+          mockRepository.updateGuest(any),
+        ).thenThrow(Exception('Validation error'));
 
         final notifier = container.read(guestStateProvider.notifier);
-        final result = await notifier.updateGuest(Guest(
-          id: 1,
-          fullName: '',
-          phone: '0901234567',
-        ));
+        final result = await notifier.updateGuest(
+          Guest(id: 1, fullName: '', phone: '0901234567'),
+        );
 
         expect(result, isNull);
       });
@@ -281,8 +284,9 @@ void main() {
       });
 
       test('should return false when guest cannot be deleted', () async {
-        when(mockRepository.deleteGuest(1))
-            .thenThrow(Exception('cannot delete guest with bookings'));
+        when(
+          mockRepository.deleteGuest(1),
+        ).thenThrow(Exception('cannot delete guest with bookings'));
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.deleteGuest(1);
@@ -300,8 +304,9 @@ void main() {
           isVip: true,
         );
 
-        when(mockRepository.toggleVipStatus(1))
-            .thenAnswer((_) async => vipGuest);
+        when(
+          mockRepository.toggleVipStatus(1),
+        ).thenAnswer((_) async => vipGuest);
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.toggleVipStatus(1);
@@ -312,8 +317,9 @@ void main() {
       });
 
       test('should return null on toggle failure', () async {
-        when(mockRepository.toggleVipStatus(1))
-            .thenThrow(Exception('Server error'));
+        when(
+          mockRepository.toggleVipStatus(1),
+        ).thenThrow(Exception('Server error'));
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.toggleVipStatus(1);
@@ -324,8 +330,9 @@ void main() {
 
     group('findByPhone', () {
       test('should find guest by phone', () async {
-        when(mockRepository.findByPhone('0901234567'))
-            .thenAnswer((_) async => testGuests[0]);
+        when(
+          mockRepository.findByPhone('0901234567'),
+        ).thenAnswer((_) async => testGuests[0]);
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.findByPhone('0901234567');
@@ -335,8 +342,9 @@ void main() {
       });
 
       test('should return null if not found', () async {
-        when(mockRepository.findByPhone('0999999999'))
-            .thenThrow(Exception('Not found'));
+        when(
+          mockRepository.findByPhone('0999999999'),
+        ).thenThrow(Exception('Not found'));
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.findByPhone('0999999999');
@@ -347,8 +355,9 @@ void main() {
 
     group('findByIdNumber', () {
       test('should find guest by ID number', () async {
-        when(mockRepository.findByIdNumber('123456789'))
-            .thenAnswer((_) async => testGuests[0]);
+        when(
+          mockRepository.findByIdNumber('123456789'),
+        ).thenAnswer((_) async => testGuests[0]);
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.findByIdNumber('123456789');
@@ -358,8 +367,9 @@ void main() {
       });
 
       test('should return null if not found', () async {
-        when(mockRepository.findByIdNumber('000000000'))
-            .thenThrow(Exception('Not found'));
+        when(
+          mockRepository.findByIdNumber('000000000'),
+        ).thenThrow(Exception('Not found'));
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.findByIdNumber('000000000');
@@ -375,9 +385,7 @@ void main() {
     setUp(() {
       mockRepository = MockGuestRepository();
       container = ProviderContainer(
-        overrides: [
-          guestRepositoryProvider.overrideWithValue(mockRepository),
-        ],
+        overrides: [guestRepositoryProvider.overrideWithValue(mockRepository)],
       );
     });
 
@@ -386,16 +394,18 @@ void main() {
     });
 
     test('guestsProvider fetches all guests', () async {
-      when(mockRepository.getGuests(ordering: '-created_at'))
-          .thenAnswer((_) async => testGuests);
+      when(
+        mockRepository.getGuests(ordering: '-created_at'),
+      ).thenAnswer((_) async => testGuests);
 
       final guests = await container.read(guestsProvider.future);
       expect(guests.length, 3);
     });
 
     test('vipGuestsProvider fetches VIP guests', () async {
-      when(mockRepository.getVipGuests())
-          .thenAnswer((_) async => [testGuests[1]]);
+      when(
+        mockRepository.getVipGuests(),
+      ).thenAnswer((_) async => [testGuests[1]]);
 
       final guests = await container.read(vipGuestsProvider.future);
       expect(guests.length, 1);
@@ -403,24 +413,27 @@ void main() {
     });
 
     test('returningGuestsProvider fetches returning guests', () async {
-      when(mockRepository.getReturningGuests())
-          .thenAnswer((_) async => [testGuests[0], testGuests[1]]);
+      when(
+        mockRepository.getReturningGuests(),
+      ).thenAnswer((_) async => [testGuests[0], testGuests[1]]);
 
       final guests = await container.read(returningGuestsProvider.future);
       expect(guests.length, 2);
     });
 
     test('recentGuestsProvider fetches recent guests', () async {
-      when(mockRepository.getRecentGuests(limit: 10))
-          .thenAnswer((_) async => testGuests);
+      when(
+        mockRepository.getRecentGuests(limit: 10),
+      ).thenAnswer((_) async => testGuests);
 
       final guests = await container.read(recentGuestsProvider.future);
       expect(guests.length, 3);
     });
 
     test('guestByIdProvider fetches single guest', () async {
-      when(mockRepository.getGuest(1))
-          .thenAnswer((_) async => testGuests.first);
+      when(
+        mockRepository.getGuest(1),
+      ).thenAnswer((_) async => testGuests.first);
 
       final guest = await container.read(guestByIdProvider(1).future);
       expect(guest.id, 1);
@@ -430,19 +443,22 @@ void main() {
     test('guestSearchProvider searches guests', () async {
       final params = GuestSearchParams(query: 'Nguyen');
 
-      when(mockRepository.searchGuests(query: 'Nguyen', searchBy: 'all'))
-          .thenAnswer((_) async => [testGuests[0]]);
+      when(
+        mockRepository.searchGuests(query: 'Nguyen', searchBy: 'all'),
+      ).thenAnswer((_) async => [testGuests[0]]);
 
       final guests = await container.read(guestSearchProvider(params).future);
       expect(guests.length, 1);
     });
 
     test('guestsByNationalityProvider filters by nationality', () async {
-      when(mockRepository.getGuestsByNationality('Vietnam'))
-          .thenAnswer((_) async => [testGuests[0], testGuests[2]]);
+      when(
+        mockRepository.getGuestsByNationality('Vietnam'),
+      ).thenAnswer((_) async => [testGuests[0], testGuests[2]]);
 
-      final guests =
-          await container.read(guestsByNationalityProvider('Vietnam').future);
+      final guests = await container.read(
+        guestsByNationalityProvider('Vietnam').future,
+      );
       expect(guests.length, 2);
     });
   });
