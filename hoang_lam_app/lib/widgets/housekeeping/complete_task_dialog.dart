@@ -306,7 +306,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
 
 class _ChecklistItem {
   final String label;
-  bool isChecked;
+  bool isChecked = false;
 
-  _ChecklistItem({required this.label, this.isChecked = false});
+  _ChecklistItem({required this.label});
 }

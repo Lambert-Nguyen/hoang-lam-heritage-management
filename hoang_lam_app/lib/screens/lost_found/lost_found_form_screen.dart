@@ -341,10 +341,11 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
         }
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

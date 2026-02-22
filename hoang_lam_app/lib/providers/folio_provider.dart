@@ -4,7 +4,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../models/finance.dart';
 import '../repositories/finance_repository.dart';
 import 'providers.dart';
-import 'settings_provider.dart';
 
 part 'folio_provider.freezed.dart';
 

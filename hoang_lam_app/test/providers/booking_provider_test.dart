@@ -15,14 +15,6 @@ class MockRef extends Mock implements Ref {}
 void main() {
   late MockBookingRepository mockRepository;
   late MockRef mockRef;
-  late ProviderContainer container;
-
-  BookingNotifier createNotifier() {
-    container = ProviderContainer(
-      overrides: [bookingRepositoryProvider.overrideWithValue(mockRepository)],
-    );
-    return BookingNotifier(mockRepository, mockRef);
-  }
 
   // Provide dummy values for Freezed types that Mockito can't auto-generate
   setUpAll(() {

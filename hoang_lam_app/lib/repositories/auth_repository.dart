@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -13,7 +14,7 @@ const _iOSOptions = IOSOptions(
   accessibility: KeychainAccessibility.first_unlock,
 );
 
-const _androidOptions = AndroidOptions(encryptedSharedPreferences: true);
+const _androidOptions = AndroidOptions();
 
 /// Repository for authentication operations
 class AuthRepository {
@@ -162,9 +163,14 @@ class AuthRepository {
   /// Check if user is currently authenticated (has stored tokens)
   Future<bool> isAuthenticated() async {
     try {
-      final accessToken = await _secureStorage
-          .read(key: AppConstants.accessTokenKey)
-          .timeout(const Duration(seconds: 3), onTimeout: () => null);
+      String? accessToken;
+      try {
+        accessToken = await _secureStorage
+            .read(key: AppConstants.accessTokenKey)
+            .timeout(const Duration(seconds: 3));
+      } on TimeoutException {
+        return false;
+      }
       return accessToken != null;
     } catch (e) {
       debugPrint('[AuthRepository] isAuthenticated error: $e');

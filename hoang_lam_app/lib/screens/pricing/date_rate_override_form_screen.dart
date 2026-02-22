@@ -488,13 +488,13 @@ class _DateRateOverrideFormScreenState
       final notifier = ref.read(dateRateOverrideNotifierProvider.notifier);
       await notifier.deleteOverride(widget.overrideId!);
 
+      if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
-      if (mounted) {
-        ref.invalidate(dateRateOverridesProvider);
-        _showSuccess(l10n.dateRateDeleted);
-        Navigator.of(context).pop(true);
-      }
+      ref.invalidate(dateRateOverridesProvider);
+      _showSuccess(l10n.dateRateDeleted);
+      Navigator.of(context).pop(true);
     } catch (e) {
+      if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       _showError('${l10n.error}: ${e.toString()}');
     } finally {

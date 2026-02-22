@@ -509,8 +509,9 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     Color textColor = color ?? AppColors.textPrimary;
     if (isIncome) textColor = AppColors.income;
     if (isExpense) textColor = AppColors.expense;
-    if (isProfit)
+    if (isProfit) {
       textColor = amount >= 0 ? AppColors.income : AppColors.expense;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),

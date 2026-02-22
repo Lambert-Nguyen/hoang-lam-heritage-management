@@ -126,9 +126,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           }
 
           // Navigate to home on successful login
-          if (mounted) {
-            context.go(AppRoutes.home);
-          }
+          if (!context.mounted) return;
+          context.go(AppRoutes.home);
         },
         error: (message) {
           // Show error message
@@ -374,6 +373,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       .enableBiometric(username);
                   if (dialogContext.mounted) {
                     Navigator.of(dialogContext).pop();
+                  }
+                  if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(context.l10n.biometricEnabled)),
                     );

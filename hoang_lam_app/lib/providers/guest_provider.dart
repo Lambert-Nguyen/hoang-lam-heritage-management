@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../core/services/sync_manager.dart';
-import '../l10n/app_localizations.dart';
 import '../models/guest.dart';
 import '../models/offline_operation.dart';
 import '../repositories/guest_repository.dart';

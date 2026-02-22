@@ -442,8 +442,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       validator: (value) {
         if (value == null || value.isEmpty) return context.l10n.pleaseEnterRate;
         final number = double.tryParse(value);
-        if (number == null || number <= 0)
+        if (number == null || number <= 0) {
           return context.l10n.rateMustBePositive;
+        }
         return null;
       },
       onChanged: (value) {

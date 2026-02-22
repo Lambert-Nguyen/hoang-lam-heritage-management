@@ -102,10 +102,8 @@ sealed class DateRateOverrideFilter with _$DateRateOverrideFilter {
 class RatePlanNotifier
     extends StateNotifier<AsyncValue<List<RatePlanListItem>>> {
   final RatePlanRepository _repository;
-  final Ref _ref;
 
-  RatePlanNotifier(this._repository, this._ref)
-    : super(const AsyncValue.loading()) {
+  RatePlanNotifier(this._repository) : super(const AsyncValue.loading()) {
     loadRatePlans();
   }
 
@@ -145,7 +143,7 @@ final ratePlanNotifierProvider =
     StateNotifierProvider<RatePlanNotifier, AsyncValue<List<RatePlanListItem>>>(
       (ref) {
         final repository = ref.watch(ratePlanRepositoryProvider);
-        return RatePlanNotifier(repository, ref);
+        return RatePlanNotifier(repository);
       },
     );
 
@@ -153,9 +151,8 @@ final ratePlanNotifierProvider =
 class DateRateOverrideNotifier
     extends StateNotifier<AsyncValue<List<DateRateOverrideListItem>>> {
   final RatePlanRepository _repository;
-  final Ref _ref;
 
-  DateRateOverrideNotifier(this._repository, this._ref)
+  DateRateOverrideNotifier(this._repository)
     : super(const AsyncValue.loading());
 
   Future<void> loadOverrides({
@@ -213,5 +210,5 @@ final dateRateOverrideNotifierProvider = StateNotifierProvider<
   AsyncValue<List<DateRateOverrideListItem>>
 >((ref) {
   final repository = ref.watch(ratePlanRepositoryProvider);
-  return DateRateOverrideNotifier(repository, ref);
+  return DateRateOverrideNotifier(repository);
 });

@@ -8,7 +8,6 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/notification.dart';
 import '../../providers/notification_provider.dart';
-import '../../router/app_router.dart';
 
 /// Notification list screen showing all notifications
 class NotificationListScreen extends ConsumerWidget {
@@ -318,8 +317,9 @@ class _NotificationTile extends StatelessWidget {
     final diff = now.difference(dateTime);
 
     if (diff.inMinutes < 1) return context.l10n.justNow;
-    if (diff.inMinutes < 60)
+    if (diff.inMinutes < 60) {
       return '${diff.inMinutes} ${context.l10n.minutesAgo}';
+    }
     if (diff.inHours < 24) return '${diff.inHours} ${context.l10n.hoursAgo}';
     if (diff.inDays < 7) return '${diff.inDays} ${context.l10n.daysAgo}';
 

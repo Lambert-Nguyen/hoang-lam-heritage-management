@@ -600,8 +600,8 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                       .deleteGuest(_guest.id);
                   if (success && mounted) {
                     ref.invalidate(guestsProvider);
-                    Navigator.of(this.context).pop();
-                    ScaffoldMessenger.of(this.context).showSnackBar(
+                    Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(context.l10n.guestDeleted),
                         backgroundColor: AppColors.success,

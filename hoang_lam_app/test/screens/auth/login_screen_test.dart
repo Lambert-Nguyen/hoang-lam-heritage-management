@@ -146,6 +146,10 @@ void main() {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
+      // Scroll to make forgot password button visible
+      await tester.ensureVisible(find.text('Quên mật khẩu?'));
+      await tester.pumpAndSettle();
+
       // Tap forgot password
       await tester.tap(find.text('Quên mật khẩu?'));
       await tester.pumpAndSettle();

@@ -555,7 +555,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
       // Invalidate guest providers so lists refresh
       ref.invalidate(guestsProvider);
 
-      if (!context.mounted) return;
+      if (!mounted) return;
 
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -579,7 +579,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         );
       }
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('${context.l10n.error}: ${e.toString()}'),

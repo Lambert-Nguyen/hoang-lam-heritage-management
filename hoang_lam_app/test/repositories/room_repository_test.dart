@@ -19,7 +19,7 @@ void main() {
   });
 
   // Helper to create room type JSON matching backend RoomTypeSerializer
-  Map<String, dynamic> _createRoomTypeJson({
+  Map<String, dynamic> createRoomTypeJson({
     required int id,
     required String name,
     required int baseRate,
@@ -43,7 +43,7 @@ void main() {
   }
 
   // Helper to create room JSON matching backend RoomSerializer
-  Map<String, dynamic> _createRoomJson({
+  Map<String, dynamic> createRoomJson({
     required int id,
     required String number,
     required int roomTypeId,
@@ -57,7 +57,7 @@ void main() {
       'name': 'Room $number',
       'room_type': roomTypeId,
       'room_type_name': 'Single',
-      'room_type_details': _createRoomTypeJson(
+      'room_type_details': createRoomTypeJson(
         id: roomTypeId,
         name: 'Single',
         baseRate: 300000,
@@ -81,8 +81,8 @@ void main() {
           'next': null,
           'previous': null,
           'results': [
-            _createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
-            _createRoomTypeJson(id: 2, name: 'Double', baseRate: 400000),
+            createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
+            createRoomTypeJson(id: 2, name: 'Double', baseRate: 400000),
           ],
         },
         statusCode: 200,
@@ -118,7 +118,7 @@ void main() {
             'next': null,
             'previous': null,
             'results': [
-              _createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
+              createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
             ],
           },
           statusCode: 200,
@@ -146,7 +146,7 @@ void main() {
 
     test('getRoomType should return single room type', () async {
       final mockResponse = Response(
-        data: _createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
+        data: createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/room-types/1/'),
       );
@@ -164,7 +164,7 @@ void main() {
 
     test('createRoomType should post data and return room type', () async {
       final mockResponse = Response(
-        data: _createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
+        data: createRoomTypeJson(id: 1, name: 'Single', baseRate: 300000),
         statusCode: 201,
         requestOptions: RequestOptions(path: '/api/v1/room-types/'),
       );
@@ -191,8 +191,8 @@ void main() {
           'next': null,
           'previous': null,
           'results': [
-            _createRoomJson(id: 1, number: '101', roomTypeId: 1),
-            _createRoomJson(id: 2, number: '102', roomTypeId: 1),
+            createRoomJson(id: 1, number: '101', roomTypeId: 1),
+            createRoomJson(id: 2, number: '102', roomTypeId: 1),
           ],
         },
         statusCode: 200,
@@ -226,7 +226,7 @@ void main() {
           'next': null,
           'previous': null,
           'results': [
-            _createRoomJson(id: 1, number: '101', roomTypeId: 1, floor: 1),
+            createRoomJson(id: 1, number: '101', roomTypeId: 1, floor: 1),
           ],
         },
         statusCode: 200,
@@ -261,7 +261,7 @@ void main() {
 
     test('getRoom should return single room', () async {
       final mockResponse = Response(
-        data: _createRoomJson(id: 1, number: '101', roomTypeId: 1),
+        data: createRoomJson(id: 1, number: '101', roomTypeId: 1),
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/rooms/1/'),
       );
@@ -279,7 +279,7 @@ void main() {
 
     test('createRoom should post data and return room', () async {
       final mockResponse = Response(
-        data: _createRoomJson(id: 1, number: '101', roomTypeId: 1),
+        data: createRoomJson(id: 1, number: '101', roomTypeId: 1),
         statusCode: 201,
         requestOptions: RequestOptions(path: '/api/v1/rooms/'),
       );
@@ -299,7 +299,7 @@ void main() {
 
     test('updateRoomStatus should call update-status endpoint', () async {
       final mockResponse = Response(
-        data: _createRoomJson(
+        data: createRoomJson(
           id: 1,
           number: '101',
           roomTypeId: 1,
@@ -329,7 +329,7 @@ void main() {
       final mockResponse = Response(
         data: {
           'available_rooms': [
-            _createRoomJson(id: 1, number: '101', roomTypeId: 1),
+            createRoomJson(id: 1, number: '101', roomTypeId: 1),
           ],
           'total_available': 1,
           'check_in': '2024-01-01',
@@ -362,8 +362,8 @@ void main() {
       final mockResponse = Response(
         data: {
           'available_rooms': [
-            _createRoomJson(id: 1, number: '101', roomTypeId: 1),
-            _createRoomJson(id: 2, number: '102', roomTypeId: 1),
+            createRoomJson(id: 1, number: '101', roomTypeId: 1),
+            createRoomJson(id: 2, number: '102', roomTypeId: 1),
           ],
           'total_available': 2,
           'check_in': '2024-01-01',
@@ -415,8 +415,8 @@ void main() {
             'next': null,
             'previous': null,
             'results': [
-              _createRoomJson(id: 1, number: '101', roomTypeId: 1, floor: 1),
-              _createRoomJson(id: 2, number: '201', roomTypeId: 2, floor: 2),
+              createRoomJson(id: 1, number: '101', roomTypeId: 1, floor: 1),
+              createRoomJson(id: 2, number: '201', roomTypeId: 2, floor: 2),
             ],
           },
           statusCode: 200,
@@ -451,19 +451,19 @@ void main() {
           'next': null,
           'previous': null,
           'results': [
-            _createRoomJson(
+            createRoomJson(
               id: 1,
               number: '101',
               roomTypeId: 1,
               status: 'available',
             ),
-            _createRoomJson(
+            createRoomJson(
               id: 2,
               number: '102',
               roomTypeId: 1,
               status: 'available',
             ),
-            _createRoomJson(
+            createRoomJson(
               id: 3,
               number: '201',
               roomTypeId: 2,

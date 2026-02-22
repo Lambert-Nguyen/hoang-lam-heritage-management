@@ -438,8 +438,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     final l10n = context.l10n;
 
     if (dateOnly == today) return l10n.today;
-    if (dateOnly == today.subtract(const Duration(days: 1)))
+    if (dateOnly == today.subtract(const Duration(days: 1))) {
       return l10n.yesterday;
+    }
     return DateFormat('dd/MM/yyyy').format(date);
   }
 

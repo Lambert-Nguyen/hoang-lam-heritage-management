@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hoang_lam_app/l10n/app_localizations.dart';
-import 'package:hoang_lam_app/models/declaration.dart';
 import 'package:hoang_lam_app/providers/declaration_provider.dart';
 import 'package:hoang_lam_app/repositories/declaration_repository.dart';
 import 'package:hoang_lam_app/screens/declaration/declaration_export_screen.dart';

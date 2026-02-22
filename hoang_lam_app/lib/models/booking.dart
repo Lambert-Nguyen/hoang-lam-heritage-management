@@ -957,6 +957,7 @@ sealed class BookingCreate with _$BookingCreate {
   const BookingCreate._();
 
   /// Convert to JSON for API
+  @override
   Map<String, dynamic> toJson() =>
       _$BookingCreateToJson(this as _BookingCreate);
 
@@ -1019,6 +1020,7 @@ sealed class BookingUpdate with _$BookingUpdate {
   const BookingUpdate._();
 
   /// Convert to JSON for API
+  @override
   Map<String, dynamic> toJson() =>
       _$BookingUpdateToJson(this as _BookingUpdate);
 

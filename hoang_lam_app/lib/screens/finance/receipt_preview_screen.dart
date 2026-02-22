@@ -135,6 +135,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
   Future<void> _shareReceipt() async {
     if (_receipt == null) return;
 
+    final l10n = context.l10n;
     try {
       final receiptText = _buildReceiptText();
       final directory = await getTemporaryDirectory();
@@ -146,14 +147,14 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       await SharePlus.instance.share(
         ShareParams(
           files: [XFile(file.path)],
-          subject: '${context.l10n.finance} #${_receipt!.receiptNumber}',
+          subject: '${l10n.finance} #${_receipt!.receiptNumber}',
         ),
       );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     }
   }

@@ -26,7 +26,6 @@ class SyncManager {
   bool _isSyncing = false;
 
   static const int _maxRetries = 5;
-  static const Duration _retryDelay = Duration(seconds: 30);
 
   SyncManager(this._ref) {
     _init();

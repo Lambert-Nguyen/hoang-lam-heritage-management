@@ -312,7 +312,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                       .read(folioNotifierProvider.notifier)
                       .voidItem(item.id, reasonController.text.trim());
 
-                  if (mounted) {
+                  if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(

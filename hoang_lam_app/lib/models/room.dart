@@ -15,8 +15,9 @@ class DecimalToIntConverter implements JsonConverter<int, dynamic> {
   int fromJson(dynamic json) {
     if (json == null) return 0;
     if (json is num) return json.toInt();
-    if (json is String)
+    if (json is String) {
       return int.tryParse(json) ?? double.tryParse(json)?.toInt() ?? 0;
+    }
     return 0;
   }
 
@@ -32,8 +33,9 @@ class NullableDecimalToIntConverter implements JsonConverter<int?, dynamic> {
   int? fromJson(dynamic json) {
     if (json == null) return null;
     if (json is num) return json.toInt();
-    if (json is String)
+    if (json is String) {
       return int.tryParse(json) ?? double.tryParse(json)?.toInt();
+    }
     return null;
   }
 

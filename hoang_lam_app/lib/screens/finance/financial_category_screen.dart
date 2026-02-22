@@ -237,7 +237,7 @@ class _FinancialCategoryScreenState
       try {
         await ref.read(financeRepositoryProvider).deleteCategory(category.id);
         _refreshCategories();
-        if (mounted) {
+        if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${l10n.categoryDeletedMsg} "${category.name}"'),
@@ -245,7 +245,7 @@ class _FinancialCategoryScreenState
           );
         }
       } catch (e) {
-        if (mounted) {
+        if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${l10n.error}: $e'),

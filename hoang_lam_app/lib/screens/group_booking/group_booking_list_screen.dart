@@ -134,8 +134,9 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
     return bookings.where((b) {
       if (_statusFilter != null && b.status != _statusFilter) return false;
       if (_searchQuery.isNotEmpty &&
-          !b.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+          !b.name.toLowerCase().contains(_searchQuery.toLowerCase())) {
         return false;
+      }
       return true;
     }).toList();
   }

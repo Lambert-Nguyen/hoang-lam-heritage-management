@@ -247,10 +247,11 @@ class _GroupBookingFormScreenState
                       (d) {
                         setState(() {
                           _checkInDate = d;
-                          if (_checkOutDate.isBefore(_checkInDate))
+                          if (_checkOutDate.isBefore(_checkInDate)) {
                             _checkOutDate = _checkInDate.add(
                               const Duration(days: 1),
                             );
+                          }
                         });
                       },
                       DateTime.now(),
@@ -465,10 +466,11 @@ class _GroupBookingFormScreenState
         }
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

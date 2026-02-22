@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hoang_lam_app/core/network/api_client.dart';
@@ -21,7 +19,7 @@ void main() {
   });
 
   // Helper to create occupancy report JSON
-  Map<String, dynamic> _createOccupancyReportJson({
+  Map<String, dynamic> createOccupancyReportJson({
     String? date,
     String? period,
     int totalRooms = 7,
@@ -42,7 +40,7 @@ void main() {
   }
 
   // Helper to create revenue report JSON
-  Map<String, dynamic> _createRevenueReportJson({
+  Map<String, dynamic> createRevenueReportJson({
     String? date,
     String? period,
     double roomRevenue = 1500000,
@@ -67,7 +65,7 @@ void main() {
   }
 
   // Helper to create KPI report JSON
-  Map<String, dynamic> _createKPIReportJson({
+  Map<String, dynamic> createKPIReportJson({
     String periodStart = '2024-01-01',
     String periodEnd = '2024-01-31',
     double revpar = 300000,
@@ -104,7 +102,7 @@ void main() {
   }
 
   // Helper to create expense report JSON
-  Map<String, dynamic> _createExpenseReportJson({
+  Map<String, dynamic> createExpenseReportJson({
     int categoryId = 1,
     String categoryName = 'Utilities',
     String categoryIcon = 'bolt',
@@ -125,7 +123,7 @@ void main() {
   }
 
   // Helper to create channel performance JSON
-  Map<String, dynamic> _createChannelPerformanceJson({
+  Map<String, dynamic> createChannelPerformanceJson({
     String source = 'direct',
     String sourceDisplay = 'Đặt trực tiếp',
     int bookingCount = 25,
@@ -150,7 +148,7 @@ void main() {
   }
 
   // Helper to create guest demographics JSON
-  Map<String, dynamic> _createGuestDemographicsJson({
+  Map<String, dynamic> createGuestDemographicsJson({
     String nationality = 'Vietnam',
     int guestCount = 50,
     int bookingCount = 30,
@@ -171,7 +169,7 @@ void main() {
   }
 
   // Helper to create comparative report JSON
-  Map<String, dynamic> _createComparativeReportJson({
+  Map<String, dynamic> createComparativeReportJson({
     String metric = 'revenue',
     double currentPeriodValue = 70500000,
     double? previousPeriodValue = 65000000,
@@ -191,8 +189,8 @@ void main() {
     test('getOccupancyReport should return list of occupancy data', () async {
       final mockResponse = Response(
         data: [
-          _createOccupancyReportJson(date: '2024-01-01'),
-          _createOccupancyReportJson(date: '2024-01-02', occupiedRooms: 6),
+          createOccupancyReportJson(date: '2024-01-01'),
+          createOccupancyReportJson(date: '2024-01-02', occupiedRooms: 6),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
@@ -223,8 +221,8 @@ void main() {
     test('getOccupancyReport with weekly grouping', () async {
       final mockResponse = Response(
         data: [
-          _createOccupancyReportJson(period: 'Week 1 Jan 2024'),
-          _createOccupancyReportJson(period: 'Week 2 Jan 2024'),
+          createOccupancyReportJson(period: 'Week 1 Jan 2024'),
+          createOccupancyReportJson(period: 'Week 2 Jan 2024'),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
@@ -278,8 +276,8 @@ void main() {
     test('getRevenueReport should return list of revenue data', () async {
       final mockResponse = Response(
         data: [
-          _createRevenueReportJson(date: '2024-01-01'),
-          _createRevenueReportJson(date: '2024-01-02', totalRevenue: 2000000),
+          createRevenueReportJson(date: '2024-01-01'),
+          createRevenueReportJson(date: '2024-01-02', totalRevenue: 2000000),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/revenue/'),
@@ -308,7 +306,7 @@ void main() {
     test('getRevenueReport includes minibar revenue', () async {
       final mockResponse = Response(
         data: [
-          _createRevenueReportJson(date: '2024-01-01', minibarRevenue: 75000),
+          createRevenueReportJson(date: '2024-01-01', minibarRevenue: 75000),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/revenue/'),
@@ -335,7 +333,7 @@ void main() {
   group('ReportRepository - KPI Report', () {
     test('getKPIReport should return KPI metrics', () async {
       final mockResponse = Response(
-        data: _createKPIReportJson(),
+        data: createKPIReportJson(),
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/kpi/'),
       );
@@ -362,7 +360,7 @@ void main() {
 
     test('getKPIReport includes comparison data when requested', () async {
       final mockResponse = Response(
-        data: _createKPIReportJson(
+        data: createKPIReportJson(
           revparChange: 5.2,
           adrChange: 3.1,
           occupancyChange: 2.5,
@@ -394,7 +392,7 @@ void main() {
 
     test('KPIReport improvement helpers work correctly', () async {
       final mockResponse = Response(
-        data: _createKPIReportJson(
+        data: createKPIReportJson(
           revparChange: -2.0,
           adrChange: 3.1,
           occupancyChange: 0,
@@ -427,8 +425,8 @@ void main() {
     test('getExpenseReport should return expenses by category', () async {
       final mockResponse = Response(
         data: [
-          _createExpenseReportJson(categoryId: 1, categoryName: 'Utilities'),
-          _createExpenseReportJson(categoryId: 2, categoryName: 'Supplies'),
+          createExpenseReportJson(categoryId: 1, categoryName: 'Utilities'),
+          createExpenseReportJson(categoryId: 2, categoryName: 'Supplies'),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/expenses/'),
@@ -458,8 +456,8 @@ void main() {
     test('getChannelPerformance should return channel metrics', () async {
       final mockResponse = Response(
         data: [
-          _createChannelPerformanceJson(source: 'direct'),
-          _createChannelPerformanceJson(source: 'booking_com'),
+          createChannelPerformanceJson(source: 'direct'),
+          createChannelPerformanceJson(source: 'booking_com'),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/channels/'),
@@ -487,7 +485,7 @@ void main() {
     test('ChannelPerformance helpers work correctly', () async {
       final mockResponse = Response(
         data: [
-          _createChannelPerformanceJson(
+          createChannelPerformanceJson(
             percentageOfRevenue: 10.0,
             cancellationRate: 20.0,
           ),
@@ -517,15 +515,12 @@ void main() {
     test('getTopChannels returns sorted top channels', () async {
       final mockResponse = Response(
         data: [
-          _createChannelPerformanceJson(
+          createChannelPerformanceJson(
             source: 'direct',
             totalRevenue: 30000000,
           ),
-          _createChannelPerformanceJson(
-            source: 'agoda',
-            totalRevenue: 20000000,
-          ),
-          _createChannelPerformanceJson(
+          createChannelPerformanceJson(source: 'agoda', totalRevenue: 20000000),
+          createChannelPerformanceJson(
             source: 'booking_com',
             totalRevenue: 25000000,
           ),
@@ -557,8 +552,8 @@ void main() {
     test('getGuestDemographics should return demographics data', () async {
       final mockResponse = Response(
         data: [
-          _createGuestDemographicsJson(nationality: 'Vietnam'),
-          _createGuestDemographicsJson(nationality: 'USA', guestCount: 10),
+          createGuestDemographicsJson(nationality: 'Vietnam'),
+          createGuestDemographicsJson(nationality: 'USA', guestCount: 10),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/demographics/'),
@@ -587,9 +582,9 @@ void main() {
     test('getTopNationalities returns sorted top nationalities', () async {
       final mockResponse = Response(
         data: [
-          _createGuestDemographicsJson(nationality: 'Vietnam', guestCount: 50),
-          _createGuestDemographicsJson(nationality: 'USA', guestCount: 30),
-          _createGuestDemographicsJson(nationality: 'Japan', guestCount: 20),
+          createGuestDemographicsJson(nationality: 'Vietnam', guestCount: 50),
+          createGuestDemographicsJson(nationality: 'USA', guestCount: 30),
+          createGuestDemographicsJson(nationality: 'Japan', guestCount: 20),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/demographics/'),
@@ -618,8 +613,8 @@ void main() {
     test('getComparativeReport should return comparison metrics', () async {
       final mockResponse = Response(
         data: [
-          _createComparativeReportJson(metric: 'revenue'),
-          _createComparativeReportJson(metric: 'occupancy'),
+          createComparativeReportJson(metric: 'revenue'),
+          createComparativeReportJson(metric: 'occupancy'),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/comparative/'),
@@ -647,7 +642,7 @@ void main() {
     test('ComparativeReport improved helper works correctly', () async {
       final mockResponse = Response(
         data: [
-          _createComparativeReportJson(
+          createComparativeReportJson(
             metric: 'revenue',
             changePercentage: -5.0,
           ),
@@ -676,10 +671,10 @@ void main() {
     test('ComparativeReport metric display names', () async {
       final mockResponse = Response(
         data: [
-          _createComparativeReportJson(metric: 'revenue'),
-          _createComparativeReportJson(metric: 'occupancy'),
-          _createComparativeReportJson(metric: 'adr'),
-          _createComparativeReportJson(metric: 'revpar'),
+          createComparativeReportJson(metric: 'revenue'),
+          createComparativeReportJson(metric: 'occupancy'),
+          createComparativeReportJson(metric: 'adr'),
+          createComparativeReportJson(metric: 'revpar'),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/comparative/'),
@@ -710,8 +705,8 @@ void main() {
     test('getAverageOccupancy calculates correctly', () async {
       final mockResponse = Response(
         data: [
-          _createOccupancyReportJson(occupancyRate: 70.0),
-          _createOccupancyReportJson(occupancyRate: 80.0),
+          createOccupancyReportJson(occupancyRate: 70.0),
+          createOccupancyReportJson(occupancyRate: 80.0),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/occupancy/'),
@@ -757,8 +752,8 @@ void main() {
     test('getTotalRevenue calculates correctly', () async {
       final mockResponse = Response(
         data: [
-          _createRevenueReportJson(totalRevenue: 1000000),
-          _createRevenueReportJson(totalRevenue: 2000000),
+          createRevenueReportJson(totalRevenue: 1000000),
+          createRevenueReportJson(totalRevenue: 2000000),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/revenue/'),
@@ -782,8 +777,8 @@ void main() {
     test('getTotalExpenses calculates correctly', () async {
       final mockResponse = Response(
         data: [
-          _createExpenseReportJson(totalAmount: 500000),
-          _createExpenseReportJson(totalAmount: 300000),
+          createExpenseReportJson(totalAmount: 500000),
+          createExpenseReportJson(totalAmount: 300000),
         ],
         statusCode: 200,
         requestOptions: RequestOptions(path: '/api/v1/reports/expenses/'),
@@ -857,10 +852,10 @@ void main() {
     });
 
     test('ExpenseReport color parsing works', () {
-      final json = _createExpenseReportJson(categoryColor: '#FF5722');
+      final json = createExpenseReportJson(categoryColor: '#FF5722');
       final report = ExpenseReport.fromJson(json);
 
-      expect(report.colorValue.value, 0xFFFF5722);
+      expect(report.colorValue.toARGB32(), 0xFFFF5722);
     });
   });
 }
