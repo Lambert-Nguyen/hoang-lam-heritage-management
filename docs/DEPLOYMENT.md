@@ -395,37 +395,154 @@ sudo systemctl status nginx
 
 ---
 
-## 6. Flutter App (Release Builds)
+## 6. Flutter App (Release Builds via Fastlane)
+
+### Prerequisites
+
+```bash
+cd hoang_lam_app
+bundle install          # Install Fastlane + CocoaPods
+flutter pub get         # Install Flutter dependencies
+dart run build_runner build --delete-conflicting-outputs  # Generate code
+```
 
 ### Android
+
+#### One-time setup: Generate signing keystore
+
+```bash
+keytool -genkey -v -keystore ~/hoang-lam-release.keystore \
+  -alias hoang-lam-heritage -keyalg RSA -keysize 2048 -validity 10000 \
+  -dname "CN=Hoang Lam Heritage, O=Hoang Lam, L=Ho Chi Minh, C=VN"
+```
+
+Create `hoang_lam_app/android/key.properties` (already in .gitignore):
+
+```properties
+storePassword=YOUR_PASSWORD
+keyPassword=YOUR_PASSWORD
+keyAlias=hoang-lam-heritage
+storeFile=/path/to/hoang-lam-release.keystore
+```
+
+#### Build commands
 
 ```bash
 cd hoang_lam_app
 
-# Update API base URL in lib/core/config/app_config.dart
-# Set to your production domain
-
-# Build APK
-flutter build apk --release
+# Build signed release APK
+bundle exec fastlane android build_apk
+# Output: build/app/outputs/flutter-apk/app-release.apk
 
 # Build App Bundle (for Play Store)
-flutter build appbundle --release
+bundle exec fastlane android build_aab
+# Output: build/app/outputs/bundle/release/app-release.aab
 
-# Output: build/app/outputs/flutter-apk/app-release.apk
+# Deploy to Play Store internal track (requires Play Store account)
+bundle exec fastlane android beta
 ```
 
 ### iOS
 
+#### One-time setup: Configure signing in Xcode
+
+1. Open `ios/Runner.xcworkspace` in Xcode
+2. Select Runner target > Signing & Capabilities
+3. Set your Development Team
+4. Update `ios/fastlane/Appfile` with `apple_id` and `team_id`
+5. Remove `--no-codesign` from `ios/fastlane/Fastfile` build lane
+
+#### Build commands
+
 ```bash
 cd hoang_lam_app
 
-# Build for iOS
-flutter build ios --release
+# Build iOS release (without codesigning - for CI/testing)
+bundle exec fastlane ios build
 
-# Open in Xcode for archive & distribution
-open ios/Runner.xcworkspace
-# Xcode → Product → Archive → Distribute App
+# Build and upload to TestFlight
+bundle exec fastlane ios beta
 ```
+
+### CI/CD Release (GitHub Actions)
+
+1. Go to **Actions > "Fastlane Release"** workflow
+2. Click **"Run workflow"**
+3. Select target: `android_beta`, `ios_beta`, or `both`
+
+Required GitHub Secrets:
+
+| Secret | Description |
+|--------|-------------|
+| `ANDROID_KEYSTORE_BASE64` | `base64 -i ~/hoang-lam-release.keystore \| pbcopy` |
+| `KEYSTORE_PASSWORD` | Keystore password |
+| `KEY_PASSWORD` | Key password |
+| `APPLE_CERTIFICATE_BASE64` | Base64-encoded `.p12` distribution certificate |
+| `APPLE_CERTIFICATE_PASSWORD` | Certificate password |
+| `APPLE_PROVISIONING_PROFILE_BASE64` | Base64-encoded `.mobileprovision` |
+
+### Environment Configuration
+
+Fastlane lanes pass `--dart-define=ENV=prod` automatically. For manual builds:
+
+```bash
+# Production
+flutter build apk --release --dart-define=ENV=prod
+
+# Staging
+flutter build apk --release --dart-define=ENV=staging
+```
+
+### Version Management
+
+- **Marketing version**: Edit `pubspec.yaml` line 5 (`version: X.Y.Z+N`)
+- **Build number**: Auto-incremented by Fastlane (git commit count locally, `github.run_number` in CI)
+- Also update `lib/core/config/app_constants.dart` `appVersion` to match
+
+---
+
+## Pre-Release Smoke Test Checklist
+
+### Core Functionality
+- [ ] App launches without crash on Android
+- [ ] App launches without crash on iOS
+- [ ] Login flow works with valid credentials
+- [ ] Login shows error for invalid credentials
+- [ ] Dashboard loads with room status grid
+- [ ] Dashboard shows occupancy and revenue stats
+
+### Booking Flow
+- [ ] Create new booking (walk-in)
+- [ ] View booking in calendar
+- [ ] Check-in a confirmed booking
+- [ ] Check-out a checked-in booking
+- [ ] Cancel a pending booking
+
+### Room Management
+- [ ] View all 7 rooms with correct status
+- [ ] Change room status (available/cleaning/maintenance)
+
+### Guest Management
+- [ ] Search for a guest by name
+- [ ] Create new guest with Vietnamese ID (CCCD)
+- [ ] View guest history
+
+### Financial
+- [ ] Record an income entry
+- [ ] Record an expense entry
+- [ ] View daily summary
+
+### Settings & Accessibility
+- [ ] Vietnamese localization displays correctly
+- [ ] Dark mode toggle works
+- [ ] Text scaling (accessibility) works
+- [ ] Version number displays correctly in About
+- [ ] Logout works and returns to login screen
+
+### Platform-Specific
+- [ ] (Android) Back button navigation works correctly
+- [ ] (iOS) Swipe-back gesture works
+- [ ] (Web) App loads in Chrome
 
 ---
 

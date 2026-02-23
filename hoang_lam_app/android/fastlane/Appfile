@@ -1,0 +1,3 @@
+# Android app metadata for Fastlane
+# json_key_file("fastlane/play-store-key.json")  # Uncomment when Play Store account is ready
+package_name("com.hoanglam.heritage")

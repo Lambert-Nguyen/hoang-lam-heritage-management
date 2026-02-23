@@ -3,7 +3,12 @@
     "allow": [
       "Bash(gh pr view:*)",
       "Bash(gh label list:*)",
-      "Bash(black --check:*)"
+      "Bash(black --check:*)",
+      "Bash(flutter upgrade:*)",
+      "Bash(gh run list:*)",
+      "Bash(ruby:*)",
+      "Bash(gem list:*)",
+      "Bash(bundle install:*)"
     ]
   }
 }
