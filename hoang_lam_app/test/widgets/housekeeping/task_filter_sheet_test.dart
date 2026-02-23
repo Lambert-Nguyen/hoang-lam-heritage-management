@@ -24,21 +24,19 @@ void main() {
         locale: const Locale('vi'),
         home: Scaffold(
           body: Builder(
-            builder:
-                (context) => ElevatedButton(
-                  onPressed: () {
-                    showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder:
-                          (_) => TaskFilterSheet(
-                            initialFilter: initialFilter,
-                            onApply: onApply,
-                          ),
-                    );
-                  },
-                  child: const Text('Open Filter'),
-                ),
+            builder: (context) => ElevatedButton(
+              onPressed: () {
+                showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => TaskFilterSheet(
+                    initialFilter: initialFilter,
+                    onApply: onApply,
+                  ),
+                );
+              },
+              child: const Text('Open Filter'),
+            ),
           ),
         ),
       );

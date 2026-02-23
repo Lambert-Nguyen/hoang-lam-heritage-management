@@ -44,10 +44,9 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
         actions: [
           IconButton(
             icon: Icon(_showInactive ? Icons.visibility : Icons.visibility_off),
-            tooltip:
-                _showInactive
-                    ? context.l10n.hideInactiveRooms
-                    : context.l10n.showInactiveRooms,
+            tooltip: _showInactive
+                ? context.l10n.hideInactiveRooms
+                : context.l10n.showInactiveRooms,
             onPressed: () => setState(() => _showInactive = !_showInactive),
           ),
         ],
@@ -62,16 +61,15 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
               decoration: InputDecoration(
                 hintText: context.l10n.searchRooms,
                 prefixIcon: const Icon(Icons.search),
-                suffixIcon:
-                    _searchQuery.isNotEmpty
-                        ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() => _searchQuery = '');
-                          },
-                        )
-                        : null,
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      )
+                    : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -123,31 +121,30 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
             child: roomsAsync.when(
               data: (rooms) {
                 // Filter rooms
-                var filteredRooms =
-                    rooms.where((room) {
-                      // Search filter
-                      if (_searchQuery.isNotEmpty) {
-                        final query = _searchQuery.toLowerCase();
-                        final matchesNumber = room.number
-                            .toLowerCase()
-                            .contains(query);
-                        final matchesName =
-                            room.name?.toLowerCase().contains(query) ?? false;
-                        final matchesType =
-                            room.roomTypeName?.toLowerCase().contains(query) ??
-                            false;
-                        if (!matchesNumber && !matchesName && !matchesType) {
-                          return false;
-                        }
-                      }
+                var filteredRooms = rooms.where((room) {
+                  // Search filter
+                  if (_searchQuery.isNotEmpty) {
+                    final query = _searchQuery.toLowerCase();
+                    final matchesNumber = room.number.toLowerCase().contains(
+                      query,
+                    );
+                    final matchesName =
+                        room.name?.toLowerCase().contains(query) ?? false;
+                    final matchesType =
+                        room.roomTypeName?.toLowerCase().contains(query) ??
+                        false;
+                    if (!matchesNumber && !matchesName && !matchesType) {
+                      return false;
+                    }
+                  }
 
-                      // Active filter
-                      if (!_showInactive && !room.isActive) {
-                        return false;
-                      }
+                  // Active filter
+                  if (!_showInactive && !room.isActive) {
+                    return false;
+                  }
 
-                      return true;
-                    }).toList();
+                  return true;
+                }).toList();
 
                 if (filteredRooms.isEmpty) {
                   return Center(
@@ -197,9 +194,8 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                     itemCount: sortedFloors.length,
                     itemBuilder: (context, index) {
                       final floor = sortedFloors[index];
-                      final floorRooms =
-                          roomsByFloor[floor]!
-                            ..sort((a, b) => a.number.compareTo(b.number));
+                      final floorRooms = roomsByFloor[floor]!
+                        ..sort((a, b) => a.number.compareTo(b.number));
 
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -208,12 +204,11 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                             child: Text(
                               '${context.l10n.floor} $floor',
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                              ),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
                             ),
                           ),
                           ...floorRooms.map((room) => _buildRoomTile(room)),
@@ -224,26 +219,25 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error:
-                  (error, _) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline,
-                          size: 48,
-                          color: AppColors.error,
-                        ),
-                        AppSpacing.gapVerticalMd,
-                        Text('${context.l10n.error}: $error'),
-                        AppSpacing.gapVerticalMd,
-                        ElevatedButton(
-                          onPressed: () => ref.invalidate(allRoomsProvider),
-                          child: Text(context.l10n.retry),
-                        ),
-                      ],
+              error: (error, _) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.error,
                     ),
-                  ),
+                    AppSpacing.gapVerticalMd,
+                    Text('${context.l10n.error}: $error'),
+                    AppSpacing.gapVerticalMd,
+                    ElevatedButton(
+                      onPressed: () => ref.invalidate(allRoomsProvider),
+                      child: Text(context.l10n.retry),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -283,10 +277,9 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color:
-                room.isActive
-                    ? room.status.color.withValues(alpha: 0.1)
-                    : AppColors.mutedAccent.withValues(alpha: 0.1),
+            color: room.isActive
+                ? room.status.color.withValues(alpha: 0.1)
+                : AppColors.mutedAccent.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
@@ -294,8 +287,9 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
               room.number,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color:
-                    room.isActive ? room.status.color : AppColors.mutedAccent,
+                color: room.isActive
+                    ? room.status.color
+                    : AppColors.mutedAccent,
               ),
             ),
           ),
@@ -351,43 +345,40 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
         ),
         trailing: PopupMenuButton<String>(
           onSelected: (action) => _handleRoomAction(action, room),
-          itemBuilder:
-              (ctx) => [
-                PopupMenuItem(
-                  value: 'edit',
-                  child: ListTile(
-                    leading: const Icon(Icons.edit),
-                    title: Text(context.l10n.edit),
-                    contentPadding: EdgeInsets.zero,
-                  ),
+          itemBuilder: (ctx) => [
+            PopupMenuItem(
+              value: 'edit',
+              child: ListTile(
+                leading: const Icon(Icons.edit),
+                title: Text(context.l10n.edit),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            PopupMenuItem(
+              value: room.isActive ? 'deactivate' : 'activate',
+              child: ListTile(
+                leading: Icon(room.isActive ? Icons.block : Icons.check_circle),
+                title: Text(
+                  room.isActive
+                      ? context.l10n.deactivate
+                      : context.l10n.activate,
                 ),
-                PopupMenuItem(
-                  value: room.isActive ? 'deactivate' : 'activate',
-                  child: ListTile(
-                    leading: Icon(
-                      room.isActive ? Icons.block : Icons.check_circle,
-                    ),
-                    title: Text(
-                      room.isActive
-                          ? context.l10n.deactivate
-                          : context.l10n.activate,
-                    ),
-                    contentPadding: EdgeInsets.zero,
-                  ),
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+            const PopupMenuDivider(),
+            PopupMenuItem(
+              value: 'delete',
+              child: ListTile(
+                leading: const Icon(Icons.delete, color: AppColors.error),
+                title: Text(
+                  context.l10n.delete,
+                  style: const TextStyle(color: AppColors.error),
                 ),
-                const PopupMenuDivider(),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: ListTile(
-                    leading: const Icon(Icons.delete, color: AppColors.error),
-                    title: Text(
-                      context.l10n.delete,
-                      style: const TextStyle(color: AppColors.error),
-                    ),
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
+                contentPadding: EdgeInsets.zero,
+              ),
+            ),
+          ],
         ),
         onTap: () => _navigateToEditRoom(room),
       ),
@@ -444,39 +435,36 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
   void _confirmDeleteRoom(Room room) {
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text('${context.l10n.deleteRoom}?'),
-            content: Text(
-              '${context.l10n.confirmDeleteRoom} ${room.number}? ${context.l10n.actionCannotBeUndone}',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(context.l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.pop(dialogContext);
-                  final success = await ref
-                      .read(roomStateProvider.notifier)
-                      .deleteRoom(room.id);
-                  if (success && mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          '${context.l10n.roomDeleted} ${room.number}',
-                        ),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  }
-                },
-                style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                child: Text(context.l10n.delete),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: Text('${context.l10n.deleteRoom}?'),
+        content: Text(
+          '${context.l10n.confirmDeleteRoom} ${room.number}? ${context.l10n.actionCannotBeUndone}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(context.l10n.cancel),
           ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              final success = await ref
+                  .read(roomStateProvider.notifier)
+                  .deleteRoom(room.id);
+              if (success && mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${context.l10n.roomDeleted} ${room.number}'),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(context.l10n.delete),
+          ),
+        ],
+      ),
     );
   }
 

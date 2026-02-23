@@ -275,10 +275,9 @@ void main() {
           resolutionNotes: null,
           createdAt: DateTime(2024, 1, 15),
           updatedAt: DateTime(2024, 1, 15),
-          completedAt:
-              status == MaintenanceStatus.completed
-                  ? DateTime(2024, 1, 16)
-                  : null,
+          completedAt: status == MaintenanceStatus.completed
+              ? DateTime(2024, 1, 16)
+              : null,
         );
 
         await tester.pumpWidget(buildWidget(request: request));

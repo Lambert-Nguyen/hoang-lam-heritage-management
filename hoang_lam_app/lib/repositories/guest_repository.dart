@@ -60,10 +60,9 @@ class GuestRepository {
         }
       } else if (response.data is List) {
         final list = response.data as List<dynamic>;
-        guests =
-            list
-                .map((json) => Guest.fromJson(json as Map<String, dynamic>))
-                .toList();
+        guests = list
+            .map((json) => Guest.fromJson(json as Map<String, dynamic>))
+            .toList();
       } else {
         guests = [];
       }
@@ -273,15 +272,17 @@ class GuestRepository {
       data['id_number'] = guest.idNumber;
     }
     if (guest.idIssueDate != null) {
-      data['id_issue_date'] =
-          guest.idIssueDate!.toIso8601String().split('T')[0];
+      data['id_issue_date'] = guest.idIssueDate!.toIso8601String().split(
+        'T',
+      )[0];
     }
     if (guest.idIssuePlace.isNotEmpty) {
       data['id_issue_place'] = guest.idIssuePlace;
     }
     if (guest.dateOfBirth != null) {
-      data['date_of_birth'] =
-          guest.dateOfBirth!.toIso8601String().split('T')[0];
+      data['date_of_birth'] = guest.dateOfBirth!.toIso8601String().split(
+        'T',
+      )[0];
     }
     if (guest.gender != null) {
       data['gender'] = guest.gender!.name;

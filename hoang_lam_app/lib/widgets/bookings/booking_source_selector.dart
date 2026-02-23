@@ -32,33 +32,31 @@ class BookingSourceSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<BookingSource>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: showLabel ? context.l10n.bookingSource : null,
         hintText: hintText ?? context.l10n.selectBookingSourceHint,
-        prefixIcon:
-            value != null
-                ? Icon(value!.icon, color: value!.color)
-                : const Icon(Icons.source),
+        prefixIcon: value != null
+            ? Icon(value!.icon, color: value!.color)
+            : const Icon(Icons.source),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
         ),
       ),
-      items:
-          BookingSource.values.map((source) {
-            return DropdownMenuItem<BookingSource>(
-              value: source,
-              child: Row(
-                children: [
-                  Icon(source.icon, size: 20, color: source.color),
-                  const SizedBox(width: 12),
-                  Text(source.localizedName(context.l10n)),
-                ],
-              ),
-            );
-          }).toList(),
+      items: BookingSource.values.map((source) {
+        return DropdownMenuItem<BookingSource>(
+          value: source,
+          child: Row(
+            children: [
+              Icon(source.icon, size: 20, color: source.color),
+              const SizedBox(width: 12),
+              Text(source.localizedName(context.l10n)),
+            ],
+          ),
+        );
+      }).toList(),
       onChanged: enabled ? onChanged : null,
       isExpanded: true,
     );
@@ -144,10 +142,9 @@ class BookingSourceGrid extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: Container(
                 decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? source.color.withValues(alpha: 0.15)
-                          : Colors.transparent,
+                  color: isSelected
+                      ? source.color.withValues(alpha: 0.15)
+                      : Colors.transparent,
                   border: Border.all(
                     color: isSelected ? source.color : AppColors.border,
                     width: isSelected ? 2 : 1,
@@ -164,8 +161,9 @@ class BookingSourceGrid extends StatelessWidget {
                     Icon(
                       source.icon,
                       size: 18,
-                      color:
-                          isSelected ? source.color : AppColors.textSecondary,
+                      color: isSelected
+                          ? source.color
+                          : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 6),
                     Flexible(
@@ -173,12 +171,12 @@ class BookingSourceGrid extends StatelessWidget {
                         source.localizedName(context.l10n),
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight:
-                              isSelected ? FontWeight.w600 : FontWeight.normal,
-                          color:
-                              isSelected
-                                  ? source.color
-                                  : AppColors.textSecondary,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          color: isSelected
+                              ? source.color
+                              : AppColors.textSecondary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),

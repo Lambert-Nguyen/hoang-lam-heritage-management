@@ -144,18 +144,17 @@ class _EarlyLateFeeDialogState extends State<EarlyLateFeeDialog> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children:
-                    _presetHours.map((h) {
-                      final isSelected = _hoursController.text == h.toString();
-                      return ChoiceChip(
-                        label: Text(
-                          '${h.toStringAsFixed(h == h.roundToDouble() ? 0 : 1)}h',
-                        ),
-                        selected: isSelected,
-                        selectedColor: color.withValues(alpha: 0.2),
-                        onSelected: (_) => _selectPresetHours(h),
-                      );
-                    }).toList(),
+                children: _presetHours.map((h) {
+                  final isSelected = _hoursController.text == h.toString();
+                  return ChoiceChip(
+                    label: Text(
+                      '${h.toStringAsFixed(h == h.roundToDouble() ? 0 : 1)}h',
+                    ),
+                    selected: isSelected,
+                    selectedColor: color.withValues(alpha: 0.2),
+                    onSelected: (_) => _selectPresetHours(h),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 16),
 

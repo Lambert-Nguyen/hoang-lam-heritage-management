@@ -35,49 +35,47 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         title: Text(l10n.lostAndFound),
         actions: [
           itemAsync.whenOrNull(
-                data:
-                    (item) => PopupMenuButton<String>(
-                      onSelected: (value) => _handleMenuAction(value, item),
-                      itemBuilder:
-                          (context) => [
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: ListTile(
-                                leading: const Icon(Icons.edit),
-                                title: Text(l10n.edit),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            if (item.status == LostFoundStatus.found)
-                              PopupMenuItem(
-                                value: 'store',
-                                child: ListTile(
-                                  leading: const Icon(Icons.archive),
-                                  title: Text(context.l10n.storeInStorage),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                            if (item.status == LostFoundStatus.found ||
-                                item.status == LostFoundStatus.stored)
-                              PopupMenuItem(
-                                value: 'claim',
-                                child: ListTile(
-                                  leading: const Icon(Icons.check_circle),
-                                  title: Text(context.l10n.itemClaimed),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                            if (item.status == LostFoundStatus.stored)
-                              PopupMenuItem(
-                                value: 'dispose',
-                                child: ListTile(
-                                  leading: const Icon(Icons.delete_forever),
-                                  title: Text(context.l10n.disposeItem),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                          ],
+                data: (item) => PopupMenuButton<String>(
+                  onSelected: (value) => _handleMenuAction(value, item),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: ListTile(
+                        leading: const Icon(Icons.edit),
+                        title: Text(l10n.edit),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
+                    if (item.status == LostFoundStatus.found)
+                      PopupMenuItem(
+                        value: 'store',
+                        child: ListTile(
+                          leading: const Icon(Icons.archive),
+                          title: Text(context.l10n.storeInStorage),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    if (item.status == LostFoundStatus.found ||
+                        item.status == LostFoundStatus.stored)
+                      PopupMenuItem(
+                        value: 'claim',
+                        child: ListTile(
+                          leading: const Icon(Icons.check_circle),
+                          title: Text(context.l10n.itemClaimed),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    if (item.status == LostFoundStatus.stored)
+                      PopupMenuItem(
+                        value: 'dispose',
+                        child: ListTile(
+                          leading: const Icon(Icons.delete_forever),
+                          title: Text(context.l10n.disposeItem),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                  ],
+                ),
               ) ??
               const SizedBox.shrink(),
         ],
@@ -85,13 +83,11 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
       body: itemAsync.when(
         data: (item) => _buildContent(item),
         loading: () => const LoadingIndicator(),
-        error:
-            (e, _) => ErrorDisplay(
-              message: '${l10n.error}: $e',
-              onRetry:
-                  () =>
-                      ref.invalidate(lostFoundItemByIdProvider(widget.itemId)),
-            ),
+        error: (e, _) => ErrorDisplay(
+          message: '${l10n.error}: $e',
+          onRetry: () =>
+              ref.invalidate(lostFoundItemByIdProvider(widget.itemId)),
+        ),
       ),
       bottomNavigationBar: itemAsync.whenOrNull(
         data: (item) => _buildBottomBar(item),
@@ -226,10 +222,9 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
                   _InfoRow(label: context.l10n.name, value: item.guestName!),
                   _InfoRow(
                     label: context.l10n.guestContacted,
-                    value:
-                        item.guestContacted
-                            ? context.l10n.yesLabel
-                            : context.l10n.notYetLabel,
+                    value: item.guestContacted
+                        ? context.l10n.yesLabel
+                        : context.l10n.notYetLabel,
                   ),
                 ],
               ),
@@ -374,24 +369,23 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(title),
-            content: TextField(
-              controller: controller,
-              decoration: InputDecoration(hintText: hint),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(AppLocalizations.of(context)!.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, controller.text),
-                child: Text(AppLocalizations.of(context)!.save),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(hintText: hint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text(AppLocalizations.of(context)!.save),
+          ),
+        ],
+      ),
     ).then((result) {
       controller.dispose();
       return result;
@@ -401,21 +395,20 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   Future<bool?> _showConfirmDialog(String title, String content) {
     return showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(AppLocalizations.of(context)!.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(AppLocalizations.of(context)!.confirm),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(AppLocalizations.of(context)!.confirm),
+          ),
+        ],
+      ),
     );
   }
 

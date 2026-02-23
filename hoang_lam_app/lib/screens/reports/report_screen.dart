@@ -40,29 +40,28 @@ class ReportScreen extends ConsumerWidget {
             icon: const Icon(Icons.download),
             tooltip: l10n.exportReport,
             onSelected: (format) => _exportReport(context, ref, format),
-            itemBuilder:
-                (context) => [
-                  const PopupMenuItem(
-                    value: ExportFormat.xlsx,
-                    child: Row(
-                      children: [
-                        Icon(Icons.table_chart),
-                        SizedBox(width: AppSpacing.sm),
-                        Text('Excel (XLSX)'),
-                      ],
-                    ),
-                  ),
-                  const PopupMenuItem(
-                    value: ExportFormat.csv,
-                    child: Row(
-                      children: [
-                        Icon(Icons.text_snippet),
-                        SizedBox(width: AppSpacing.sm),
-                        Text('CSV'),
-                      ],
-                    ),
-                  ),
-                ],
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: ExportFormat.xlsx,
+                child: Row(
+                  children: [
+                    Icon(Icons.table_chart),
+                    SizedBox(width: AppSpacing.sm),
+                    Text('Excel (XLSX)'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: ExportFormat.csv,
+                child: Row(
+                  children: [
+                    Icon(Icons.text_snippet),
+                    SizedBox(width: AppSpacing.sm),
+                    Text('CSV'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -169,39 +168,34 @@ class ReportScreen extends ConsumerWidget {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Row(
-        children:
-            ReportType.values.map((type) {
-              final isSelected = state.selectedReportType == type;
-              return Padding(
-                padding: const EdgeInsets.only(right: AppSpacing.sm),
-                child: ChoiceChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        type.icon,
-                        size: 18,
-                        color:
-                            isSelected
-                                ? AppColors.onPrimary
-                                : AppColors.textPrimary,
-                      ),
-                      AppSpacing.gapHorizontalXs,
-                      Text(type.localizedName(context.l10n)),
-                    ],
+        children: ReportType.values.map((type) {
+          final isSelected = state.selectedReportType == type;
+          return Padding(
+            padding: const EdgeInsets.only(right: AppSpacing.sm),
+            child: ChoiceChip(
+              label: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    type.icon,
+                    size: 18,
+                    color: isSelected
+                        ? AppColors.onPrimary
+                        : AppColors.textPrimary,
                   ),
-                  selected: isSelected,
-                  onSelected: (_) => notifier.setReportType(type),
-                  selectedColor: AppColors.primary,
-                  labelStyle: TextStyle(
-                    color:
-                        isSelected
-                            ? AppColors.onPrimary
-                            : AppColors.textPrimary,
-                  ),
-                ),
-              );
-            }).toList(),
+                  AppSpacing.gapHorizontalXs,
+                  Text(type.localizedName(context.l10n)),
+                ],
+              ),
+              selected: isSelected,
+              onSelected: (_) => notifier.setReportType(type),
+              selectedColor: AppColors.primary,
+              labelStyle: TextStyle(
+                color: isSelected ? AppColors.onPrimary : AppColors.textPrimary,
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -336,11 +330,10 @@ class _OccupancyReportContent extends ConsumerWidget {
     return reportAsync.when(
       data: (reports) => _buildOccupancyList(context, reports),
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => ErrorDisplay(
-            message: '${context.l10n.reportLoadError}: $error',
-            onRetry: () => ref.invalidate(currentOccupancyReportProvider),
-          ),
+      error: (error, _) => ErrorDisplay(
+        message: '${context.l10n.reportLoadError}: $error',
+        onRetry: () => ref.invalidate(currentOccupancyReportProvider),
+      ),
     );
   }
 
@@ -371,10 +364,9 @@ class _OccupancyReportContent extends ConsumerWidget {
                     label: context.l10n.averageOccupancy,
                     value: '${avgOccupancy.toStringAsFixed(1)}%',
                     icon: Icons.hotel,
-                    color:
-                        avgOccupancy >= 70
-                            ? AppColors.success
-                            : AppColors.warning,
+                    color: avgOccupancy >= 70
+                        ? AppColors.success
+                        : AppColors.warning,
                   ),
                   const Divider(),
                   _SummaryRow(
@@ -410,19 +402,17 @@ class _OccupancyReportTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor:
-            report.occupancyRate >= 70
-                ? AppColors.success.withValues(alpha: 0.2)
-                : AppColors.warning.withValues(alpha: 0.2),
+        backgroundColor: report.occupancyRate >= 70
+            ? AppColors.success.withValues(alpha: 0.2)
+            : AppColors.warning.withValues(alpha: 0.2),
         child: Text(
           '${report.occupancyRate.toInt()}%',
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color:
-                report.occupancyRate >= 70
-                    ? AppColors.success
-                    : AppColors.warning,
+            color: report.occupancyRate >= 70
+                ? AppColors.success
+                : AppColors.warning,
           ),
         ),
       ),
@@ -445,11 +435,10 @@ class _RevenueReportContent extends ConsumerWidget {
     return reportAsync.when(
       data: (reports) => _buildRevenueList(context, reports),
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => ErrorDisplay(
-            message: '${context.l10n.reportLoadError}: $error',
-            onRetry: () => ref.invalidate(currentRevenueReportProvider),
-          ),
+      error: (error, _) => ErrorDisplay(
+        message: '${context.l10n.reportLoadError}: $error',
+        onRetry: () => ref.invalidate(currentRevenueReportProvider),
+      ),
     );
   }
 
@@ -502,8 +491,9 @@ class _RevenueReportContent extends ConsumerWidget {
                 _MetricCard(
                   label: context.l10n.netProfit,
                   value: CurrencyFormatter.formatVND(netProfit),
-                  icon:
-                      netProfit >= 0 ? Icons.trending_up : Icons.trending_down,
+                  icon: netProfit >= 0
+                      ? Icons.trending_up
+                      : Icons.trending_down,
                   color: netProfit >= 0 ? AppColors.success : AppColors.error,
                 ),
               ],
@@ -532,10 +522,9 @@ class _RevenueReportTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor:
-            report.netProfit >= 0
-                ? AppColors.success.withValues(alpha: 0.2)
-                : AppColors.error.withValues(alpha: 0.2),
+        backgroundColor: report.netProfit >= 0
+            ? AppColors.success.withValues(alpha: 0.2)
+            : AppColors.error.withValues(alpha: 0.2),
         child: Icon(
           report.netProfit >= 0 ? Icons.trending_up : Icons.trending_down,
           color: report.netProfit >= 0 ? AppColors.success : AppColors.error,
@@ -566,11 +555,10 @@ class _KPIReportContent extends ConsumerWidget {
     return reportAsync.when(
       data: (report) => _buildKPIContent(context, report),
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => ErrorDisplay(
-            message: '${context.l10n.reportLoadError}: $error',
-            onRetry: () => ref.invalidate(currentKPIReportProvider),
-          ),
+      error: (error, _) => ErrorDisplay(
+        message: '${context.l10n.reportLoadError}: $error',
+        onRetry: () => ref.invalidate(currentKPIReportProvider),
+      ),
     );
   }
 
@@ -749,11 +737,10 @@ class _ExpenseReportContent extends ConsumerWidget {
     return reportAsync.when(
       data: (reports) => _buildExpenseList(context, reports),
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => ErrorDisplay(
-            message: '${context.l10n.reportLoadError}: $error',
-            onRetry: () => ref.invalidate(currentExpenseReportProvider),
-          ),
+      error: (error, _) => ErrorDisplay(
+        message: '${context.l10n.reportLoadError}: $error',
+        onRetry: () => ref.invalidate(currentExpenseReportProvider),
+      ),
     );
   }
 
@@ -834,11 +821,10 @@ class _ChannelReportContent extends ConsumerWidget {
     return reportAsync.when(
       data: (channels) => _buildChannelList(context, channels),
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => ErrorDisplay(
-            message: '${context.l10n.reportLoadError}: $error',
-            onRetry: () => ref.invalidate(currentChannelPerformanceProvider),
-          ),
+      error: (error, _) => ErrorDisplay(
+        message: '${context.l10n.reportLoadError}: $error',
+        onRetry: () => ref.invalidate(currentChannelPerformanceProvider),
+      ),
     );
   }
 
@@ -907,16 +893,14 @@ class _ChannelPerformanceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor:
-            channel.isHighPerforming
-                ? AppColors.success.withValues(alpha: 0.2)
-                : AppColors.surfaceVariant,
+        backgroundColor: channel.isHighPerforming
+            ? AppColors.success.withValues(alpha: 0.2)
+            : AppColors.surfaceVariant,
         child: Icon(
           Icons.source,
-          color:
-              channel.isHighPerforming
-                  ? AppColors.success
-                  : AppColors.textSecondary,
+          color: channel.isHighPerforming
+              ? AppColors.success
+              : AppColors.textSecondary,
         ),
       ),
       title: Text(channel.sourceDisplay),
@@ -935,10 +919,9 @@ class _ChannelPerformanceTile extends StatelessWidget {
             '${channel.percentageOfRevenue.toStringAsFixed(1)}%',
             style: TextStyle(
               fontSize: 12,
-              color:
-                  channel.isHighPerforming
-                      ? AppColors.success
-                      : AppColors.textSecondary,
+              color: channel.isHighPerforming
+                  ? AppColors.success
+                  : AppColors.textSecondary,
             ),
           ),
         ],
@@ -957,11 +940,10 @@ class _DemographicsReportContent extends ConsumerWidget {
     return reportAsync.when(
       data: (demographics) => _buildDemographicsList(context, demographics),
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => ErrorDisplay(
-            message: '${context.l10n.reportLoadError}: $error',
-            onRetry: () => ref.invalidate(currentGuestDemographicsProvider),
-          ),
+      error: (error, _) => ErrorDisplay(
+        message: '${context.l10n.reportLoadError}: $error',
+        onRetry: () => ref.invalidate(currentGuestDemographicsProvider),
+      ),
     );
   }
 

@@ -97,16 +97,14 @@ class _DateRateOverrideFormScreenState
           _initFromOverride(override);
           return _buildForm(roomTypesAsync);
         },
-        loading:
-            () => Scaffold(
-              appBar: AppBar(title: Text(l10n.editDateRate)),
-              body: const Center(child: CircularProgressIndicator()),
-            ),
-        error:
-            (error, _) => Scaffold(
-              appBar: AppBar(title: Text(l10n.editDateRate)),
-              body: Center(child: Text('${l10n.error}: $error')),
-            ),
+        loading: () => Scaffold(
+          appBar: AppBar(title: Text(l10n.editDateRate)),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
+        error: (error, _) => Scaffold(
+          appBar: AppBar(title: Text(l10n.editDateRate)),
+          body: Center(child: Text('${l10n.error}: $error')),
+        ),
       );
     }
 
@@ -147,33 +145,29 @@ class _DateRateOverrideFormScreenState
             // Room Type
             _buildSectionHeader(l10n.roomType),
             roomTypesAsync.when(
-              data:
-                  (roomTypes) => DropdownButtonFormField<int>(
-                    value: _selectedRoomTypeId,
-                    decoration: InputDecoration(
-                      labelText: '${l10n.selectRoomType} *',
-                      prefixIcon: const Icon(Icons.meeting_room),
-                    ),
-                    items:
-                        roomTypes
-                            .map(
-                              (type) => DropdownMenuItem(
-                                value: type.id,
-                                child: Text(
-                                  '${type.name} - ${type.formattedBaseRate}',
-                                ),
-                              ),
-                            )
-                            .toList(),
-                    onChanged:
-                        (value) => setState(() => _selectedRoomTypeId = value),
-                    validator: (value) {
-                      if (value == null) {
-                        return l10n.pleaseSelectRoomType;
-                      }
-                      return null;
-                    },
-                  ),
+              data: (roomTypes) => DropdownButtonFormField<int>(
+                initialValue: _selectedRoomTypeId,
+                decoration: InputDecoration(
+                  labelText: '${l10n.selectRoomType} *',
+                  prefixIcon: const Icon(Icons.meeting_room),
+                ),
+                items: roomTypes
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type.id,
+                        child: Text('${type.name} - ${type.formattedBaseRate}'),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedRoomTypeId = value),
+                validator: (value) {
+                  if (value == null) {
+                    return l10n.pleaseSelectRoomType;
+                  }
+                  return null;
+                },
+              ),
               loading: () => const LinearProgressIndicator(),
               error: (_, __) => Text(l10n.cannotLoadRoomTypes),
             ),
@@ -254,22 +248,18 @@ class _DateRateOverrideFormScreenState
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children:
-                  _getCommonReasons(l10n)
-                      .map(
-                        (reason) => ActionChip(
-                          label: Text(reason),
-                          onPressed:
-                              () => setState(
-                                () => _reasonController.text = reason,
-                              ),
-                          backgroundColor:
-                              _reasonController.text == reason
-                                  ? AppColors.primary.withValues(alpha: 0.1)
-                                  : null,
-                        ),
-                      )
-                      .toList(),
+              children: _getCommonReasons(l10n)
+                  .map(
+                    (reason) => ActionChip(
+                      label: Text(reason),
+                      onPressed: () =>
+                          setState(() => _reasonController.text = reason),
+                      backgroundColor: _reasonController.text == reason
+                          ? AppColors.primary.withValues(alpha: 0.1)
+                          : null,
+                    ),
+                  )
+                  .toList(),
             ),
 
             AppSpacing.gapVerticalLg,
@@ -317,14 +307,13 @@ class _DateRateOverrideFormScreenState
             // Save Button
             FilledButton.icon(
               onPressed: _isLoading ? null : _saveOverride,
-              icon:
-                  _isLoading
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Icon(Icons.save),
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.save),
               label: Text(
                 _isEditing
                     ? l10n.update
@@ -383,10 +372,9 @@ class _DateRateOverrideFormScreenState
           'reason': _reasonController.text.trim(),
           'closed_to_arrival': _closedToArrival,
           'closed_to_departure': _closedToDeparture,
-          'min_stay':
-              _minStayController.text.isEmpty
-                  ? null
-                  : int.parse(_minStayController.text),
+          'min_stay': _minStayController.text.isEmpty
+              ? null
+              : int.parse(_minStayController.text),
         });
 
         if (mounted) {
@@ -404,10 +392,9 @@ class _DateRateOverrideFormScreenState
           reason: _reasonController.text.trim(),
           closedToArrival: _closedToArrival,
           closedToDeparture: _closedToDeparture,
-          minStay:
-              _minStayController.text.isEmpty
-                  ? null
-                  : int.parse(_minStayController.text),
+          minStay: _minStayController.text.isEmpty
+              ? null
+              : int.parse(_minStayController.text),
         );
 
         await notifier.bulkCreateOverrides(request);
@@ -429,10 +416,9 @@ class _DateRateOverrideFormScreenState
           reason: _reasonController.text.trim(),
           closedToArrival: _closedToArrival,
           closedToDeparture: _closedToDeparture,
-          minStay:
-              _minStayController.text.isEmpty
-                  ? null
-                  : int.parse(_minStayController.text),
+          minStay: _minStayController.text.isEmpty
+              ? null
+              : int.parse(_minStayController.text),
         );
 
         await notifier.createOverride(request);
@@ -457,27 +443,26 @@ class _DateRateOverrideFormScreenState
     final dateFormat = DateFormat('dd/MM/yyyy');
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.deleteDateRateTitle),
-            content: Text(
-              '${l10n.confirmDeleteDateRate} ${_selectedDate != null ? dateFormat.format(_selectedDate!) : ''}?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await _deleteOverride();
-                },
-                style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                child: Text(l10n.delete),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteDateRateTitle),
+        content: Text(
+          '${l10n.confirmDeleteDateRate} ${_selectedDate != null ? dateFormat.format(_selectedDate!) : ''}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
           ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deleteOverride();
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
     );
   }
 
@@ -551,13 +536,12 @@ class _DatePickerField extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          suffixIcon:
-              value != null
-                  ? IconButton(
-                    icon: const Icon(Icons.clear, size: 18),
-                    onPressed: () => onChanged(null),
-                  )
-                  : const Icon(Icons.calendar_today),
+          suffixIcon: value != null
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 18),
+                  onPressed: () => onChanged(null),
+                )
+              : const Icon(Icons.calendar_today),
         ),
         child: Text(
           value != null

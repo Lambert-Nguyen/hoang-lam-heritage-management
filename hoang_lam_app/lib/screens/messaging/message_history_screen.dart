@@ -26,12 +26,11 @@ class MessageHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final displayTitle = title ?? l10n.messageHistory;
-    final messagesAsync =
-        guestId != null
-            ? ref.watch(guestMessagesByGuestProvider(guestId!))
-            : bookingId != null
-            ? ref.watch(guestMessagesByBookingProvider(bookingId!))
-            : ref.watch(guestMessagesProvider);
+    final messagesAsync = guestId != null
+        ? ref.watch(guestMessagesByGuestProvider(guestId!))
+        : bookingId != null
+        ? ref.watch(guestMessagesByBookingProvider(bookingId!))
+        : ref.watch(guestMessagesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -83,42 +82,36 @@ class MessageHistoryScreen extends ConsumerWidget {
                 final message = messages[index];
                 return _MessageTile(
                   message: message,
-                  onResend:
-                      message.status == MessageStatus.failed
-                          ? () => _resendMessage(context, ref, message)
-                          : null,
+                  onResend: message.status == MessageStatus.failed
+                      ? () => _resendMessage(context, ref, message)
+                      : null,
                 );
               },
             ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (e, _) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 48,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(l10n.errorLoadingData),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (guestId != null) {
-                        ref.invalidate(guestMessagesByGuestProvider(guestId!));
-                      } else {
-                        ref.invalidate(guestMessagesProvider);
-                      }
-                    },
-                    child: Text(l10n.retry),
-                  ),
-                ],
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(l10n.errorLoadingData),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  if (guestId != null) {
+                    ref.invalidate(guestMessagesByGuestProvider(guestId!));
+                  } else {
+                    ref.invalidate(guestMessagesProvider);
+                  }
+                },
+                child: Text(l10n.retry),
               ),
-            ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -131,21 +124,20 @@ class MessageHistoryScreen extends ConsumerWidget {
     final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.resendMessage),
-            content: Text(l10n.resendMessageConfirm),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.send),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.resendMessage),
+        content: Text(l10n.resendMessageConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.send),
+          ),
+        ],
+      ),
     );
 
     if (confirmed != true || !context.mounted) return;

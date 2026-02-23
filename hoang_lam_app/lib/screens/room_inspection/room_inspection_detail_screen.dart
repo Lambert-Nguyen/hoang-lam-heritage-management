@@ -24,21 +24,18 @@ class RoomInspectionDetailScreen extends ConsumerWidget {
 
     return inspectionAsync.when(
       data: (inspection) => _InspectionDetailContent(inspection: inspection),
-      loading:
-          () => Scaffold(
-            appBar: AppBar(title: Text(l10n.inspectionDetails)),
-            body: const LoadingIndicator(),
-          ),
-      error:
-          (e, _) => Scaffold(
-            appBar: AppBar(title: Text(l10n.inspectionDetails)),
-            body: ErrorDisplay(
-              message: '${l10n.error}: $e',
-              onRetry:
-                  () =>
-                      ref.invalidate(roomInspectionByIdProvider(inspectionId)),
-            ),
-          ),
+      loading: () => Scaffold(
+        appBar: AppBar(title: Text(l10n.inspectionDetails)),
+        body: const LoadingIndicator(),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(l10n.inspectionDetails)),
+        body: ErrorDisplay(
+          message: '${l10n.error}: $e',
+          onRetry: () =>
+              ref.invalidate(roomInspectionByIdProvider(inspectionId)),
+        ),
+      ),
     );
   }
 }
@@ -74,47 +71,43 @@ class _InspectionDetailContentState
             ),
           if (inspection.status == InspectionStatus.inProgress)
             TextButton.icon(
-              onPressed:
-                  () => context.push(
-                    '/room-inspections/${inspection.id}/conduct',
-                  ),
+              onPressed: () =>
+                  context.push('/room-inspections/${inspection.id}/conduct'),
               icon: const Icon(Icons.checklist),
               label: Text(l10n.continueLabel),
             ),
         ],
       ),
-      body:
-          _isLoading
-              ? const LoadingIndicator()
-              : SingleChildScrollView(
-                padding: AppSpacing.paddingAll,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeaderCard(context, inspection),
+      body: _isLoading
+          ? const LoadingIndicator()
+          : SingleChildScrollView(
+              padding: AppSpacing.paddingAll,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeaderCard(context, inspection),
+                  const SizedBox(height: AppSpacing.md),
+                  if (inspection.status == InspectionStatus.completed ||
+                      inspection.status == InspectionStatus.requiresAction) ...[
+                    _buildScoreCard(context, inspection),
                     const SizedBox(height: AppSpacing.md),
-                    if (inspection.status == InspectionStatus.completed ||
-                        inspection.status ==
-                            InspectionStatus.requiresAction) ...[
-                      _buildScoreCard(context, inspection),
-                      const SizedBox(height: AppSpacing.md),
-                    ],
-                    _buildChecklistCard(context, inspection),
-                    const SizedBox(height: AppSpacing.md),
-                    if (inspection.images.isNotEmpty) ...[
-                      _buildImagesCard(context, inspection),
-                      const SizedBox(height: AppSpacing.md),
-                    ],
-                    if (inspection.notes.isNotEmpty) ...[
-                      _buildNotesCard(context, inspection),
-                      const SizedBox(height: AppSpacing.md),
-                    ],
-                    if (inspection.actionRequired.isNotEmpty) ...[
-                      _buildActionRequiredCard(context, inspection),
-                    ],
                   ],
-                ),
+                  _buildChecklistCard(context, inspection),
+                  const SizedBox(height: AppSpacing.md),
+                  if (inspection.images.isNotEmpty) ...[
+                    _buildImagesCard(context, inspection),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  if (inspection.notes.isNotEmpty) ...[
+                    _buildNotesCard(context, inspection),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+                  if (inspection.actionRequired.isNotEmpty) ...[
+                    _buildActionRequiredCard(context, inspection),
+                  ],
+                ],
               ),
+            ),
     );
   }
 
@@ -243,12 +236,11 @@ class _InspectionDetailContentState
                     children: [
                       Text(
                         '${inspection.score.toStringAsFixed(0)}%',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.displaySmall?.copyWith(
-                          color: _getScoreColor(inspection.score),
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: Theme.of(context).textTheme.displaySmall
+                            ?.copyWith(
+                              color: _getScoreColor(inspection.score),
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
                       Text(context.l10n.scoreLabel),
                     ],
@@ -402,20 +394,18 @@ class _InspectionDetailContentState
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color:
-            isChecked
-                ? (isPassed
-                    ? AppColors.success.withValues(alpha: 0.05)
-                    : AppColors.error.withValues(alpha: 0.05))
-                : AppColors.mutedAccent.withValues(alpha: 0.05),
+        color: isChecked
+            ? (isPassed
+                  ? AppColors.success.withValues(alpha: 0.05)
+                  : AppColors.error.withValues(alpha: 0.05))
+            : AppColors.mutedAccent.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color:
-              isChecked
-                  ? (isPassed
-                      ? AppColors.success.withValues(alpha: 0.3)
-                      : AppColors.error.withValues(alpha: 0.3))
-                  : AppColors.mutedAccent.withValues(alpha: 0.3),
+          color: isChecked
+              ? (isPassed
+                    ? AppColors.success.withValues(alpha: 0.3)
+                    : AppColors.error.withValues(alpha: 0.3))
+              : AppColors.mutedAccent.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -424,10 +414,9 @@ class _InspectionDetailContentState
             isChecked
                 ? (isPassed ? Icons.check_circle : Icons.cancel)
                 : Icons.radio_button_unchecked,
-            color:
-                isChecked
-                    ? (isPassed ? AppColors.success : AppColors.error)
-                    : AppColors.mutedAccent,
+            color: isChecked
+                ? (isPassed ? AppColors.success : AppColors.error)
+                : AppColors.mutedAccent,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -511,13 +500,12 @@ class _InspectionDetailContentState
                         child: Image.network(
                           imageUrl,
                           fit: BoxFit.cover,
-                          errorBuilder:
-                              (_, __, ___) => const Center(
-                                child: Icon(
-                                  Icons.image_not_supported,
-                                  color: AppColors.mutedAccent,
-                                ),
-                              ),
+                          errorBuilder: (_, __, ___) => const Center(
+                            child: Icon(
+                              Icons.image_not_supported,
+                              color: AppColors.mutedAccent,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -618,35 +606,31 @@ class _InspectionDetailContentState
   void _showImageDialog(BuildContext context, String imageUrl) {
     showDialog(
       context: context,
-      builder:
-          (context) => Dialog(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                AppBar(
-                  title: Text(context.l10n.viewPhoto),
-                  automaticallyImplyLeading: false,
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-                Image.network(
-                  imageUrl,
-                  fit: BoxFit.contain,
-                  errorBuilder:
-                      (_, __, ___) => const SizedBox(
-                        height: 200,
-                        child: Center(
-                          child: Icon(Icons.image_not_supported, size: 64),
-                        ),
-                      ),
+      builder: (context) => Dialog(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppBar(
+              title: Text(context.l10n.viewPhoto),
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.pop(context),
                 ),
               ],
             ),
-          ),
+            Image.network(
+              imageUrl,
+              fit: BoxFit.contain,
+              errorBuilder: (_, __, ___) => const SizedBox(
+                height: 200,
+                child: Center(child: Icon(Icons.image_not_supported, size: 64)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

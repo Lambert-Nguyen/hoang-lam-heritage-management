@@ -206,69 +206,66 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
 
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(
-              isCustom ? l10n.writeCustomMessage : l10n.messagePreview,
-            ),
-            content: SingleChildScrollView(
-              child: SizedBox(
-                width: double.maxFinite,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (recipientAddress != null &&
-                        recipientAddress.isNotEmpty) ...[
-                      Text(
-                        '${l10n.recipient}: $recipientAddress',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-                    TextField(
-                      controller: subjectController,
-                      decoration: InputDecoration(
-                        labelText: l10n.subject,
-                        border: const OutlineInputBorder(),
-                      ),
-                      maxLines: 1,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(isCustom ? l10n.writeCustomMessage : l10n.messagePreview),
+        content: SingleChildScrollView(
+          child: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (recipientAddress != null &&
+                    recipientAddress.isNotEmpty) ...[
+                  Text(
+                    '${l10n.recipient}: $recipientAddress',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: bodyController,
-                      decoration: InputDecoration(
-                        labelText: l10n.messageContent,
-                        border: const OutlineInputBorder(),
-                      ),
-                      maxLines: 8,
-                    ),
-                  ],
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                TextField(
+                  controller: subjectController,
+                  decoration: InputDecoration(
+                    labelText: l10n.subject,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 1,
                 ),
-              ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: bodyController,
+                  decoration: InputDecoration(
+                    labelText: l10n.messageContent,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 8,
+                ),
+              ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
-              ),
-              FilledButton.icon(
-                onPressed: () async {
-                  Navigator.pop(dialogContext);
-                  await _sendMessage(
-                    subject: subjectController.text,
-                    body: bodyController.text,
-                    channel: channel,
-                    templateId: templateId,
-                  );
-                },
-                icon: const Icon(Icons.send, size: 18),
-                label: Text(l10n.send),
-              ),
-            ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton.icon(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              await _sendMessage(
+                subject: subjectController.text,
+                body: bodyController.text,
+                channel: channel,
+                templateId: templateId,
+              );
+            },
+            icon: const Icon(Icons.send, size: 18),
+            label: Text(l10n.send),
+          ),
+        ],
+      ),
     ).then((_) {
       subjectController.dispose();
       bodyController.dispose();

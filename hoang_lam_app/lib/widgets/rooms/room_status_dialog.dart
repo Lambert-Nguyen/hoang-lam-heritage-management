@@ -117,20 +117,18 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                 child: Material(
-                  color:
-                      isSelected
-                          ? status.color.withAlpha(30)
-                          : Colors.transparent,
+                  color: isSelected
+                      ? status.color.withAlpha(30)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   child: InkWell(
-                    onTap:
-                        _isLoading
-                            ? null
-                            : () {
-                              setState(() {
-                                _selectedStatus = status;
-                              });
-                            },
+                    onTap: _isLoading
+                        ? null
+                        : () {
+                            setState(() {
+                              _selectedStatus = status;
+                            });
+                          },
                     borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
@@ -148,21 +146,19 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
                                 Text(
                                   status.localizedName(context.l10n),
                                   style: TextStyle(
-                                    fontWeight:
-                                        isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                     color: status.color,
                                   ),
                                 ),
                                 if (isCurrentStatus)
                                   Text(
                                     context.l10n.currentLabel,
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.textSecondary,
-                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                        ),
                                   ),
                               ],
                             ),
@@ -199,18 +195,16 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
           child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
-          onPressed:
-              _isLoading || _selectedStatus == widget.room.status
-                  ? null
-                  : _updateStatus,
-          child:
-              _isLoading
-                  ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                  : Text(context.l10n.update),
+          onPressed: _isLoading || _selectedStatus == widget.room.status
+              ? null
+              : _updateStatus,
+          child: _isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(context.l10n.update),
         ),
       ],
     );
@@ -313,30 +307,27 @@ class QuickStatusBottomSheet extends ConsumerWidget {
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
-              children:
-                  RoomStatus.values.map((status) {
-                    final isCurrentStatus = room.status == status;
+              children: RoomStatus.values.map((status) {
+                final isCurrentStatus = room.status == status;
 
-                    return ActionChip(
-                      avatar: Icon(
-                        status.icon,
-                        size: 18,
-                        color: isCurrentStatus ? Colors.white : status.color,
-                      ),
-                      label: Text(status.localizedName(context.l10n)),
-                      backgroundColor:
-                          isCurrentStatus
-                              ? status.color
-                              : status.color.withAlpha(30),
-                      labelStyle: TextStyle(
-                        color: isCurrentStatus ? Colors.white : status.color,
-                      ),
-                      onPressed:
-                          isCurrentStatus
-                              ? null
-                              : () => Navigator.pop(context, status),
-                    );
-                  }).toList(),
+                return ActionChip(
+                  avatar: Icon(
+                    status.icon,
+                    size: 18,
+                    color: isCurrentStatus ? Colors.white : status.color,
+                  ),
+                  label: Text(status.localizedName(context.l10n)),
+                  backgroundColor: isCurrentStatus
+                      ? status.color
+                      : status.color.withAlpha(30),
+                  labelStyle: TextStyle(
+                    color: isCurrentStatus ? Colors.white : status.color,
+                  ),
+                  onPressed: isCurrentStatus
+                      ? null
+                      : () => Navigator.pop(context, status),
+                );
+              }).toList(),
             ),
             const SizedBox(height: AppSpacing.md),
           ],

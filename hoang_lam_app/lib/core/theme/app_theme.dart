@@ -63,7 +63,7 @@ class AppTheme {
       ),
 
       // Card
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.card,
         elevation: AppSpacing.elevationMd,
         shape: RoundedRectangleBorder(
@@ -225,7 +225,7 @@ class AppTheme {
       ),
 
       // Dialog
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         elevation: AppSpacing.elevationXl,
         shape: RoundedRectangleBorder(
@@ -329,7 +329,7 @@ class AppTheme {
       ),
 
       // Card
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.darkCard,
         elevation: AppSpacing.elevationMd,
         shape: RoundedRectangleBorder(
@@ -456,7 +456,7 @@ class AppTheme {
       ),
 
       // Dialog
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.darkSurface,
         elevation: AppSpacing.elevationXl,
         shape: RoundedRectangleBorder(
@@ -526,7 +526,7 @@ class AppTheme {
       ),
 
       // Tab
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: AppColors.primaryLight,
         unselectedLabelColor: AppColors.darkTextSecondary,
         labelStyle: AppTypography.labelLarge,

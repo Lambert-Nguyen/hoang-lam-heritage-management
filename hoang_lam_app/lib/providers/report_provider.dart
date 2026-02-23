@@ -38,19 +38,20 @@ final occupancyReportProvider = FutureProvider.autoDispose
     });
 
 /// Provider for occupancy report with simplified date range
-final occupancyReportByDateProvider = FutureProvider.autoDispose.family<
-  List<OccupancyReport>,
-  ({DateTime start, DateTime end, ReportGroupBy? groupBy})
->((ref, params) async {
-  final repository = ref.watch(reportRepositoryProvider);
-  return repository.getOccupancyReport(
-    OccupancyReportRequest(
-      startDate: params.start,
-      endDate: params.end,
-      groupBy: params.groupBy ?? ReportGroupBy.day,
-    ),
-  );
-});
+final occupancyReportByDateProvider = FutureProvider.autoDispose
+    .family<
+      List<OccupancyReport>,
+      ({DateTime start, DateTime end, ReportGroupBy? groupBy})
+    >((ref, params) async {
+      final repository = ref.watch(reportRepositoryProvider);
+      return repository.getOccupancyReport(
+        OccupancyReportRequest(
+          startDate: params.start,
+          endDate: params.end,
+          groupBy: params.groupBy ?? ReportGroupBy.day,
+        ),
+      );
+    });
 
 // ==================== Revenue Report Providers ====================
 
@@ -62,19 +63,20 @@ final revenueReportProvider = FutureProvider.autoDispose
     });
 
 /// Provider for revenue report with simplified date range
-final revenueReportByDateProvider = FutureProvider.autoDispose.family<
-  List<RevenueReport>,
-  ({DateTime start, DateTime end, ReportGroupBy? groupBy})
->((ref, params) async {
-  final repository = ref.watch(reportRepositoryProvider);
-  return repository.getRevenueReport(
-    RevenueReportRequest(
-      startDate: params.start,
-      endDate: params.end,
-      groupBy: params.groupBy ?? ReportGroupBy.day,
-    ),
-  );
-});
+final revenueReportByDateProvider = FutureProvider.autoDispose
+    .family<
+      List<RevenueReport>,
+      ({DateTime start, DateTime end, ReportGroupBy? groupBy})
+    >((ref, params) async {
+      final repository = ref.watch(reportRepositoryProvider);
+      return repository.getRevenueReport(
+        RevenueReportRequest(
+          startDate: params.start,
+          endDate: params.end,
+          groupBy: params.groupBy ?? ReportGroupBy.day,
+        ),
+      );
+    });
 
 // ==================== KPI Report Providers ====================
 
@@ -146,17 +148,18 @@ final channelPerformanceByDateProvider = FutureProvider.autoDispose
     });
 
 /// Provider for top channels
-final topChannelsProvider = FutureProvider.autoDispose.family<
-  List<ChannelPerformance>,
-  ({DateTime start, DateTime end, int? limit})
->((ref, params) async {
-  final repository = ref.watch(reportRepositoryProvider);
-  return repository.getTopChannels(
-    params.start,
-    params.end,
-    limit: params.limit ?? 5,
-  );
-});
+final topChannelsProvider = FutureProvider.autoDispose
+    .family<
+      List<ChannelPerformance>,
+      ({DateTime start, DateTime end, int? limit})
+    >((ref, params) async {
+      final repository = ref.watch(reportRepositoryProvider);
+      return repository.getTopChannels(
+        params.start,
+        params.end,
+        limit: params.limit ?? 5,
+      );
+    });
 
 // ==================== Guest Demographics Providers ====================
 
@@ -171,32 +174,34 @@ final guestDemographicsProvider = FutureProvider.autoDispose
     });
 
 /// Provider for demographics with simplified date range
-final guestDemographicsByDateProvider = FutureProvider.autoDispose.family<
-  List<GuestDemographics>,
-  ({DateTime start, DateTime end, DemographicsGroupBy? groupBy})
->((ref, params) async {
-  final repository = ref.watch(reportRepositoryProvider);
-  return repository.getGuestDemographics(
-    GuestDemographicsRequest(
-      startDate: params.start,
-      endDate: params.end,
-      groupBy: params.groupBy ?? DemographicsGroupBy.nationality,
-    ),
-  );
-});
+final guestDemographicsByDateProvider = FutureProvider.autoDispose
+    .family<
+      List<GuestDemographics>,
+      ({DateTime start, DateTime end, DemographicsGroupBy? groupBy})
+    >((ref, params) async {
+      final repository = ref.watch(reportRepositoryProvider);
+      return repository.getGuestDemographics(
+        GuestDemographicsRequest(
+          startDate: params.start,
+          endDate: params.end,
+          groupBy: params.groupBy ?? DemographicsGroupBy.nationality,
+        ),
+      );
+    });
 
 /// Provider for top nationalities
-final topNationalitiesProvider = FutureProvider.autoDispose.family<
-  List<GuestDemographics>,
-  ({DateTime start, DateTime end, int? limit})
->((ref, params) async {
-  final repository = ref.watch(reportRepositoryProvider);
-  return repository.getTopNationalities(
-    params.start,
-    params.end,
-    limit: params.limit ?? 10,
-  );
-});
+final topNationalitiesProvider = FutureProvider.autoDispose
+    .family<
+      List<GuestDemographics>,
+      ({DateTime start, DateTime end, int? limit})
+    >((ref, params) async {
+      final repository = ref.watch(reportRepositoryProvider);
+      return repository.getTopNationalities(
+        params.start,
+        params.end,
+        limit: params.limit ?? 10,
+      );
+    });
 
 // ==================== Comparative Report Providers ====================
 

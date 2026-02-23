@@ -89,8 +89,8 @@ void main() {
             expect(rooms[0].number, '101');
             expect(rooms[1].status, RoomStatus.occupied);
           },
-          error:
-              (message) => fail('Expected loaded state, got error: $message'),
+          error: (message) =>
+              fail('Expected loaded state, got error: $message'),
         );
       });
 
@@ -115,8 +115,8 @@ void main() {
             expect(rooms.length, 1);
             expect(rooms.first.status, RoomStatus.available);
           },
-          error:
-              (message) => fail('Expected loaded state, got error: $message'),
+          error: (message) =>
+              fail('Expected loaded state, got error: $message'),
         );
       });
 

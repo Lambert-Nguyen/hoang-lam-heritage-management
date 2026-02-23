@@ -65,15 +65,16 @@ class FinanceChart extends ConsumerWidget {
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor:
-                        (group) => AppColors.surface.withValues(alpha: 0.9),
+                    getTooltipColor: (group) =>
+                        AppColors.surface.withValues(alpha: 0.9),
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final isIncome = rodIndex == 0;
                       return BarTooltipItem(
                         '${isIncome ? context.l10n.incomeLabel : context.l10n.expenseShort}: ${_formatCurrency(rod.toY)}',
                         TextStyle(
-                          color:
-                              isIncome ? AppColors.income : AppColors.expense,
+                          color: isIncome
+                              ? AppColors.income
+                              : AppColors.expense,
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -128,11 +129,10 @@ class FinanceChart extends ConsumerWidget {
                   show: true,
                   drawVerticalLine: false,
                   horizontalInterval: _getMaxY(weeklyData) / 4,
-                  getDrawingHorizontalLine:
-                      (value) => FlLine(
-                        color: AppColors.border.withValues(alpha: 0.5),
-                        strokeWidth: 1,
-                      ),
+                  getDrawingHorizontalLine: (value) => FlLine(
+                    color: AppColors.border.withValues(alpha: 0.5),
+                    strokeWidth: 1,
+                  ),
                 ),
                 barGroups: _buildBarGroups(weeklyData),
               ),

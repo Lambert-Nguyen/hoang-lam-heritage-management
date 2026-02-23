@@ -51,10 +51,9 @@ class GuestCard extends StatelessWidget {
   Widget _buildAvatar(BuildContext context) {
     return CircleAvatar(
       radius: 24,
-      backgroundColor:
-          guest.isVip
-              ? AppColors.warning.withValues(alpha: 0.2)
-              : AppColors.primary.withValues(alpha: 0.1),
+      backgroundColor: guest.isVip
+          ? AppColors.warning.withValues(alpha: 0.2)
+          : AppColors.primary.withValues(alpha: 0.1),
       child: Text(
         guest.initials,
         style: TextStyle(
@@ -218,10 +217,9 @@ class GuestCompactCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor:
-                    guest.isVip
-                        ? AppColors.warning.withValues(alpha: 0.2)
-                        : AppColors.primary.withValues(alpha: 0.1),
+                backgroundColor: guest.isVip
+                    ? AppColors.warning.withValues(alpha: 0.2)
+                    : AppColors.primary.withValues(alpha: 0.1),
                 child: Text(
                   guest.initials,
                   style: TextStyle(

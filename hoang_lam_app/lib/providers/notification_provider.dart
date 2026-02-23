@@ -111,10 +111,11 @@ class NotificationNotifier
 }
 
 /// Provider for NotificationNotifier
-final notificationNotifierProvider = StateNotifierProvider.autoDispose<
-  NotificationNotifier,
-  AsyncValue<List<AppNotification>>
->((ref) {
-  final repository = ref.watch(notificationRepositoryProvider);
-  return NotificationNotifier(repository, ref);
-});
+final notificationNotifierProvider =
+    StateNotifierProvider.autoDispose<
+      NotificationNotifier,
+      AsyncValue<List<AppNotification>>
+    >((ref) {
+      final repository = ref.watch(notificationRepositoryProvider);
+      return NotificationNotifier(repository, ref);
+    });

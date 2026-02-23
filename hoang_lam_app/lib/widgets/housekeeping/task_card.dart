@@ -91,12 +91,11 @@ class TaskCard extends StatelessWidget {
                         AppSpacing.gapHorizontalXs,
                         Text(
                           task.taskType.localizedName(context.l10n),
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodySmall?.copyWith(
-                            color: task.taskType.color,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: task.taskType.color,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ],
                     ),

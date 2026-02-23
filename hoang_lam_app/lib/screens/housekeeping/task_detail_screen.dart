@@ -55,22 +55,21 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   break;
               }
             },
-            itemBuilder:
-                (context) => [
-                  PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        const Icon(Icons.delete, color: AppColors.error),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.delete,
-                          style: const TextStyle(color: AppColors.error),
-                        ),
-                      ],
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    const Icon(Icons.delete, color: AppColors.error),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.delete,
+                      style: const TextStyle(color: AppColors.error),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -473,21 +472,20 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.verifyTask),
-            content: Text(l10n.verifyTaskConfirmation),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.verify),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.verifyTask),
+        content: Text(l10n.verifyTaskConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.verify),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && mounted) {
@@ -509,24 +507,21 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.deleteTask),
-            content: Text(l10n.deleteTaskConfirmation),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: Text(l10n.delete),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteTask),
+        content: Text(l10n.deleteTaskConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && mounted) {

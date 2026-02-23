@@ -102,23 +102,19 @@ class _GroupBookingListScreenState extends ConsumerState<GroupBookingListScreen>
                   child: ListView.builder(
                     padding: AppSpacing.paddingHorizontal,
                     itemCount: filtered.length,
-                    itemBuilder:
-                        (context, i) => _GroupBookingCard(
-                          booking: filtered[i],
-                          onTap:
-                              () => context.push(
-                                '/group-bookings/${filtered[i].id}',
-                              ),
-                        ),
+                    itemBuilder: (context, i) => _GroupBookingCard(
+                      booking: filtered[i],
+                      onTap: () =>
+                          context.push('/group-bookings/${filtered[i].id}'),
+                    ),
                   ),
                 );
               },
               loading: () => const LoadingIndicator(),
-              error:
-                  (e, _) => ErrorDisplay(
-                    message: '${l10n.error}: $e',
-                    onRetry: () => ref.invalidate(groupBookingsProvider),
-                  ),
+              error: (e, _) => ErrorDisplay(
+                message: '${l10n.error}: $e',
+                onRetry: () => ref.invalidate(groupBookingsProvider),
+              ),
             ),
           ),
         ],

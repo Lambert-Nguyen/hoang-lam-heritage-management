@@ -71,12 +71,11 @@ class CurrencyFormatter {
       final isUsd = value.contains('\$');
 
       // Remove currency symbols and spaces
-      String cleaned =
-          value
-              .replaceAll('₫', '')
-              .replaceAll('\$', '')
-              .replaceAll(' ', '')
-              .trim();
+      String cleaned = value
+          .replaceAll('₫', '')
+          .replaceAll('\$', '')
+          .replaceAll(' ', '')
+          .trim();
 
       if (isUsd) {
         // USD format: remove thousand separators (commas), keep decimal dot

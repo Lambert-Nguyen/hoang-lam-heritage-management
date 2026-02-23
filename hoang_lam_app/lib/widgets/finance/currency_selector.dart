@@ -60,49 +60,47 @@ class CurrencySelector extends StatelessWidget {
     final theme = Theme.of(context);
 
     return DropdownButtonFormField<String>(
-      value: selectedCurrency,
+      initialValue: selectedCurrency,
       decoration: InputDecoration(
         labelText: labelText ?? context.l10n.currencyType,
         border: const OutlineInputBorder(),
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       ),
-      items:
-          currencies.map((currency) {
-            return DropdownMenuItem<String>(
-              value: currency.code,
-              child: Row(
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      currency.symbol,
-                      style: TextStyle(
-                        color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
+      items: currencies.map((currency) {
+        return DropdownMenuItem<String>(
+          value: currency.code,
+          child: Row(
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  currency.symbol,
+                  style: TextStyle(
+                    color: theme.colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
                   ),
-                  const SizedBox(width: 8),
-                  Text(currency.code),
-                ],
+                ),
               ),
-            );
-          }).toList(),
-      onChanged:
-          enabled
-              ? (value) {
-                if (value != null && onChanged != null) {
-                  onChanged!(value);
-                }
+              const SizedBox(width: 8),
+              Text(currency.code),
+            ],
+          ),
+        );
+      }).toList(),
+      onChanged: enabled
+          ? (value) {
+              if (value != null && onChanged != null) {
+                onChanged!(value);
               }
-              : null,
+            }
+          : null,
     );
   }
 }
@@ -134,42 +132,38 @@ class CompactCurrencySelector extends StatelessWidget {
       enabled: enabled,
       initialValue: selectedCurrency,
       onSelected: onChanged,
-      itemBuilder:
-          (context) =>
-              currencies.map((currency) {
-                return PopupMenuItem<String>(
-                  value: currency.code,
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color:
-                              currency.code == selectedCurrency
-                                  ? theme.colorScheme.primaryContainer
-                                  : theme.colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          currency.symbol,
-                          style: TextStyle(
-                            color:
-                                currency.code == selectedCurrency
-                                    ? theme.colorScheme.onPrimaryContainer
-                                    : theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(currency.displayName),
-                    ],
+      itemBuilder: (context) => currencies.map((currency) {
+        return PopupMenuItem<String>(
+          value: currency.code,
+          child: Row(
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: currency.code == selectedCurrency
+                      ? theme.colorScheme.primaryContainer
+                      : theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  currency.symbol,
+                  style: TextStyle(
+                    color: currency.code == selectedCurrency
+                        ? theme.colorScheme.onPrimaryContainer
+                        : theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
                   ),
-                );
-              }).toList(),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Text(currency.displayName),
+            ],
+          ),
+        );
+      }).toList(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(

@@ -35,8 +35,9 @@ class DeclarationRepository {
       'form_type': formType.apiValue,
     };
 
-    final formSuffix =
-        formType == DeclarationFormType.all ? '' : '_${formType.apiValue}';
+    final formSuffix = formType == DeclarationFormType.all
+        ? ''
+        : '_${formType.apiValue}';
     final filename =
         'khai_bao_luu_tru${formSuffix}_${dateFromStr}_$dateToStr.${format.fileExtension}';
 

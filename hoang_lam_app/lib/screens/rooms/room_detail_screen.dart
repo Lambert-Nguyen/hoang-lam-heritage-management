@@ -431,16 +431,15 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               child: AppButton(
                 label: context.l10n.bookRoom,
                 icon: Icons.book_online,
-                onPressed:
-                    _room.status == RoomStatus.available
-                        ? () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const BookingFormScreen(),
-                            ),
-                          );
-                        }
-                        : null,
+                onPressed: _room.status == RoomStatus.available
+                    ? () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const BookingFormScreen(),
+                          ),
+                        );
+                      }
+                    : null,
               ),
             ),
           ],
@@ -475,8 +474,9 @@ class _QuickActionChip extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color:
-              isSelected ? color.withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected
+              ? color.withValues(alpha: 0.15)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           border: Border.all(
             color: isSelected ? color : AppColors.divider,

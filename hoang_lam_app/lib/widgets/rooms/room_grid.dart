@@ -27,23 +27,21 @@ class RoomGrid extends ConsumerWidget {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:
-              roomsByFloor.entries.map((entry) {
-                return _FloorSection(
-                  floor: entry.key,
-                  rooms: entry.value,
-                  onRoomTap: onRoomTap,
-                  onRoomLongPress: onRoomLongPress,
-                );
-              }).toList(),
+          children: roomsByFloor.entries.map((entry) {
+            return _FloorSection(
+              floor: entry.key,
+              rooms: entry.value,
+              onRoomTap: onRoomTap,
+              onRoomLongPress: onRoomLongPress,
+            );
+          }).toList(),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error:
-          (error, stack) => _ErrorWidget(
-            message: context.l10n.cannotLoadRoomList,
-            onRetry: () => ref.refresh(roomsByFloorProvider),
-          ),
+      error: (error, stack) => _ErrorWidget(
+        message: context.l10n.cannotLoadRoomList,
+        onRetry: () => ref.refresh(roomsByFloorProvider),
+      ),
     );
   }
 }
@@ -87,17 +85,15 @@ class _FloorSection extends StatelessWidget {
           child: Wrap(
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
-            children:
-                rooms.map((room) {
-                  return RoomStatusCard(
-                    room: room,
-                    onTap: onRoomTap != null ? () => onRoomTap!(room) : null,
-                    onLongPress:
-                        onRoomLongPress != null
-                            ? () => onRoomLongPress!(room)
-                            : null,
-                  );
-                }).toList(),
+            children: rooms.map((room) {
+              return RoomStatusCard(
+                room: room,
+                onTap: onRoomTap != null ? () => onRoomTap!(room) : null,
+                onLongPress: onRoomLongPress != null
+                    ? () => onRoomLongPress!(room)
+                    : null,
+              );
+            }).toList(),
           ),
         ),
         const SizedBox(height: AppSpacing.md),
@@ -185,27 +181,26 @@ class RoomStatusLegend extends StatelessWidget {
       child: Wrap(
         spacing: AppSpacing.lg,
         runSpacing: AppSpacing.sm,
-        children:
-            RoomStatus.values.map((status) {
-              return Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: status.color,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.xs),
-                  Text(
-                    status.localizedName(context.l10n),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                ],
-              );
-            }).toList(),
+        children: RoomStatus.values.map((status) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: status.color,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.xs),
+              Text(
+                status.localizedName(context.l10n),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
@@ -270,13 +265,12 @@ class RoomStatusSummary extends ConsumerWidget {
           ),
         );
       },
-      loading:
-          () => const Card(
-            child: Padding(
-              padding: EdgeInsets.all(AppSpacing.md),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-          ),
+      loading: () => const Card(
+        child: Padding(
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ),
       error: (_, __) => const SizedBox.shrink(),
     );
   }

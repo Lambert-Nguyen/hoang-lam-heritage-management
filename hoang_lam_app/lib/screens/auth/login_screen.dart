@@ -76,8 +76,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         if (storedUsername != null) {
           // Refresh token with server to validate session is still valid
-          final sessionValid =
-              await ref.read(authStateProvider.notifier).refreshSession();
+          final sessionValid = await ref
+              .read(authStateProvider.notifier)
+              .refreshSession();
           if (!sessionValid && mounted) {
             setState(() {
               _errorMessage = context.l10n.biometricAuthFailed;
@@ -289,8 +290,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Login button
                 AppButton(
                   label: context.l10n.loginButton,
-                  onPressed:
-                      isLoading || _biometricLoading ? null : _handleLogin,
+                  onPressed: isLoading || _biometricLoading
+                      ? null
+                      : _handleLogin,
                   isLoading: isLoading,
                 ),
 
@@ -307,10 +309,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         _BiometricLoginButton(
                           biometricTypeName: biometricState.biometricTypeName,
                           isLoading: _biometricLoading,
-                          onPressed:
-                              isLoading || _biometricLoading
-                                  ? null
-                                  : _handleBiometricLogin,
+                          onPressed: isLoading || _biometricLoading
+                              ? null
+                              : _handleBiometricLogin,
                         ),
                       ],
                     );
@@ -324,18 +325,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Forgot password (optional - not implemented for family app)
                 AppTextButton(
                   label: context.l10n.forgotPassword,
-                  onPressed:
-                      isLoading || _biometricLoading
-                          ? null
-                          : () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  context.l10n.contactAdminResetPassword,
-                                ),
+                  onPressed: isLoading || _biometricLoading
+                      ? null
+                      : () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                context.l10n.contactAdminResetPassword,
                               ),
-                            );
-                          },
+                            ),
+                          );
+                        },
                 ),
 
                 AppSpacing.gapVerticalXl,
@@ -357,33 +357,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _showEnableBiometricDialog(String username) {
     return showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(context.l10n.enableBiometricTitle),
-            content: Text(context.l10n.enableBiometricMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text(context.l10n.later),
-              ),
-              FilledButton(
-                onPressed: () async {
-                  await ref
-                      .read(biometricNotifierProvider.notifier)
-                      .enableBiometric(username);
-                  if (dialogContext.mounted) {
-                    Navigator.of(dialogContext).pop();
-                  }
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(context.l10n.biometricEnabled)),
-                    );
-                  }
-                },
-                child: Text(context.l10n.enable),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.enableBiometricTitle),
+        content: Text(context.l10n.enableBiometricMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(context.l10n.later),
           ),
+          FilledButton(
+            onPressed: () async {
+              await ref
+                  .read(biometricNotifierProvider.notifier)
+                  .enableBiometric(username);
+              if (dialogContext.mounted) {
+                Navigator.of(dialogContext).pop();
+              }
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(context.l10n.biometricEnabled)),
+                );
+              }
+            },
+            child: Text(context.l10n.enable),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -404,17 +403,16 @@ class _BiometricLoginButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: onPressed,
-      icon:
-          isLoading
-              ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-              : Icon(
-                biometricTypeName == 'Face ID' ? Icons.face : Icons.fingerprint,
-                size: 24,
-              ),
+      icon: isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Icon(
+              biometricTypeName == 'Face ID' ? Icons.face : Icons.fingerprint,
+              size: 24,
+            ),
       label: Text(
         isLoading
             ? context.l10n.authenticating

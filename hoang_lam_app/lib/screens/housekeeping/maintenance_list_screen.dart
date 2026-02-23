@@ -97,10 +97,9 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         );
       },
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => _buildErrorState(error, () {
-            ref.invalidate(urgentRequestsProvider);
-          }),
+      error: (error, _) => _buildErrorState(error, () {
+        ref.invalidate(urgentRequestsProvider);
+      }),
     );
   }
 
@@ -127,10 +126,9 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         );
       },
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => _buildErrorState(error, () {
-            ref.invalidate(filteredMaintenanceRequestsProvider(_filter));
-          }),
+      error: (error, _) => _buildErrorState(error, () {
+        ref.invalidate(filteredMaintenanceRequestsProvider(_filter));
+      }),
     );
   }
 
@@ -155,34 +153,34 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         );
       },
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => _buildErrorState(error, () {
-            ref.invalidate(myMaintenanceRequestsProvider);
-          }),
+      error: (error, _) => _buildErrorState(error, () {
+        ref.invalidate(myMaintenanceRequestsProvider);
+      }),
     );
   }
 
   Widget _buildRequestList(List<MaintenanceRequest> requests) {
     final l10n = AppLocalizations.of(context)!;
     // Group requests by status
-    final pending =
-        requests.where((r) => r.status == MaintenanceStatus.pending).toList();
-    final assigned =
-        requests.where((r) => r.status == MaintenanceStatus.assigned).toList();
-    final inProgress =
-        requests
-            .where((r) => r.status == MaintenanceStatus.inProgress)
-            .toList();
-    final onHold =
-        requests.where((r) => r.status == MaintenanceStatus.onHold).toList();
-    final completed =
-        requests
-            .where(
-              (r) =>
-                  r.status == MaintenanceStatus.completed ||
-                  r.status == MaintenanceStatus.cancelled,
-            )
-            .toList();
+    final pending = requests
+        .where((r) => r.status == MaintenanceStatus.pending)
+        .toList();
+    final assigned = requests
+        .where((r) => r.status == MaintenanceStatus.assigned)
+        .toList();
+    final inProgress = requests
+        .where((r) => r.status == MaintenanceStatus.inProgress)
+        .toList();
+    final onHold = requests
+        .where((r) => r.status == MaintenanceStatus.onHold)
+        .toList();
+    final completed = requests
+        .where(
+          (r) =>
+              r.status == MaintenanceStatus.completed ||
+              r.status == MaintenanceStatus.cancelled,
+        )
+        .toList();
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 80),
@@ -285,8 +283,9 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
       request: request,
       onTap: () => _navigateToDetail(context, request),
       onAssign: request.status.canAssign ? () => _assignRequest(request) : null,
-      onComplete:
-          request.status.canComplete ? () => _completeRequest(request) : null,
+      onComplete: request.status.canComplete
+          ? () => _completeRequest(request)
+          : null,
     );
   }
 
@@ -328,15 +327,14 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder:
-          (context) => MaintenanceFilterSheet(
-            initialFilter: _filter,
-            onApply: (filter) {
-              setState(() {
-                _filter = filter;
-              });
-            },
-          ),
+      builder: (context) => MaintenanceFilterSheet(
+        initialFilter: _filter,
+        onApply: (filter) {
+          setState(() {
+            _filter = filter;
+          });
+        },
+      ),
     );
   }
 
@@ -384,21 +382,20 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.completeRequest),
-            content: Text(l10n.completeRequestConfirmation),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.completed),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.completeRequest),
+        content: Text(l10n.completeRequestConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.completed),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && mounted) {
@@ -467,17 +464,15 @@ class _MaintenanceAssignDialogState
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
-                tileColor:
-                    _selectedUserId == currentUser.id
-                        ? AppColors.primary.withValues(alpha: 0.1)
-                        : null,
+                tileColor: _selectedUserId == currentUser.id
+                    ? AppColors.primary.withValues(alpha: 0.1)
+                    : null,
                 leading: const CircleAvatar(child: Icon(Icons.person)),
                 title: Text(context.l10n.selfAssign),
                 subtitle: Text(currentUser.displayName),
-                trailing:
-                    _selectedUserId == currentUser.id
-                        ? Icon(Icons.check_circle, color: AppColors.primary)
-                        : null,
+                trailing: _selectedUserId == currentUser.id
+                    ? Icon(Icons.check_circle, color: AppColors.primary)
+                    : null,
               ),
             const Divider(),
             Text(
@@ -491,45 +486,36 @@ class _MaintenanceAssignDialogState
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 200),
               child: staffAsync.when(
-                data:
-                    (staffList) => ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: staffList.length,
-                      itemBuilder: (context, index) {
-                        final staff = staffList[index];
-                        final isSelected = _selectedUserId == staff.id;
-                        return ListTile(
-                          onTap:
-                              () => setState(() => _selectedUserId = staff.id),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          tileColor:
-                              isSelected
-                                  ? AppColors.primary.withValues(alpha: 0.1)
-                                  : null,
-                          leading: CircleAvatar(
-                            child: Text(staff.displayName[0]),
-                          ),
-                          title: Text(staff.displayName),
-                          subtitle: Text(
-                            staff.roleDisplay ??
-                                staff.role?.localizedName(context.l10n) ??
-                                '',
-                          ),
-                          trailing:
-                              isSelected
-                                  ? Icon(
-                                    Icons.check_circle,
-                                    color: AppColors.primary,
-                                  )
-                                  : null,
-                        );
-                      },
-                    ),
+                data: (staffList) => ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: staffList.length,
+                  itemBuilder: (context, index) {
+                    final staff = staffList[index];
+                    final isSelected = _selectedUserId == staff.id;
+                    return ListTile(
+                      onTap: () => setState(() => _selectedUserId = staff.id),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      tileColor: isSelected
+                          ? AppColors.primary.withValues(alpha: 0.1)
+                          : null,
+                      leading: CircleAvatar(child: Text(staff.displayName[0])),
+                      title: Text(staff.displayName),
+                      subtitle: Text(
+                        staff.roleDisplay ??
+                            staff.role?.localizedName(context.l10n) ??
+                            '',
+                      ),
+                      trailing: isSelected
+                          ? Icon(Icons.check_circle, color: AppColors.primary)
+                          : null,
+                    );
+                  },
+                ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (_, __) => Center(child: Text(context.l10n.staffLoadError)),
+                error: (_, __) =>
+                    Center(child: Text(context.l10n.staffLoadError)),
               ),
             ),
             AppSpacing.gapVerticalLg,
@@ -546,10 +532,9 @@ class _MaintenanceAssignDialogState
                 Expanded(
                   child: AppButton(
                     label: context.l10n.confirm,
-                    onPressed:
-                        _selectedUserId != null
-                            ? () => Navigator.pop(context, _selectedUserId)
-                            : null,
+                    onPressed: _selectedUserId != null
+                        ? () => Navigator.pop(context, _selectedUserId)
+                        : null,
                   ),
                 ),
               ],

@@ -376,59 +376,56 @@ final bookingStatsProvider = Provider<BookingStats>((ref) {
 
       return BookingStats(
         totalBookings: bookings.length,
-        activeBookings:
-            bookings
-                .where(
-                  (b) =>
-                      b.status == BookingStatus.confirmed ||
-                      b.status == BookingStatus.checkedIn,
-                )
-                .length,
-        todayCheckIns:
-            bookings.where((b) {
-              final checkInDate = DateTime(
-                b.checkInDate.year,
-                b.checkInDate.month,
-                b.checkInDate.day,
-              );
-              return checkInDate.isAtSameMomentAs(today) &&
-                  (b.status == BookingStatus.confirmed ||
-                      b.status == BookingStatus.pending);
-            }).length,
-        todayCheckOuts:
-            bookings.where((b) {
-              final checkOutDate = DateTime(
-                b.checkOutDate.year,
-                b.checkOutDate.month,
-                b.checkOutDate.day,
-              );
-              return checkOutDate.isAtSameMomentAs(today) &&
-                  b.status == BookingStatus.checkedIn;
-            }).length,
-        pendingBookings:
-            bookings.where((b) => b.status == BookingStatus.pending).length,
-        cancelledBookings:
-            bookings.where((b) => b.status == BookingStatus.cancelled).length,
+        activeBookings: bookings
+            .where(
+              (b) =>
+                  b.status == BookingStatus.confirmed ||
+                  b.status == BookingStatus.checkedIn,
+            )
+            .length,
+        todayCheckIns: bookings.where((b) {
+          final checkInDate = DateTime(
+            b.checkInDate.year,
+            b.checkInDate.month,
+            b.checkInDate.day,
+          );
+          return checkInDate.isAtSameMomentAs(today) &&
+              (b.status == BookingStatus.confirmed ||
+                  b.status == BookingStatus.pending);
+        }).length,
+        todayCheckOuts: bookings.where((b) {
+          final checkOutDate = DateTime(
+            b.checkOutDate.year,
+            b.checkOutDate.month,
+            b.checkOutDate.day,
+          );
+          return checkOutDate.isAtSameMomentAs(today) &&
+              b.status == BookingStatus.checkedIn;
+        }).length,
+        pendingBookings: bookings
+            .where((b) => b.status == BookingStatus.pending)
+            .length,
+        cancelledBookings: bookings
+            .where((b) => b.status == BookingStatus.cancelled)
+            .length,
       );
     },
-    loading:
-        () => const BookingStats(
-          totalBookings: 0,
-          activeBookings: 0,
-          todayCheckIns: 0,
-          todayCheckOuts: 0,
-          pendingBookings: 0,
-          cancelledBookings: 0,
-        ),
-    error:
-        (_, __) => const BookingStats(
-          totalBookings: 0,
-          activeBookings: 0,
-          todayCheckIns: 0,
-          todayCheckOuts: 0,
-          pendingBookings: 0,
-          cancelledBookings: 0,
-        ),
+    loading: () => const BookingStats(
+      totalBookings: 0,
+      activeBookings: 0,
+      todayCheckIns: 0,
+      todayCheckOuts: 0,
+      pendingBookings: 0,
+      cancelledBookings: 0,
+    ),
+    error: (_, __) => const BookingStats(
+      totalBookings: 0,
+      activeBookings: 0,
+      todayCheckIns: 0,
+      todayCheckOuts: 0,
+      pendingBookings: 0,
+      cancelledBookings: 0,
+    ),
   );
 });
 

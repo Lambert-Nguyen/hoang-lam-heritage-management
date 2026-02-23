@@ -499,17 +499,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.home,
             name: 'home',
-            pageBuilder:
-                (context, state) => const NoTransitionPage(child: HomeScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: HomeScreen()),
           ),
 
           // Bookings
           GoRoute(
             path: AppRoutes.bookings,
             name: 'bookings',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: BookingsScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: BookingsScreen()),
             routes: [
               // New Booking
               GoRoute(
@@ -536,18 +535,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.finance,
             name: 'finance',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: FinanceScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: FinanceScreen()),
           ),
 
           // Minibar POS
           GoRoute(
             path: AppRoutes.minibarPos,
             name: 'minibarPos',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: MinibarPosScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: MinibarPosScreen()),
             routes: [
               // Minibar Inventory
               GoRoute(
@@ -563,111 +560,101 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.nightAudit,
             name: 'nightAudit',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: NightAuditScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: NightAuditScreen()),
           ),
 
           // Declaration Export
           GoRoute(
             path: AppRoutes.declaration,
             name: 'declaration',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: DeclarationExportScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: DeclarationExportScreen()),
           ),
 
           // Reports & Analytics
           GoRoute(
             path: AppRoutes.reports,
             name: 'reports',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: ReportScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: ReportScreen()),
           ),
 
           // Housekeeping Tasks
           GoRoute(
             path: AppRoutes.housekeepingTasks,
             name: 'housekeepingTasks',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: TaskListScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: TaskListScreen()),
           ),
 
           // Maintenance Requests
           GoRoute(
             path: AppRoutes.maintenance,
             name: 'maintenance',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: MaintenanceListScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: MaintenanceListScreen()),
           ),
 
           // Lost & Found
           GoRoute(
             path: AppRoutes.lostFound,
             name: 'lostFound',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: LostFoundListScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: LostFoundListScreen()),
           ),
 
           // Group Bookings
           GoRoute(
             path: AppRoutes.groupBookings,
             name: 'groupBookings',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: GroupBookingListScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: GroupBookingListScreen()),
           ),
 
           // Room Inspections
           GoRoute(
             path: AppRoutes.roomInspections,
             name: 'roomInspections',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: RoomInspectionListScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: RoomInspectionListScreen()),
           ),
 
           // Settings
           GoRoute(
             path: AppRoutes.settings,
             name: 'settings',
-            pageBuilder:
-                (context, state) =>
-                    const NoTransitionPage(child: SettingsScreen()),
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: SettingsScreen()),
           ),
         ],
       ),
     ],
 
     // Error page
-    errorBuilder:
-        (context, state) => Scaffold(
-          appBar: AppBar(title: Text(context.l10n.error)),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
-                const SizedBox(height: 16),
-                Text(
-                  context.l10n.pageNotFound,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 8),
-                Text(state.error?.message ?? context.l10n.errorOccurred),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () => context.go(AppRoutes.home),
-                  child: Text(context.l10n.goHome),
-                ),
-              ],
+    errorBuilder: (context, state) => Scaffold(
+      appBar: AppBar(title: Text(context.l10n.error)),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 16),
+            Text(
+              context.l10n.pageNotFound,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-          ),
+            const SizedBox(height: 8),
+            Text(state.error?.message ?? context.l10n.errorOccurred),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go(AppRoutes.home),
+              child: Text(context.l10n.goHome),
+            ),
+          ],
         ),
+      ),
+    ),
 
     // Redirect logic for authentication
     redirect: (context, state) {

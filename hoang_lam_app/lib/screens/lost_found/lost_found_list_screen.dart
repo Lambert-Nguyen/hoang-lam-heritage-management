@@ -129,21 +129,18 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
           child: ListView.builder(
             padding: AppSpacing.paddingHorizontal,
             itemCount: filtered.length,
-            itemBuilder:
-                (context, index) => _LostFoundItemCard(
-                  item: filtered[index],
-                  onTap:
-                      () => context.push('/lost-found/${filtered[index].id}'),
-                ),
+            itemBuilder: (context, index) => _LostFoundItemCard(
+              item: filtered[index],
+              onTap: () => context.push('/lost-found/${filtered[index].id}'),
+            ),
           ),
         );
       },
       loading: () => const LoadingIndicator(),
-      error:
-          (error, _) => ErrorDisplay(
-            message: '${AppLocalizations.of(context)!.error}: $error',
-            onRetry: () => ref.invalidate(lostFoundItemsProvider),
-          ),
+      error: (error, _) => ErrorDisplay(
+        message: '${AppLocalizations.of(context)!.error}: $error',
+        onRetry: () => ref.invalidate(lostFoundItemsProvider),
+      ),
     );
   }
 
@@ -195,48 +192,47 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
   void _showFilterSheet() {
     showModalBottomSheet(
       context: context,
-      builder:
-          (context) => Container(
-            padding: AppSpacing.paddingAll,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      builder: (context) => Container(
+        padding: AppSpacing.paddingAll,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              AppLocalizations.of(context)!.filterByCategoryLabel,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: [
-                Text(
-                  AppLocalizations.of(context)!.filterByCategoryLabel,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                FilterChip(
+                  label: Text(AppLocalizations.of(context)!.all),
+                  selected: _categoryFilter == null,
+                  onSelected: (_) {
+                    setState(() => _categoryFilter = null);
+                    Navigator.pop(context);
+                  },
                 ),
-                const SizedBox(height: AppSpacing.md),
-                Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: [
-                    FilterChip(
-                      label: Text(AppLocalizations.of(context)!.all),
-                      selected: _categoryFilter == null,
-                      onSelected: (_) {
-                        setState(() => _categoryFilter = null);
-                        Navigator.pop(context);
-                      },
-                    ),
-                    ...LostFoundCategory.values.map(
-                      (c) => FilterChip(
-                        label: Text(c.localizedName(context.l10n)),
-                        selected: _categoryFilter == c,
-                        onSelected: (_) {
-                          setState(() => _categoryFilter = c);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                  ],
+                ...LostFoundCategory.values.map(
+                  (c) => FilterChip(
+                    label: Text(c.localizedName(context.l10n)),
+                    selected: _categoryFilter == c,
+                    onSelected: (_) {
+                      setState(() => _categoryFilter = c);
+                      Navigator.pop(context);
+                    },
+                  ),
                 ),
-                const SizedBox(height: AppSpacing.lg),
               ],
             ),
-          ),
+            const SizedBox(height: AppSpacing.lg),
+          ],
+        ),
+      ),
     );
   }
 
@@ -353,61 +349,59 @@ class _StatisticsSheet extends ConsumerWidget {
       minChildSize: 0.3,
       maxChildSize: 0.9,
       expand: false,
-      builder:
-          (context, scrollController) => Container(
-            padding: AppSpacing.paddingAll,
-            child: statsAsync.when(
-              data:
-                  (stats) => SingleChildScrollView(
-                    controller: scrollController,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          context.l10n.statistics,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _StatCard(
-                                title: context.l10n.total,
-                                value: stats.totalItems.toString(),
-                                icon: Icons.inventory_2,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: _StatCard(
-                                title: context.l10n.unclaimedValue,
-                                value:
-                                    '${stats.unclaimedValue.toStringAsFixed(0)}₫',
-                                icon: Icons.attach_money,
-                                color: AppColors.success,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        Text(
-                          context.l10n.byStatusLabel,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        ...stats.byStatus.entries.map(
-                          (e) =>
-                              _StatRow(label: e.key, value: e.value.toString()),
-                        ),
-                      ],
+      builder: (context, scrollController) => Container(
+        padding: AppSpacing.paddingAll,
+        child: statsAsync.when(
+          data: (stats) => SingleChildScrollView(
+            controller: scrollController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.statistics,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StatCard(
+                        title: context.l10n.total,
+                        value: stats.totalItems.toString(),
+                        icon: Icons.inventory_2,
+                        color: AppColors.primary,
+                      ),
                     ),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: _StatCard(
+                        title: context.l10n.unclaimedValue,
+                        value: '${stats.unclaimedValue.toStringAsFixed(0)}₫',
+                        icon: Icons.attach_money,
+                        color: AppColors.success,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Text(
+                  context.l10n.byStatusLabel,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
-              loading: () => const LoadingIndicator(),
-              error: (e, _) => Center(child: Text('${context.l10n.error}: $e')),
+                ),
+                ...stats.byStatus.entries.map(
+                  (e) => _StatRow(label: e.key, value: e.value.toString()),
+                ),
+              ],
             ),
           ),
+          loading: () => const LoadingIndicator(),
+          error: (e, _) => Center(child: Text('${context.l10n.error}: $e')),
+        ),
+      ),
     );
   }
 }

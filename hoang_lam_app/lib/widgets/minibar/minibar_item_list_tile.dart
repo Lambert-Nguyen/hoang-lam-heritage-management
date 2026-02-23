@@ -30,10 +30,9 @@ class MinibarItemListTile extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor:
-            item.isActive
-                ? AppColors.primary.withValues(alpha: 0.1)
-                : AppColors.textSecondary.withValues(alpha: 0.1),
+        backgroundColor: item.isActive
+            ? AppColors.primary.withValues(alpha: 0.1)
+            : AppColors.textSecondary.withValues(alpha: 0.1),
         child: Icon(
           Icons.local_bar,
           color: item.isActive ? AppColors.primary : AppColors.textSecondary,
@@ -74,15 +73,15 @@ class MinibarItemListTile extends StatelessWidget {
           IconButton(
             icon: Icon(
               item.isActive ? Icons.toggle_on : Icons.toggle_off,
-              color:
-                  item.isActive ? AppColors.success : AppColors.textSecondary,
+              color: item.isActive
+                  ? AppColors.success
+                  : AppColors.textSecondary,
               size: 32,
             ),
             onPressed: onToggleActive,
-            tooltip:
-                item.isActive
-                    ? context.l10n.discontinued
-                    : context.l10n.activateLabel,
+            tooltip: item.isActive
+                ? context.l10n.discontinued
+                : context.l10n.activateLabel,
           ),
         ],
       ),

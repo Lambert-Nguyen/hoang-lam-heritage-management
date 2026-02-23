@@ -90,14 +90,12 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
                     AppSpacing.gapVerticalMd,
                     roomsAsync.when(
                       data: (rooms) => _buildRoomDropdown(rooms),
-                      loading:
-                          () =>
-                              const Center(child: CircularProgressIndicator()),
-                      error:
-                          (_, __) => Text(
-                            l10n.cannotLoadRoomList,
-                            style: TextStyle(color: AppColors.error),
-                          ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (_, __) => Text(
+                        l10n.cannotLoadRoomList,
+                        style: TextStyle(color: AppColors.error),
+                      ),
                     ),
                   ],
                 ),
@@ -239,15 +237,14 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     final l10n = AppLocalizations.of(context)!;
     return AppDropdown<int>(
       value: _selectedRoomId,
-      items:
-          rooms
-              .map(
-                (room) => DropdownMenuItem(
-                  value: room.id,
-                  child: Text('${l10n.room} ${room.number}'),
-                ),
-              )
-              .toList(),
+      items: rooms
+          .map(
+            (room) => DropdownMenuItem(
+              value: room.id,
+              child: Text('${l10n.room} ${room.number}'),
+            ),
+          )
+          .toList(),
       onChanged: (value) {
         setState(() {
           _selectedRoomId = value;
@@ -261,128 +258,119 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
-      children:
-          MaintenanceCategory.values.map((category) {
-            final isSelected = category == _selectedCategory;
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  _selectedCategory = category;
-                });
-              },
+      children: MaintenanceCategory.values.map((category) {
+        final isSelected = category == _selectedCategory;
+        return InkWell(
+          onTap: () {
+            setState(() {
+              _selectedCategory = category;
+            });
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? category.color.withValues(alpha: 0.2)
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
+              border: Border.all(
+                color: isSelected ? category.color : AppColors.divider,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  category.icon,
+                  size: 18,
+                  color: isSelected ? category.color : AppColors.textSecondary,
                 ),
-                decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? category.color.withValues(alpha: 0.2)
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected ? category.color : AppColors.divider,
-                    width: isSelected ? 2 : 1,
+                AppSpacing.gapHorizontalSm,
+                Text(
+                  category.localizedName(context.l10n),
+                  style: TextStyle(
+                    color: isSelected
+                        ? category.color
+                        : AppColors.textSecondary,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                    fontSize: 13,
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      category.icon,
-                      size: 18,
-                      color:
-                          isSelected ? category.color : AppColors.textSecondary,
-                    ),
-                    AppSpacing.gapHorizontalSm,
-                    Text(
-                      category.localizedName(context.l10n),
-                      style: TextStyle(
-                        color:
-                            isSelected
-                                ? category.color
-                                : AppColors.textSecondary,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
   Widget _buildPrioritySelector() {
     return Row(
-      children:
-          MaintenancePriority.values.map((priority) {
-            final isSelected = priority == _selectedPriority;
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right:
-                      priority != MaintenancePriority.values.last
-                          ? AppSpacing.sm
-                          : 0,
-                ),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _selectedPriority = priority;
-                    });
-                  },
+      children: MaintenancePriority.values.map((priority) {
+        final isSelected = priority == _selectedPriority;
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(
+              right: priority != MaintenancePriority.values.last
+                  ? AppSpacing.sm
+                  : 0,
+            ),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _selectedPriority = priority;
+                });
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? priority.color.withValues(alpha: 0.2)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    padding: const EdgeInsets.all(AppSpacing.md),
-                    decoration: BoxDecoration(
-                      color:
-                          isSelected
-                              ? priority.color.withValues(alpha: 0.2)
-                              : Colors.transparent,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected ? priority.color : AppColors.divider,
-                        width: isSelected ? 2 : 1,
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          priority.icon,
-                          size: 24,
-                          color:
-                              isSelected
-                                  ? priority.color
-                                  : AppColors.textSecondary,
-                        ),
-                        AppSpacing.gapVerticalXs,
-                        Text(
-                          priority.localizedName(context.l10n),
-                          style: TextStyle(
-                            color:
-                                isSelected
-                                    ? priority.color
-                                    : AppColors.textSecondary,
-                            fontWeight:
-                                isSelected
-                                    ? FontWeight.bold
-                                    : FontWeight.normal,
-                            fontSize: 12,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
+                  border: Border.all(
+                    color: isSelected ? priority.color : AppColors.divider,
+                    width: isSelected ? 2 : 1,
                   ),
                 ),
+                child: Column(
+                  children: [
+                    Icon(
+                      priority.icon,
+                      size: 24,
+                      color: isSelected
+                          ? priority.color
+                          : AppColors.textSecondary,
+                    ),
+                    AppSpacing.gapVerticalXs,
+                    Text(
+                      priority.localizedName(context.l10n),
+                      style: TextStyle(
+                        color: isSelected
+                            ? priority.color
+                            : AppColors.textSecondary,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
-            );
-          }).toList(),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 

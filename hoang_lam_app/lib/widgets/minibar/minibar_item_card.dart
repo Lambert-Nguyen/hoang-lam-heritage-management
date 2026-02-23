@@ -27,10 +27,9 @@ class MinibarItemCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color:
-              item.isActive
-                  ? Colors.transparent
-                  : AppColors.error.withValues(alpha: 0.3),
+          color: item.isActive
+              ? Colors.transparent
+              : AppColors.error.withValues(alpha: 0.3),
           width: item.isActive ? 0 : 1,
         ),
       ),

@@ -291,10 +291,9 @@ class GuestNotifier extends StateNotifier<GuestState> {
       // Update local guest list state if currently loaded
       state.whenOrNull(
         loaded: (guests) {
-          final updatedList =
-              guests.map((g) {
-                return g.id == guestId ? updatedGuest : g;
-              }).toList();
+          final updatedList = guests.map((g) {
+            return g.id == guestId ? updatedGuest : g;
+          }).toList();
           state = GuestState.loaded(guests: updatedList);
         },
       );

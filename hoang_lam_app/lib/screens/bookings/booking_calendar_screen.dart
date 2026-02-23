@@ -75,20 +75,18 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
           // Calendar widget
           calendarBookingsAsync.when(
             data: (bookings) => _buildCalendar(bookings),
-            loading:
-                () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-            error:
-                (error, stack) => Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text('${context.l10n.error}: $error'),
-                  ),
-                ),
+            loading: () => const Center(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            error: (error, stack) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text('${context.l10n.error}: $error'),
+              ),
+            ),
           ),
 
           const Divider(height: 1),
@@ -297,24 +295,19 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error:
-          (error, stack) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 48,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text('${context.l10n.error}: $error'),
-                ],
-              ),
-            ),
+      error: (error, stack) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text('${context.l10n.error}: $error'),
+            ],
           ),
+        ),
+      ),
     );
   }
 
@@ -481,37 +474,35 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
     final l10n = context.l10n;
     showDialog(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text(l10n.filter),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildFilterOption(ctx, l10n.all, 'all'),
-                _buildFilterOption(ctx, 'Check-in', 'check_in'),
-                _buildFilterOption(ctx, 'Check-out', 'check_out'),
-                _buildFilterOption(ctx, l10n.staying, 'staying'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(l10n.close),
-              ),
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.filter),
+        content: RadioGroup<String>(
+          groupValue: _filterType,
+          onChanged: (v) {
+            setState(() => _filterType = v!);
+            Navigator.of(ctx).pop();
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildFilterOption(l10n.all, 'all'),
+              _buildFilterOption('Check-in', 'check_in'),
+              _buildFilterOption('Check-out', 'check_out'),
+              _buildFilterOption(l10n.staying, 'staying'),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.close),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildFilterOption(BuildContext ctx, String label, String value) {
-    return RadioListTile<String>(
-      title: Text(label),
-      value: value,
-      groupValue: _filterType,
-      onChanged: (v) {
-        setState(() => _filterType = v!);
-        Navigator.of(ctx).pop();
-      },
-    );
+  Widget _buildFilterOption(String label, String value) {
+    return RadioListTile<String>(title: Text(label), value: value);
   }
 }

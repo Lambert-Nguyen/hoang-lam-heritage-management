@@ -69,17 +69,18 @@ final dateRateOverridesProvider =
     });
 
 /// Provider for date rate overrides by room type and date range
-final dateRateOverridesByRoomTypeProvider = FutureProvider.family<
-  List<DateRateOverrideListItem>,
-  DateRateOverrideFilter
->((ref, filter) async {
-  final repository = ref.watch(ratePlanRepositoryProvider);
-  return repository.getDateRateOverridesByRoomType(
-    filter.roomTypeId,
-    startDate: filter.startDate,
-    endDate: filter.endDate,
-  );
-});
+final dateRateOverridesByRoomTypeProvider =
+    FutureProvider.family<
+      List<DateRateOverrideListItem>,
+      DateRateOverrideFilter
+    >((ref, filter) async {
+      final repository = ref.watch(ratePlanRepositoryProvider);
+      return repository.getDateRateOverridesByRoomType(
+        filter.roomTypeId,
+        startDate: filter.startDate,
+        endDate: filter.endDate,
+      );
+    });
 
 /// Provider for a specific date rate override by ID
 final dateRateOverrideByIdProvider =
@@ -205,10 +206,11 @@ class DateRateOverrideNotifier
 }
 
 /// Provider for DateRateOverrideNotifier
-final dateRateOverrideNotifierProvider = StateNotifierProvider<
-  DateRateOverrideNotifier,
-  AsyncValue<List<DateRateOverrideListItem>>
->((ref) {
-  final repository = ref.watch(ratePlanRepositoryProvider);
-  return DateRateOverrideNotifier(repository);
-});
+final dateRateOverrideNotifierProvider =
+    StateNotifierProvider<
+      DateRateOverrideNotifier,
+      AsyncValue<List<DateRateOverrideListItem>>
+    >((ref) {
+      final repository = ref.watch(ratePlanRepositoryProvider);
+      return DateRateOverrideNotifier(repository);
+    });

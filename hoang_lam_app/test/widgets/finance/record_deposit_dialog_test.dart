@@ -28,13 +28,12 @@ void main() {
                 onPressed: () {
                   showDialog<dynamic>(
                     context: context,
-                    builder:
-                        (context) => RecordDepositDialog(
-                          bookingId: bookingId,
-                          suggestedAmount: suggestedAmount,
-                          roomNumber: roomNumber,
-                          guestName: guestName,
-                        ),
+                    builder: (context) => RecordDepositDialog(
+                      bookingId: bookingId,
+                      suggestedAmount: suggestedAmount,
+                      roomNumber: roomNumber,
+                      guestName: guestName,
+                    ),
                   );
                 },
                 child: const Text('Open Dialog'),

@@ -138,14 +138,11 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
               ),
-              child:
-                  _isSubmitting
-                      ? const CircularProgressIndicator()
-                      : Text(
-                        isEdit
-                            ? context.l10n.update
-                            : context.l10n.createBooking,
-                      ),
+              child: _isSubmitting
+                  ? const CircularProgressIndicator()
+                  : Text(
+                      isEdit ? context.l10n.update : context.l10n.createBooking,
+                    ),
             ),
           ],
         ),
@@ -164,21 +161,20 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     return roomsAsync.when(
       data: (rooms) {
         return DropdownButtonFormField<int>(
-          value: _selectedRoomId,
+          initialValue: _selectedRoomId,
           decoration: InputDecoration(
             labelText: '${context.l10n.roomNumber} *',
             border: const OutlineInputBorder(),
             prefixIcon: const Icon(Icons.hotel),
           ),
-          items:
-              rooms.map((room) {
-                return DropdownMenuItem(
-                  value: room.id,
-                  child: Text(
-                    '${room.number} - ${room.name ?? room.roomTypeName ?? ""}',
-                  ),
-                );
-              }).toList(),
+          items: rooms.map((room) {
+            return DropdownMenuItem(
+              value: room.id,
+              child: Text(
+                '${room.number} - ${room.name ?? room.roomTypeName ?? ""}',
+              ),
+            );
+          }).toList(),
           onChanged: (value) {
             setState(() {
               _selectedRoomId = value;
@@ -374,12 +370,12 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Future<void> _selectDate(BuildContext context, bool isCheckIn) async {
     final initialDate = isCheckIn ? _checkInDate : _checkOutDate;
-    final firstDate =
-        isCheckIn
-            ? DateTime.now().subtract(const Duration(days: 30))
-            : _checkInDate.add(const Duration(days: 1));
-    final adjustedInitialDate =
-        initialDate.isBefore(firstDate) ? firstDate : initialDate;
+    final firstDate = isCheckIn
+        ? DateTime.now().subtract(const Duration(days: 30))
+        : _checkInDate.add(const Duration(days: 1));
+    final adjustedInitialDate = initialDate.isBefore(firstDate)
+        ? firstDate
+        : initialDate;
 
     final date = await showDatePicker(
       context: context,
@@ -493,19 +489,18 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Widget _buildSourceSelection() {
     return DropdownButtonFormField<BookingSource>(
-      value: _source,
+      initialValue: _source,
       decoration: InputDecoration(
         labelText: '${context.l10n.source} *',
         border: const OutlineInputBorder(),
         prefixIcon: const Icon(Icons.source),
       ),
-      items:
-          BookingSource.values.map((source) {
-            return DropdownMenuItem(
-              value: source,
-              child: Text(_getBookingSourceLabel(source)),
-            );
-          }).toList(),
+      items: BookingSource.values.map((source) {
+        return DropdownMenuItem(
+          value: source,
+          child: Text(_getBookingSourceLabel(source)),
+        );
+      }).toList(),
       onChanged: (value) {
         if (value != null) {
           setState(() {
@@ -518,19 +513,18 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Widget _buildPaymentMethodSelection() {
     return DropdownButtonFormField<PaymentMethod>(
-      value: _paymentMethod,
+      initialValue: _paymentMethod,
       decoration: InputDecoration(
         labelText: '${context.l10n.paymentMethod} *',
         border: const OutlineInputBorder(),
         prefixIcon: const Icon(Icons.payment),
       ),
-      items:
-          PaymentMethod.values.map((method) {
-            return DropdownMenuItem(
-              value: method,
-              child: Text(_getPaymentMethodLabel(method)),
-            );
-          }).toList(),
+      items: PaymentMethod.values.map((method) {
+        return DropdownMenuItem(
+          value: method,
+          child: Text(_getPaymentMethodLabel(method)),
+        );
+      }).toList(),
       onChanged: (value) {
         if (value != null) {
           setState(() {
@@ -675,41 +669,39 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             ),
           ).future,
         );
-        final overlapping =
-            existingBookings
-                .where(
-                  (b) =>
-                      b.status != BookingStatus.cancelled &&
-                      b.status != BookingStatus.noShow &&
-                      b.checkInDate.isBefore(_checkOutDate) &&
-                      b.checkOutDate.isAfter(_checkInDate),
-                )
-                .toList();
+        final overlapping = existingBookings
+            .where(
+              (b) =>
+                  b.status != BookingStatus.cancelled &&
+                  b.status != BookingStatus.noShow &&
+                  b.checkInDate.isBefore(_checkOutDate) &&
+                  b.checkOutDate.isAfter(_checkInDate),
+            )
+            .toList();
 
         if (overlapping.isNotEmpty && mounted) {
           final l10n = context.l10n;
           final proceed = await showDialog<bool>(
             context: context,
-            builder:
-                (ctx) => AlertDialog(
-                  title: Text(l10n.overlapWarningTitle),
-                  content: Text(
-                    l10n.overlapWarningMessage.replaceAll(
-                      '{count}',
-                      overlapping.length.toString(),
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(false),
-                      child: Text(context.l10n.cancel),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => Navigator.of(ctx).pop(true),
-                      child: Text(context.l10n.confirm),
-                    ),
-                  ],
+            builder: (ctx) => AlertDialog(
+              title: Text(l10n.overlapWarningTitle),
+              content: Text(
+                l10n.overlapWarningMessage.replaceAll(
+                  '{count}',
+                  overlapping.length.toString(),
                 ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: Text(context.l10n.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: Text(context.l10n.confirm),
+                ),
+              ],
+            ),
           );
           if (proceed != true) return;
         }

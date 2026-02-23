@@ -142,14 +142,13 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   void _showFilterDialog() {
     showModalBottomSheet(
       context: context,
-      builder:
-          (context) => _FilterBottomSheet(
-            currentFilter: _filterType,
-            onFilterChanged: (type) {
-              setState(() => _filterType = type);
-              Navigator.pop(context);
-            },
-          ),
+      builder: (context) => _FilterBottomSheet(
+        currentFilter: _filterType,
+        onFilterChanged: (type) {
+          setState(() => _filterType = type);
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 
@@ -176,21 +175,19 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       padding: AppSpacing.paddingAll,
       child: summaryAsync.when(
         data: (summary) => _buildSummaryContent(l10n, summary),
-        loading:
-            () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(AppSpacing.lg),
-                child: CircularProgressIndicator(color: AppColors.onPrimary),
-              ),
-            ),
-        error:
-            (error, _) => Padding(
-              padding: const EdgeInsets.all(AppSpacing.md),
-              child: Text(
-                '${l10n.dataLoadError}: $error',
-                style: const TextStyle(color: AppColors.onPrimary),
-              ),
-            ),
+        loading: () => const Center(
+          child: Padding(
+            padding: EdgeInsets.all(AppSpacing.lg),
+            child: CircularProgressIndicator(color: AppColors.onPrimary),
+          ),
+        ),
+        error: (error, _) => Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Text(
+            '${l10n.dataLoadError}: $error',
+            style: const TextStyle(color: AppColors.onPrimary),
+          ),
+        ),
       ),
     );
   }
@@ -199,14 +196,12 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     AppLocalizations l10n,
     MonthlyFinancialSummary summary,
   ) {
-    final profitMargin =
-        summary.totalIncome > 0
-            ? (summary.netBalance / summary.totalIncome * 100)
-            : 0.0;
-    final profitRatio =
-        summary.totalIncome > 0
-            ? (summary.netBalance / summary.totalIncome).clamp(0.0, 1.0)
-            : 0.0;
+    final profitMargin = summary.totalIncome > 0
+        ? (summary.netBalance / summary.totalIncome * 100)
+        : 0.0;
+    final profitRatio = summary.totalIncome > 0
+        ? (summary.netBalance / summary.totalIncome).clamp(0.0, 1.0)
+        : 0.0;
 
     return Column(
       children: [
@@ -412,11 +407,10 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         );
       },
       loading: () => const LoadingIndicator(),
-      error:
-          (error, stack) => ErrorDisplay(
-            message: '${context.l10n.dataLoadError}: $error',
-            onRetry: _refreshData,
-          ),
+      error: (error, stack) => ErrorDisplay(
+        message: '${context.l10n.dataLoadError}: $error',
+        onRetry: _refreshData,
+      ),
     );
   }
 
@@ -516,27 +510,25 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder:
-          (context) => _EntryDetailSheet(
-            entry: entry,
-            onEdit: () {
-              Navigator.pop(context);
-              _editEntry(entry);
-            },
-            onDelete: () async {
-              Navigator.pop(context);
-              await _deleteEntry(entry);
-            },
-          ),
+      builder: (context) => _EntryDetailSheet(
+        entry: entry,
+        onEdit: () {
+          Navigator.pop(context);
+          _editEntry(entry);
+        },
+        onDelete: () async {
+          Navigator.pop(context);
+          await _deleteEntry(entry);
+        },
+      ),
     );
   }
 
   Future<void> _editEntry(FinancialEntry entry) async {
     final result = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder:
-            (context) =>
-                FinanceFormScreen(entryType: entry.entryType, entry: entry),
+        builder: (context) =>
+            FinanceFormScreen(entryType: entry.entryType, entry: entry),
         fullscreenDialog: true,
       ),
     );
@@ -549,22 +541,21 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.confirmDelete),
-            content: Text('${l10n.areYouSure} "${entry.categoryName ?? ""}"?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                child: Text(l10n.delete),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.confirmDelete),
+        content: Text('${l10n.areYouSure} "${entry.categoryName ?? ""}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true) {
@@ -650,8 +641,9 @@ class _FilterBottomSheet extends StatelessWidget {
           color: isSelected ? AppColors.primary : null,
         ),
       ),
-      trailing:
-          isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
+      trailing: isSelected
+          ? const Icon(Icons.check, color: AppColors.primary)
+          : null,
       onTap: () => onFilterChanged(type),
     );
   }
@@ -768,11 +760,10 @@ class _EntryDetailSheet extends StatelessWidget {
                   onPressed: onDelete,
                   icon: const Icon(Icons.delete, color: AppColors.error),
                   label: Builder(
-                    builder:
-                        (context) => Text(
-                          context.l10n.delete,
-                          style: const TextStyle(color: AppColors.error),
-                        ),
+                    builder: (context) => Text(
+                      context.l10n.delete,
+                      style: const TextStyle(color: AppColors.error),
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: AppColors.error),

@@ -55,27 +55,20 @@ class _PricingManagementScreenState
         actions: [
           // Room type filter
           roomTypesAsync.when(
-            data:
-                (roomTypes) => PopupMenuButton<int?>(
-                  icon: const Icon(Icons.filter_list),
-                  tooltip: l10n.filterByRoomType,
-                  onSelected: (value) {
-                    setState(() => _selectedRoomTypeId = value);
-                  },
-                  itemBuilder:
-                      (context) => [
-                        PopupMenuItem(
-                          value: null,
-                          child: Text(l10n.allRoomTypes),
-                        ),
-                        ...roomTypes.map(
-                          (type) => PopupMenuItem(
-                            value: type.id,
-                            child: Text(type.name),
-                          ),
-                        ),
-                      ],
+            data: (roomTypes) => PopupMenuButton<int?>(
+              icon: const Icon(Icons.filter_list),
+              tooltip: l10n.filterByRoomType,
+              onSelected: (value) {
+                setState(() => _selectedRoomTypeId = value);
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem(value: null, child: Text(l10n.allRoomTypes)),
+                ...roomTypes.map(
+                  (type) =>
+                      PopupMenuItem(value: type.id, child: Text(type.name)),
                 ),
+              ],
+            ),
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
@@ -113,10 +106,9 @@ class _RatePlansTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ratePlansAsync =
-        roomTypeId != null
-            ? ref.watch(ratePlansByRoomTypeProvider(roomTypeId!))
-            : ref.watch(ratePlansProvider);
+    final ratePlansAsync = roomTypeId != null
+        ? ref.watch(ratePlansByRoomTypeProvider(roomTypeId!))
+        : ref.watch(ratePlansProvider);
 
     return ratePlansAsync.when(
       data: (ratePlans) {
@@ -164,22 +156,21 @@ class _RatePlansTab extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error:
-          (error, _) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                AppSpacing.gapVerticalMd,
-                Text('${context.l10n.error}: $error'),
-                AppSpacing.gapVerticalMd,
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(ratePlansProvider),
-                  child: Text(context.l10n.retry),
-                ),
-              ],
+      error: (error, _) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: AppColors.error),
+            AppSpacing.gapVerticalMd,
+            Text('${context.l10n.error}: $error'),
+            AppSpacing.gapVerticalMd,
+            ElevatedButton(
+              onPressed: () => ref.invalidate(ratePlansProvider),
+              child: Text(context.l10n.retry),
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -234,10 +225,9 @@ class _RatePlanCard extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color:
-                          plan.isActive
-                              ? AppColors.success.withValues(alpha: 0.1)
-                              : AppColors.textSecondary.withValues(alpha: 0.1),
+                      color: plan.isActive
+                          ? AppColors.success.withValues(alpha: 0.1)
+                          : AppColors.textSecondary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -245,10 +235,9 @@ class _RatePlanCard extends ConsumerWidget {
                           ? context.l10n.isActive
                           : context.l10n.pausedStatus,
                       style: TextStyle(
-                        color:
-                            plan.isActive
-                                ? AppColors.success
-                                : AppColors.textSecondary,
+                        color: plan.isActive
+                            ? AppColors.success
+                            : AppColors.textSecondary,
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -342,10 +331,9 @@ class _DateOverridesTab extends ConsumerWidget {
     return overridesAsync.when(
       data: (overrides) {
         // Filter by room type if selected
-        final filtered =
-            roomTypeId != null
-                ? overrides.where((o) => o.roomType == roomTypeId).toList()
-                : overrides;
+        final filtered = roomTypeId != null
+            ? overrides.where((o) => o.roomType == roomTypeId).toList()
+            : overrides;
 
         if (filtered.isEmpty) {
           return Center(
@@ -397,22 +385,21 @@ class _DateOverridesTab extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error:
-          (error, _) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                AppSpacing.gapVerticalMd,
-                Text('${context.l10n.error}: $error'),
-                AppSpacing.gapVerticalMd,
-                ElevatedButton(
-                  onPressed: () => ref.invalidate(dateRateOverridesProvider),
-                  child: Text(context.l10n.retry),
-                ),
-              ],
+      error: (error, _) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.error_outline, size: 48, color: AppColors.error),
+            AppSpacing.gapVerticalMd,
+            Text('${context.l10n.error}: $error'),
+            AppSpacing.gapVerticalMd,
+            ElevatedButton(
+              onPressed: () => ref.invalidate(dateRateOverridesProvider),
+              child: Text(context.l10n.retry),
             ),
-          ),
+          ],
+        ),
+      ),
     );
   }
 }

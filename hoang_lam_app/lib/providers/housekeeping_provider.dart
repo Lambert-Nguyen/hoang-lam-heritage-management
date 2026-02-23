@@ -279,10 +279,9 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
   }
 
   void _updateTaskInList(HousekeepingTask updatedTask) {
-    final updatedTasks =
-        state.tasks.map((t) {
-          return t.id == updatedTask.id ? updatedTask : t;
-        }).toList();
+    final updatedTasks = state.tasks.map((t) {
+      return t.id == updatedTask.id ? updatedTask : t;
+    }).toList();
     state = state.copyWith(isLoading: false, tasks: updatedTasks);
   }
 
@@ -468,10 +467,9 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
   }
 
   void _updateRequestInList(MaintenanceRequest updatedRequest) {
-    final updatedRequests =
-        state.requests.map((r) {
-          return r.id == updatedRequest.id ? updatedRequest : r;
-        }).toList();
+    final updatedRequests = state.requests.map((r) {
+      return r.id == updatedRequest.id ? updatedRequest : r;
+    }).toList();
     state = state.copyWith(isLoading: false, requests: updatedRequests);
   }
 

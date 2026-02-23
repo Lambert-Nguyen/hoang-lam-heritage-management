@@ -203,13 +203,12 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
       return;
     }
 
-    final updatedItems =
-        state.items.map((cartItem) {
-          if (cartItem.item.id == itemId) {
-            return cartItem.copyWith(quantity: quantity);
-          }
-          return cartItem;
-        }).toList();
+    final updatedItems = state.items.map((cartItem) {
+      if (cartItem.item.id == itemId) {
+        return cartItem.copyWith(quantity: quantity);
+      }
+      return cartItem;
+    }).toList();
 
     state = state.copyWith(items: updatedItems);
   }
@@ -258,15 +257,14 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
     try {
       final request = BulkCreateMinibarSaleRequest(
         booking: state.bookingId!,
-        items:
-            state.items
-                .map(
-                  (item) => MinibarSaleItem(
-                    itemId: item.item.id,
-                    quantity: item.quantity,
-                  ),
-                )
-                .toList(),
+        items: state.items
+            .map(
+              (item) => MinibarSaleItem(
+                itemId: item.item.id,
+                quantity: item.quantity,
+              ),
+            )
+            .toList(),
         date: DateTime.now(),
       );
 
@@ -376,10 +374,9 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.updateItem(id, request);
-      final updatedItems =
-          state.items.map((item) {
-            return item.id == id ? updated : item;
-          }).toList();
+      final updatedItems = state.items.map((item) {
+        return item.id == id ? updated : item;
+      }).toList();
       state = state.copyWith(isLoading: false, items: updatedItems);
       _invalidateItemProviders();
       return updated;
@@ -394,10 +391,9 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.toggleItemActive(id);
-      final updatedItems =
-          state.items.map((item) {
-            return item.id == id ? updated : item;
-          }).toList();
+      final updatedItems = state.items.map((item) {
+        return item.id == id ? updated : item;
+      }).toList();
       state = state.copyWith(isLoading: false, items: updatedItems);
       _invalidateItemProviders();
       return updated;
@@ -469,10 +465,9 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.markSaleCharged(id);
-      final updatedSales =
-          state.sales.map((sale) {
-            return sale.id == id ? updated : sale;
-          }).toList();
+      final updatedSales = state.sales.map((sale) {
+        return sale.id == id ? updated : sale;
+      }).toList();
       state = state.copyWith(isLoading: false, sales: updatedSales);
       _invalidateSaleProviders(updated.booking);
       return updated;
@@ -487,10 +482,9 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updated = await _repository.unmarkSaleCharged(id);
-      final updatedSales =
-          state.sales.map((sale) {
-            return sale.id == id ? updated : sale;
-          }).toList();
+      final updatedSales = state.sales.map((sale) {
+        return sale.id == id ? updated : sale;
+      }).toList();
       state = state.copyWith(isLoading: false, sales: updatedSales);
       _invalidateSaleProviders(updated.booking);
       return updated;

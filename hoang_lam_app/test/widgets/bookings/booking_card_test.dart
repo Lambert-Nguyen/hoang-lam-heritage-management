@@ -415,7 +415,9 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('vi'),
-          home: Scaffold(body: BookingCard(booking: testBooking, onTap: () {})),
+          home: Scaffold(
+            body: BookingCard(booking: testBooking, onTap: () {}),
+          ),
         ),
       );
       await tester.pumpAndSettle();

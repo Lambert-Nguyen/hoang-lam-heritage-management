@@ -94,24 +94,24 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
     }
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      filtered =
-          filtered
-              .where(
-                (u) =>
-                    u.displayName.toLowerCase().contains(query) ||
-                    u.username.toLowerCase().contains(query) ||
-                    (u.phone ?? '').contains(query) ||
-                    (u.email ?? '').toLowerCase().contains(query),
-              )
-              .toList();
+      filtered = filtered
+          .where(
+            (u) =>
+                u.displayName.toLowerCase().contains(query) ||
+                u.username.toLowerCase().contains(query) ||
+                (u.phone ?? '').contains(query) ||
+                (u.email ?? '').toLowerCase().contains(query),
+          )
+          .toList();
     }
 
     // Group by role
     final owners = filtered.where((u) => u.role == UserRole.owner).toList();
     final managers = filtered.where((u) => u.role == UserRole.manager).toList();
     final staff = filtered.where((u) => u.role == UserRole.staff).toList();
-    final housekeeping =
-        filtered.where((u) => u.role == UserRole.housekeeping).toList();
+    final housekeeping = filtered
+        .where((u) => u.role == UserRole.housekeeping)
+        .toList();
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -258,15 +258,14 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
         decoration: InputDecoration(
           hintText: context.l10n.searchStaffHint,
           prefixIcon: const Icon(Icons.search, size: 20),
-          suffixIcon:
-              _searchQuery.isNotEmpty
-                  ? IconButton(
-                    icon: const Icon(Icons.clear, size: 18),
-                    onPressed: () {
-                      setState(() => _searchQuery = '');
-                    },
-                  )
-                  : null,
+          suffixIcon: _searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 18),
+                  onPressed: () {
+                    setState(() => _searchQuery = '');
+                  },
+                )
+              : null,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -301,10 +300,9 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
             return ChoiceChip(
               label: Text('${role.localizedName(context.l10n)} ($count)'),
               selected: _roleFilter == role,
-              onSelected:
-                  (_) => setState(() {
-                    _roleFilter = _roleFilter == role ? null : role;
-                  }),
+              onSelected: (_) => setState(() {
+                _roleFilter = _roleFilter == role ? null : role;
+              }),
             );
           }),
         ],
@@ -431,8 +429,9 @@ class _StaffTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initial =
-        user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : 'U';
+    final initial = user.displayName.isNotEmpty
+        ? user.displayName[0].toUpperCase()
+        : 'U';
 
     final roleColor = _getRoleColor(user.role);
 
@@ -497,8 +496,9 @@ class _StaffDetailSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final roleColor = _getRoleColor(user.role);
-    final initial =
-        user.displayName.isNotEmpty ? user.displayName[0].toUpperCase() : 'U';
+    final initial = user.displayName.isNotEmpty
+        ? user.displayName[0].toUpperCase()
+        : 'U';
 
     return Padding(
       padding: EdgeInsets.only(
@@ -658,22 +658,21 @@ class _StaffDetailSheet extends StatelessWidget {
         value,
         style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
       ),
-      trailing:
-          canCopy
-              ? IconButton(
-                icon: const Icon(Icons.copy, size: 18),
-                tooltip: context.l10n.copyTooltip,
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: value));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${context.l10n.copiedValueMsg}: $value'),
-                      duration: const Duration(seconds: 1),
-                    ),
-                  );
-                },
-              )
-              : null,
+      trailing: canCopy
+          ? IconButton(
+              icon: const Icon(Icons.copy, size: 18),
+              tooltip: context.l10n.copyTooltip,
+              onPressed: () {
+                Clipboard.setData(ClipboardData(text: value));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('${context.l10n.copiedValueMsg}: $value'),
+                    duration: const Duration(seconds: 1),
+                  ),
+                );
+              },
+            )
+          : null,
     );
   }
 

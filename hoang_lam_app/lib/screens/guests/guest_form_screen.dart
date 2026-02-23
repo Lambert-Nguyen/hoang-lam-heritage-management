@@ -226,21 +226,20 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             label: context.l10n.documentType,
             value: _idType,
             prefixIcon: _idType.icon,
-            items:
-                IDType.values
-                    .map(
-                      (type) => DropdownMenuItem(
-                        value: type,
-                        child: Row(
-                          children: [
-                            Icon(type.icon, size: 20),
-                            AppSpacing.gapHorizontalSm,
-                            Text(type.fullDisplayName),
-                          ],
-                        ),
-                      ),
-                    )
-                    .toList(),
+            items: IDType.values
+                .map(
+                  (type) => DropdownMenuItem(
+                    value: type,
+                    child: Row(
+                      children: [
+                        Icon(type.icon, size: 20),
+                        AppSpacing.gapHorizontalSm,
+                        Text(type.fullDisplayName),
+                      ],
+                    ),
+                  ),
+                )
+                .toList(),
             onChanged: (value) {
               if (value != null) {
                 setState(() => _idType = value);
@@ -255,10 +254,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             label: context.l10n.documentNumber,
             prefixIcon: Icons.numbers,
             textInputAction: TextInputAction.next,
-            keyboardType:
-                _idType == IDType.passport
-                    ? TextInputType.text
-                    : TextInputType.number,
+            keyboardType: _idType == IDType.passport
+                ? TextInputType.text
+                : TextInputType.number,
             inputFormatters: [
               if (_idType != IDType.passport)
                 FilteringTextInputFormatter.digitsOnly,
@@ -285,16 +283,14 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             lastDate: DateTime.now(),
             firstDate: DateTime(1950),
             controller: _idIssueDateController,
-            onChanged:
-                (date) => setState(() {
-                  _idIssueDate = date;
-                  _idIssueDateController.text = _formatDateValue(date);
-                }),
-            onClear:
-                () => setState(() {
-                  _idIssueDate = null;
-                  _idIssueDateController.text = '';
-                }),
+            onChanged: (date) => setState(() {
+              _idIssueDate = date;
+              _idIssueDateController.text = _formatDateValue(date);
+            }),
+            onClear: () => setState(() {
+              _idIssueDate = null;
+              _idIssueDateController.text = '';
+            }),
           ),
         ],
       ),
@@ -371,16 +367,14 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             lastDate: DateTime.now(),
             firstDate: DateTime(1920),
             controller: _dateOfBirthController,
-            onChanged:
-                (date) => setState(() {
-                  _dateOfBirth = date;
-                  _dateOfBirthController.text = _formatDateValue(date);
-                }),
-            onClear:
-                () => setState(() {
-                  _dateOfBirth = null;
-                  _dateOfBirthController.text = '';
-                }),
+            onChanged: (date) => setState(() {
+              _dateOfBirth = date;
+              _dateOfBirthController.text = _formatDateValue(date);
+            }),
+            onClear: () => setState(() {
+              _dateOfBirth = null;
+              _dateOfBirthController.text = '';
+            }),
           ),
         ],
       ),
@@ -500,10 +494,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             Expanded(
               flex: 2,
               child: AppButton(
-                label:
-                    _isEditing
-                        ? context.l10n.saveChanges
-                        : context.l10n.addGuest,
+                label: _isEditing
+                    ? context.l10n.saveChanges
+                    : context.l10n.addGuest,
                 icon: _isEditing ? Icons.save : Icons.person_add,
                 isLoading: _isLoading,
                 onPressed: _submitForm,
@@ -529,10 +522,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         phone: _phoneController.text.trim(),
         email: _emailController.text.trim(),
         idType: _idType,
-        idNumber:
-            _idNumberController.text.trim().isEmpty
-                ? null
-                : _idNumberController.text.trim(),
+        idNumber: _idNumberController.text.trim().isEmpty
+            ? null
+            : _idNumberController.text.trim(),
         idIssueDate: _idIssueDate,
         idIssuePlace: _idIssuePlaceController.text.trim(),
         nationality: _nationality,
@@ -667,8 +659,9 @@ class _NationalityDropdownState extends State<NationalityDropdown> {
 
     return AppDropdown<String>(
       label: widget.label ?? context.l10n.nationality,
-      value:
-          Nationalities.common.contains(widget.value) ? widget.value : 'Other',
+      value: Nationalities.common.contains(widget.value)
+          ? widget.value
+          : 'Other',
       prefixIcon: Icons.flag,
       items: [
         ...Nationalities.common.map(

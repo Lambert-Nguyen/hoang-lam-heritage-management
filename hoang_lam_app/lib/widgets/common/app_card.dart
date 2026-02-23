@@ -29,10 +29,9 @@ class AppCard extends StatelessWidget {
       color: color,
       elevation: elevation,
       margin: margin ?? EdgeInsets.zero,
-      shape:
-          borderRadius != null
-              ? RoundedRectangleBorder(borderRadius: borderRadius!)
-              : null,
+      shape: borderRadius != null
+          ? RoundedRectangleBorder(borderRadius: borderRadius!)
+          : null,
       child: Padding(padding: padding ?? AppSpacing.paddingCard, child: child),
     );
 

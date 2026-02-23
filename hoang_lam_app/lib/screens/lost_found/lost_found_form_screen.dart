@@ -95,18 +95,18 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
             return _buildForm();
           },
           loading: () => const LoadingIndicator(),
-          error:
-              (e, _) => ErrorDisplay(
-                message: '${l10n.error}: $e',
-                onRetry:
-                    () => ref.invalidate(
-                      lostFoundItemByIdProvider(widget.itemId!),
-                    ),
-              ),
+          error: (e, _) => ErrorDisplay(
+            message: '${l10n.error}: $e',
+            onRetry: () =>
+                ref.invalidate(lostFoundItemByIdProvider(widget.itemId!)),
+          ),
         ),
       );
     }
-    return Scaffold(appBar: AppBar(title: Text(l10n.add)), body: _buildForm());
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.add)),
+      body: _buildForm(),
+    );
   }
 
   Widget _buildForm() {
@@ -129,11 +129,8 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                       controller: _itemNameController,
                       label: l10n.itemNameLabel,
                       hint: l10n.itemNameHint,
-                      validator:
-                          (v) =>
-                              v == null || v.isEmpty
-                                  ? l10n.pleaseEnterName
-                                  : null,
+                      validator: (v) =>
+                          v == null || v.isEmpty ? l10n.pleaseEnterName : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(
@@ -144,26 +141,25 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                     ),
                     const SizedBox(height: AppSpacing.md),
                     DropdownButtonFormField<LostFoundCategory>(
-                      value: _selectedCategory,
+                      initialValue: _selectedCategory,
                       decoration: InputDecoration(
                         labelText: l10n.category,
                         border: const OutlineInputBorder(),
                       ),
-                      items:
-                          LostFoundCategory.values
-                              .map(
-                                (c) => DropdownMenuItem(
-                                  value: c,
-                                  child: Row(
-                                    children: [
-                                      Icon(c.icon, size: 20, color: c.color),
-                                      const SizedBox(width: 8),
-                                      Text(c.localizedName(context.l10n)),
-                                    ],
-                                  ),
-                                ),
-                              )
-                              .toList(),
+                      items: LostFoundCategory.values
+                          .map(
+                            (c) => DropdownMenuItem(
+                              value: c,
+                              child: Row(
+                                children: [
+                                  Icon(c.icon, size: 20, color: c.color),
+                                  const SizedBox(width: 8),
+                                  Text(c.localizedName(context.l10n)),
+                                ],
+                              ),
+                            ),
+                          )
+                          .toList(),
                       onChanged: (v) {
                         if (v != null) setState(() => _selectedCategory = v);
                       },
@@ -198,11 +194,8 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                       controller: _foundLocationController,
                       label: l10n.foundLocationLabel,
                       hint: l10n.foundLocationHint,
-                      validator:
-                          (v) =>
-                              v == null || v.isEmpty
-                                  ? l10n.pleaseEnterValue
-                                  : null,
+                      validator: (v) =>
+                          v == null || v.isEmpty ? l10n.pleaseEnterValue : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(

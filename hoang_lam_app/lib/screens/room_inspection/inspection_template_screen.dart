@@ -50,11 +50,10 @@ class _InspectionTemplateScreenState
           );
         },
         loading: () => const LoadingIndicator(),
-        error:
-            (e, _) => ErrorDisplay(
-              message: '${l10n.error}: $e',
-              onRetry: () => ref.invalidate(inspectionTemplatesProvider),
-            ),
+        error: (e, _) => ErrorDisplay(
+          message: '${l10n.error}: $e',
+          onRetry: () => ref.invalidate(inspectionTemplatesProvider),
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateTemplateDialog,
@@ -97,130 +96,131 @@ class _InspectionTemplateScreenState
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder:
-          (context) => DraggableScrollableSheet(
-            initialChildSize: 0.7,
-            maxChildSize: 0.9,
-            minChildSize: 0.4,
-            expand: false,
-            builder: (context, scrollController) {
-              final l10n = context.l10n;
-              return Container(
-                padding: AppSpacing.paddingAll,
-                child: ListView(
-                  controller: scrollController,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        maxChildSize: 0.9,
+        minChildSize: 0.4,
+        expand: false,
+        builder: (context, scrollController) {
+          final l10n = context.l10n;
+          return Container(
+            padding: AppSpacing.paddingAll,
+            child: ListView(
+              controller: scrollController,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.mutedAccent,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                Row(
                   children: [
-                    Center(
-                      child: Container(
-                        width: 40,
-                        height: 4,
-                        margin: const EdgeInsets.only(bottom: 16),
-                        decoration: BoxDecoration(
-                          color: AppColors.mutedAccent,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                    Expanded(
+                      child: Text(
+                        template.name,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            template.name,
-                            style: Theme.of(context).textTheme.titleLarge,
+                    if (template.isDefault)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.success.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          l10n.defaultBadge,
+                          style: const TextStyle(
+                            color: AppColors.success,
+                            fontSize: 12,
                           ),
                         ),
-                        if (template.isDefault)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.success.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              l10n.defaultBadge,
-                              style: const TextStyle(
-                                color: AppColors.success,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                      ],
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      template.inspectionType.icon,
+                      size: 16,
+                      color: AppColors.textSecondary,
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          template.inspectionType.icon,
-                          size: 16,
+                    const SizedBox(width: 4),
+                    Text(
+                      template.inspectionType.localizedName(context.l10n),
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    if (template.roomTypeName != null) ...[
+                      const SizedBox(width: 16),
+                      Icon(
+                        Icons.meeting_room,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        template.roomTypeName!,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.textSecondary,
                         ),
-                        const SizedBox(width: 4),
-                        Text(
-                          template.inspectionType.localizedName(context.l10n),
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.textSecondary),
-                        ),
-                        if (template.roomTypeName != null) ...[
-                          const SizedBox(width: 16),
-                          Icon(
-                            Icons.meeting_room,
-                            size: 16,
-                            color: AppColors.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            template.roomTypeName!,
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: AppColors.textSecondary),
-                          ),
-                        ],
-                      ],
+                      ),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 8),
+                Text(
+                  '${l10n.checklistCount} (${template.items.length} ${l10n.itemsSuffix})',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 12),
+                ...template.items.map(
+                  (templateItem) => _buildTemplateItemTile(templateItem),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _editTemplate(template);
+                        },
+                        icon: const Icon(Icons.edit),
+                        label: Text(l10n.editLabel),
+                      ),
                     ),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 8),
-                    Text(
-                      '${l10n.checklistCount} (${template.items.length} ${l10n.itemsSuffix})',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    ...template.items.map(
-                      (templateItem) => _buildTemplateItemTile(templateItem),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton.icon(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _editTemplate(template);
-                            },
-                            icon: const Icon(Icons.edit),
-                            label: Text(l10n.editLabel),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: FilledButton.icon(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              _duplicateTemplate(template);
-                            },
-                            icon: const Icon(Icons.copy),
-                            label: Text(l10n.duplicateBtn),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _duplicateTemplate(template);
+                        },
+                        icon: const Icon(Icons.copy),
+                        label: Text(l10n.duplicateBtn),
+                      ),
                     ),
                   ],
                 ),
-              );
-            },
-          ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -352,22 +352,21 @@ class _InspectionTemplateScreenState
     final l10n = context.l10n;
     final confirm = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.confirmDelete),
-            content: Text(l10n.confirmDeleteTemplate),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.error),
-                child: Text(l10n.delete),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.confirmDelete),
+        content: Text(l10n.confirmDeleteTemplate),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
     );
 
     if (confirm == true) {
@@ -625,11 +624,8 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                     labelText: '${l10n.templateNameLabel} *',
                     hintText: l10n.templateNameHint,
                   ),
-                  validator:
-                      (v) =>
-                          v?.isEmpty ?? true
-                              ? l10n.pleaseEnterTemplateName
-                              : null,
+                  validator: (v) =>
+                      v?.isEmpty ?? true ? l10n.pleaseEnterTemplateName : null,
                   onChanged: (v) => _name = v,
                 ),
                 const SizedBox(height: 16),
@@ -643,19 +639,18 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children:
-                      InspectionType.values.map((type) {
-                        final isSelected = _type == type;
-                        return ChoiceChip(
-                          label: Text(type.localizedName(context.l10n)),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            if (selected) {
-                              setState(() => _type = type);
-                            }
-                          },
-                        );
-                      }).toList(),
+                  children: InspectionType.values.map((type) {
+                    final isSelected = _type == type;
+                    return ChoiceChip(
+                      label: Text(type.localizedName(context.l10n)),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        if (selected) {
+                          setState(() => _type = type);
+                        }
+                      },
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(height: 16),
 
@@ -749,8 +744,8 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                           ),
                         IconButton(
                           icon: const Icon(Icons.delete_outline, size: 20),
-                          onPressed:
-                              () => setState(() => _items.removeAt(index)),
+                          onPressed: () =>
+                              setState(() => _items.removeAt(index)),
                         ),
                       ],
                     ),
@@ -774,97 +769,89 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
     final l10n = context.l10n;
     showDialog(
       context: context,
-      builder:
-          (context) => StatefulBuilder(
-            builder: (context, setDialogState) {
-              return AlertDialog(
-                title: Text(l10n.addChecklistItemTitle),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: _itemNameController,
-                      decoration: InputDecoration(
-                        labelText: l10n.itemNameLabel,
-                      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Text(l10n.addChecklistItemTitle),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: _itemNameController,
+                  decoration: InputDecoration(labelText: l10n.itemNameLabel),
+                ),
+                const SizedBox(height: 8),
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(labelText: l10n.categoryLabel),
+                  initialValue: _itemCategory,
+                  items: [
+                    DropdownMenuItem(
+                      value: 'Phòng ngủ',
+                      child: Text(l10n.bedroomCategory),
                     ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        labelText: l10n.categoryLabel,
-                      ),
-                      value: _itemCategory,
-                      items: [
-                        DropdownMenuItem(
-                          value: 'Phòng ngủ',
-                          child: Text(l10n.bedroomCategory),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Phòng tắm',
-                          child: Text(l10n.bathroomCategory),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Tiện nghi',
-                          child: Text(l10n.amenitiesCategory),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Điện tử',
-                          child: Text(l10n.electronicsCategory),
-                        ),
-                        DropdownMenuItem(
-                          value: 'An toàn',
-                          child: Text(l10n.safetyCategory),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Khác',
-                          child: Text(l10n.otherCategory),
-                        ),
-                      ],
-                      onChanged:
-                          (v) => setDialogState(
-                            () => _itemCategory = v ?? 'Phòng ngủ',
-                          ),
+                    DropdownMenuItem(
+                      value: 'Phòng tắm',
+                      child: Text(l10n.bathroomCategory),
                     ),
-                    const SizedBox(height: 8),
-                    CheckboxListTile(
-                      title: Text(l10n.critical),
-                      value: _itemCritical,
-                      onChanged:
-                          (v) =>
-                              setDialogState(() => _itemCritical = v ?? false),
-                      controlAffinity: ListTileControlAffinity.leading,
-                      contentPadding: EdgeInsets.zero,
+                    DropdownMenuItem(
+                      value: 'Tiện nghi',
+                      child: Text(l10n.amenitiesCategory),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Điện tử',
+                      child: Text(l10n.electronicsCategory),
+                    ),
+                    DropdownMenuItem(
+                      value: 'An toàn',
+                      child: Text(l10n.safetyCategory),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Khác',
+                      child: Text(l10n.otherCategory),
                     ),
                   ],
+                  onChanged: (v) =>
+                      setDialogState(() => _itemCategory = v ?? 'Phòng ngủ'),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(l10n.cancel),
-                  ),
-                  FilledButton(
-                    onPressed: () {
-                      if (_itemNameController.text.isNotEmpty) {
-                        setState(() {
-                          _items.add(
-                            TemplateItem(
-                              item: _itemNameController.text,
-                              category: _itemCategory,
-                              critical: _itemCritical,
-                            ),
-                          );
-                        });
-                        _itemNameController.clear();
-                        _itemCritical = false;
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: Text(l10n.addLabel),
-                  ),
-                ],
-              );
-            },
-          ),
+                const SizedBox(height: 8),
+                CheckboxListTile(
+                  title: Text(l10n.critical),
+                  value: _itemCritical,
+                  onChanged: (v) =>
+                      setDialogState(() => _itemCritical = v ?? false),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () {
+                  if (_itemNameController.text.isNotEmpty) {
+                    setState(() {
+                      _items.add(
+                        TemplateItem(
+                          item: _itemNameController.text,
+                          category: _itemCategory,
+                          critical: _itemCritical,
+                        ),
+                      );
+                    });
+                    _itemNameController.clear();
+                    _itemCritical = false;
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text(l10n.addLabel),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 

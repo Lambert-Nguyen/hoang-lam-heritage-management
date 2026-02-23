@@ -67,10 +67,9 @@ class SettingsScreen extends ConsumerWidget {
                 value: biometricState.isEnabled,
                 onChanged: (value) async {
                   if (value) {
-                    final authenticated =
-                        await ref
-                            .read(biometricNotifierProvider.notifier)
-                            .authenticate();
+                    final authenticated = await ref
+                        .read(biometricNotifierProvider.notifier)
+                        .authenticate();
                     if (authenticated && currentUser != null) {
                       await ref
                           .read(biometricNotifierProvider.notifier)
@@ -94,15 +93,14 @@ class SettingsScreen extends ConsumerWidget {
                 },
               );
             },
-            loading:
-                () => ListTile(
-                  leading: const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                  title: Text(l10n.loading),
-                ),
+            loading: () => ListTile(
+              leading: const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              title: Text(l10n.loading),
+            ),
             error: (_, __) => const SizedBox.shrink(),
           ),
 
@@ -404,10 +402,9 @@ class SettingsScreen extends ConsumerWidget {
     return ListTile(
       leading: Icon(icon, color: textColor ?? AppColors.primary),
       title: Text(title, style: TextStyle(color: textColor, fontSize: 16)),
-      subtitle:
-          subtitle != null
-              ? Text(subtitle, style: const TextStyle(fontSize: 14))
-              : null,
+      subtitle: subtitle != null
+          ? Text(subtitle, style: const TextStyle(fontSize: 14))
+          : null,
       trailing: const Icon(Icons.chevron_right, color: AppColors.textHint),
       onTap: onTap,
     );
@@ -421,55 +418,42 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(l10n.selectTheme),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile<ThemeMode>(
-                  title: Text(l10n.systemDefault),
-                  subtitle: Text(l10n.autoPhoneSettings),
-                  value: ThemeMode.system,
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setThemeMode(ThemeMode.system);
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-                RadioListTile<ThemeMode>(
-                  title: Text(l10n.light),
-                  value: ThemeMode.light,
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setThemeMode(ThemeMode.light);
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-                RadioListTile<ThemeMode>(
-                  title: Text(l10n.dark),
-                  value: ThemeMode.dark,
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setThemeMode(ThemeMode.dark);
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.selectTheme),
+        content: RadioGroup<ThemeMode>(
+          groupValue: current,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(settingsProvider.notifier).setThemeMode(value);
+            }
+            Navigator.pop(dialogContext);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.systemDefault),
+                subtitle: Text(l10n.autoPhoneSettings),
+                value: ThemeMode.system,
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.light),
+                value: ThemeMode.light,
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.dark),
+                value: ThemeMode.dark,
               ),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
     );
   }
 
@@ -481,39 +465,31 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(l10n.selectLanguage),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile<String>(
-                  title: Text(l10n.vietnamese),
-                  value: 'vi',
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setLocale('vi');
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-                RadioListTile<String>(
-                  title: Text(l10n.english),
-                  value: 'en',
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setLocale('en');
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
-              ),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.selectLanguage),
+        content: RadioGroup<String>(
+          groupValue: current,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(settingsProvider.notifier).setLocale(value);
+            }
+            Navigator.pop(dialogContext);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<String>(title: Text(l10n.vietnamese), value: 'vi'),
+              RadioListTile<String>(title: Text(l10n.english), value: 'en'),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
     );
   }
 
@@ -525,67 +501,48 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = context.l10n;
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(l10n.textSize),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                RadioListTile<double>(
-                  title: Text(l10n.small, style: const TextStyle(fontSize: 12)),
-                  value: 0.85,
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setTextScaleFactor(0.85);
-                    Navigator.pop(dialogContext);
-                  },
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.textSize),
+        content: RadioGroup<double>(
+          groupValue: current,
+          onChanged: (value) {
+            if (value != null) {
+              ref.read(settingsProvider.notifier).setTextScaleFactor(value);
+            }
+            Navigator.pop(dialogContext);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<double>(
+                title: Text(l10n.small, style: const TextStyle(fontSize: 12)),
+                value: 0.85,
+              ),
+              RadioListTile<double>(
+                title: Text(l10n.normal, style: const TextStyle(fontSize: 14)),
+                value: 1.0,
+              ),
+              RadioListTile<double>(
+                title: Text(l10n.large, style: const TextStyle(fontSize: 16)),
+                value: 1.15,
+              ),
+              RadioListTile<double>(
+                title: Text(
+                  l10n.extraLarge,
+                  style: const TextStyle(fontSize: 18),
                 ),
-                RadioListTile<double>(
-                  title: Text(
-                    l10n.normal,
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                  value: 1.0,
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setTextScaleFactor(1.0);
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-                RadioListTile<double>(
-                  title: Text(l10n.large, style: const TextStyle(fontSize: 16)),
-                  value: 1.15,
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .setTextScaleFactor(1.15);
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-                RadioListTile<double>(
-                  title: Text(
-                    l10n.extraLarge,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  value: 1.3,
-                  groupValue: current,
-                  onChanged: (value) {
-                    ref.read(settingsProvider.notifier).setTextScaleFactor(1.3);
-                    Navigator.pop(dialogContext);
-                  },
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
+                value: 1.3,
               ),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
     );
   }
 
@@ -601,142 +558,115 @@ class SettingsScreen extends ConsumerWidget {
 
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => StatefulBuilder(
-            builder:
-                (context, setState) => AlertDialog(
-                  title: Text(l10n.notificationSettings),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Backend-synced push notification toggle
-                        Consumer(
-                          builder: (context, innerRef, _) {
-                            final prefsAsync = innerRef.watch(
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text(l10n.notificationSettings),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Backend-synced push notification toggle
+                Consumer(
+                  builder: (context, innerRef, _) {
+                    final prefsAsync = innerRef.watch(
+                      notificationPreferencesProvider,
+                    );
+                    return prefsAsync.when(
+                      data: (prefs) => SwitchListTile(
+                        title: Text(l10n.pushNotifications),
+                        subtitle: Text(l10n.receivePushNotifications),
+                        value: prefs.receiveNotifications,
+                        onChanged: (value) async {
+                          try {
+                            await innerRef
+                                .read(notificationRepositoryProvider)
+                                .updatePreferences(receiveNotifications: value);
+                            innerRef.invalidate(
                               notificationPreferencesProvider,
                             );
-                            return prefsAsync.when(
-                              data:
-                                  (prefs) => SwitchListTile(
-                                    title: Text(l10n.pushNotifications),
-                                    subtitle: Text(
-                                      l10n.receivePushNotifications,
-                                    ),
-                                    value: prefs.receiveNotifications,
-                                    onChanged: (value) async {
-                                      try {
-                                        await innerRef
-                                            .read(
-                                              notificationRepositoryProvider,
-                                            )
-                                            .updatePreferences(
-                                              receiveNotifications: value,
-                                            );
-                                        innerRef.invalidate(
-                                          notificationPreferencesProvider,
-                                        );
-                                      } catch (e) {
-                                        if (dialogContext.mounted) {
-                                          ScaffoldMessenger.of(
-                                            dialogContext,
-                                          ).showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                '${l10n.error}: $e',
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      }
-                                    },
-                                  ),
-                              loading:
-                                  () => ListTile(
-                                    leading: const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    ),
-                                    title: Text(l10n.pushNotificationsLabel),
-                                  ),
-                              error:
-                                  (_, __) => SwitchListTile(
-                                    title: Text(l10n.pushNotifications),
-                                    subtitle: Text(l10n.tapToRetry),
-                                    value: true,
-                                    onChanged: (_) {
-                                      innerRef.invalidate(
-                                        notificationPreferencesProvider,
-                                      );
-                                    },
-                                  ),
-                            );
-                          },
+                          } catch (e) {
+                            if (dialogContext.mounted) {
+                              ScaffoldMessenger.of(dialogContext).showSnackBar(
+                                SnackBar(content: Text('${l10n.error}: $e')),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                      loading: () => ListTile(
+                        leading: const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
-                        const Divider(),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16,
-                            top: 8,
-                            bottom: 4,
-                          ),
-                          child: Text(
-                            l10n.localReminders,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                        SwitchListTile(
-                          title: Text(l10n.checkinReminder),
-                          subtitle: Text(l10n.notifyCheckinToday),
-                          value: notifyCheckIn,
-                          onChanged: (value) {
-                            setState(() => notifyCheckIn = value);
-                            ref
-                                .read(settingsProvider.notifier)
-                                .setNotifyCheckIn(value);
-                          },
-                        ),
-                        SwitchListTile(
-                          title: Text(l10n.checkoutReminder),
-                          subtitle: Text(l10n.notifyCheckoutToday),
-                          value: notifyCheckOut,
-                          onChanged: (value) {
-                            setState(() => notifyCheckOut = value);
-                            ref
-                                .read(settingsProvider.notifier)
-                                .setNotifyCheckOut(value);
-                          },
-                        ),
-                        SwitchListTile(
-                          title: Text(l10n.cleaningReminder),
-                          subtitle: Text(l10n.notifyRoomNeedsCleaning),
-                          value: notifyCleaning,
-                          onChanged: (value) {
-                            setState(() => notifyCleaning = value);
-                            ref
-                                .read(settingsProvider.notifier)
-                                .setNotifyCleaning(value);
-                          },
-                        ),
-                      ],
+                        title: Text(l10n.pushNotificationsLabel),
+                      ),
+                      error: (_, __) => SwitchListTile(
+                        title: Text(l10n.pushNotifications),
+                        subtitle: Text(l10n.tapToRetry),
+                        value: true,
+                        onChanged: (_) {
+                          innerRef.invalidate(notificationPreferencesProvider);
+                        },
+                      ),
+                    );
+                  },
+                ),
+                const Divider(),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 8, bottom: 4),
+                  child: Text(
+                    l10n.localReminders,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textSecondary,
                     ),
                   ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(dialogContext),
-                      child: Text(l10n.close),
-                    ),
-                  ],
                 ),
+                SwitchListTile(
+                  title: Text(l10n.checkinReminder),
+                  subtitle: Text(l10n.notifyCheckinToday),
+                  value: notifyCheckIn,
+                  onChanged: (value) {
+                    setState(() => notifyCheckIn = value);
+                    ref.read(settingsProvider.notifier).setNotifyCheckIn(value);
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.checkoutReminder),
+                  subtitle: Text(l10n.notifyCheckoutToday),
+                  value: notifyCheckOut,
+                  onChanged: (value) {
+                    setState(() => notifyCheckOut = value);
+                    ref
+                        .read(settingsProvider.notifier)
+                        .setNotifyCheckOut(value);
+                  },
+                ),
+                SwitchListTile(
+                  title: Text(l10n.cleaningReminder),
+                  subtitle: Text(l10n.notifyRoomNeedsCleaning),
+                  value: notifyCleaning,
+                  onChanged: (value) {
+                    setState(() => notifyCleaning = value);
+                    ref
+                        .read(settingsProvider.notifier)
+                        .setNotifyCleaning(value);
+                  },
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(l10n.close),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -778,83 +708,79 @@ class SettingsScreen extends ConsumerWidget {
   ) {
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(l10n.confirmLogout),
-            content: Text(l10n.confirmLogoutMessage),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  Navigator.pop(dialogContext);
-                  await ref.read(authStateProvider.notifier).logout();
-                  if (context.mounted) {
-                    context.go(AppRoutes.login);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: Text(l10n.logout),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.confirmLogout),
+        content: Text(l10n.confirmLogoutMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              await ref.read(authStateProvider.notifier).logout();
+              if (context.mounted) {
+                context.go(AppRoutes.login);
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(l10n.logout),
+          ),
+        ],
+      ),
     );
   }
 
   void _showHelpDialog(BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text(l10n.userGuide),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '📋 ${l10n.helpRoomManagement}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(l10n.helpRoomManagementDesc),
-                  const SizedBox(height: 12),
-                  Text(
-                    '📅 ${l10n.helpBookings}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(l10n.helpBookingsDesc),
-                  const SizedBox(height: 12),
-                  Text(
-                    '🧹 ${l10n.helpHousekeeping}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(l10n.helpHousekeepingDesc),
-                  const SizedBox(height: 12),
-                  Text(
-                    '💰 ${l10n.helpFinance}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(l10n.helpFinanceDesc),
-                  const SizedBox(height: 12),
-                  Text(
-                    '🌙 ${l10n.helpNightAudit}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Text(l10n.helpNightAuditDesc),
-                ],
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.userGuide),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '📋 ${l10n.helpRoomManagement}',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(l10n.close),
+              Text(l10n.helpRoomManagementDesc),
+              const SizedBox(height: 12),
+              Text(
+                '📅 ${l10n.helpBookings}',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
+              Text(l10n.helpBookingsDesc),
+              const SizedBox(height: 12),
+              Text(
+                '🧹 ${l10n.helpHousekeeping}',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(l10n.helpHousekeepingDesc),
+              const SizedBox(height: 12),
+              Text(
+                '💰 ${l10n.helpFinance}',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(l10n.helpFinanceDesc),
+              const SizedBox(height: 12),
+              Text(
+                '🌙 ${l10n.helpNightAudit}',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(l10n.helpNightAuditDesc),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.close),
+          ),
+        ],
+      ),
     );
   }
 }

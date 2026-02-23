@@ -52,80 +52,79 @@ class FolioItemListWidget extends StatelessWidget {
     }
 
     // Sort groups by type order
-    final sortedTypes =
-        groupedItems.keys.toList()..sort((a, b) => a.index.compareTo(b.index));
+    final sortedTypes = groupedItems.keys.toList()
+      ..sort((a, b) => a.index.compareTo(b.index));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children:
-          sortedTypes.map((type) {
-            final typeItems = groupedItems[type]!;
-            final typeTotal = typeItems.fold<double>(
-              0,
-              (sum, item) => sum + (item.isVoided ? 0 : item.totalPrice),
-            );
+      children: sortedTypes.map((type) {
+        final typeItems = groupedItems[type]!;
+        final typeTotal = typeItems.fold<double>(
+          0,
+          (sum, item) => sum + (item.isVoided ? 0 : item.totalPrice),
+        );
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Type header
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: type.color.withValues(alpha: 0.1),
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(12),
+        return Card(
+          margin: const EdgeInsets.only(bottom: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Type header
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: type.color.withValues(alpha: 0.1),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(type.icon, color: type.color, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        type.localizedName(context.l10n),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: type.color,
+                        ),
                       ),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(type.icon, color: type.color, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            type.localizedName(context.l10n),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: type.color,
-                            ),
-                          ),
-                        ),
-                        Text(
-                          '${typeItems.length} ${context.l10n.itemsCount}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          currencyFormat.format(typeTotal),
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: type.color,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      '${typeItems.length} ${context.l10n.itemsCount}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
-                  ),
-
-                  // Items list
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: typeItems.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final item = typeItems[index];
-                      return _buildItemTile(context, item);
-                    },
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      currencyFormat.format(typeTotal),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: type.color,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          }).toList(),
+
+              // Items list
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: typeItems.length,
+                separatorBuilder: (_, __) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final item = typeItems[index];
+                  return _buildItemTile(context, item);
+                },
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -137,10 +136,9 @@ class FolioItemListWidget extends StatelessWidget {
       opacity: isVoided ? 0.5 : 1.0,
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor:
-              isVoided
-                  ? AppColors.surfaceVariant
-                  : item.itemType.color.withValues(alpha: 0.2),
+          backgroundColor: isVoided
+              ? AppColors.surfaceVariant
+              : item.itemType.color.withValues(alpha: 0.2),
           child: Icon(
             item.itemType.icon,
             color: isVoided ? AppColors.mutedAccent : item.itemType.color,

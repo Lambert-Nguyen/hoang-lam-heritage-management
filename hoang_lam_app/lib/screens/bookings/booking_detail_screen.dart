@@ -62,29 +62,28 @@ class BookingDetailScreen extends ConsumerWidget {
       body: bookingAsync.when(
         data: (booking) => _buildContent(context, ref, booking),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (error, stack) => Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: AppColors.error,
-                    ),
-                    const SizedBox(height: 16),
-                    Text('${context.l10n.error}: $error'),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Text(context.l10n.goBack),
-                    ),
-                  ],
+        error: (error, stack) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: AppColors.error,
                 ),
-              ),
+                const SizedBox(height: 16),
+                Text('${context.l10n.error}: $error'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(context.l10n.goBack),
+                ),
+              ],
             ),
+          ),
+        ),
       ),
     );
   }
@@ -245,12 +244,11 @@ class BookingDetailScreen extends ConsumerWidget {
                           booking.status == BookingStatus.confirmed)
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed:
-                                () => _handleRecordEarlyCheckIn(
-                                  context,
-                                  ref,
-                                  booking,
-                                ),
+                            onPressed: () => _handleRecordEarlyCheckIn(
+                              context,
+                              ref,
+                              booking,
+                            ),
                             icon: const Icon(Icons.login, size: 16),
                             label: Text(
                               context.l10n.earlyCheckIn,
@@ -267,12 +265,11 @@ class BookingDetailScreen extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed:
-                                () => _handleRecordLateCheckOut(
-                                  context,
-                                  ref,
-                                  booking,
-                                ),
+                            onPressed: () => _handleRecordLateCheckOut(
+                              context,
+                              ref,
+                              booking,
+                            ),
                             icon: const Icon(Icons.logout, size: 16),
                             label: Text(
                               context.l10n.lateCheckOut,
@@ -532,23 +529,22 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text('${context.l10n.confirm} ${context.l10n.checkIn}'),
-            content: Text(
-              '${context.l10n.confirm} ${context.l10n.checkIn} ${booking.guestName}?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(true),
-                child: Text(context.l10n.checkIn),
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: Text('${context.l10n.confirm} ${context.l10n.checkIn}'),
+        content: Text(
+          '${context.l10n.confirm} ${context.l10n.checkIn} ${booking.guestName}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(context.l10n.checkIn),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && context.mounted) {
@@ -581,23 +577,22 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text('${context.l10n.confirm} ${context.l10n.checkOut}'),
-            content: Text(
-              '${context.l10n.confirm} ${context.l10n.checkOut} ${booking.guestName}?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(true),
-                child: Text(context.l10n.checkOut),
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: Text('${context.l10n.confirm} ${context.l10n.checkOut}'),
+        content: Text(
+          '${context.l10n.confirm} ${context.l10n.checkOut} ${booking.guestName}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(context.l10n.checkOut),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && context.mounted) {
@@ -630,24 +625,21 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text(context.l10n.cancel),
-            content: Text('${context.l10n.areYouSure} ${booking.guestName}?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: Text(context.l10n.confirm),
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.cancel),
+        content: Text('${context.l10n.areYouSure} ${booking.guestName}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && context.mounted) {
@@ -680,24 +672,21 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text(context.l10n.noShow),
-            content: Text('${context.l10n.noShow} ${booking.guestName}?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.warning,
-                ),
-                child: Text(context.l10n.confirm),
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.noShow),
+        content: Text('${context.l10n.noShow} ${booking.guestName}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.warning),
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && context.mounted) {
@@ -729,26 +718,23 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text(context.l10n.delete),
-            content: Text(
-              '${context.l10n.areYouSure}\n\n${context.l10n.actionCannotBeUndone}',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(false),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: Text(context.l10n.delete),
-              ),
-            ],
+      builder: (ctx) => AlertDialog(
+        title: Text(context.l10n.delete),
+        content: Text(
+          '${context.l10n.areYouSure}\n\n${context.l10n.actionCannotBeUndone}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(context.l10n.delete),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && context.mounted) {
@@ -779,13 +765,12 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder:
-          (ctx) => EarlyLateFeeDialog(
-            isEarlyCheckIn: true,
-            nightlyRate: booking.nightlyRate,
-            currentHours: booking.earlyCheckInHours,
-            currentFee: booking.earlyCheckInFee,
-          ),
+      builder: (ctx) => EarlyLateFeeDialog(
+        isEarlyCheckIn: true,
+        nightlyRate: booking.nightlyRate,
+        currentHours: booking.earlyCheckInHours,
+        currentFee: booking.earlyCheckInFee,
+      ),
     );
 
     if (result != null && context.mounted) {
@@ -822,13 +807,12 @@ class BookingDetailScreen extends ConsumerWidget {
   ) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder:
-          (ctx) => EarlyLateFeeDialog(
-            isEarlyCheckIn: false,
-            nightlyRate: booking.nightlyRate,
-            currentHours: booking.lateCheckOutHours,
-            currentFee: booking.lateCheckOutFee,
-          ),
+      builder: (ctx) => EarlyLateFeeDialog(
+        isEarlyCheckIn: false,
+        nightlyRate: booking.nightlyRate,
+        currentHours: booking.lateCheckOutHours,
+        currentFee: booking.lateCheckOutFee,
+      ),
     );
 
     if (result != null && context.mounted) {

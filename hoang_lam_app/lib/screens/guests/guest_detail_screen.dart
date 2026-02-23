@@ -393,10 +393,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             AppSpacing.gapHorizontalMd,
             Expanded(
               child: AppButton(
-                label:
-                    _guest.isVip
-                        ? context.l10n.removeVip
-                        : context.l10n.markVip,
+                label: _guest.isVip
+                    ? context.l10n.removeVip
+                    : context.l10n.markVip,
                 icon: _guest.isVip ? Icons.star_border : Icons.star,
                 isOutlined: true,
                 backgroundColor: AppColors.warning,
@@ -524,98 +523,94 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   void _showMoreActions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder:
-          (context) => SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: Text(context.l10n.editInfo),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _navigateToEdit();
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    _guest.isVip ? Icons.star_border : Icons.star,
-                    color: AppColors.warning,
-                  ),
-                  title: Text(
-                    _guest.isVip
-                        ? context.l10n.removeVip
-                        : context.l10n.markVip,
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _toggleVipStatus();
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.phone),
-                  title: Text(context.l10n.call),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _launchPhone(_guest.phone);
-                  },
-                ),
-                if (_guest.bookingCount == 0)
-                  ListTile(
-                    leading: const Icon(Icons.delete, color: AppColors.error),
-                    title: Text(
-                      context.l10n.deleteGuest,
-                      style: const TextStyle(color: AppColors.error),
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      _showDeleteConfirmation();
-                    },
-                  ),
-              ],
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: Text(context.l10n.editInfo),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToEdit();
+              },
             ),
-          ),
+            ListTile(
+              leading: Icon(
+                _guest.isVip ? Icons.star_border : Icons.star,
+                color: AppColors.warning,
+              ),
+              title: Text(
+                _guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _toggleVipStatus();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.phone),
+              title: Text(context.l10n.call),
+              onTap: () {
+                Navigator.pop(context);
+                _launchPhone(_guest.phone);
+              },
+            ),
+            if (_guest.bookingCount == 0)
+              ListTile(
+                leading: const Icon(Icons.delete, color: AppColors.error),
+                title: Text(
+                  context.l10n.deleteGuest,
+                  style: const TextStyle(color: AppColors.error),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmation();
+                },
+              ),
+          ],
+        ),
+      ),
     );
   }
 
   void _showDeleteConfirmation() {
     showDialog(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(context.l10n.confirmDelete),
-            content: Text(
-              '${context.l10n.confirmDeleteGuest} "${_guest.fullName}"?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: Text(context.l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.pop(dialogContext);
-                  final success = await ref
-                      .read(guestStateProvider.notifier)
-                      .deleteGuest(_guest.id);
-                  if (success && mounted) {
-                    ref.invalidate(guestsProvider);
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(context.l10n.guestDeleted),
-                        backgroundColor: AppColors.success,
-                      ),
-                    );
-                  }
-                },
-                child: Text(
-                  context.l10n.delete,
-                  style: const TextStyle(color: AppColors.error),
-                ),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: Text(context.l10n.confirmDelete),
+        content: Text(
+          '${context.l10n.confirmDeleteGuest} "${_guest.fullName}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(context.l10n.cancel),
           ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              final success = await ref
+                  .read(guestStateProvider.notifier)
+                  .deleteGuest(_guest.id);
+              if (success && mounted) {
+                ref.invalidate(guestsProvider);
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(context.l10n.guestDeleted),
+                    backgroundColor: AppColors.success,
+                  ),
+                );
+              }
+            },
+            child: Text(
+              context.l10n.delete,
+              style: const TextStyle(color: AppColors.error),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

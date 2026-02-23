@@ -74,31 +74,23 @@ class _RoomInspectionListScreenState
           _buildSearchBar(),
           Expanded(
             child: inspectionsAsync.when(
-              data:
-                  (inspections) => TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildInspectionList(inspections, null),
-                      _buildInspectionList(
-                        inspections,
-                        InspectionStatus.pending,
-                      ),
-                      _buildInspectionList(
-                        inspections,
-                        InspectionStatus.completed,
-                      ),
-                      _buildInspectionList(
-                        inspections,
-                        InspectionStatus.requiresAction,
-                      ),
-                    ],
+              data: (inspections) => TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildInspectionList(inspections, null),
+                  _buildInspectionList(inspections, InspectionStatus.pending),
+                  _buildInspectionList(inspections, InspectionStatus.completed),
+                  _buildInspectionList(
+                    inspections,
+                    InspectionStatus.requiresAction,
                   ),
+                ],
+              ),
               loading: () => const LoadingIndicator(),
-              error:
-                  (e, _) => ErrorDisplay(
-                    message: '${l10n.error}: $e',
-                    onRetry: () => ref.invalidate(roomInspectionsProvider),
-                  ),
+              error: (e, _) => ErrorDisplay(
+                message: '${l10n.error}: $e',
+                onRetry: () => ref.invalidate(roomInspectionsProvider),
+              ),
             ),
           ),
         ],
@@ -128,13 +120,12 @@ class _RoomInspectionListScreenState
                 horizontal: 16,
                 vertical: 12,
               ),
-              suffixIcon:
-                  _typeFilter != null
-                      ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () => setState(() => _typeFilter = null),
-                      )
-                      : null,
+              suffixIcon: _typeFilter != null
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () => setState(() => _typeFilter = null),
+                    )
+                  : null,
             ),
             onChanged: (value) => setState(() => _searchQuery = value),
           ),
@@ -142,20 +133,19 @@ class _RoomInspectionListScreenState
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children:
-                  InspectionType.values.map((type) {
-                    final isSelected = _typeFilter == type;
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        label: Text(type.localizedName(context.l10n)),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          setState(() => _typeFilter = selected ? type : null);
-                        },
-                      ),
-                    );
-                  }).toList(),
+              children: InspectionType.values.map((type) {
+                final isSelected = _typeFilter == type;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: FilterChip(
+                    label: Text(type.localizedName(context.l10n)),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setState(() => _typeFilter = selected ? type : null);
+                    },
+                  ),
+                );
+              }).toList(),
             ),
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -168,22 +158,19 @@ class _RoomInspectionListScreenState
     List<RoomInspection> inspections,
     InspectionStatus? status,
   ) {
-    var filtered =
-        inspections.where((i) {
-          if (status != null && i.status != status) {
-            return false;
-          }
-          if (_typeFilter != null && i.inspectionType != _typeFilter) {
-            return false;
-          }
-          if (_searchQuery.isNotEmpty &&
-              !i.roomNumber.toLowerCase().contains(
-                _searchQuery.toLowerCase(),
-              )) {
-            return false;
-          }
-          return true;
-        }).toList();
+    var filtered = inspections.where((i) {
+      if (status != null && i.status != status) {
+        return false;
+      }
+      if (_typeFilter != null && i.inspectionType != _typeFilter) {
+        return false;
+      }
+      if (_searchQuery.isNotEmpty &&
+          !i.roomNumber.toLowerCase().contains(_searchQuery.toLowerCase())) {
+        return false;
+      }
+      return true;
+    }).toList();
 
     if (filtered.isEmpty) {
       return _buildEmptyState(status);
@@ -237,188 +224,167 @@ class _RoomInspectionListScreenState
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder:
-          (context) => DraggableScrollableSheet(
-            initialChildSize: 0.6,
-            maxChildSize: 0.9,
-            minChildSize: 0.3,
-            expand: false,
-            builder: (context, scrollController) {
-              return Consumer(
-                builder: (context, ref, _) {
-                  final statsAsync = ref.watch(inspectionStatisticsProvider);
-                  return Container(
-                    padding: AppSpacing.paddingAll,
-                    child: statsAsync.when(
-                      data:
-                          (stats) => ListView(
-                            controller: scrollController,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        maxChildSize: 0.9,
+        minChildSize: 0.3,
+        expand: false,
+        builder: (context, scrollController) {
+          return Consumer(
+            builder: (context, ref, _) {
+              final statsAsync = ref.watch(inspectionStatisticsProvider);
+              return Container(
+                padding: AppSpacing.paddingAll,
+                child: statsAsync.when(
+                  data: (stats) => ListView(
+                    controller: scrollController,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: AppColors.mutedAccent,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      Text(
+                        context.l10n.inspectionStatistics,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: AppSpacing.lg),
+                      _StatCard(
+                        title: context.l10n.totalInspections,
+                        value: stats.totalInspections.toString(),
+                        icon: Icons.checklist,
+                        color: AppColors.statusBlue,
+                      ),
+                      _StatCard(
+                        title: context.l10n.completed,
+                        value: stats.completedInspections.toString(),
+                        icon: Icons.check_circle,
+                        color: AppColors.success,
+                      ),
+                      _StatCard(
+                        title: context.l10n.pending,
+                        value: stats.pendingInspections.toString(),
+                        icon: Icons.schedule,
+                        color: AppColors.mutedAccent,
+                      ),
+                      _StatCard(
+                        title: context.l10n.requiresAction,
+                        value: stats.requiresAction.toString(),
+                        icon: Icons.warning,
+                        color: AppColors.warning,
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      AppCard(
+                        child: Padding(
+                          padding: AppSpacing.paddingCard,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Center(
-                                child: Container(
-                                  width: 40,
-                                  height: 4,
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.mutedAccent,
-                                    borderRadius: BorderRadius.circular(2),
-                                  ),
-                                ),
-                              ),
                               Text(
-                                context.l10n.inspectionStatistics,
-                                style: Theme.of(context).textTheme.titleLarge,
+                                context.l10n.averageScore,
+                                style: Theme.of(context).textTheme.titleMedium,
                               ),
-                              const SizedBox(height: AppSpacing.lg),
-                              _StatCard(
-                                title: context.l10n.totalInspections,
-                                value: stats.totalInspections.toString(),
-                                icon: Icons.checklist,
-                                color: AppColors.statusBlue,
-                              ),
-                              _StatCard(
-                                title: context.l10n.completed,
-                                value: stats.completedInspections.toString(),
-                                icon: Icons.check_circle,
-                                color: AppColors.success,
-                              ),
-                              _StatCard(
-                                title: context.l10n.pending,
-                                value: stats.pendingInspections.toString(),
-                                icon: Icons.schedule,
-                                color: AppColors.mutedAccent,
-                              ),
-                              _StatCard(
-                                title: context.l10n.requiresAction,
-                                value: stats.requiresAction.toString(),
-                                icon: Icons.warning,
-                                color: AppColors.warning,
-                              ),
-                              const SizedBox(height: AppSpacing.md),
-                              AppCard(
-                                child: Padding(
-                                  padding: AppSpacing.paddingCard,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        context.l10n.averageScore,
-                                        style:
-                                            Theme.of(
-                                              context,
-                                            ).textTheme.titleMedium,
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '${stats.averageScore.toStringAsFixed(1)}%',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headlineMedium
-                                                ?.copyWith(
-                                                  color: _getScoreColor(
-                                                    stats.averageScore,
-                                                  ),
-                                                  fontWeight: FontWeight.bold,
-                                                ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Text(
+                                    '${stats.averageScore.toStringAsFixed(1)}%',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineMedium
+                                        ?.copyWith(
+                                          color: _getScoreColor(
+                                            stats.averageScore,
                                           ),
-                                          const SizedBox(width: 16),
-                                          Expanded(
-                                            child: LinearProgressIndicator(
-                                              value: stats.averageScore / 100,
-                                              backgroundColor:
-                                                  AppColors.mutedAccent,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                    _getScoreColor(
-                                                      stats.averageScore,
-                                                    ),
-                                                  ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.md),
-                              AppCard(
-                                child: Padding(
-                                  padding: AppSpacing.paddingCard,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        context.l10n.issuesDetected,
-                                        style:
-                                            Theme.of(
-                                              context,
-                                            ).textTheme.titleMedium,
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: LinearProgressIndicator(
+                                      value: stats.averageScore / 100,
+                                      backgroundColor: AppColors.mutedAccent,
+                                      valueColor: AlwaysStoppedAnimation(
+                                        _getScoreColor(stats.averageScore),
                                       ),
-                                      const SizedBox(height: 8),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  stats.totalIssues.toString(),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headlineSmall
-                                                      ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                ),
-                                                Text(context.l10n.totalIssues),
-                                              ],
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              children: [
-                                                Text(
-                                                  stats.criticalIssues
-                                                      .toString(),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .headlineSmall
-                                                      ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: AppColors.error,
-                                                      ),
-                                                ),
-                                                Text(
-                                                  context.l10n.criticalLabel,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ],
                           ),
-                      loading: () => const LoadingIndicator(),
-                      error:
-                          (e, _) => ErrorDisplay(
-                            message: '${context.l10n.error}: $e',
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      AppCard(
+                        child: Padding(
+                          padding: AppSpacing.paddingCard,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                context.l10n.issuesDetected,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          stats.totalIssues.toString(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        Text(context.l10n.totalIssues),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          stats.criticalIssues.toString(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: AppColors.error,
+                                              ),
+                                        ),
+                                        Text(context.l10n.criticalLabel),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                    ),
-                  );
-                },
+                        ),
+                      ),
+                    ],
+                  ),
+                  loading: () => const LoadingIndicator(),
+                  error: (e, _) =>
+                      ErrorDisplay(message: '${context.l10n.error}: $e'),
+                ),
               );
             },
-          ),
+          );
+        },
+      ),
     );
   }
 
@@ -454,18 +420,16 @@ class _InspectionCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color:
-                        inspection.inspectionType.icon == Icons.logout
-                            ? AppColors.warning.withValues(alpha: 0.1)
-                            : AppColors.statusBlue.withValues(alpha: 0.1),
+                    color: inspection.inspectionType.icon == Icons.logout
+                        ? AppColors.warning.withValues(alpha: 0.1)
+                        : AppColors.statusBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
                     inspection.inspectionType.icon,
-                    color:
-                        inspection.inspectionType == InspectionType.checkout
-                            ? AppColors.warning
-                            : AppColors.statusBlue,
+                    color: inspection.inspectionType == InspectionType.checkout
+                        ? AppColors.warning
+                        : AppColors.statusBlue,
                   ),
                 ),
                 const SizedBox(width: 12),

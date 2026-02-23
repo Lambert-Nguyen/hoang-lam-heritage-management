@@ -30,10 +30,9 @@ class NotificationListScreen extends ConsumerWidget {
             icon: const Icon(Icons.done_all),
             tooltip: l10n.markAllRead,
             onPressed: () async {
-              final count =
-                  await ref
-                      .read(notificationNotifierProvider.notifier)
-                      .markAllAsRead();
+              final count = await ref
+                  .read(notificationNotifierProvider.notifier)
+                  .markAllAsRead();
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -72,31 +71,26 @@ class NotificationListScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (error, _) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 48,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.errorLoadingData,
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      ref.read(notificationNotifierProvider.notifier).refresh();
-                    },
-                    child: Text(l10n.retry),
-                  ),
-                ],
+        error: (error, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(
+                l10n.errorLoadingData,
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-            ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(notificationNotifierProvider.notifier).refresh();
+                },
+                child: Text(l10n.retry),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -165,12 +159,11 @@ class _NotificationTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        color:
-            notification.isRead
-                ? null
-                : (isDark
-                    ? AppColors.primary.withValues(alpha: 0.08)
-                    : AppColors.primary.withValues(alpha: 0.04)),
+        color: notification.isRead
+            ? null
+            : (isDark
+                  ? AppColors.primary.withValues(alpha: 0.08)
+                  : AppColors.primary.withValues(alpha: 0.04)),
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
@@ -200,10 +193,9 @@ class _NotificationTile extends StatelessWidget {
                         child: Text(
                           notification.title,
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight:
-                                notification.isRead
-                                    ? FontWeight.w500
-                                    : FontWeight.w700,
+                            fontWeight: notification.isRead
+                                ? FontWeight.w500
+                                : FontWeight.w700,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

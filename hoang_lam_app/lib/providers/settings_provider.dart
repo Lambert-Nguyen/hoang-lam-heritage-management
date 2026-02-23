@@ -66,8 +66,9 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
       final textScaleStr = await _storage.read(
         key: SettingsStorageKeys.textScaleFactor,
       );
-      final textScaleFactor =
-          textScaleStr != null ? double.tryParse(textScaleStr) ?? 1.0 : 1.0;
+      final textScaleFactor = textScaleStr != null
+          ? double.tryParse(textScaleStr) ?? 1.0
+          : 1.0;
 
       // Load notification settings
       final notifyCheckInStr = await _storage.read(

@@ -68,16 +68,15 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
         decoration: InputDecoration(
           hintText: context.l10n.searchGuests,
           prefixIcon: const Icon(Icons.search),
-          suffixIcon:
-              _searchController.text.isNotEmpty
-                  ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _searchController.clear();
-                      _performSearch('');
-                    },
-                  )
-                  : null,
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    _performSearch('');
+                  },
+                )
+              : null,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           ),
@@ -300,51 +299,50 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   void _showGuestActions(BuildContext context, Guest guest) {
     showModalBottomSheet(
       context: context,
-      builder:
-          (context) => SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ListTile(
-                  leading: const Icon(Icons.visibility),
-                  title: Text(context.l10n.viewBookingDetails),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _navigateToDetail(context, guest);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: Text(context.l10n.edit),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _navigateToForm(context, guest);
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    guest.isVip ? Icons.star_border : Icons.star,
-                    color: AppColors.warning,
-                  ),
-                  title: Text(
-                    guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _toggleVipStatus(guest);
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.history),
-                  title: Text(context.l10n.history),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _navigateToDetail(context, guest);
-                  },
-                ),
-              ],
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.visibility),
+              title: Text(context.l10n.viewBookingDetails),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToDetail(context, guest);
+              },
             ),
-          ),
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: Text(context.l10n.edit),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToForm(context, guest);
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                guest.isVip ? Icons.star_border : Icons.star,
+                color: AppColors.warning,
+              ),
+              title: Text(
+                guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                _toggleVipStatus(guest);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: Text(context.l10n.history),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToDetail(context, guest);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -370,19 +368,18 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder:
-          (context) => _FilterSheet(
-            showVipOnly: _showVipOnly,
-            selectedNationality: _selectedNationality,
-            onApply: (vipOnly, nationality) {
-              setState(() {
-                _showVipOnly = vipOnly;
-                _selectedNationality = nationality;
-              });
-              Navigator.pop(context);
-              _performSearch(_searchController.text);
-            },
-          ),
+      builder: (context) => _FilterSheet(
+        showVipOnly: _showVipOnly,
+        selectedNationality: _selectedNationality,
+        onApply: (vipOnly, nationality) {
+          setState(() {
+            _showVipOnly = vipOnly;
+            _selectedNationality = nationality;
+          });
+          Navigator.pop(context);
+          _performSearch(_searchController.text);
+        },
+      ),
     );
   }
 }
@@ -412,10 +409,9 @@ class _FilterChip extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? AppColors.primary.withValues(alpha: 0.1)
-                  : Colors.transparent,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.divider,
@@ -574,10 +570,9 @@ class _FilterSheetState extends State<_FilterSheet> {
           vertical: AppSpacing.sm,
         ),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? AppColors.primary.withValues(alpha: 0.1)
-                  : Colors.transparent,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSpacing.radiusFull),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.divider,

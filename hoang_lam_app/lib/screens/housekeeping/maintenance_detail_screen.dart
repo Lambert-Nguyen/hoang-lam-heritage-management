@@ -57,45 +57,44 @@ class _MaintenanceDetailScreenState
                   break;
               }
             },
-            itemBuilder:
-                (context) => [
-                  if (_request.status.canHold)
-                    PopupMenuItem(
-                      value: 'hold',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.pause),
-                          const SizedBox(width: 8),
-                          Text(l10n.hold),
-                        ],
+            itemBuilder: (context) => [
+              if (_request.status.canHold)
+                PopupMenuItem(
+                  value: 'hold',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.pause),
+                      const SizedBox(width: 8),
+                      Text(l10n.hold),
+                    ],
+                  ),
+                ),
+              if (_request.status == MaintenanceStatus.onHold)
+                PopupMenuItem(
+                  value: 'resume',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.play_arrow),
+                      const SizedBox(width: 8),
+                      Text(l10n.resume),
+                    ],
+                  ),
+                ),
+              if (_request.status.canCancel)
+                PopupMenuItem(
+                  value: 'cancel',
+                  child: Row(
+                    children: [
+                      const Icon(Icons.cancel, color: AppColors.error),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.cancel,
+                        style: const TextStyle(color: AppColors.error),
                       ),
-                    ),
-                  if (_request.status == MaintenanceStatus.onHold)
-                    PopupMenuItem(
-                      value: 'resume',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.play_arrow),
-                          const SizedBox(width: 8),
-                          Text(l10n.resume),
-                        ],
-                      ),
-                    ),
-                  if (_request.status.canCancel)
-                    PopupMenuItem(
-                      value: 'cancel',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.cancel, color: AppColors.error),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n.cancel,
-                            style: const TextStyle(color: AppColors.error),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
+                    ],
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -640,21 +639,20 @@ class _MaintenanceDetailScreenState
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.continueRequest),
-            content: Text(l10n.continueRequestConfirmation),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(l10n.resume),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.continueRequest),
+        content: Text(l10n.continueRequestConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.resume),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && mounted) {
@@ -679,24 +677,21 @@ class _MaintenanceDetailScreenState
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(l10n.cancelRequest),
-            content: Text(l10n.cancelRequestConfirmation),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(l10n.no),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: Text(l10n.cancelRequest),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(l10n.cancelRequest),
+        content: Text(l10n.cancelRequestConfirmation),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.no),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(l10n.cancelRequest),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && mounted) {
@@ -808,54 +803,46 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
                 leading: const CircleAvatar(child: Icon(Icons.person)),
                 title: Text(AppLocalizations.of(context)!.selfAssign),
                 subtitle: Text(currentUser.displayName),
-                trailing:
-                    _selectedUserId == currentUser.id
-                        ? Icon(
-                          Icons.check_circle,
-                          color: Theme.of(context).colorScheme.primary,
-                        )
-                        : null,
+                trailing: _selectedUserId == currentUser.id
+                    ? Icon(
+                        Icons.check_circle,
+                        color: Theme.of(context).colorScheme.primary,
+                      )
+                    : null,
               ),
             const Divider(),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 200),
               child: staffAsync.when(
-                data:
-                    (staffList) => ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: staffList.length,
-                      itemBuilder: (context, index) {
-                        final staff = staffList[index];
-                        final isSelected = _selectedUserId == staff.id;
-                        return ListTile(
-                          onTap:
-                              () => setState(() => _selectedUserId = staff.id),
-                          selected: isSelected,
-                          leading: CircleAvatar(
-                            child: Text(staff.displayName[0]),
-                          ),
-                          title: Text(staff.displayName),
-                          subtitle: Text(
-                            staff.roleDisplay ??
-                                staff.role?.localizedName(context.l10n) ??
-                                '',
-                          ),
-                          trailing:
-                              isSelected
-                                  ? Icon(
-                                    Icons.check_circle,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  )
-                                  : null,
-                        );
-                      },
-                    ),
+                data: (staffList) => ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: staffList.length,
+                  itemBuilder: (context, index) {
+                    final staff = staffList[index];
+                    final isSelected = _selectedUserId == staff.id;
+                    return ListTile(
+                      onTap: () => setState(() => _selectedUserId = staff.id),
+                      selected: isSelected,
+                      leading: CircleAvatar(child: Text(staff.displayName[0])),
+                      title: Text(staff.displayName),
+                      subtitle: Text(
+                        staff.roleDisplay ??
+                            staff.role?.localizedName(context.l10n) ??
+                            '',
+                      ),
+                      trailing: isSelected
+                          ? Icon(
+                              Icons.check_circle,
+                              color: Theme.of(context).colorScheme.primary,
+                            )
+                          : null,
+                    );
+                  },
+                ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error:
-                    (_, __) => Center(
-                      child: Text(AppLocalizations.of(context)!.staffLoadError),
-                    ),
+                error: (_, __) => Center(
+                  child: Text(AppLocalizations.of(context)!.staffLoadError),
+                ),
               ),
             ),
           ],
@@ -867,10 +854,9 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
           child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
-          onPressed:
-              _selectedUserId != null
-                  ? () => Navigator.pop(context, _selectedUserId)
-                  : null,
+          onPressed: _selectedUserId != null
+              ? () => Navigator.pop(context, _selectedUserId)
+              : null,
           child: Text(AppLocalizations.of(context)!.confirm),
         ),
       ],

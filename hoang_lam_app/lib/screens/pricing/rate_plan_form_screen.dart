@@ -99,16 +99,14 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
           _initFromRatePlan(ratePlan);
           return _buildForm(roomTypesAsync);
         },
-        loading:
-            () => Scaffold(
-              appBar: AppBar(title: Text(l10n.editRatePlan)),
-              body: const Center(child: CircularProgressIndicator()),
-            ),
-        error:
-            (error, _) => Scaffold(
-              appBar: AppBar(title: Text(l10n.editRatePlan)),
-              body: Center(child: Text('${l10n.error}: $error')),
-            ),
+        loading: () => Scaffold(
+          appBar: AppBar(title: Text(l10n.editRatePlan)),
+          body: const Center(child: CircularProgressIndicator()),
+        ),
+        error: (error, _) => Scaffold(
+          appBar: AppBar(title: Text(l10n.editRatePlan)),
+          body: Center(child: Text('${l10n.error}: $error')),
+        ),
       );
     }
 
@@ -169,33 +167,29 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
 
             // Room Type
             roomTypesAsync.when(
-              data:
-                  (roomTypes) => DropdownButtonFormField<int>(
-                    value: _selectedRoomTypeId,
-                    decoration: InputDecoration(
-                      labelText: '${l10n.roomType} *',
-                      prefixIcon: const Icon(Icons.meeting_room),
-                    ),
-                    items:
-                        roomTypes
-                            .map(
-                              (type) => DropdownMenuItem(
-                                value: type.id,
-                                child: Text(
-                                  '${type.name} - ${type.formattedBaseRate}',
-                                ),
-                              ),
-                            )
-                            .toList(),
-                    onChanged:
-                        (value) => setState(() => _selectedRoomTypeId = value),
-                    validator: (value) {
-                      if (value == null) {
-                        return l10n.pleaseSelectRoomType;
-                      }
-                      return null;
-                    },
-                  ),
+              data: (roomTypes) => DropdownButtonFormField<int>(
+                initialValue: _selectedRoomTypeId,
+                decoration: InputDecoration(
+                  labelText: '${l10n.roomType} *',
+                  prefixIcon: const Icon(Icons.meeting_room),
+                ),
+                items: roomTypes
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type.id,
+                        child: Text('${type.name} - ${type.formattedBaseRate}'),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) =>
+                    setState(() => _selectedRoomTypeId = value),
+                validator: (value) {
+                  if (value == null) {
+                    return l10n.pleaseSelectRoomType;
+                  }
+                  return null;
+                },
+              ),
               loading: () => const LinearProgressIndicator(),
               error: (_, __) => Text(l10n.cannotLoadRoomTypes),
             ),
@@ -272,17 +266,16 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             _buildSectionHeader(l10n.cancellationPolicy),
 
             DropdownButtonFormField<CancellationPolicy>(
-              value: _cancellationPolicy,
+              initialValue: _cancellationPolicy,
               decoration: const InputDecoration(prefixIcon: Icon(Icons.policy)),
-              items:
-                  CancellationPolicy.values
-                      .map(
-                        (policy) => DropdownMenuItem(
-                          value: policy,
-                          child: Text(policy.localizedName(context.l10n)),
-                        ),
-                      )
-                      .toList(),
+              items: CancellationPolicy.values
+                  .map(
+                    (policy) => DropdownMenuItem(
+                      value: policy,
+                      child: Text(policy.localizedName(context.l10n)),
+                    ),
+                  )
+                  .toList(),
               onChanged: (value) {
                 if (value != null) {
                   setState(() => _cancellationPolicy = value);
@@ -355,14 +348,13 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
             // Save Button
             FilledButton.icon(
               onPressed: _isLoading ? null : _saveRatePlan,
-              icon:
-                  _isLoading
-                      ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Icon(Icons.save),
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.save),
               label: Text(_isEditing ? l10n.update : l10n.createRatePlan),
             ),
 
@@ -399,22 +391,19 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
       if (_isEditing) {
         await notifier.updateRatePlan(widget.ratePlanId!, {
           'name': _nameController.text.trim(),
-          'name_en':
-              _nameEnController.text.trim().isEmpty
-                  ? null
-                  : _nameEnController.text.trim(),
+          'name_en': _nameEnController.text.trim().isEmpty
+              ? null
+              : _nameEnController.text.trim(),
           'room_type': _selectedRoomTypeId,
           'base_rate': int.parse(_baseRateController.text),
           'is_active': _isActive,
           'min_stay': int.tryParse(_minStayController.text) ?? 1,
-          'max_stay':
-              _maxStayController.text.isEmpty
-                  ? null
-                  : int.parse(_maxStayController.text),
-          'advance_booking_days':
-              _advanceBookingController.text.isEmpty
-                  ? null
-                  : int.parse(_advanceBookingController.text),
+          'max_stay': _maxStayController.text.isEmpty
+              ? null
+              : int.parse(_maxStayController.text),
+          'advance_booking_days': _advanceBookingController.text.isEmpty
+              ? null
+              : int.parse(_advanceBookingController.text),
           'cancellation_policy': _cancellationPolicy.name,
           'valid_from': _validFrom?.toIso8601String().split('T')[0],
           'valid_to': _validTo?.toIso8601String().split('T')[0],
@@ -437,22 +426,19 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
       } else {
         final request = RatePlanCreateRequest(
           name: _nameController.text.trim(),
-          nameEn:
-              _nameEnController.text.trim().isEmpty
-                  ? null
-                  : _nameEnController.text.trim(),
+          nameEn: _nameEnController.text.trim().isEmpty
+              ? null
+              : _nameEnController.text.trim(),
           roomType: _selectedRoomTypeId!,
           baseRate: double.parse(_baseRateController.text),
           isActive: _isActive,
           minStay: int.tryParse(_minStayController.text) ?? 1,
-          maxStay:
-              _maxStayController.text.isEmpty
-                  ? null
-                  : int.parse(_maxStayController.text),
-          advanceBookingDays:
-              _advanceBookingController.text.isEmpty
-                  ? null
-                  : int.parse(_advanceBookingController.text),
+          maxStay: _maxStayController.text.isEmpty
+              ? null
+              : int.parse(_maxStayController.text),
+          advanceBookingDays: _advanceBookingController.text.isEmpty
+              ? null
+              : int.parse(_advanceBookingController.text),
           cancellationPolicy: _cancellationPolicy,
           validFrom: _validFrom,
           validTo: _validTo,
@@ -495,27 +481,26 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
     final l10n = context.l10n;
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('${l10n.deleteRatePlan}?'),
-            content: Text(
-              '${l10n.confirmDeleteRatePlan} "${_nameController.text}"?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(l10n.cancel),
-              ),
-              TextButton(
-                onPressed: () async {
-                  Navigator.pop(context);
-                  await _deleteRatePlan();
-                },
-                style: TextButton.styleFrom(foregroundColor: AppColors.error),
-                child: Text(l10n.delete),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text('${l10n.deleteRatePlan}?'),
+        content: Text(
+          '${l10n.confirmDeleteRatePlan} "${_nameController.text}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l10n.cancel),
           ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await _deleteRatePlan();
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
     );
   }
 
@@ -585,13 +570,12 @@ class _DatePickerField extends StatelessWidget {
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,
-          suffixIcon:
-              value != null
-                  ? IconButton(
-                    icon: const Icon(Icons.clear, size: 18),
-                    onPressed: () => onChanged(null),
-                  )
-                  : const Icon(Icons.calendar_today),
+          suffixIcon: value != null
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 18),
+                  onPressed: () => onChanged(null),
+                )
+              : const Icon(Icons.calendar_today),
         ),
         child: Text(
           value != null

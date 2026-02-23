@@ -135,20 +135,19 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   Widget _buildTaskList(List<HousekeepingTask> tasks) {
     final l10n = AppLocalizations.of(context)!;
     // Group tasks by status
-    final pendingTasks =
-        tasks.where((t) => t.status == HousekeepingTaskStatus.pending).toList();
-    final inProgressTasks =
-        tasks
-            .where((t) => t.status == HousekeepingTaskStatus.inProgress)
-            .toList();
-    final completedTasks =
-        tasks
-            .where(
-              (t) =>
-                  t.status == HousekeepingTaskStatus.completed ||
-                  t.status == HousekeepingTaskStatus.verified,
-            )
-            .toList();
+    final pendingTasks = tasks
+        .where((t) => t.status == HousekeepingTaskStatus.pending)
+        .toList();
+    final inProgressTasks = tasks
+        .where((t) => t.status == HousekeepingTaskStatus.inProgress)
+        .toList();
+    final completedTasks = tasks
+        .where(
+          (t) =>
+              t.status == HousekeepingTaskStatus.completed ||
+              t.status == HousekeepingTaskStatus.verified,
+        )
+        .toList();
 
     return RefreshIndicator(
       onRefresh: _refreshTasks,
@@ -255,16 +254,15 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder:
-          (context) => TaskFilterSheet(
-            initialFilter: _filter,
-            onApply: (newFilter) {
-              setState(() {
-                _filter = newFilter;
-              });
-              Navigator.pop(context);
-            },
-          ),
+      builder: (context) => TaskFilterSheet(
+        initialFilter: _filter,
+        onApply: (newFilter) {
+          setState(() {
+            _filter = newFilter;
+          });
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 

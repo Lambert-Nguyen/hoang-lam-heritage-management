@@ -21,20 +21,18 @@ void main() {
           locale: const Locale('vi'),
           home: Scaffold(
             body: Builder(
-              builder:
-                  (context) => ElevatedButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (context) => AddChargeDialog(
-                              bookingId: bookingId,
-                              onChargeAdded: onChargeAdded,
-                            ),
-                      );
-                    },
-                    child: const Text('Open Dialog'),
-                  ),
+              builder: (context) => ElevatedButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AddChargeDialog(
+                      bookingId: bookingId,
+                      onChargeAdded: onChargeAdded,
+                    ),
+                  );
+                },
+                child: const Text('Open Dialog'),
+              ),
             ),
           ),
         ),

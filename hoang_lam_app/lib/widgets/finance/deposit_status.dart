@@ -19,10 +19,9 @@ class DepositStatusIndicator extends StatelessWidget {
     this.onTap,
   });
 
-  double get progress =>
-      requiredDeposit > 0
-          ? (paidDeposit / requiredDeposit).clamp(0.0, 1.0)
-          : 0.0;
+  double get progress => requiredDeposit > 0
+      ? (paidDeposit / requiredDeposit).clamp(0.0, 1.0)
+      : 0.0;
   double get outstanding =>
       (requiredDeposit - paidDeposit).clamp(0.0, requiredDeposit);
   bool get isFullyPaid => paidDeposit >= requiredDeposit;
@@ -299,8 +298,9 @@ class OutstandingDepositsList extends StatelessWidget {
         final deposit = deposits[index];
         return OutstandingDepositCard(
           deposit: deposit,
-          onRecordDeposit:
-              onRecordDeposit != null ? () => onRecordDeposit!(deposit) : null,
+          onRecordDeposit: onRecordDeposit != null
+              ? () => onRecordDeposit!(deposit)
+              : null,
           onTap: onTap != null ? () => onTap!(deposit) : null,
         );
       },

@@ -80,14 +80,12 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
                     AppSpacing.gapVerticalMd,
                     roomsAsync.when(
                       data: (rooms) => _buildRoomDropdown(rooms),
-                      loading:
-                          () =>
-                              const Center(child: CircularProgressIndicator()),
-                      error:
-                          (_, __) => Text(
-                            l10n.cannotLoadRoomList,
-                            style: TextStyle(color: AppColors.error),
-                          ),
+                      loading: () =>
+                          const Center(child: CircularProgressIndicator()),
+                      error: (_, __) => Text(
+                        l10n.cannotLoadRoomList,
+                        style: TextStyle(color: AppColors.error),
+                      ),
                     ),
                   ],
                 ),
@@ -172,15 +170,14 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     final l10n = AppLocalizations.of(context)!;
     return AppDropdown<int>(
       value: _selectedRoomId,
-      items:
-          rooms
-              .map(
-                (room) => DropdownMenuItem(
-                  value: room.id,
-                  child: Text('${l10n.room} ${room.number}'),
-                ),
-              )
-              .toList(),
+      items: rooms
+          .map(
+            (room) => DropdownMenuItem(
+              value: room.id,
+              child: Text('${l10n.room} ${room.number}'),
+            ),
+          )
+          .toList(),
       onChanged: (value) {
         setState(() {
           _selectedRoomId = value;
@@ -200,55 +197,53 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
     return Wrap(
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
-      children:
-          HousekeepingTaskType.values.map((type) {
-            final isSelected = type == _selectedTaskType;
-            return InkWell(
-              onTap: () {
-                setState(() {
-                  _selectedTaskType = type;
-                });
-              },
+      children: HousekeepingTaskType.values.map((type) {
+        final isSelected = type == _selectedTaskType;
+        return InkWell(
+          onTap: () {
+            setState(() {
+              _selectedTaskType = type;
+            });
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? type.color.withValues(alpha: 0.2)
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
+              border: Border.all(
+                color: isSelected ? type.color : AppColors.divider,
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  type.icon,
+                  size: 20,
+                  color: isSelected ? type.color : AppColors.textSecondary,
                 ),
-                decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? type.color.withValues(alpha: 0.2)
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isSelected ? type.color : AppColors.divider,
-                    width: isSelected ? 2 : 1,
+                AppSpacing.gapHorizontalSm,
+                Text(
+                  type.localizedName(context.l10n),
+                  style: TextStyle(
+                    color: isSelected ? type.color : AppColors.textSecondary,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      type.icon,
-                      size: 20,
-                      color: isSelected ? type.color : AppColors.textSecondary,
-                    ),
-                    AppSpacing.gapHorizontalSm,
-                    Text(
-                      type.localizedName(context.l10n),
-                      style: TextStyle(
-                        color:
-                            isSelected ? type.color : AppColors.textSecondary,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -324,8 +319,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
         result = await notifier.updateTask(
           widget.task!.id,
           HousekeepingTaskUpdate(
-            notes:
-                _notesController.text.isNotEmpty ? _notesController.text : null,
+            notes: _notesController.text.isNotEmpty
+                ? _notesController.text
+                : null,
           ),
         );
       } else {
@@ -334,8 +330,9 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
             room: _selectedRoomId!,
             taskType: _selectedTaskType.apiValue,
             scheduledDate: formattedDate,
-            notes:
-                _notesController.text.isNotEmpty ? _notesController.text : null,
+            notes: _notesController.text.isNotEmpty
+                ? _notesController.text
+                : null,
           ),
         );
       }

@@ -62,8 +62,9 @@ class _FinancialCategoryScreenState
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final entryType =
-              _tabController.index == 0 ? EntryType.income : EntryType.expense;
+          final entryType = _tabController.index == 0
+              ? EntryType.income
+              : EntryType.expense;
           _showCategoryDialog(context, entryType: entryType);
         },
         child: const Icon(Icons.add),
@@ -106,26 +107,21 @@ class _FinancialCategoryScreenState
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (error, _) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 48,
-                    color: AppColors.error,
-                  ),
-                  AppSpacing.gapVerticalMd,
-                  Text('${l10n.error}: $error'),
-                  AppSpacing.gapVerticalMd,
-                  ElevatedButton(
-                    onPressed: _refreshCategories,
-                    child: Text(l10n.retry),
-                  ),
-                ],
+        error: (error, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              AppSpacing.gapVerticalMd,
+              Text('${l10n.error}: $error'),
+              AppSpacing.gapVerticalMd,
+              ElevatedButton(
+                onPressed: _refreshCategories,
+                child: Text(l10n.retry),
               ),
-            ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -137,12 +133,11 @@ class _FinancialCategoryScreenState
   }) async {
     final result = await showDialog<bool>(
       context: context,
-      builder:
-          (dialogContext) => _CategoryFormDialog(
-            category: category,
-            entryType: entryType ?? category?.categoryType ?? EntryType.income,
-            repository: ref.read(financeRepositoryProvider),
-          ),
+      builder: (dialogContext) => _CategoryFormDialog(
+        category: category,
+        entryType: entryType ?? category?.categoryType ?? EntryType.income,
+        repository: ref.read(financeRepositoryProvider),
+      ),
     );
     if (result == true) {
       _refreshCategories();
@@ -211,26 +206,23 @@ class _FinancialCategoryScreenState
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder:
-          (dialogContext) => AlertDialog(
-            title: Text(l10n.deleteCategory),
-            content: Text(
-              l10n.confirmDeleteCategoryMsg.replaceAll('{name}', category.name),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text(l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(dialogContext, true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: Text(l10n.delete),
-              ),
-            ],
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteCategory),
+        content: Text(
+          l10n.confirmDeleteCategoryMsg.replaceAll('{name}', category.name),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
     );
 
     if (confirmed == true && mounted) {
@@ -440,10 +432,9 @@ class _CategoryTile extends StatelessWidget {
           ),
           child: Icon(
             category.iconData,
-            color:
-                category.isActive
-                    ? category.colorValue
-                    : AppColors.textSecondary,
+            color: category.isActive
+                ? category.colorValue
+                : AppColors.textSecondary,
             size: 22,
           ),
         ),
@@ -704,14 +695,13 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
         ),
         ElevatedButton(
           onPressed: _saving ? null : _save,
-          child:
-              _saving
-                  ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                  : Text(_isEditing ? l10n.save : l10n.create),
+          child: _saving
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(_isEditing ? l10n.save : l10n.create),
         ),
       ],
     );
@@ -721,35 +711,32 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
     return Wrap(
       spacing: 6,
       runSpacing: 6,
-      children:
-          _availableIcons.entries.map((entry) {
-            final isSelected = _selectedIcon == entry.key;
-            return InkWell(
-              onTap: () => setState(() => _selectedIcon = entry.key),
+      children: _availableIcons.entries.map((entry) {
+        final isSelected = _selectedIcon == entry.key;
+        return InkWell(
+          onTap: () => setState(() => _selectedIcon = entry.key),
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? AppColors.primary.withValues(alpha: 0.15)
+                  : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? AppColors.primary.withValues(alpha: 0.15)
-                          : Colors.transparent,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: isSelected ? AppColors.primary : AppColors.border,
-                    width: isSelected ? 2 : 1,
-                  ),
-                ),
-                child: Icon(
-                  entry.value,
-                  size: 20,
-                  color:
-                      isSelected ? AppColors.primary : AppColors.textSecondary,
-                ),
+              border: Border.all(
+                color: isSelected ? AppColors.primary : AppColors.border,
+                width: isSelected ? 2 : 1,
               ),
-            );
-          }).toList(),
+            ),
+            child: Icon(
+              entry.value,
+              size: 20,
+              color: isSelected ? AppColors.primary : AppColors.textSecondary,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -757,32 +744,29 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children:
-          _availableColors.map((hex) {
-            final isSelected = _selectedColor == hex;
-            final color = _hexToColor(hex);
-            return InkWell(
-              onTap: () => setState(() => _selectedColor = hex),
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: color,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color:
-                        isSelected ? AppColors.textPrimary : Colors.transparent,
-                    width: 3,
-                  ),
-                ),
-                child:
-                    isSelected
-                        ? const Icon(Icons.check, size: 18, color: Colors.white)
-                        : null,
+      children: _availableColors.map((hex) {
+        final isSelected = _selectedColor == hex;
+        final color = _hexToColor(hex);
+        return InkWell(
+          onTap: () => setState(() => _selectedColor = hex),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected ? AppColors.textPrimary : Colors.transparent,
+                width: 3,
               ),
-            );
-          }).toList(),
+            ),
+            child: isSelected
+                ? const Icon(Icons.check, size: 18, color: Colors.white)
+                : null,
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -790,10 +774,9 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
     final l10n = AppLocalizations.of(context)!;
     final previewColor = _hexToColor(_selectedColor);
     final previewIcon = _availableIcons[_selectedIcon] ?? Icons.category;
-    final name =
-        _nameController.text.isNotEmpty
-            ? _nameController.text
-            : l10n.categoryNamePlaceholder;
+    final name = _nameController.text.isNotEmpty
+        ? _nameController.text
+        : l10n.categoryNamePlaceholder;
 
     return Container(
       padding: AppSpacing.paddingAll,
@@ -854,10 +837,9 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
         await widget.repository.updateCategory(
           widget.category!.id,
           name: _nameController.text.trim(),
-          nameEn:
-              _nameEnController.text.trim().isEmpty
-                  ? null
-                  : _nameEnController.text.trim(),
+          nameEn: _nameEnController.text.trim().isEmpty
+              ? null
+              : _nameEnController.text.trim(),
           icon: _selectedIcon,
           color: _selectedColor,
           isDefault: _isDefault,
@@ -866,10 +848,9 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
         await widget.repository.createCategory(
           name: _nameController.text.trim(),
           categoryType: widget.entryType,
-          nameEn:
-              _nameEnController.text.trim().isEmpty
-                  ? null
-                  : _nameEnController.text.trim(),
+          nameEn: _nameEnController.text.trim().isEmpty
+              ? null
+              : _nameEnController.text.trim(),
           icon: _selectedIcon,
           color: _selectedColor,
           isDefault: _isDefault,

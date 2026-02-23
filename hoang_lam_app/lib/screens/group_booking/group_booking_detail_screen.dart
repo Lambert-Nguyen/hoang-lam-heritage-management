@@ -36,71 +36,68 @@ class _GroupBookingDetailScreenState
         title: Text(l10n.groupBookingDetails),
         actions: [
           bookingAsync.whenOrNull(
-                data:
-                    (booking) => PopupMenuButton<String>(
-                      onSelected: (v) => _handleMenuAction(v, booking),
-                      itemBuilder:
-                          (context) => [
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: ListTile(
-                                leading: const Icon(Icons.edit),
-                                title: Text(l10n.edit),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            if (booking.status == GroupBookingStatus.tentative)
-                              PopupMenuItem(
-                                value: 'confirm',
-                                child: ListTile(
-                                  leading: const Icon(
-                                    Icons.check_circle,
-                                    color: AppColors.success,
-                                  ),
-                                  title: Text(l10n.confirm),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                            if (booking.status == GroupBookingStatus.confirmed)
-                              PopupMenuItem(
-                                value: 'check_in',
-                                child: ListTile(
-                                  leading: const Icon(
-                                    Icons.login,
-                                    color: AppColors.statusBlue,
-                                  ),
-                                  title: Text(l10n.checkIn),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                            if (booking.status == GroupBookingStatus.checkedIn)
-                              PopupMenuItem(
-                                value: 'check_out',
-                                child: ListTile(
-                                  leading: const Icon(
-                                    Icons.logout,
-                                    color: AppColors.statusPurple,
-                                  ),
-                                  title: Text(l10n.checkOut),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                            if (booking.status ==
-                                    GroupBookingStatus.tentative ||
-                                booking.status == GroupBookingStatus.confirmed)
-                              PopupMenuItem(
-                                value: 'cancel',
-                                child: ListTile(
-                                  leading: const Icon(
-                                    Icons.cancel,
-                                    color: AppColors.error,
-                                  ),
-                                  title: Text(l10n.cancel),
-                                  contentPadding: EdgeInsets.zero,
-                                ),
-                              ),
-                          ],
+                data: (booking) => PopupMenuButton<String>(
+                  onSelected: (v) => _handleMenuAction(v, booking),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: ListTile(
+                        leading: const Icon(Icons.edit),
+                        title: Text(l10n.edit),
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
+                    if (booking.status == GroupBookingStatus.tentative)
+                      PopupMenuItem(
+                        value: 'confirm',
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.check_circle,
+                            color: AppColors.success,
+                          ),
+                          title: Text(l10n.confirm),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    if (booking.status == GroupBookingStatus.confirmed)
+                      PopupMenuItem(
+                        value: 'check_in',
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.login,
+                            color: AppColors.statusBlue,
+                          ),
+                          title: Text(l10n.checkIn),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    if (booking.status == GroupBookingStatus.checkedIn)
+                      PopupMenuItem(
+                        value: 'check_out',
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.logout,
+                            color: AppColors.statusPurple,
+                          ),
+                          title: Text(l10n.checkOut),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    if (booking.status == GroupBookingStatus.tentative ||
+                        booking.status == GroupBookingStatus.confirmed)
+                      PopupMenuItem(
+                        value: 'cancel',
+                        child: ListTile(
+                          leading: const Icon(
+                            Icons.cancel,
+                            color: AppColors.error,
+                          ),
+                          title: Text(l10n.cancel),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                  ],
+                ),
               ) ??
               const SizedBox.shrink(),
         ],
@@ -108,14 +105,11 @@ class _GroupBookingDetailScreenState
       body: bookingAsync.when(
         data: (booking) => _buildContent(booking),
         loading: () => const LoadingIndicator(),
-        error:
-            (e, _) => ErrorDisplay(
-              message: '${l10n.error}: $e',
-              onRetry:
-                  () => ref.invalidate(
-                    groupBookingByIdProvider(widget.bookingId),
-                  ),
-            ),
+        error: (e, _) => ErrorDisplay(
+          message: '${l10n.error}: $e',
+          onRetry: () =>
+              ref.invalidate(groupBookingByIdProvider(widget.bookingId)),
+        ),
       ),
       bottomNavigationBar: bookingAsync.whenOrNull(
         data: (booking) => _buildBottomBar(booking),
@@ -234,10 +228,9 @@ class _GroupBookingDetailScreenState
                   label: l10n.paidStatus,
                   value: booking.depositPaid ? l10n.yesLabel : l10n.notYetLabel,
                   valueStyle: TextStyle(
-                    color:
-                        booking.depositPaid
-                            ? AppColors.success
-                            : AppColors.warning,
+                    color: booking.depositPaid
+                        ? AppColors.success
+                        : AppColors.warning,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -252,33 +245,32 @@ class _GroupBookingDetailScreenState
               child: Wrap(
                 spacing: AppSpacing.sm,
                 runSpacing: AppSpacing.sm,
-                children:
-                    booking.roomNumbers
-                        .map(
-                          (r) => Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.md,
-                              vertical: AppSpacing.sm,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(
-                                AppSpacing.radiusSm,
-                              ),
-                              border: Border.all(
-                                color: AppColors.primary.withValues(alpha: 0.3),
-                              ),
-                            ),
-                            child: Text(
-                              '${l10n.roomLabel} $r',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                children: booking.roomNumbers
+                    .map(
+                      (r) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusSm,
                           ),
-                        )
-                        .toList(),
+                          border: Border.all(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Text(
+                          '${l10n.roomLabel} $r',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ],
@@ -336,10 +328,9 @@ class _GroupBookingDetailScreenState
               Expanded(
                 child: AppButton(
                   label: l10n.assignRoomsLabel,
-                  onPressed:
-                      _isLoading
-                          ? null
-                          : () => _showRoomAssignmentDialog(booking),
+                  onPressed: _isLoading
+                      ? null
+                      : () => _showRoomAssignmentDialog(booking),
                   isOutlined: true,
                   icon: Icons.meeting_room,
                 ),
@@ -485,44 +476,42 @@ class _GroupBookingDetailScreenState
     final controller = TextEditingController(text: booking.rooms.join(', '));
     final result = await showDialog<String>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(context.l10n.assignRoomsLabel),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('${context.l10n.roomsNeeded}: ${booking.roomCount}'),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    labelText: context.l10n.roomIdListLabel,
-                    hintText: context.l10n.roomIdListHint,
-                  ),
-                ),
-              ],
+      builder: (context) => AlertDialog(
+        title: Text(context.l10n.assignRoomsLabel),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('${context.l10n.roomsNeeded}: ${booking.roomCount}'),
+            const SizedBox(height: AppSpacing.md),
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: context.l10n.roomIdListLabel,
+                hintText: context.l10n.roomIdListHint,
+              ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, controller.text),
-                child: Text(context.l10n.save),
-              ),
-            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: Text(context.l10n.save),
+          ),
+        ],
+      ),
     );
     controller.dispose();
     if (result == null || result.isEmpty) return;
-    final roomIds =
-        result
-            .split(',')
-            .map((e) => int.tryParse(e.trim()))
-            .whereType<int>()
-            .toList();
+    final roomIds = result
+        .split(',')
+        .map((e) => int.tryParse(e.trim()))
+        .whereType<int>()
+        .toList();
     if (roomIds.isEmpty) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -553,21 +542,20 @@ class _GroupBookingDetailScreenState
   Future<bool?> _showConfirmDialog(String title, String content) {
     return showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: Text(context.l10n.confirm),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
     );
   }
 
@@ -575,27 +563,24 @@ class _GroupBookingDetailScreenState
     final controller = TextEditingController();
     return showDialog<String>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text(title),
-            content: TextField(
-              controller: controller,
-              decoration: InputDecoration(hintText: hint),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(context.l10n.cancel),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context, controller.text),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                ),
-                child: Text(context.l10n.confirm),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(hintText: hint),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(context.l10n.cancel),
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
     ).then((result) {
       controller.dispose();
       return result;

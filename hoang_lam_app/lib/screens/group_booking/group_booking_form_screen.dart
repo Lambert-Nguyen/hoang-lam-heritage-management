@@ -113,14 +113,11 @@ class _GroupBookingFormScreenState
             return _buildForm();
           },
           loading: () => const LoadingIndicator(),
-          error:
-              (e, _) => ErrorDisplay(
-                message: '${l10n.error}: $e',
-                onRetry:
-                    () => ref.invalidate(
-                      groupBookingByIdProvider(widget.bookingId!),
-                    ),
-              ),
+          error: (e, _) => ErrorDisplay(
+            message: '${l10n.error}: $e',
+            onRetry: () =>
+                ref.invalidate(groupBookingByIdProvider(widget.bookingId!)),
+          ),
         ),
       );
     }
@@ -149,11 +146,9 @@ class _GroupBookingFormScreenState
                       controller: _nameController,
                       label: '${context.l10n.groupNameRequired} *',
                       hint: context.l10n.exampleGroupName,
-                      validator:
-                          (v) =>
-                              v == null || v.isEmpty
-                                  ? context.l10n.pleaseEnterValue
-                                  : null,
+                      validator: (v) => v == null || v.isEmpty
+                          ? context.l10n.pleaseEnterValue
+                          : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Row(
@@ -163,14 +158,13 @@ class _GroupBookingFormScreenState
                             controller: _roomCountController,
                             label: '${context.l10n.numberOfRooms} *',
                             keyboardType: TextInputType.number,
-                            validator:
-                                (v) =>
-                                    v == null ||
-                                            v.isEmpty ||
-                                            int.tryParse(v) == null ||
-                                            int.parse(v) < 1
-                                        ? context.l10n.invalid
-                                        : null,
+                            validator: (v) =>
+                                v == null ||
+                                    v.isEmpty ||
+                                    int.tryParse(v) == null ||
+                                    int.parse(v) < 1
+                                ? context.l10n.invalid
+                                : null,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.md),
@@ -179,14 +173,13 @@ class _GroupBookingFormScreenState
                             controller: _guestCountController,
                             label: '${context.l10n.numberOfGuests} *',
                             keyboardType: TextInputType.number,
-                            validator:
-                                (v) =>
-                                    v == null ||
-                                            v.isEmpty ||
-                                            int.tryParse(v) == null ||
-                                            int.parse(v) < 1
-                                        ? context.l10n.invalid
-                                        : null,
+                            validator: (v) =>
+                                v == null ||
+                                    v.isEmpty ||
+                                    int.tryParse(v) == null ||
+                                    int.parse(v) < 1
+                                ? context.l10n.invalid
+                                : null,
                           ),
                         ),
                       ],
@@ -206,22 +199,18 @@ class _GroupBookingFormScreenState
                     AppTextField(
                       controller: _contactNameController,
                       label: '${context.l10n.contactPersonRequired} *',
-                      validator:
-                          (v) =>
-                              v == null || v.isEmpty
-                                  ? context.l10n.pleaseEnterValue
-                                  : null,
+                      validator: (v) => v == null || v.isEmpty
+                          ? context.l10n.pleaseEnterValue
+                          : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(
                       controller: _contactPhoneController,
                       label: '${context.l10n.phoneRequired} *',
                       keyboardType: TextInputType.phone,
-                      validator:
-                          (v) =>
-                              v == null || v.isEmpty
-                                  ? context.l10n.pleaseEnterValue
-                                  : null,
+                      validator: (v) => v == null || v.isEmpty
+                          ? context.l10n.pleaseEnterValue
+                          : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     AppTextField(
@@ -293,13 +282,10 @@ class _GroupBookingFormScreenState
                       controller: _totalAmountController,
                       label: '${context.l10n.totalAmountVnd} *',
                       keyboardType: TextInputType.number,
-                      validator:
-                          (v) =>
-                              v == null ||
-                                      v.isEmpty ||
-                                      double.tryParse(v) == null
-                                  ? context.l10n.invalid
-                                  : null,
+                      validator: (v) =>
+                          v == null || v.isEmpty || double.tryParse(v) == null
+                          ? context.l10n.invalid
+                          : null,
                     ),
                     const SizedBox(height: AppSpacing.md),
                     Row(
@@ -359,10 +345,9 @@ class _GroupBookingFormScreenState
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                label:
-                    widget.isEditing
-                        ? context.l10n.update
-                        : context.l10n.createBooking,
+                label: widget.isEditing
+                    ? context.l10n.update
+                    : context.l10n.createBooking,
                 onPressed: _isLoading ? null : _handleSubmit,
                 isLoading: _isLoading,
                 icon: widget.isEditing ? Icons.save : Icons.add,

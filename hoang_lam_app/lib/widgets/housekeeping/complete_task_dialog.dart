@@ -236,13 +236,12 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                       Expanded(
                         child: AppButton(
                           label: l10n.completeBtn,
-                          onPressed:
-                              _allItemsChecked
-                                  ? () => Navigator.pop(
-                                    context,
-                                    _notesController.text,
-                                  )
-                                  : null,
+                          onPressed: _allItemsChecked
+                              ? () => Navigator.pop(
+                                  context,
+                                  _notesController.text,
+                                )
+                              : null,
                         ),
                       ),
                     ],
@@ -281,18 +280,18 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                   width: 2,
                 ),
               ),
-              child:
-                  item.isChecked
-                      ? const Icon(Icons.check, size: 16, color: Colors.white)
-                      : null,
+              child: item.isChecked
+                  ? const Icon(Icons.check, size: 16, color: Colors.white)
+                  : null,
             ),
             AppSpacing.gapHorizontalMd,
             Expanded(
               child: Text(
                 item.label,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  decoration:
-                      item.isChecked ? TextDecoration.lineThrough : null,
+                  decoration: item.isChecked
+                      ? TextDecoration.lineThrough
+                      : null,
                   color: item.isChecked ? AppColors.textSecondary : null,
                 ),
               ),

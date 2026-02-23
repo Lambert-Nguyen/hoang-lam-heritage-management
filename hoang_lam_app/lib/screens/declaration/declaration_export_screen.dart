@@ -49,13 +49,12 @@ class _DeclarationExportScreenState
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l10n.exportSuccess),
-              action:
-                  file_saver.isWebPlatform
-                      ? null
-                      : SnackBarAction(
-                        label: l10n.open,
-                        onPressed: () => _openFile(filePath),
-                      ),
+              action: file_saver.isWebPlatform
+                  ? null
+                  : SnackBarAction(
+                      label: l10n.open,
+                      onPressed: () => _openFile(filePath),
+                    ),
               duration: const Duration(seconds: 5),
             ),
           );
@@ -122,19 +121,18 @@ class _DeclarationExportScreenState
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children:
-                  DeclarationFormType.values.map((type) {
-                    final isSelected = _formType == type;
-                    return ChoiceChip(
-                      label: Text(type.localizedName(context.l10n)),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        if (selected) {
-                          setState(() => _formType = type);
-                        }
-                      },
-                    );
-                  }).toList(),
+              children: DeclarationFormType.values.map((type) {
+                final isSelected = _formType == type;
+                return ChoiceChip(
+                  label: Text(type.localizedName(context.l10n)),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    if (selected) {
+                      setState(() => _formType = type);
+                    }
+                  },
+                );
+              }).toList(),
             ),
             if (_formType != DeclarationFormType.all) ...[
               const SizedBox(height: 4),
@@ -273,21 +271,19 @@ class _DeclarationExportScreenState
             SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
-                onPressed:
-                    exportState is DeclarationExportLoading
-                        ? null
-                        : _handleExport,
-                icon:
-                    exportState is DeclarationExportLoading
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                        : const Icon(Icons.download),
+                onPressed: exportState is DeclarationExportLoading
+                    ? null
+                    : _handleExport,
+                icon: exportState is DeclarationExportLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.download),
                 label: Text(
                   exportState is DeclarationExportLoading
                       ? l10n.exporting
@@ -427,10 +423,9 @@ class _FormatCard extends StatelessWidget {
             color: isSelected ? colorScheme.primary : colorScheme.outline,
             width: isSelected ? 2 : 1,
           ),
-          color:
-              isSelected
-                  ? colorScheme.primaryContainer.withValues(alpha: 0.3)
-                  : null,
+          color: isSelected
+              ? colorScheme.primaryContainer.withValues(alpha: 0.3)
+              : null,
         ),
         child: Column(
           children: [

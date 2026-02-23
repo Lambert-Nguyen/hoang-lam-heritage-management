@@ -107,29 +107,27 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                     },
                   );
                 },
-                loading:
-                    () => const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(AppSpacing.lg),
-                        child: CircularProgressIndicator(),
+                loading: () => const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(AppSpacing.lg),
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+                error: (error, _) => Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        context.l10n.errorLoadingStaffList,
+                        style: TextStyle(color: AppColors.error),
                       ),
-                    ),
-                error:
-                    (error, _) => Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            context.l10n.errorLoadingStaffList,
-                            style: TextStyle(color: AppColors.error),
-                          ),
-                          TextButton(
-                            onPressed: () => ref.invalidate(staffListProvider),
-                            child: Text(context.l10n.retry),
-                          ),
-                        ],
+                      TextButton(
+                        onPressed: () => ref.invalidate(staffListProvider),
+                        child: Text(context.l10n.retry),
                       ),
-                    ),
+                    ],
+                  ),
+                ),
               ),
             ),
 
@@ -149,10 +147,9 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                 Expanded(
                   child: AppButton(
                     label: context.l10n.confirm,
-                    onPressed:
-                        _selectedUserId != null
-                            ? () => Navigator.pop(context, _selectedUserId)
-                            : null,
+                    onPressed: _selectedUserId != null
+                        ? () => Navigator.pop(context, _selectedUserId)
+                        : null,
                   ),
                 ),
               ],
@@ -181,10 +178,9 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color:
-              isSelected
-                  ? AppColors.primary.withValues(alpha: 0.1)
-                  : Colors.transparent,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.divider,
@@ -193,10 +189,9 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor:
-                  isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary.withValues(alpha: 0.2),
+              backgroundColor: isSelected
+                  ? AppColors.primary
+                  : AppColors.textSecondary.withValues(alpha: 0.2),
               child: Icon(
                 Icons.person,
                 color: isSelected ? Colors.white : AppColors.textSecondary,
@@ -241,10 +236,9 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       tileColor: isSelected ? AppColors.primary.withValues(alpha: 0.1) : null,
       leading: CircleAvatar(
-        backgroundColor:
-            isSelected
-                ? AppColors.primary
-                : AppColors.textSecondary.withValues(alpha: 0.2),
+        backgroundColor: isSelected
+            ? AppColors.primary
+            : AppColors.textSecondary.withValues(alpha: 0.2),
         child: Text(
           staff.displayName[0],
           style: TextStyle(
@@ -265,10 +259,9 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
           context,
         ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
       ),
-      trailing:
-          isSelected
-              ? Icon(Icons.check_circle, color: AppColors.primary)
-              : null,
+      trailing: isSelected
+          ? Icon(Icons.check_circle, color: AppColors.primary)
+          : null,
     );
   }
 }

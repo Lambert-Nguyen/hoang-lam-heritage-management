@@ -285,10 +285,9 @@ void main() {
           notes: null,
           createdAt: DateTime(2024, 1, 14),
           updatedAt: DateTime(2024, 1, 14),
-          completedAt:
-              status == HousekeepingTaskStatus.completed
-                  ? DateTime.now()
-                  : null,
+          completedAt: status == HousekeepingTaskStatus.completed
+              ? DateTime.now()
+              : null,
         );
 
         await tester.pumpWidget(buildWidget(task: task));
