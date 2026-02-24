@@ -6,6 +6,7 @@ import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../widgets/guests/guest_quick_search.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Booking Form Screen - Phase 1.9.6
 ///
@@ -161,27 +162,69 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   Widget _buildRoomSelection() {
-    // TODO: Filter rooms by availability for the selected date range using
-    // availableRoomsProvider. Currently shows all active rooms regardless of
-    // existing bookings. A full implementation should query the backend
-    // availability endpoint and only display rooms that are free for the
-    // chosen check-in/check-out window.
+    // Use availableRoomsProvider to filter by date range when dates are set
+    final filter = AvailabilityFilter(
+      checkIn: _checkInDate,
+      checkOut: _checkOutDate,
+    );
+    final availableAsync = ref.watch(availableRoomsProvider(filter));
+    // Fallback to all rooms if availability check fails
     final roomsAsync = ref.watch(roomsProvider);
 
-    return roomsAsync.when(
-      data: (rooms) {
+    return availableAsync.when(
+      data: (availableRooms) {
+        // When editing, ensure the currently selected room is always in the list
+        final rooms = widget.booking != null
+            ? (() {
+                final allRooms = roomsAsync.valueOrNull ?? availableRooms;
+                final ids = availableRooms.map((r) => r.id).toSet();
+                return [
+                  ...availableRooms,
+                  ...allRooms.where(
+                    (r) => r.id == _selectedRoomId && !ids.contains(r.id),
+                  ),
+                ];
+              })()
+            : availableRooms;
+
         return DropdownButtonFormField<int>(
           initialValue: _selectedRoomId,
           decoration: InputDecoration(
             labelText: '${context.l10n.roomNumber} *',
             border: const OutlineInputBorder(),
             prefixIcon: const Icon(Icons.hotel),
+            helperText: '${rooms.length} ${context.l10n.availableRooms}',
           ),
           items: rooms.map((room) {
+            final isAvailable = availableRooms.any((r) => r.id == room.id);
             return DropdownMenuItem(
               value: room.id,
-              child: Text(
-                '${room.number} - ${room.name ?? room.roomTypeName ?? ""}',
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${room.number} - ${room.name ?? room.roomTypeName ?? ""}',
+                    ),
+                  ),
+                  if (!isAvailable)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.occupied.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        context.l10n.occupied,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: AppColors.occupied,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             );
           }).toList(),
@@ -594,44 +637,46 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   }
 
   String _getBookingSourceLabel(BookingSource source) {
+    final l10n = context.l10n;
     switch (source) {
       case BookingSource.walkIn:
-        return 'Walk-in';
+        return l10n.bookingSourceWalkIn;
       case BookingSource.phone:
-        return 'Phone';
+        return l10n.bookingSourcePhone;
       case BookingSource.bookingCom:
-        return 'Booking.com';
+        return l10n.bookingSourceBookingCom;
       case BookingSource.agoda:
-        return 'Agoda';
+        return l10n.bookingSourceAgoda;
       case BookingSource.airbnb:
-        return 'Airbnb';
+        return l10n.bookingSourceAirbnb;
       case BookingSource.traveloka:
-        return 'Traveloka';
+        return l10n.bookingSourceTraveloka;
       case BookingSource.otherOta:
-        return 'OTA';
+        return l10n.bookingSourceOtherOta;
       case BookingSource.website:
-        return 'Website';
+        return l10n.bookingSourceWebsite;
       case BookingSource.other:
-        return 'Other';
+        return l10n.bookingSourceOther;
     }
   }
 
   String _getPaymentMethodLabel(PaymentMethod method) {
+    final l10n = context.l10n;
     switch (method) {
       case PaymentMethod.cash:
-        return 'Cash';
+        return l10n.paymentMethodCash;
       case PaymentMethod.bankTransfer:
-        return 'Bank Transfer';
+        return l10n.paymentMethodBankTransfer;
       case PaymentMethod.momo:
-        return 'MoMo';
+        return l10n.paymentMethodMomo;
       case PaymentMethod.vnpay:
-        return 'VNPay';
+        return l10n.paymentMethodVnpay;
       case PaymentMethod.card:
-        return 'Card';
+        return l10n.paymentMethodCard;
       case PaymentMethod.otaCollect:
-        return 'OTA';
+        return l10n.paymentMethodOtaCollect;
       case PaymentMethod.other:
-        return 'Other';
+        return l10n.paymentMethodOther;
     }
   }
 

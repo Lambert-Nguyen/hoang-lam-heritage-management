@@ -1515,11 +1515,18 @@ class AppLocalizations {
   String get bookingStatusNoShow => translate('booking_status_no_show');
   String get bookingSourceWalkIn => translate('booking_source_walk_in');
   String get bookingSourcePhone => translate('booking_source_phone');
+  String get bookingSourceBookingCom => translate('booking_source_booking_com');
+  String get bookingSourceAgoda => translate('booking_source_agoda');
+  String get bookingSourceAirbnb => translate('booking_source_airbnb');
+  String get bookingSourceTraveloka => translate('booking_source_traveloka');
+  String get bookingSourceWebsite => translate('booking_source_website');
   String get bookingSourceOtherOta => translate('booking_source_other_ota');
   String get bookingSourceOther => translate('booking_source_other');
   String get paymentMethodCash => translate('payment_method_cash');
   String get paymentMethodBankTransfer =>
       translate('payment_method_bank_transfer');
+  String get paymentMethodMomo => translate('payment_method_momo');
+  String get paymentMethodVnpay => translate('payment_method_vnpay');
   String get paymentMethodCard => translate('payment_method_card');
   String get paymentMethodOtaCollect => translate('payment_method_ota_collect');
   String get paymentMethodOther => translate('payment_method_other');
@@ -3201,10 +3208,17 @@ const Map<String, String> _viTranslations = {
   'booking_status_no_show': 'Không đến',
   'booking_source_walk_in': 'Khách vãng lai',
   'booking_source_phone': 'Điện thoại',
+  'booking_source_booking_com': 'Booking.com',
+  'booking_source_agoda': 'Agoda',
+  'booking_source_airbnb': 'Airbnb',
+  'booking_source_traveloka': 'Traveloka',
+  'booking_source_website': 'Website',
   'booking_source_other_ota': 'OTA khác',
   'booking_source_other': 'Khác',
   'payment_method_cash': 'Tiền mặt',
   'payment_method_bank_transfer': 'Chuyển khoản',
+  'payment_method_momo': 'MoMo',
+  'payment_method_vnpay': 'VNPay',
   'payment_method_card': 'Thẻ',
   'payment_method_ota_collect': 'OTA thu hộ',
   'payment_method_other': 'Khác',
@@ -4865,10 +4879,17 @@ const Map<String, String> _enTranslations = {
   'booking_status_no_show': 'No Show',
   'booking_source_walk_in': 'Walk-in',
   'booking_source_phone': 'Phone',
+  'booking_source_booking_com': 'Booking.com',
+  'booking_source_agoda': 'Agoda',
+  'booking_source_airbnb': 'Airbnb',
+  'booking_source_traveloka': 'Traveloka',
+  'booking_source_website': 'Website',
   'booking_source_other_ota': 'Other OTA',
   'booking_source_other': 'Other',
   'payment_method_cash': 'Cash',
   'payment_method_bank_transfer': 'Bank Transfer',
+  'payment_method_momo': 'MoMo',
+  'payment_method_vnpay': 'VNPay',
   'payment_method_card': 'Card',
   'payment_method_ota_collect': 'OTA Collect',
   'payment_method_other': 'Other',

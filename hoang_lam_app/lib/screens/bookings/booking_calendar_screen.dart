@@ -9,7 +9,6 @@ import '../../providers/booking_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_card.dart';
 import 'booking_detail_screen.dart';
-import 'booking_form_screen.dart';
 import '../../core/theme/app_colors.dart';
 
 /// Booking Calendar Screen - Phase 1.9.4
@@ -103,9 +102,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const BookingFormScreen()),
-          );
+          context.push(AppRoutes.newBooking);
         },
         icon: const Icon(Icons.add),
         label: Text(context.l10n.newBooking),
