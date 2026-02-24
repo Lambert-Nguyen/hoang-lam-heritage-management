@@ -57,7 +57,8 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
         title: Text(context.l10n.bookings),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.view_list),
+            tooltip: context.l10n.listView,
             onPressed: () {
               context.go(AppRoutes.bookings);
             },

@@ -112,24 +112,34 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             _buildTotalDisplay(),
             const SizedBox(height: 16),
 
-            // Booking Source
-            _buildSourceSelection(),
-            const SizedBox(height: 16),
+            // Optional fields — collapsed by default for quick walk-in bookings
+            ExpansionTile(
+              title: Text(context.l10n.optionalFields),
+              leading: const Icon(Icons.tune),
+              initiallyExpanded: isEdit,
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: const EdgeInsets.only(bottom: 8),
+              children: [
+                // Booking Source
+                _buildSourceSelection(),
+                const SizedBox(height: 16),
 
-            // Payment Method
-            _buildPaymentMethodSelection(),
-            const SizedBox(height: 16),
+                // Payment Method
+                _buildPaymentMethodSelection(),
+                const SizedBox(height: 16),
 
-            // Deposit
-            _buildDepositField(),
-            const SizedBox(height: 16),
+                // Deposit
+                _buildDepositField(),
+                const SizedBox(height: 16),
 
-            // Special Requests
-            _buildSpecialRequestsField(),
-            const SizedBox(height: 16),
+                // Special Requests
+                _buildSpecialRequestsField(),
+                const SizedBox(height: 16),
 
-            // Internal Notes
-            _buildInternalNotesField(),
+                // Internal Notes
+                _buildInternalNotesField(),
+              ],
+            ),
             const SizedBox(height: 24),
 
             // Submit Button

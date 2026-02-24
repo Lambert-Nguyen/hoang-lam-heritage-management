@@ -15,6 +15,7 @@ import '../screens/rooms/room_form_screen.dart';
 import '../screens/rooms/room_management_screen.dart';
 import '../screens/bookings/bookings_screen.dart';
 import '../screens/bookings/booking_form_screen.dart';
+import '../screens/bookings/booking_calendar_screen.dart';
 import '../screens/bookings/booking_detail_screen.dart';
 import '../screens/finance/finance_screen.dart';
 import '../screens/finance/receipt_preview_screen.dart';
@@ -44,6 +45,7 @@ import '../screens/messaging/message_history_screen.dart';
 import '../screens/finance/financial_category_screen.dart';
 import '../screens/settings/staff_management_screen.dart';
 import '../l10n/app_localizations.dart';
+import '../screens/more/more_menu_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -58,6 +60,7 @@ class AppRoutes {
   static const String bookings = '/bookings';
   static const String bookingDetail = '/bookings/:id';
   static const String newBooking = '/bookings/new';
+  static const String bookingCalendar = '/booking-calendar';
   static const String finance = '/finance';
   static const String receipt = '/receipt';
   static const String minibarPos = '/minibar';
@@ -100,6 +103,8 @@ class AppRoutes {
   static const String notifications = '/notifications';
   static const String sendMessage = '/send-message';
   static const String messageHistory = '/message-history';
+  // More menu
+  static const String more = '/more';
   // Settings sub-routes
   static const String financialCategories = '/financial-categories';
   static const String staffManagement = '/staff-management';
@@ -531,6 +536,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             ],
           ),
 
+          // Booking Calendar
+          GoRoute(
+            path: AppRoutes.bookingCalendar,
+            name: 'bookingCalendar',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: BookingCalendarScreen()),
+          ),
+
           // Finance
           GoRoute(
             path: AppRoutes.finance,
@@ -618,6 +631,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'roomInspections',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: RoomInspectionListScreen()),
+          ),
+
+          // More menu
+          GoRoute(
+            path: AppRoutes.more,
+            name: 'more',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: MoreMenuScreen()),
           ),
 
           // Settings

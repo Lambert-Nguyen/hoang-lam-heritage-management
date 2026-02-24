@@ -100,6 +100,7 @@ class HomeScreen extends ConsumerWidget {
                   todayBookingsAsync.when(
                     data: (todayBookings) => _buildUpcomingList(
                       context,
+                      ref,
                       todayBookings.checkOuts,
                       isCheckout: true,
                     ),
@@ -119,6 +120,7 @@ class HomeScreen extends ConsumerWidget {
                   todayBookingsAsync.when(
                     data: (todayBookings) => _buildUpcomingList(
                       context,
+                      ref,
                       todayBookings.checkIns,
                       isCheckout: false,
                     ),
@@ -352,6 +354,7 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildUpcomingList(
     BuildContext context,
+    WidgetRef ref,
     List<Booking> bookings, {
     required bool isCheckout,
   }) {
@@ -385,6 +388,13 @@ class HomeScreen extends ConsumerWidget {
 
         final roomNumber = booking.roomNumber ?? booking.room.toString();
         final guestName = booking.guestDetails?.fullName ?? l10n.guest;
+
+        // Show quick action button based on booking status
+        final bool canQuickCheckIn = !isCheckout &&
+            (booking.status == BookingStatus.confirmed ||
+                booking.status == BookingStatus.pending);
+        final bool canQuickCheckOut =
+            isCheckout && booking.status == BookingStatus.checkedIn;
 
         return AppCard(
           margin: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -435,12 +445,112 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.textHint),
+              if (canQuickCheckIn)
+                _QuickActionButton(
+                  label: l10n.checkIn,
+                  color: AppColors.available,
+                  icon: Icons.login,
+                  onPressed: () => _showQuickActionDialog(
+                    context,
+                    ref,
+                    booking: booking,
+                    isCheckIn: true,
+                  ),
+                )
+              else if (canQuickCheckOut)
+                _QuickActionButton(
+                  label: l10n.checkOut,
+                  color: AppColors.occupied,
+                  icon: Icons.logout,
+                  onPressed: () => _showQuickActionDialog(
+                    context,
+                    ref,
+                    booking: booking,
+                    isCheckIn: false,
+                  ),
+                )
+              else
+                const Icon(Icons.chevron_right, color: AppColors.textHint),
             ],
           ),
         );
       }).toList(),
     );
+  }
+
+  Future<void> _showQuickActionDialog(
+    BuildContext context,
+    WidgetRef ref, {
+    required Booking booking,
+    required bool isCheckIn,
+  }) async {
+    final l10n = context.l10n;
+    final roomNumber = booking.roomNumber ?? booking.room.toString();
+    final guestName = booking.guestDetails?.fullName ?? l10n.guest;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          isCheckIn
+              ? l10n.confirmCheckInQuestion
+              : l10n.confirmCheckOutQuestion,
+        ),
+        content: Text(
+          (isCheckIn
+                  ? l10n.confirmCheckInMessage
+                  : l10n.confirmCheckOutMessage)
+              .replaceAll('{guestName}', guestName)
+              .replaceAll('{roomNumber}', roomNumber),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+    if (!context.mounted) return;
+
+    try {
+      if (isCheckIn) {
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .checkIn(booking.id);
+      } else {
+        await ref
+            .read(bookingNotifierProvider.notifier)
+            .checkOut(booking.id);
+      }
+
+      // Refresh dashboard data
+      ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(todayBookingsProvider);
+      ref.invalidate(roomsProvider);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isCheckIn ? l10n.checkedInSuccess : l10n.checkedOutSuccess,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
   }
 }
 
@@ -483,6 +593,39 @@ class _NotificationIconButton extends ConsumerWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Compact action button for quick check-in/check-out on dashboard cards
+class _QuickActionButton extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _QuickActionButton({
+    required this.label,
+    required this.color,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 32,
+      child: FilledButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 16),
+        label: Text(label, style: const TextStyle(fontSize: 12)),
+        style: FilledButton.styleFrom(
+          backgroundColor: color,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          minimumSize: Size.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      ),
     );
   }
 }

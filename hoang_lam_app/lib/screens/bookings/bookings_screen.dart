@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
+import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_card.dart';
 import 'booking_form_screen.dart';
 import 'booking_detail_screen.dart';
@@ -41,6 +44,11 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       appBar: AppBar(
         title: Text(context.l10n.bookingList),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_view_month),
+            tooltip: context.l10n.calendarView,
+            onPressed: () => context.go(AppRoutes.bookingCalendar),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => ref.invalidate(filteredBookingsProvider(filter)),

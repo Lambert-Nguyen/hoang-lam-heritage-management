@@ -1799,6 +1799,24 @@ class AppLocalizations {
   String get errorNotFound => translate('error_not_found');
   String get errorConflict => translate('error_conflict');
   String get errorServer => translate('error_server');
+
+  // ===== UX IMPROVEMENTS =====
+  String get more => translate('more');
+  String get quickActions => translate('quick_actions');
+  String get moreDetails => translate('more_details');
+  String get optionalFields => translate('optional_fields');
+  String get markRoomClean => translate('mark_room_clean');
+  String get confirmCheckInQuestion => translate('confirm_check_in_question');
+  String get confirmCheckOutQuestion => translate('confirm_check_out_question');
+  String get confirmCheckInMessage => translate('confirm_check_in_message');
+  String get confirmCheckOutMessage => translate('confirm_check_out_message');
+  String get guestManagement => translate('guest_management');
+  String get allFeatures => translate('all_features');
+  String get operations => translate('operations');
+  String get messaging => translate('messaging');
+  String get declaration => translate('declaration');
+  String get listView => translate('list_view');
+  String get calendarView => translate('calendar_view');
 }
 
 // Vietnamese translations
@@ -3443,6 +3461,24 @@ const Map<String, String> _viTranslations = {
   'sync_failed': 'Đồng bộ thất bại',
   'sync_in_progress': 'Đang đồng bộ dữ liệu...',
   'offline_data_cached': 'Đang hiển thị dữ liệu đã lưu',
+
+  // UX Improvements
+  'more': 'Khác',
+  'quick_actions': 'Thao tác nhanh',
+  'more_details': 'Thêm chi tiết',
+  'optional_fields': 'Thông tin thêm (tùy chọn)',
+  'mark_room_clean': 'Đánh dấu đã dọn',
+  'confirm_check_in_question': 'Xác nhận nhận phòng?',
+  'confirm_check_out_question': 'Xác nhận trả phòng?',
+  'confirm_check_in_message': 'Nhận phòng cho khách {guestName} - Phòng {roomNumber}?',
+  'confirm_check_out_message': 'Trả phòng cho khách {guestName} - Phòng {roomNumber}?',
+  'guest_management': 'Quản lý khách',
+  'all_features': 'Tất cả tính năng',
+  'operations': 'Vận hành',
+  'messaging': 'Tin nhắn',
+  'declaration': 'Khai báo',
+  'list_view': 'Danh sách',
+  'calendar_view': 'Lịch',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -5087,6 +5123,24 @@ const Map<String, String> _enTranslations = {
   'sync_failed': 'Sync failed',
   'sync_in_progress': 'Syncing data...',
   'offline_data_cached': 'Showing cached data',
+
+  // UX Improvements
+  'more': 'More',
+  'quick_actions': 'Quick Actions',
+  'more_details': 'More details',
+  'optional_fields': 'Additional info (optional)',
+  'mark_room_clean': 'Mark as cleaned',
+  'confirm_check_in_question': 'Confirm check-in?',
+  'confirm_check_out_question': 'Confirm check-out?',
+  'confirm_check_in_message': 'Check in guest {guestName} - Room {roomNumber}?',
+  'confirm_check_out_message': 'Check out guest {guestName} - Room {roomNumber}?',
+  'guest_management': 'Guest Management',
+  'all_features': 'All Features',
+  'operations': 'Operations',
+  'messaging': 'Messaging',
+  'declaration': 'Declaration',
+  'list_view': 'List',
+  'calendar_view': 'Calendar',
 };
 
 // Delegate

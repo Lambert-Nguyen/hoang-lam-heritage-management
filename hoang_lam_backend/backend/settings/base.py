@@ -98,9 +98,9 @@ if os.getenv("USE_SQLITE", "False").lower() == "true":
     }
 
 # Heroku (and other PaaS) provide a single DATABASE_URL — override individual DB_* vars
-import dj_database_url
-
 if os.getenv("DATABASE_URL"):
+    import dj_database_url
+
     DATABASES["default"] = dj_database_url.config(
         conn_max_age=int(os.getenv("DB_CONN_MAX_AGE", "600")),
         conn_health_checks=True,
