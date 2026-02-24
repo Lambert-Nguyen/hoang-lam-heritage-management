@@ -13,7 +13,7 @@ platform :ios do
         "--dart-define=ENV=prod",
         "--obfuscate",
         "--split-debug-info=build/debug-info",
-        "--no-codesign" # Remove this once signing is configured in Xcode
+        # "--no-codesign" # Remove this once signing is configured in Xcode
       )
     end
   end
