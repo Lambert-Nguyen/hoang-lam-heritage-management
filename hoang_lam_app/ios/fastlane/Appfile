@@ -1,4 +1,4 @@
 # iOS app metadata for Fastlane
 app_identifier("com.hoanglam.heritage")
-# apple_id("your@email.com")   # Your Apple ID email
-# team_id("XXXXXXXXXX")        # Your Apple Developer Team ID
+apple_id("nguyenphuongduylam@gmail.com")   # Your Apple ID email
+team_id("H69KJ2PLBH")        # Your Apple Developer Team ID

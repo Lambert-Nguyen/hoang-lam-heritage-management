@@ -4,7 +4,10 @@ class AppConstants {
 
   // App Info - marketing version from pubspec.yaml, build number set by Fastlane
   static const String appVersion = '1.0.0';
-  static const String appBuildNumber = String.fromEnvironment('BUILD_NUMBER', defaultValue: '1');
+  static const String appBuildNumber = String.fromEnvironment(
+    'BUILD_NUMBER',
+    defaultValue: '1',
+  );
 
   // Hotel Info
   static const String hotelName = 'Hoàng Lâm Heritage Suites';
