@@ -29,9 +29,13 @@ class EnvConfig {
   );
 
   /// Staging configuration
+  /// Override URL at build time: --dart-define=API_BASE_URL=https://...
   static const EnvConfig staging = EnvConfig._(
     environment: Environment.staging,
-    apiBaseUrl: 'https://staging-api.hoanglam.vn/api/v1',
+    apiBaseUrl: String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'https://staging-api.hoanglam.vn/api/v1',
+    ),
     appName: 'Hoang Lam Heritage (Staging)',
     enableLogging: true,
     apiTimeout: Duration(seconds: 30),
@@ -39,9 +43,13 @@ class EnvConfig {
   );
 
   /// Production configuration
+  /// Override URL at build time: --dart-define=API_BASE_URL=https://...
   static const EnvConfig prod = EnvConfig._(
     environment: Environment.prod,
-    apiBaseUrl: 'https://api.hoanglam.vn/api/v1',
+    apiBaseUrl: String.fromEnvironment(
+      'API_BASE_URL',
+      defaultValue: 'https://api.hoanglam.vn/api/v1',
+    ),
     appName: 'Hoàng Lâm Heritage Suites',
     enableLogging: false,
     apiTimeout: Duration(seconds: 30),

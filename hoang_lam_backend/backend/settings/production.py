@@ -4,11 +4,14 @@ Production settings for Hoang Lam Heritage Management backend.
 
 from .base import *
 
+import os
+
 # Production-specific settings
 DEBUG = False
 
 # Security settings
 SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
@@ -26,14 +29,7 @@ CORS_ALLOW_ALL_ORIGINS = False
 if not ALLOWED_HOSTS or ALLOWED_HOSTS == ["*"]:
     raise ValueError("ALLOWED_HOSTS must be explicitly set in production")
 
-# Logging
-# Ensure logs directory exists
-import os
-
-LOGS_DIR = BASE_DIR / "logs"
-if not LOGS_DIR.exists():
-    LOGS_DIR.mkdir(exist_ok=True)
-
+# Logging — console-only (Heroku and other PaaS have ephemeral filesystems)
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -53,56 +49,38 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
-        "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGS_DIR / "production.log",
-            "maxBytes": 1024 * 1024 * 50,  # 50 MB
-            "backupCount": 10,
-            "formatter": "verbose",
-        },
-        "error_file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGS_DIR / "production_errors.log",
-            "maxBytes": 1024 * 1024 * 50,  # 50 MB
-            "backupCount": 10,
-            "formatter": "verbose",
-            "level": "ERROR",
-        },
-        "security_audit": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGS_DIR / "security_audit.log",
-            "maxBytes": 1024 * 1024 * 50,  # 50 MB
-            "backupCount": 10,
-            "formatter": "verbose",
+        "console_json": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
         },
     },
     "root": {
-        "handlers": ["console", "file"],
+        "handlers": ["console"],
         "level": "WARNING",
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file", "error_file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
         "django.request": {
-            "handlers": ["error_file"],
+            "handlers": ["console"],
             "level": "ERROR",
             "propagate": False,
         },
         "django.security": {
-            "handlers": ["error_file"],
+            "handlers": ["console"],
             "level": "ERROR",
             "propagate": False,
         },
         "hotel_api": {
-            "handlers": ["console", "file", "error_file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
         "hotel_api.security": {
-            "handlers": ["security_audit", "file"],
+            "handlers": ["console_json"],
             "level": "INFO",
             "propagate": False,
         },

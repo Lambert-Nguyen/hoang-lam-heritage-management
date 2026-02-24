@@ -4,11 +4,14 @@ Staging settings for Hoang Lam Heritage Management backend.
 
 from .base import *
 
+import os
+
 # Staging-specific settings
 DEBUG = False
 
 # Security settings
 SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
@@ -19,14 +22,7 @@ X_FRAME_OPTIONS = "DENY"
 CORS_ALLOW_ALL_ORIGINS = False
 # CORS_ALLOWED_ORIGINS configured in base.py from environment variable
 
-# Logging
-# Ensure logs directory exists
-import os
-
-LOGS_DIR = BASE_DIR / "logs"
-if not LOGS_DIR.exists():
-    LOGS_DIR.mkdir(exist_ok=True)
-
+# Logging — console-only (Heroku and other PaaS have ephemeral filesystems)
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -42,34 +38,19 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
-        "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGS_DIR / "staging.log",
-            "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "backupCount": 5,
-            "formatter": "verbose",
-        },
-        "error_file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGS_DIR / "staging_errors.log",
-            "maxBytes": 1024 * 1024 * 10,  # 10 MB
-            "backupCount": 5,
-            "formatter": "verbose",
-            "level": "ERROR",
-        },
     },
     "root": {
-        "handlers": ["console", "file"],
+        "handlers": ["console"],
         "level": "INFO",
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file", "error_file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },
         "hotel_api": {
-            "handlers": ["console", "file", "error_file"],
+            "handlers": ["console"],
             "level": "INFO",
             "propagate": False,
         },

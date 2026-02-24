@@ -280,7 +280,8 @@ sudo certbot --nginx -d your-domain.com
 | `DJANGO_SECRET_KEY` | **Yes** | — | Generate with `python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"` |
 | `DEBUG` | No | `True` | Set to `False` in production |
 | `ALLOWED_HOSTS` | **Yes** | `localhost` | Comma-separated hostnames, e.g. `your-domain.com,www.your-domain.com` |
-| `DJANGO_SETTINGS_MODULE` | **Yes** | — | `backend.settings.production` for prod |
+| `DJANGO_ENVIRONMENT` | **Yes** | `development` | Set to `production` or `staging`. Controls which settings module is loaded. |
+| `DATABASE_URL` | No | — | Single database URL (Heroku sets this automatically). Overrides individual `DB_*` vars. |
 | `DB_NAME` | **Yes** | `hoang_lam_heritage` | PostgreSQL database name |
 | `DB_USER` | **Yes** | `postgres` | PostgreSQL username |
 | `DB_PASSWORD` | **Yes** | — | PostgreSQL password |
@@ -290,8 +291,9 @@ sudo certbot --nginx -d your-domain.com
 | `CELERY_RESULT_BACKEND` | No | `redis://localhost:6379/0` | Redis URL for results |
 | `REDIS_URL` | No | — | Redis URL for Django caching |
 | `CORS_ALLOWED_ORIGINS` | No | `http://localhost:3000` | Allowed CORS origins |
+| `HASH_PEPPER` | **Yes (prod)** | — | Pepper for CCCD hash lookups. Generate: `python -c "import secrets; print(secrets.token_urlsafe(32))"`. Changing this invalidates existing hashes. |
 | `FIELD_ENCRYPTION_KEY` | **Yes (prod)** | — | Fernet key for encrypting guest ID/passport data. Generate: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. Leave empty to disable encryption (dev/test). |
-| `DATA_RETENTION_OVERRIDES` | No | — | Override default retention periods. Format: `model=days,model=days` (e.g., `notification=60,booking=1825`). See Section 9. |
+| `DATA_RETENTION_OVERRIDES` | No | — | Override default retention periods. Format: `model=days,model=days` (e.g., `notification=60,booking=1825`). See Section 10. |
 | `FCM_ENABLED` | No | `False` | Enable push notifications |
 | `FCM_CREDENTIALS_FILE` | No | — | Path to Firebase credentials JSON |
 | `FCM_CREDENTIALS_JSON` | No | — | Firebase credentials as JSON string |
@@ -301,13 +303,13 @@ sudo certbot --nginx -d your-domain.com
 | `EMAIL_HOST_PASSWORD` | No | — | SMTP password |
 | `DEFAULT_FROM_EMAIL` | No | `noreply@hoanglam.com` | Sender email address |
 | `ADMIN_EMAIL` | No | `admin@hoanglam.com` | Admin notification email |
-| `DB_CONN_MAX_AGE` | No | `600` | Database connection lifetime in seconds. Set to `0` to disable persistent connections. See Section 12. |
-| `SENTRY_DSN` | No | — | Sentry Data Source Name. Leave empty to disable Sentry. See Section 11. |
+| `DB_CONN_MAX_AGE` | No | `600` | Database connection lifetime in seconds. Set to `0` to disable persistent connections. See Section 13. |
+| `SENTRY_DSN` | No | — | Sentry Data Source Name. Leave empty to disable Sentry. See Section 12. |
 | `SENTRY_ENVIRONMENT` | No | `development` | Environment tag sent to Sentry. Falls back to `DJANGO_ENVIRONMENT`. |
 | `SENTRY_TRACES_SAMPLE_RATE` | No | `0` | Sentry performance tracing rate (0.0–1.0). Use `0.1` in production. |
-| `MEDIA_STORAGE_BACKEND` | No | `local` | Media storage backend. Set to `s3` for S3-compatible storage. See Section 13. |
+| `MEDIA_STORAGE_BACKEND` | No | `local` | Media storage backend. Set to `s3` for S3-compatible storage. See Section 14. |
 | `AWS_STORAGE_BUCKET_NAME` | If S3 | — | S3 bucket name (only when `MEDIA_STORAGE_BACKEND=s3`). |
-| `SMS_ENABLED` | No | `False` | Enable real SMS sending via eSMS.vn. See Section 14. |
+| `SMS_ENABLED` | No | `False` | Enable real SMS sending via eSMS.vn. See Section 15. |
 | `SMS_API_KEY` | If SMS | — | eSMS.vn API key. |
 | `SMS_SECRET_KEY` | If SMS | — | eSMS.vn secret key. |
 | `SMS_BRAND_NAME` | If SMS | — | Registered brandname for SMS sender ID. |
@@ -546,7 +548,168 @@ flutter build apk --release --dart-define=ENV=staging
 
 ---
 
-## 7. Updating (Zero-Downtime)
+## 7. Heroku Deployment (PaaS)
+
+A simpler alternative to VPS — Heroku manages the infrastructure. Suitable for small-scale deployments.
+
+### 7.1 Cost Estimate
+
+| Resource | Monthly |
+|----------|---------|
+| Eco dyno (backend) | $5 |
+| Mini Postgres (10K rows, 1GB) | $5 |
+| Custom domain SSL | Free (ACM) |
+| **Total (no Celery)** | **$10/mo** |
+
+> Eco dynos sleep after 30 min of inactivity. First request after sleep takes ~10s to wake.
+
+### 7.2 Initial Setup
+
+```bash
+# Install Heroku CLI: https://devcenter.heroku.com/articles/heroku-cli
+heroku login
+
+# Create the app
+heroku create hoang-lam-heritage
+
+# Add Postgres
+heroku addons:create heroku-postgresql:mini
+
+# Set config vars
+heroku config:set \
+  DJANGO_ENVIRONMENT=production \
+  DJANGO_SECRET_KEY="$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')" \
+  ALLOWED_HOSTS=hoang-lam-heritage.herokuapp.com \
+  CORS_ALLOWED_ORIGINS=https://hoang-lam-heritage.herokuapp.com \
+  FIELD_ENCRYPTION_KEY="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')" \
+  HASH_PEPPER="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')" \
+  FCM_ENABLED=False \
+  SMS_ENABLED=False \
+  MEDIA_STORAGE_BACKEND=s3
+
+# If using S3 for media:
+heroku config:set \
+  AWS_ACCESS_KEY_ID=your-key \
+  AWS_SECRET_ACCESS_KEY=your-secret \
+  AWS_STORAGE_BUCKET_NAME=hoang-lam-media \
+  AWS_S3_REGION_NAME=ap-southeast-1
+```
+
+### 7.3 Deploy
+
+```bash
+# Heroku expects the app root in the repo root.
+# Since Django is in hoang_lam_backend/, set the project path:
+heroku config:set PROJECT_PATH=hoang_lam_backend
+
+# Push to Heroku (from repo root)
+# Option A: If hoang_lam_backend is in a subdirectory, use subtree push:
+git subtree push --prefix hoang_lam_backend heroku main
+
+# Option B: Or set the Heroku buildpack to use subdirectory:
+heroku buildpacks:set https://github.com/timanovsky/subdir-heroku-buildpack
+heroku buildpacks:add heroku/python
+heroku config:set PROJECT_PATH=hoang_lam_backend
+git push heroku main
+```
+
+The `release` phase in the Procfile automatically runs migrations and `collectstatic`.
+
+### 7.4 First-Time Setup (After Deploy)
+
+```bash
+# Create admin user
+heroku run python manage.py createsuperuser
+
+# Seed initial data
+heroku run python manage.py seed_room_types
+heroku run python manage.py seed_rooms
+heroku run python manage.py seed_financial_categories
+heroku run python manage.py seed_nationalities
+heroku run python manage.py seed_message_templates
+
+# Encrypt existing guest data (if FIELD_ENCRYPTION_KEY is set)
+heroku run python manage.py encrypt_guest_data --dry-run
+heroku run python manage.py encrypt_guest_data
+```
+
+### 7.5 Useful Heroku Commands
+
+```bash
+# View logs (live)
+heroku logs --tail
+
+# Run management commands
+heroku run python manage.py showmigrations
+heroku run python manage.py apply_retention_policy --dry-run
+
+# Open Django admin
+heroku open /admin/
+
+# Check database info
+heroku pg:info
+
+# Database backup
+heroku pg:backups:capture
+heroku pg:backups:download
+
+# Restart dyno
+heroku restart
+
+# Open Rails-like console
+heroku run python manage.py shell
+```
+
+### 7.6 Custom Domain (Later)
+
+```bash
+# Add your domain
+heroku domains:add api.hoanglam.vn
+
+# Get the DNS target
+heroku domains
+
+# At your DNS provider, create a CNAME record:
+#   api.hoanglam.vn → <dns-target-from-heroku>.herokudns.com
+
+# Enable automatic SSL
+heroku certs:auto:enable
+```
+
+After adding a custom domain, update:
+
+- `ALLOWED_HOSTS` to include the new domain
+- `CORS_ALLOWED_ORIGINS` to include the new domain
+- Flutter `env_config.dart` default URLs (or use `--dart-define=API_BASE_URL=...`)
+
+### 7.7 Flutter App Pointing to Heroku
+
+Build the mobile app with the Heroku backend URL:
+
+```bash
+cd hoang_lam_app
+
+# Using --dart-define to override the API URL:
+flutter build apk --release \
+  --dart-define=ENV=prod \
+  --dart-define=API_BASE_URL=https://hoang-lam-heritage.herokuapp.com/api/v1
+
+# Or via Fastlane (add --dart-define to Fastfile flutter build command)
+```
+
+### 7.8 Heroku Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| Eco dyno sleeps after 30 min | First request takes ~10s | Acceptable for family hotel app |
+| Ephemeral filesystem | Uploaded files lost on restart | Use S3 for media (`MEDIA_STORAGE_BACKEND=s3`) |
+| No Celery without Redis add-on | Scheduled tasks don't run | Run manually: `heroku run python manage.py apply_retention_policy` |
+| 10K row limit on Mini Postgres | May need upgrade eventually | Monitor with `heroku pg:info` |
+| 30s request timeout | Long reports may timeout | Optimize queries, paginate results |
+
+---
+
+## 8. Updating (Zero-Downtime) — VPS
 
 ```bash
 cd ~/app
@@ -568,7 +731,7 @@ sudo systemctl restart hoanglam-celery-beat
 
 ---
 
-## 8. Troubleshooting
+## 9. Troubleshooting
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
@@ -585,7 +748,7 @@ sudo systemctl restart hoanglam-celery-beat
 
 ---
 
-## 9. Data Retention Policy
+## 10. Data Retention Policy
 
 The system automatically deletes old records based on configurable retention periods. This ensures database performance, compliance with Vietnam data protection regulations, and reduced storage costs.
 
@@ -665,7 +828,7 @@ When a booking is deleted by the retention policy, the following related records
 
 ---
 
-## 10. Sensitive Data Encryption
+## 11. Sensitive Data Encryption
 
 Guest identity data (`id_number` / CCCD and `visa_number`) is encrypted at rest using Fernet symmetric encryption (AES-128-CBC + HMAC-SHA256).
 
@@ -729,7 +892,7 @@ In production, audit entries are also written to `logs/security_audit.log` (rota
 
 ---
 
-## 11. Sentry Error Tracking
+## 12. Sentry Error Tracking
 
 Sentry provides real-time error tracking, alerting, and performance monitoring. The integration is optional and disabled by default (no DSN = disabled).
 
@@ -782,7 +945,7 @@ This ensures compliance with Vietnam data protection regulations.
 
 ---
 
-## 12. Database Connection Pooling
+## 13. Database Connection Pooling
 
 By default, Django opens and closes a PostgreSQL connection for every request. Connection pooling keeps connections alive and reuses them, reducing overhead under load.
 
@@ -834,7 +997,7 @@ DB_CONN_MAX_AGE=0   # let pgbouncer manage connection lifetime
 
 ---
 
-## 13. Media Storage
+## 14. Media Storage
 
 Uploaded files (guest ID photos, receipts, lost & found images) need to be served efficiently in production. Two backends are supported, switchable via `MEDIA_STORAGE_BACKEND` env var.
 
@@ -899,7 +1062,7 @@ AWS_S3_ENDPOINT_URL=https://sgp1.digitaloceanspaces.com
 
 ---
 
-## 14. SMS Gateway (eSMS.vn)
+## 15. SMS Gateway (eSMS.vn)
 
 Guest SMS messaging uses [eSMS.vn](https://esms.vn) as the SMS gateway. SMS is disabled by default in development (returns mock responses).
 
