@@ -3470,8 +3470,10 @@ const Map<String, String> _viTranslations = {
   'mark_room_clean': 'Đánh dấu đã dọn',
   'confirm_check_in_question': 'Xác nhận nhận phòng?',
   'confirm_check_out_question': 'Xác nhận trả phòng?',
-  'confirm_check_in_message': 'Nhận phòng cho khách {guestName} - Phòng {roomNumber}?',
-  'confirm_check_out_message': 'Trả phòng cho khách {guestName} - Phòng {roomNumber}?',
+  'confirm_check_in_message':
+      'Nhận phòng cho khách {guestName} - Phòng {roomNumber}?',
+  'confirm_check_out_message':
+      'Trả phòng cho khách {guestName} - Phòng {roomNumber}?',
   'guest_management': 'Quản lý khách',
   'all_features': 'Tất cả tính năng',
   'operations': 'Vận hành',
@@ -5133,7 +5135,8 @@ const Map<String, String> _enTranslations = {
   'confirm_check_in_question': 'Confirm check-in?',
   'confirm_check_out_question': 'Confirm check-out?',
   'confirm_check_in_message': 'Check in guest {guestName} - Room {roomNumber}?',
-  'confirm_check_out_message': 'Check out guest {guestName} - Room {roomNumber}?',
+  'confirm_check_out_message':
+      'Check out guest {guestName} - Room {roomNumber}?',
   'guest_management': 'Guest Management',
   'all_features': 'All Features',
   'operations': 'Operations',

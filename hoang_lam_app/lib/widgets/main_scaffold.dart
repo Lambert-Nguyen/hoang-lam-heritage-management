@@ -14,10 +14,7 @@ class MainScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: _RoleBasedBottomNav(),
-    );
+    return Scaffold(body: child, bottomNavigationBar: _RoleBasedBottomNav());
   }
 }
 
@@ -55,11 +52,13 @@ class _RoleBasedBottomNav extends ConsumerWidget {
         }
       },
       destinations: navItems
-          .map((item) => NavigationDestination(
-                icon: Icon(item.icon),
-                selectedIcon: Icon(item.selectedIcon),
-                label: item.label,
-              ))
+          .map(
+            (item) => NavigationDestination(
+              icon: Icon(item.icon),
+              selectedIcon: Icon(item.selectedIcon),
+              label: item.label,
+            ),
+          )
           .toList(),
     );
   }

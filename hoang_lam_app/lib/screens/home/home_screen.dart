@@ -390,7 +390,8 @@ class HomeScreen extends ConsumerWidget {
         final guestName = booking.guestDetails?.fullName ?? l10n.guest;
 
         // Show quick action button based on booking status
-        final bool canQuickCheckIn = !isCheckout &&
+        final bool canQuickCheckIn =
+            !isCheckout &&
             (booking.status == BookingStatus.confirmed ||
                 booking.status == BookingStatus.pending);
         final bool canQuickCheckOut =
@@ -497,9 +498,7 @@ class HomeScreen extends ConsumerWidget {
               : l10n.confirmCheckOutQuestion,
         ),
         content: Text(
-          (isCheckIn
-                  ? l10n.confirmCheckInMessage
-                  : l10n.confirmCheckOutMessage)
+          (isCheckIn ? l10n.confirmCheckInMessage : l10n.confirmCheckOutMessage)
               .replaceAll('{guestName}', guestName)
               .replaceAll('{roomNumber}', roomNumber),
         ),
@@ -521,13 +520,9 @@ class HomeScreen extends ConsumerWidget {
 
     try {
       if (isCheckIn) {
-        await ref
-            .read(bookingNotifierProvider.notifier)
-            .checkIn(booking.id);
+        await ref.read(bookingNotifierProvider.notifier).checkIn(booking.id);
       } else {
-        await ref
-            .read(bookingNotifierProvider.notifier)
-            .checkOut(booking.id);
+        await ref.read(bookingNotifierProvider.notifier).checkOut(booking.id);
       }
 
       // Refresh dashboard data
@@ -546,9 +541,9 @@ class HomeScreen extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     }
   }

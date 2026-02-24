@@ -50,104 +50,130 @@ class MoreMenuScreen extends ConsumerWidget {
 
     // Bookings — always available for non-housekeeping
     if (role?.canManageBookings ?? true) {
-      items.add(_MenuItem(
-        icon: Icons.calendar_month,
-        label: l10n.bookings,
-        route: AppRoutes.bookings,
-        color: AppColors.primary,
-      ));
-      items.add(_MenuItem(
-        icon: Icons.group,
-        label: l10n.groupBooking,
-        route: AppRoutes.groupBookings,
-        color: Colors.indigo,
-      ));
+      items.add(
+        _MenuItem(
+          icon: Icons.calendar_month,
+          label: l10n.bookings,
+          route: AppRoutes.bookings,
+          color: AppColors.primary,
+        ),
+      );
+      items.add(
+        _MenuItem(
+          icon: Icons.group,
+          label: l10n.groupBooking,
+          route: AppRoutes.groupBookings,
+          color: Colors.indigo,
+        ),
+      );
     }
 
     // Housekeeping — available to all roles
-    items.add(_MenuItem(
-      icon: Icons.cleaning_services,
-      label: l10n.housekeepingTasks,
-      route: AppRoutes.housekeepingTasks,
-      color: Colors.teal,
-    ));
+    items.add(
+      _MenuItem(
+        icon: Icons.cleaning_services,
+        label: l10n.housekeepingTasks,
+        route: AppRoutes.housekeepingTasks,
+        color: Colors.teal,
+      ),
+    );
 
     // Maintenance
-    items.add(_MenuItem(
-      icon: Icons.build,
-      label: l10n.maintenance,
-      route: AppRoutes.maintenance,
-      color: Colors.orange,
-    ));
+    items.add(
+      _MenuItem(
+        icon: Icons.build,
+        label: l10n.maintenance,
+        route: AppRoutes.maintenance,
+        color: Colors.orange,
+      ),
+    );
 
     // Room Management
-    items.add(_MenuItem(
-      icon: Icons.meeting_room,
-      label: l10n.roomManagement,
-      route: AppRoutes.roomManagement,
-      color: Colors.blue,
-    ));
+    items.add(
+      _MenuItem(
+        icon: Icons.meeting_room,
+        label: l10n.roomManagement,
+        route: AppRoutes.roomManagement,
+        color: Colors.blue,
+      ),
+    );
 
     // Room Inspections
-    items.add(_MenuItem(
-      icon: Icons.checklist,
-      label: l10n.roomInspection,
-      route: AppRoutes.roomInspections,
-      color: Colors.deepPurple,
-    ));
+    items.add(
+      _MenuItem(
+        icon: Icons.checklist,
+        label: l10n.roomInspection,
+        route: AppRoutes.roomInspections,
+        color: Colors.deepPurple,
+      ),
+    );
 
     // Minibar POS
-    items.add(_MenuItem(
-      icon: Icons.local_bar,
-      label: l10n.minibarManagement,
-      route: AppRoutes.minibarPos,
-      color: Colors.pink,
-    ));
+    items.add(
+      _MenuItem(
+        icon: Icons.local_bar,
+        label: l10n.minibarManagement,
+        route: AppRoutes.minibarPos,
+        color: Colors.pink,
+      ),
+    );
 
     // Lost & Found
-    items.add(_MenuItem(
-      icon: Icons.inventory_2,
-      label: l10n.lostAndFound,
-      route: AppRoutes.lostFound,
-      color: Colors.brown,
-    ));
+    items.add(
+      _MenuItem(
+        icon: Icons.inventory_2,
+        label: l10n.lostAndFound,
+        route: AppRoutes.lostFound,
+        color: Colors.brown,
+      ),
+    );
 
     // Finance — admin only
     if (role?.canViewFinance ?? false) {
-      items.add(_MenuItem(
-        icon: Icons.account_balance_wallet,
-        label: l10n.finance,
-        route: AppRoutes.finance,
-        color: Colors.green,
-      ));
-      items.add(_MenuItem(
-        icon: Icons.nightlight,
-        label: l10n.nightAudit,
-        route: AppRoutes.nightAudit,
-        color: Colors.blueGrey,
-      ));
-      items.add(_MenuItem(
-        icon: Icons.bar_chart,
-        label: l10n.reports,
-        route: AppRoutes.reports,
-        color: Colors.amber,
-      ));
-      items.add(_MenuItem(
-        icon: Icons.description,
-        label: l10n.residenceDeclaration,
-        route: AppRoutes.declaration,
-        color: Colors.lime,
-      ));
+      items.add(
+        _MenuItem(
+          icon: Icons.account_balance_wallet,
+          label: l10n.finance,
+          route: AppRoutes.finance,
+          color: Colors.green,
+        ),
+      );
+      items.add(
+        _MenuItem(
+          icon: Icons.nightlight,
+          label: l10n.nightAudit,
+          route: AppRoutes.nightAudit,
+          color: Colors.blueGrey,
+        ),
+      );
+      items.add(
+        _MenuItem(
+          icon: Icons.bar_chart,
+          label: l10n.reports,
+          route: AppRoutes.reports,
+          color: Colors.amber,
+        ),
+      );
+      items.add(
+        _MenuItem(
+          icon: Icons.description,
+          label: l10n.residenceDeclaration,
+          route: AppRoutes.declaration,
+          color: Colors.lime,
+        ),
+      );
     }
 
     // Pricing — owner only
     if (role?.canEditRates ?? false) {
-      items.add(_MenuItem(
-        icon: Icons.sell,
-        label: l10n.priceManagement,
-        route: AppRoutes.pricing,
-        color: Colors.deepOrange,
-      ));
+      items.add(
+        _MenuItem(
+          icon: Icons.sell,
+          label: l10n.priceManagement,
+          route: AppRoutes.pricing,
+          color: Colors.deepOrange,
+        ),
+      );
     }
 
     return items;
