@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../providers/room_provider.dart';
+import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_status_badge.dart';
 import '../../widgets/bookings/early_late_fee_dialog.dart';
-import 'booking_form_screen.dart';
 
 /// Booking Detail Screen - Phase 1.9.7
 ///
@@ -44,11 +45,7 @@ class BookingDetailScreen extends ConsumerWidget {
               IconButton(
                 icon: const Icon(Icons.edit),
                 onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => BookingFormScreen(booking: booking),
-                    ),
-                  );
+                  context.push(AppRoutes.newBooking, extra: booking);
                 },
               ),
               IconButton(
@@ -287,6 +284,25 @@ class BookingDetailScreen extends ConsumerWidget {
                   ),
                 ],
               ],
+            ),
+
+          // View Folio button (when checked in or checked out)
+          if (booking.status == BookingStatus.checkedIn ||
+              booking.status == BookingStatus.checkedOut)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  context.push('${AppRoutes.roomFolio}/${booking.id}');
+                },
+                icon: const Icon(Icons.receipt_long),
+                label: Text(context.l10n.viewFolio),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 48),
+                  foregroundColor: AppColors.primary,
+                  side: const BorderSide(color: AppColors.primary),
+                ),
+              ),
             ),
 
           // Booking Source and Notes
@@ -604,7 +620,20 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${context.l10n.checkOut} ${context.l10n.success}'),
+              content: Text(context.l10n.checkoutSuccessViewReceipt),
+              action: SnackBarAction(
+                label: context.l10n.viewReceipt,
+                onPressed: () {
+                  context.push(
+                    '${AppRoutes.receipt}/$bookingId',
+                    extra: {
+                      'guestName': booking.guestName,
+                      'roomNumber': booking.roomNumber,
+                    },
+                  );
+                },
+              ),
+              duration: const Duration(seconds: 5),
             ),
           );
         }

@@ -6,13 +6,13 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
+import '../../models/booking.dart';
+import '../../providers/booking_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/rooms/room_status_dialog.dart';
-import '../bookings/booking_form_screen.dart';
-import 'room_form_screen.dart';
 
 /// Screen showing detailed information about a single room
 class RoomDetailScreen extends ConsumerStatefulWidget {
@@ -66,24 +66,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           AppIconButton(
             icon: Icons.edit,
             onPressed: () async {
-              final result = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(
-                  builder: (context) => RoomFormScreen(room: _room),
-                ),
-              );
-              if (result == true && mounted) {
-                // Refresh data after edit
-                ref.invalidate(roomsProvider);
-                ref.invalidate(roomByIdProvider(_room.id));
-                final updatedRoom = await ref.read(
-                  roomByIdProvider(_room.id).future,
-                );
-                if (mounted) {
-                  setState(() {
-                    _room = updatedRoom;
-                  });
-                }
-              }
+              context.push(AppRoutes.roomEdit, extra: _room);
             },
             tooltip: context.l10n.edit,
           ),
@@ -332,13 +315,55 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   }
 
   Widget _buildCurrentBookingSection() {
-    // Placeholder - will be connected to booking provider
-    return AppCard(
-      color: AppColors.occupied.withValues(alpha: 0.05),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    final now = DateTime.now();
+    final params = BookingsByRoomParams(
+      roomId: _room.id,
+      from: now.subtract(const Duration(days: 1)),
+      to: now.add(const Duration(days: 1)),
+    );
+    final bookingsAsync = ref.watch(bookingsByRoomProvider(params));
+
+    return bookingsAsync.when(
+      data: (bookings) {
+        // Find the active (checked-in) booking
+        final activeBooking = bookings.cast<Booking?>().firstWhere(
+          (b) => b!.status == BookingStatus.checkedIn,
+          orElse: () => null,
+        );
+
+        if (activeBooking == null) {
+          return AppCard(
+            color: AppColors.occupied.withValues(alpha: 0.05),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(AppSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: AppColors.occupied.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                  ),
+                  child: const Icon(Icons.person, color: AppColors.occupied),
+                ),
+                AppSpacing.gapHorizontalMd,
+                Expanded(
+                  child: Text(
+                    context.l10n.hasGuests,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return AppCard(
+          color: AppColors.occupied.withValues(alpha: 0.05),
+          onTap: () {
+            context.push('${AppRoutes.bookings}/${activeBooking.id}');
+          },
+          child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
@@ -354,7 +379,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      context.l10n.hasGuests,
+                      activeBooking.guestName,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -369,12 +394,17 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               const Icon(Icons.chevron_right, color: AppColors.textHint),
             ],
           ),
-        ],
-      ),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 
   Widget _buildHistorySection() {
+    final params = BookingsByRoomParams(roomId: _room.id);
+    final historyAsync = ref.watch(bookingsByRoomProvider(params));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -389,7 +419,6 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop();
                 context.go(AppRoutes.bookings);
               },
               child: Text(context.l10n.viewAll),
@@ -397,13 +426,64 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           ],
         ),
         AppSpacing.gapVerticalSm,
-        // Placeholder for history items
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            child: Text(
-              context.l10n.noHistory,
-              style: const TextStyle(color: AppColors.textHint),
+        historyAsync.when(
+          data: (bookings) {
+            if (bookings.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.lg),
+                  child: Text(
+                    context.l10n.noHistory,
+                    style: const TextStyle(color: AppColors.textHint),
+                  ),
+                ),
+              );
+            }
+            // Show last 5 bookings
+            final recent = bookings.take(5).toList();
+            return Column(
+              children: recent
+                  .map(
+                    (booking) => ListTile(
+                      dense: true,
+                      leading: Icon(
+                        booking.status == BookingStatus.checkedOut
+                            ? Icons.check_circle
+                            : Icons.circle,
+                        size: 16,
+                        color: booking.status == BookingStatus.checkedIn
+                            ? AppColors.occupied
+                            : booking.status == BookingStatus.checkedOut
+                                ? AppColors.available
+                                : AppColors.textHint,
+                      ),
+                      title: Text(booking.guestName),
+                      subtitle: Text(
+                        '${booking.checkInDate.day}/${booking.checkInDate.month} - ${booking.checkOutDate.day}/${booking.checkOutDate.month}',
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        size: 18,
+                        color: AppColors.textHint,
+                      ),
+                      onTap: () {
+                        context.push(
+                          '${AppRoutes.bookings}/${booking.id}',
+                        );
+                      },
+                    ),
+                  )
+                  .toList(),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, __) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: Text(
+                context.l10n.noHistory,
+                style: const TextStyle(color: AppColors.textHint),
+              ),
             ),
           ),
         ),
@@ -433,11 +513,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                 icon: Icons.book_online,
                 onPressed: _room.status == RoomStatus.available
                     ? () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const BookingFormScreen(),
-                          ),
-                        );
+                        context.push(AppRoutes.newBooking);
                       }
                     : null,
               ),

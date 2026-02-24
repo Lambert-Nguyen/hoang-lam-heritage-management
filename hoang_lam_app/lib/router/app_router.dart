@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/auth.dart';
+import '../models/booking.dart';
 import '../providers/auth_provider.dart';
 import '../models/room.dart';
 import '../models/housekeeping.dart';
@@ -515,12 +516,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: BookingsScreen()),
             routes: [
-              // New Booking
+              // New Booking (or edit if extra contains a Booking)
               GoRoute(
                 path: 'new',
                 name: 'newBooking',
                 parentNavigatorKey: _rootNavigatorKey,
-                builder: (context, state) => const BookingFormScreen(),
+                builder: (context, state) {
+                  final booking = state.extra as Booking?;
+                  return BookingFormScreen(booking: booking);
+                },
               ),
               // Booking Detail
               GoRoute(

@@ -1824,6 +1824,18 @@ class AppLocalizations {
   String get declaration => translate('declaration');
   String get listView => translate('list_view');
   String get calendarView => translate('calendar_view');
+
+  // ===== UX ROUND 2 =====
+  String get viewFolio => translate('view_folio');
+  String get viewReceipt => translate('view_receipt');
+  String get checkoutSuccessViewReceipt =>
+      translate('checkout_success_view_receipt');
+  String get bookingManagementCategory =>
+      translate('booking_management_category');
+  String get operationsCategory => translate('operations_category');
+  String get adminReportsCategory => translate('admin_reports_category');
+  String get expectedPrefix => translate('expected_prefix');
+  String get checkingCredentials => translate('checking_credentials');
 }
 
 // Vietnamese translations
@@ -3495,6 +3507,16 @@ const Map<String, String> _viTranslations = {
   'declaration': 'Khai báo',
   'list_view': 'Danh sách',
   'calendar_view': 'Lịch',
+
+  // ===== UX ROUND 2 =====
+  'view_folio': 'Xem chi tiết phòng',
+  'view_receipt': 'Xem hóa đơn',
+  'checkout_success_view_receipt': 'Trả phòng thành công. Xem hóa đơn?',
+  'booking_management_category': 'Quản lý đặt phòng',
+  'operations_category': 'Vận hành',
+  'admin_reports_category': 'Quản trị & Báo cáo',
+  'expected_prefix': 'Dự kiến',
+  'checking_credentials': 'Đang kiểm tra đăng nhập...',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -5165,6 +5187,16 @@ const Map<String, String> _enTranslations = {
   'declaration': 'Declaration',
   'list_view': 'List',
   'calendar_view': 'Calendar',
+
+  // ===== UX ROUND 2 =====
+  'view_folio': 'View Folio',
+  'view_receipt': 'View Receipt',
+  'checkout_success_view_receipt': 'Checkout successful. View receipt?',
+  'booking_management_category': 'Booking Management',
+  'operations_category': 'Operations',
+  'admin_reports_category': 'Admin & Reports',
+  'expected_prefix': 'Expected',
+  'checking_credentials': 'Checking credentials...',
 };
 
 // Delegate

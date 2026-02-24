@@ -1,162 +1,185 @@
+# UX Design Review — Hoang Lam Heritage Management App
 
-UX Workflow Review: Non-Technical User Perspective
-Scenario: Your Mom (Owner/Manager) — First Day
-Opening the App for the First Time
-What works well:
+## Review History
 
-Splash screen → Login is clean and standard
-Biometric setup prompt after first login is smart — your mom can use Face ID next time instead of remembering passwords
-Vietnamese-first localization is perfect for the target audience
-Potential issue:
+- **Round 1** (2026-02-24): Initial review — identified 8 major UX issues
+- **Round 1 Implementation**: Fixed 6 issues (role-based nav, collapsible booking form, quick actions, calendar toggle, More menu)
+- **Round 2** (2026-02-24): Rigorous re-audit — found 13 remaining issues
 
-There's no registration flow — accounts must be created by someone else (likely via Django admin or staff management screen). This is actually correct for a hotel management app — you don't want random people signing up. But it means you will need to create her account first and hand her credentials.
-Scenario: Daily Morning Flow (Your Mom opens the app)
-Step 1: Dashboard
-The dashboard shows the right things at a glance:
+---
 
-How many rooms available/occupied
-Today's revenue
-Who's checking in today, who's checking out
-Room status grid with color coding
-This is well-designed. A non-technical user can look at this and immediately understand the state of the business.
+## Round 1 — Issues FIXED
 
-One concern: The dashboard has a LOT of information (stats row + revenue card + occupancy widget + room grid + upcoming checkouts + upcoming checkins). On a phone screen, this could feel overwhelming. Consider whether your mom would actually scroll through all of this or just want to see "who's coming today, who's leaving today."
+| # | Issue | Fix Applied |
+|---|-------|-------------|
+| 1 | Booking form too complex for walk-ins | Optional fields collapsed in `ExpansionTile` — form reduced from 11 to 7 visible fields |
+| 2 | Housekeeping/Minibar not in main nav | Added "More" menu screen with role-filtered feature grid |
+| 3 | Same nav for all roles | Bottom nav now adapts: Owner gets Finance, Staff gets Housekeeping, Housekeeping gets Tasks+Inspections |
+| 4 | Check-in/out requires too many taps | Quick check-in/out buttons added directly on dashboard booking cards |
+| 5 | Calendar view hidden | Calendar/list toggle added in bookings AppBar |
+| 6 | Features buried in navigation | "More" tab added with grid of all features |
 
-Scenario: Your Sister Finds a Walk-in Guest and Wants to Create a Booking
-The Current Flow:
-Navigate to Bookings tab (bottom nav)
-Tap "Create Booking" button
-Fill out the booking form:
-Select room
-Select or create guest
-Set check-in / check-out dates
-Enter number of guests
-Set nightly rate
-Select payment method
-Enter deposit amount
-Add special requests / notes
-Select booking source
-Submit
-Issues I See:
-1. Room Selection Before Availability Check
-The form asks to "select room" — but does your sister know which rooms are available? She'd need to either:
+### Files Changed (Round 1)
+- `hoang_lam_app/lib/widgets/main_scaffold.dart` — role-based bottom nav
+- `hoang_lam_app/lib/screens/more/more_menu_screen.dart` — NEW: feature grid
+- `hoang_lam_app/lib/screens/bookings/booking_form_screen.dart` — collapsible optional fields
+- `hoang_lam_app/lib/screens/home/home_screen.dart` — quick check-in/out buttons
+- `hoang_lam_app/lib/screens/bookings/bookings_screen.dart` — calendar toggle
+- `hoang_lam_app/lib/screens/bookings/booking_calendar_screen.dart` — list toggle back
+- `hoang_lam_app/lib/router/app_router.dart` — added /more and /booking-calendar routes
+- `hoang_lam_app/lib/l10n/app_localizations.dart` — 16 new l10n string pairs
 
-Go back to the dashboard to check the room grid first
-Or the form should show only available rooms filtered by date
-If the room picker doesn't filter by the selected dates, this is a major UX problem. Your sister would have to mentally track which rooms are free.
+---
 
-2. Guest Creation is Inline
-If the guest is new (walk-in), your sister needs to create a guest profile. The question is: does this happen inside the booking form or does she need to navigate away to the guest management screen first?
+## Round 2 — Remaining Issues
 
-Looking at the flow, there's a "select or create guest" step — if this is a bottom sheet or dialog within the booking form, that's good. If she has to leave the form, fill out guest details separately, then come back — that's disruptive.
+### Critical (Workflow Broken)
 
-3. Too Many Fields for a Walk-in
-For a walk-in guest, your sister just needs:
+#### 1. Folio Screen Has No Entry Point
+**File**: `hoang_lam_app/lib/screens/bookings/booking_detail_screen.dart`
 
-Which room
-Guest name + phone (maybe ID)
-How many nights
-Payment
-But the form asks for: booking source, special requests, internal notes, deposit amount, nightly rate, payment method. That's 9+ fields. For a walk-in at midnight, this is too much friction.
+The room folio screen exists at route `/folio/:bookingId` but **nothing links to it**. Booking detail has no "View Folio" button. A user checking out a guest cannot see itemized charges.
 
-Recommendation: Consider a "Quick Booking" mode for walk-ins that only requires essential fields, with optional fields collapsed/hidden.
+**User impact**: Your sister can't see what a guest owes before checkout. The entire folio system is invisible.
 
-Scenario: After the Booking is Created — What Next?
-The Lifecycle Gap
-Here's where I see a workflow design concern:
+**Fix**: Add "View Folio" button in booking detail screen when status is `checkedIn` or `checkedOut`.
 
+#### 2. Room Detail "Current Booking" is a Dead Tap Target
+**File**: `hoang_lam_app/lib/screens/rooms/room_detail_screen.dart`
 
-Booking Created (pending)
-    → Confirmed
-        → Check In
-            → [Guest stays, charges accumulate on Folio]
-                → Check Out
-                    → Payment settled
-Questions a non-technical user would have:
+Shows "This room has guests" + "View booking details" with a chevron arrow, but tapping does nothing. Looks like a real button, is actually a placeholder.
 
-"The guest is standing in front of me — how do I check them in?"
+**User impact**: Your mom taps an occupied room, sees "has guests", taps expecting to see who — nothing happens. Erodes trust in the app.
 
-From the booking detail screen, there should be a prominent "Check In" button
-From the dashboard's "Upcoming Check-ins" list, there should be a quick action
-This seems to exist — good
-"The guest wants to buy a drink from the minibar — how do I charge them?"
+**Fix**: Connect tap handler to navigate to the booking detail for the room's active booking.
 
-Navigate to... Folio? Minibar POS? Where?
-The Folio screen exists at room_folio_screen.dart and the Minibar POS at minibar_pos_screen.dart
-But neither is accessible from the bottom nav. The user needs to find these through room details or booking details
-This could be confusing for a non-technical user
-"The guest is leaving — how do I check them out?"
+#### 3. Receipt Not Connected to Checkout Flow
+**File**: `hoang_lam_app/lib/screens/bookings/booking_detail_screen.dart`
 
-From booking detail → "Check Out" button
-But does it warn about unpaid charges on the folio?
-Does it generate a receipt automatically?
-"How do I see the receipt / bill?"
+`receipt_preview_screen.dart` exists at `/receipt/:bookingId` but the checkout flow never offers "Print Receipt". After checkout, the guest leaves with no bill.
 
-There's a receipt_preview_screen.dart — but is it accessible from the checkout flow?
-Major UX Concerns
-1. Navigation Depth Problem
-The 4-tab bottom nav (Home, Bookings, Finance, Settings) covers the basics, but many critical daily features are buried deep:
+**Fix**: After successful checkout, show a dialog or snackbar action: "View Receipt" → navigate to receipt preview.
 
-Feature	How to Access	Depth
-Room status	Home → Room grid	1 tap
-Create booking	Bookings → + button	2 taps
-Check in guest	Bookings → Find booking → Detail → Check In	3-4 taps
-Add minibar charge	??? → Room → Folio → Add	3-4+ taps
-Housekeeping tasks	Not in bottom nav at all	Unknown
-Lost & Found	Not in bottom nav	Unknown
-Night Audit	Not in bottom nav	Unknown
-Housekeeping, Minibar POS, and Room Inspections have no direct bottom-nav entry point. For a housekeeping staff member, they'd need to navigate through some menu to find their tasks every time.
+### Major (Significant UX Problems)
 
-2. Role-Based Navigation Missing
-Your mom (owner) and your sister (staff) see the same bottom navigation:
+#### 4. Room Dropdown Not Filtered by Availability
+**File**: `hoang_lam_app/lib/screens/bookings/booking_form_screen.dart` (line 153-158)
 
-Home, Bookings, Finance, Settings
-But housekeeping staff also sees this same nav — yet they can't manage bookings and shouldn't need the Finance tab. The nav doesn't adapt to the user's role, which means:
+The room selection dropdown shows ALL rooms regardless of existing bookings. There's a TODO comment acknowledging this. Overlap check only warns AFTER the user has filled the entire form.
 
-Housekeeping staff sees Finance tab but can't use it (confusing)
-Staff sees Finance tab but can't access it (frustrating)
-Recommendation: The bottom nav or home screen should adapt based on role. A housekeeping user should see: Home, Tasks, Inspections, Settings.
+**User impact**: Your sister picks Room 101, fills out the whole form, then gets told it's occupied. Wasted effort.
 
-3. No Quick Actions / FAB Menu
-The most common daily actions should be 1-tap away:
+**Fix**: Filter the room dropdown by selected dates using `availableRoomsProvider` or `bookingsByRoomProvider`. Show occupied rooms as disabled/greyed with "(Occupied)" label.
 
-Quick check-in
-Quick booking
-Quick charge
-Mark room as cleaned
-Currently, each requires navigating through multiple screens.
+#### 5. Navigation Inconsistency (MaterialPageRoute vs GoRouter)
+**Files**: Multiple screens
 
-4. The Booking Calendar vs. Booking List
-There are two booking views — list and calendar. But the calendar view (booking_calendar_screen.dart) is a separate route, not a toggle on the bookings tab. This means your mom might not even discover it exists.
+These screens use `Navigator.push(MaterialPageRoute(...))` instead of GoRouter:
+- `bookings_screen.dart` → booking detail (`_navigateToDetail`)
+- `bookings_screen.dart` → new booking (`_navigateToCreateBooking`)
+- `booking_detail_screen.dart` → edit booking
+- `room_detail_screen.dart` → edit room, book room
+- `task_list_screen.dart` → task detail, task form
 
-5. Finance Tab for Daily Revenue
-Your mom probably just wants to see "how much money did we make today." The Finance tab seems to show a list of entries rather than a summary-first view. The dashboard has a revenue card, but if she taps it, does it go to a detailed breakdown?
+**Impact**: Deep links don't work. Browser back button behavior is inconsistent. State restoration after app kill won't navigate correctly.
 
-What's Well Designed
-Room status color coding (green=available, red=occupied, yellow=cleaning) — visual and intuitive
-Biometric login — perfect for daily use, no password remembering
-Vietnamese-first — correct for the target audience
-Booking sources (Walk-in, OTA, Phone) — reflects real hotel operations
-Payment methods (MoMo, VNPay, Bank Transfer, Cash) — covers Vietnamese payment ecosystem perfectly
-Session auto-logout — good security for a shared device
-Dashboard as home — showing occupancy and today's activity first is the right choice
-Guest management — storing guest ID details, history — professional
-Folio system — tracking itemized charges per booking is industry-standard
-Summary of Recommendations
-Priority	Issue	Recommendation
-High	Booking form too complex for walk-ins	Add "Quick Booking" mode with minimal fields
-High	Housekeeping/Minibar not in main nav	Add a "More" tab or role-based nav
-High	Room selection doesn't clearly show availability	Filter rooms by date in booking form
-Medium	Check-in/out requires too many taps	Add quick actions on dashboard cards
-Medium	Same nav for all roles	Adapt bottom nav based on user role
-Medium	Calendar view is hidden	Add list/calendar toggle on Bookings tab
-Low	Dashboard info-dense	Consider collapsible sections or priority ordering
-Low	No onboarding	Add first-time usage tips for non-tech users
-The "Mom Test" Verdict
-Your mom could use this app daily for checking room status and seeing revenue. The dashboard gives her what she needs at a glance.
+**Fix**: Replace all `Navigator.push(MaterialPageRoute(...))` with `context.push(AppRoutes.xxx)`.
 
-But if she needs to do something (create a booking, check someone in, handle a minibar charge), she'd likely get lost navigating through multiple screens. The app feels designed like a comprehensive admin panel rather than a daily operations tool.
+#### 6. Finance Month Label Format
+**File**: `hoang_lam_app/lib/screens/finance/finance_screen.dart`
 
-The biggest gap: there's no task-oriented shortcut layer. A non-technical user thinks in terms of "a guest just arrived" or "someone wants to buy water" — not "navigate to bookings, find the booking, open details, tap check-in."
+Displays "Month 2, 2026" instead of "February 2026" or "Tháng 2, 2026".
 
-Want me to design and implement any of these improvements?
+**Fix**: Use `DateFormat('MMMM yyyy', locale)` instead of hardcoded "Month X" format.
+
+### Minor (Polish)
+
+#### 7. Settings Has Non-Functional Stubs
+**File**: `hoang_lam_app/lib/screens/settings/settings_screen.dart`
+
+"Sync data" and "Backup" tiles look functional but just show snackbars. A non-technical user will believe they backed up their data.
+
+**Fix**: Add "(Coming soon)" badge or disable the tiles.
+
+#### 8. More Menu Has No Category Grouping
+**File**: `hoang_lam_app/lib/screens/more/more_menu_screen.dart`
+
+All 13+ feature tiles are in a flat grid with no headers. Hard to scan when looking for a specific feature.
+
+**Fix**: Add section headers: "Booking Management", "Operations", "Admin & Reports".
+
+#### 9. Dashboard Times Show Defaults Without Label
+**File**: `hoang_lam_app/lib/screens/home/home_screen.dart`
+
+Upcoming check-in cards show "14:00" and checkout shows "12:00" as placeholder times with no indication these are expected (not actual).
+
+**Fix**: Prefix with "Expected:" or use lighter color/italic for placeholder times.
+
+#### 10. Room Detail History is Placeholder Only
+**File**: `hoang_lam_app/lib/screens/rooms/room_detail_screen.dart`
+
+History section always says "No history" — never loads real booking data.
+
+**Fix**: Query `bookingsByRoomProvider` and display recent bookings.
+
+#### 11. Guest Quick Search Overlay Doesn't Auto-Close
+**File**: `hoang_lam_app/lib/widgets/guests/guest_quick_search.dart`
+
+After creating a new guest and returning, the autocomplete overlay stays open. User must tap outside manually.
+
+**Fix**: Call `_hideOverlay()` after guest form returns with result.
+
+#### 12. Splash Screen No Feedback After 2 Seconds
+**File**: `hoang_lam_app/lib/screens/auth/splash_screen.dart`
+
+If auth check takes >2s on slow network, user sees logo + spinner with no status text. Looks frozen.
+
+**Fix**: After 2s delay, show "Checking credentials..." text below spinner.
+
+#### 13. Biometric Failure Blocks Manual Login
+**File**: `hoang_lam_app/lib/screens/auth/login_screen.dart`
+
+When biometric auto-prompts on load and fails, user can't immediately switch to manual login.
+
+**Fix**: After biometric failure, ensure form fields are enabled and focused for immediate password entry.
+
+---
+
+## Priority Matrix
+
+| Priority | # | Issue | Effort |
+|----------|---|-------|--------|
+| **Critical** | 1 | Folio has no entry point | Small — add button in booking detail |
+| **Critical** | 2 | Room detail current booking dead tap | Small — connect to booking route |
+| **Critical** | 3 | Receipt not in checkout flow | Small — add post-checkout action |
+| **Major** | 4 | Room dropdown not filtered | Medium — wire up availability provider |
+| **Major** | 5 | MaterialPageRoute → GoRouter migration | Medium — ~6 screens to update |
+| **Major** | 6 | Finance month label format | Small — one DateFormat change |
+| **Minor** | 7 | Settings stubs misleading | Small — add badges |
+| **Minor** | 8 | More menu no categories | Small — add section headers |
+| **Minor** | 9 | Dashboard placeholder times | Small — add "Expected:" prefix |
+| **Minor** | 10 | Room history placeholder | Medium — connect provider |
+| **Minor** | 11 | Guest search overlay stuck | Small — add hideOverlay call |
+| **Minor** | 12 | Splash no feedback text | Small — add delayed text |
+| **Minor** | 13 | Biometric blocks manual login | Small — ensure form enabled |
+
+---
+
+## What's Working Well
+
+These design decisions are correct and should be preserved:
+
+- **Vietnamese-first localization** — correct for target audience
+- **Biometric login** — reduces friction for daily use
+- **Dashboard as home** — occupancy + today's activity is the right first screen
+- **Room status color coding** — intuitive at a glance
+- **Booking sources** (Walk-in, OTA, Phone) — reflects real hotel operations
+- **Payment methods** (MoMo, VNPay, Bank Transfer, Cash) — Vietnamese payment ecosystem
+- **Session auto-logout** — good security for shared devices
+- **Folio system** — industry-standard charge tracking (just needs to be reachable)
+- **Role-based bottom nav** — each role sees relevant tabs
+- **Quick check-in/out on dashboard** — reduces workflow from 4 taps to 1
+- **Collapsible booking form** — walk-in bookings are fast
+- **More menu** — all features accessible in 2 taps max
+- **Finance summary-first** — monthly totals prominent with drill-down to transactions
+- **Guest quick search** — inline search with 300ms debounce, no page navigation needed
