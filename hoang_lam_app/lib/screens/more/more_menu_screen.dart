@@ -9,7 +9,7 @@ import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../router/app_router.dart';
 
-/// More menu screen — grid of all features, role-filtered
+/// More menu screen — grid of all features, role-filtered, with category sections
 class MoreMenuScreen extends ConsumerWidget {
   const MoreMenuScreen({super.key});
 
@@ -19,165 +19,179 @@ class MoreMenuScreen extends ConsumerWidget {
     final currentUser = ref.watch(currentUserProvider);
     final role = currentUser?.role;
 
-    final menuItems = _buildMenuItems(l10n, role);
+    final sections = _buildMenuSections(l10n, role);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.allFeatures)),
-      body: GridView.builder(
+      body: ListView.builder(
         padding: AppSpacing.paddingScreen,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          mainAxisSpacing: AppSpacing.md,
-          crossAxisSpacing: AppSpacing.md,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: menuItems.length,
+        itemCount: sections.length,
         itemBuilder: (context, index) {
-          final item = menuItems[index];
-          return _MenuTile(
-            icon: item.icon,
-            label: item.label,
-            color: item.color,
-            onTap: () => context.push(item.route),
+          final section = sections[index];
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (index > 0) const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                child: Text(
+                  section.title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              GridView.count(
+                crossAxisCount: 3,
+                mainAxisSpacing: AppSpacing.md,
+                crossAxisSpacing: AppSpacing.md,
+                childAspectRatio: 1.0,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: section.items
+                    .map(
+                      (item) => _MenuTile(
+                        icon: item.icon,
+                        label: item.label,
+                        color: item.color,
+                        onTap: () => context.push(item.route),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
           );
         },
       ),
     );
   }
 
-  List<_MenuItem> _buildMenuItems(AppLocalizations l10n, UserRole? role) {
-    final items = <_MenuItem>[];
+  List<_MenuSection> _buildMenuSections(AppLocalizations l10n, UserRole? role) {
+    final sections = <_MenuSection>[];
 
-    // Bookings — always available for non-housekeeping
+    // Booking Management section
     if (role?.canManageBookings ?? true) {
-      items.add(
-        _MenuItem(
-          icon: Icons.calendar_month,
-          label: l10n.bookings,
-          route: AppRoutes.bookings,
-          color: AppColors.primary,
-        ),
-      );
-      items.add(
-        _MenuItem(
-          icon: Icons.group,
-          label: l10n.groupBooking,
-          route: AppRoutes.groupBookings,
-          color: Colors.indigo,
+      sections.add(
+        _MenuSection(
+          title: l10n.bookingManagementCategory,
+          items: [
+            _MenuItem(
+              icon: Icons.calendar_month,
+              label: l10n.bookings,
+              route: AppRoutes.bookings,
+              color: AppColors.primary,
+            ),
+            _MenuItem(
+              icon: Icons.group,
+              label: l10n.groupBooking,
+              route: AppRoutes.groupBookings,
+              color: Colors.indigo,
+            ),
+          ],
         ),
       );
     }
 
-    // Housekeeping — available to all roles
-    items.add(
+    // Operations section
+    final operationsItems = <_MenuItem>[
       _MenuItem(
         icon: Icons.cleaning_services,
         label: l10n.housekeepingTasks,
         route: AppRoutes.housekeepingTasks,
         color: Colors.teal,
       ),
-    );
-
-    // Maintenance
-    items.add(
       _MenuItem(
         icon: Icons.build,
         label: l10n.maintenance,
         route: AppRoutes.maintenance,
         color: Colors.orange,
       ),
-    );
-
-    // Room Management
-    items.add(
       _MenuItem(
         icon: Icons.meeting_room,
         label: l10n.roomManagement,
         route: AppRoutes.roomManagement,
         color: Colors.blue,
       ),
-    );
-
-    // Room Inspections
-    items.add(
       _MenuItem(
         icon: Icons.checklist,
         label: l10n.roomInspection,
         route: AppRoutes.roomInspections,
         color: Colors.deepPurple,
       ),
-    );
-
-    // Minibar POS
-    items.add(
       _MenuItem(
         icon: Icons.local_bar,
         label: l10n.minibarManagement,
         route: AppRoutes.minibarPos,
         color: Colors.pink,
       ),
-    );
-
-    // Lost & Found
-    items.add(
       _MenuItem(
         icon: Icons.inventory_2,
         label: l10n.lostAndFound,
         route: AppRoutes.lostFound,
         color: Colors.brown,
       ),
+    ];
+    sections.add(
+      _MenuSection(title: l10n.operationsCategory, items: operationsItems),
     );
 
-    // Finance — admin only
+    // Admin & Reports section
     if (role?.canViewFinance ?? false) {
-      items.add(
+      final adminItems = <_MenuItem>[
         _MenuItem(
           icon: Icons.account_balance_wallet,
           label: l10n.finance,
           route: AppRoutes.finance,
           color: Colors.green,
         ),
-      );
-      items.add(
         _MenuItem(
           icon: Icons.nightlight,
           label: l10n.nightAudit,
           route: AppRoutes.nightAudit,
           color: Colors.blueGrey,
         ),
-      );
-      items.add(
         _MenuItem(
           icon: Icons.bar_chart,
           label: l10n.reports,
           route: AppRoutes.reports,
           color: Colors.amber,
         ),
-      );
-      items.add(
         _MenuItem(
           icon: Icons.description,
           label: l10n.residenceDeclaration,
           route: AppRoutes.declaration,
           color: Colors.lime,
         ),
+      ];
+
+      // Pricing — owner only
+      if (role?.canEditRates ?? false) {
+        adminItems.add(
+          _MenuItem(
+            icon: Icons.sell,
+            label: l10n.priceManagement,
+            route: AppRoutes.pricing,
+            color: Colors.deepOrange,
+          ),
+        );
+      }
+
+      sections.add(
+        _MenuSection(title: l10n.adminReportsCategory, items: adminItems),
       );
     }
 
-    // Pricing — owner only
-    if (role?.canEditRates ?? false) {
-      items.add(
-        _MenuItem(
-          icon: Icons.sell,
-          label: l10n.priceManagement,
-          route: AppRoutes.pricing,
-          color: Colors.deepOrange,
-        ),
-      );
-    }
-
-    return items;
+    return sections;
   }
+}
+
+class _MenuSection {
+  final String title;
+  final List<_MenuItem> items;
+
+  const _MenuSection({required this.title, required this.items});
 }
 
 class _MenuItem {

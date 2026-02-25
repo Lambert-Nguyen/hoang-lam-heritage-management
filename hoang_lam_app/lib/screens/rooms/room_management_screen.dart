@@ -5,7 +5,8 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
-import 'room_form_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_router.dart';
 
 /// Room Management Screen
 ///
@@ -469,12 +470,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
   }
 
   Future<void> _navigateToAddRoom() async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (context) => const RoomFormScreen(),
-        fullscreenDialog: true,
-      ),
-    );
+    final result = await context.push<bool>(AppRoutes.roomNew);
 
     if (result == true) {
       ref.invalidate(allRoomsProvider);
@@ -482,9 +478,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
   }
 
   Future<void> _navigateToEditRoom(Room room) async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(builder: (context) => RoomFormScreen(room: room)),
-    );
+    final result = await context.push<bool>(AppRoutes.roomEdit, extra: room);
 
     if (result == true) {
       ref.invalidate(allRoomsProvider);

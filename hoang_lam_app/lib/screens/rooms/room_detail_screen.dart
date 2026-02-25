@@ -454,8 +454,8 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                         color: booking.status == BookingStatus.checkedIn
                             ? AppColors.occupied
                             : booking.status == BookingStatus.checkedOut
-                                ? AppColors.available
-                                : AppColors.textHint,
+                            ? AppColors.available
+                            : AppColors.textHint,
                       ),
                       title: Text(booking.guestName),
                       subtitle: Text(
@@ -467,9 +467,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                         color: AppColors.textHint,
                       ),
                       onTap: () {
-                        context.push(
-                          '${AppRoutes.bookings}/${booking.id}',
-                        );
+                        context.push('${AppRoutes.bookings}/${booking.id}');
                       },
                     ),
                   )

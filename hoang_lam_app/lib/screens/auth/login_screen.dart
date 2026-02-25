@@ -26,6 +26,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _usernameFocusNode = FocusNode();
   bool _obscurePassword = true;
   String? _errorMessage;
   bool _biometricLoading = false;
@@ -43,6 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _usernameFocusNode.dispose();
     super.dispose();
   }
 
@@ -93,6 +95,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } finally {
       if (mounted) {
         setState(() => _biometricLoading = false);
+        // Focus username field so user can login manually
+        _usernameFocusNode.requestFocus();
       }
     }
   }
@@ -238,6 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 // Username field
                 AppTextField(
                   controller: _usernameController,
+                  focusNode: _usernameFocusNode,
                   label: context.l10n.usernameLabel,
                   hint: context.l10n.usernameHint,
                   prefixIcon: Icons.person_outline,

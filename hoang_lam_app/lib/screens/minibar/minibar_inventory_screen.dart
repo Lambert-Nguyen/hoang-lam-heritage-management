@@ -10,7 +10,8 @@ import '../../providers/minibar_provider.dart';
 import '../../widgets/common/offline_banner.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/minibar/minibar_item_list_tile.dart';
-import 'minibar_item_form_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_router.dart';
 
 /// Inventory management screen for minibar items
 class MinibarInventoryScreen extends ConsumerStatefulWidget {
@@ -372,19 +373,11 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
   }
 
   void _addNewItem() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const MinibarItemFormScreen()),
-    );
+    context.push(AppRoutes.minibarItemForm);
   }
 
   void _editItem(MinibarItem item) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MinibarItemFormScreen(item: item),
-      ),
-    );
+    context.push(AppRoutes.minibarItemForm, extra: item);
   }
 
   Future<void> _toggleItemActive(MinibarItem item) async {

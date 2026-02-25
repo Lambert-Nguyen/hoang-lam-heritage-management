@@ -8,8 +8,8 @@ import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/guests/guest_card.dart';
-import 'guest_detail_screen.dart';
-import 'guest_form_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_router.dart';
 
 /// Main screen for displaying and managing guests
 class GuestListScreen extends ConsumerStatefulWidget {
@@ -285,15 +285,11 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   }
 
   void _navigateToDetail(BuildContext context, Guest guest) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => GuestDetailScreen(guest: guest)));
+    context.push(AppRoutes.guestDetail, extra: guest);
   }
 
   void _navigateToForm(BuildContext context, [Guest? guest]) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (_) => GuestFormScreen(guest: guest)));
+    context.push(AppRoutes.guestForm, extra: guest);
   }
 
   void _showGuestActions(BuildContext context, Guest guest) {

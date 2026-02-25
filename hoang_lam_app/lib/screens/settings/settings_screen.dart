@@ -227,10 +227,11 @@ class SettingsScreen extends ConsumerWidget {
             icon: Icons.sync,
             title: l10n.syncData,
             subtitle: l10n.lastUpdateJustNow,
+            trailing: _buildComingSoonBadge(l10n),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(l10n.syncData),
+                  content: Text(l10n.featureComingSoon),
                   duration: const Duration(seconds: 2),
                 ),
               );
@@ -240,10 +241,11 @@ class SettingsScreen extends ConsumerWidget {
             context,
             icon: Icons.backup,
             title: l10n.backup,
+            trailing: _buildComingSoonBadge(l10n),
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(l10n.backupInDevelopment),
+                  content: Text(l10n.featureComingSoon),
                   duration: const Duration(seconds: 2),
                 ),
               );
@@ -391,12 +393,31 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildComingSoonBadge(AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.orange.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        l10n.featureComingSoon,
+        style: const TextStyle(
+          fontSize: 11,
+          color: Colors.orange,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
   Widget _buildSettingsTile(
     BuildContext context, {
     required IconData icon,
     required String title,
     String? subtitle,
     Color? textColor,
+    Widget? trailing,
     VoidCallback? onTap,
   }) {
     return ListTile(
@@ -405,7 +426,9 @@ class SettingsScreen extends ConsumerWidget {
       subtitle: subtitle != null
           ? Text(subtitle, style: const TextStyle(fontSize: 14))
           : null,
-      trailing: const Icon(Icons.chevron_right, color: AppColors.textHint),
+      trailing:
+          trailing ??
+          const Icon(Icons.chevron_right, color: AppColors.textHint),
       onTap: onTap,
     );
   }

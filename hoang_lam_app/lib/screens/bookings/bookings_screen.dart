@@ -9,8 +9,6 @@ import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_card.dart';
-import 'booking_form_screen.dart';
-import 'booking_detail_screen.dart';
 import '../../l10n/app_localizations.dart';
 
 class BookingsScreen extends ConsumerStatefulWidget {
@@ -412,19 +410,11 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   }
 
   void _navigateToDetail(Booking booking) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => BookingDetailScreen(bookingId: booking.id),
-      ),
-    );
+    context.push('${AppRoutes.bookings}/${booking.id}');
   }
 
   void _navigateToCreateBooking() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const BookingFormScreen()),
-    );
+    context.push(AppRoutes.newBooking);
   }
 
   DateTime _getMonthStart() {

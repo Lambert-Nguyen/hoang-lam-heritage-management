@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/auth.dart';
 import '../models/booking.dart';
+import '../models/finance.dart';
+import '../models/guest.dart';
+import '../models/minibar.dart';
 import '../providers/auth_provider.dart';
 import '../models/room.dart';
 import '../models/housekeeping.dart';
@@ -21,6 +24,9 @@ import '../screens/bookings/booking_detail_screen.dart';
 import '../screens/finance/finance_screen.dart';
 import '../screens/finance/receipt_preview_screen.dart';
 import '../screens/minibar/minibar_screens.dart';
+import '../screens/guests/guest_detail_screen.dart';
+import '../screens/guests/guest_form_screen.dart';
+import '../screens/finance/finance_form_screen.dart';
 import '../screens/folio/folio_screens.dart';
 import '../screens/night_audit/night_audit_screen.dart';
 import '../screens/declaration/declaration_export_screen.dart';
@@ -109,6 +115,13 @@ class AppRoutes {
   // Settings sub-routes
   static const String financialCategories = '/financial-categories';
   static const String staffManagement = '/staff-management';
+  // Guest routes
+  static const String guestDetail = '/guests/detail';
+  static const String guestForm = '/guests/form';
+  // Finance form route
+  static const String financeForm = '/finance/form';
+  // Minibar item form route
+  static const String minibarItemForm = '/minibar/inventory/form';
 }
 
 /// Navigation keys for bottom nav
@@ -487,6 +500,53 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.financialCategories,
         name: 'financialCategories',
         builder: (context, state) => const FinancialCategoryScreen(),
+      ),
+
+      // Guest routes (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.guestDetail,
+        name: 'guestDetail',
+        builder: (context, state) {
+          final guest = state.extra;
+          if (guest == null || guest is! Guest) {
+            return Scaffold(
+              appBar: AppBar(title: Text(context.l10n.error)),
+              body: Center(child: Text(context.l10n.guestNotFound)),
+            );
+          }
+          return GuestDetailScreen(guest: guest);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.guestForm,
+        name: 'guestForm',
+        builder: (context, state) {
+          final guest = state.extra as Guest?;
+          return GuestFormScreen(guest: guest);
+        },
+      ),
+
+      // Finance Form (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.financeForm,
+        name: 'financeForm',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          final entryType =
+              extra?['entryType'] as EntryType? ?? EntryType.income;
+          final entry = extra?['entry'] as FinancialEntry?;
+          return FinanceFormScreen(entryType: entryType, entry: entry);
+        },
+      ),
+
+      // Minibar Item Form (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.minibarItemForm,
+        name: 'minibarItemForm',
+        builder: (context, state) {
+          final item = state.extra as MinibarItem?;
+          return MinibarItemFormScreen(item: item);
+        },
       ),
 
       // Staff / Account management

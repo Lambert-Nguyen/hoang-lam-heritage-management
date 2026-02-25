@@ -13,8 +13,8 @@ import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/housekeeping/maintenance_card.dart';
 import '../../widgets/housekeeping/maintenance_filter_sheet.dart';
-import 'maintenance_detail_screen.dart';
-import 'maintenance_form_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_router.dart';
 
 /// Screen displaying a list of maintenance requests
 class MaintenanceListScreen extends ConsumerStatefulWidget {
@@ -339,21 +339,14 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
   }
 
   void _navigateToDetail(BuildContext context, MaintenanceRequest request) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MaintenanceDetailScreen(request: request),
-      ),
+    context.push(
+      '${AppRoutes.maintenanceDetail}/${request.id}',
+      extra: request,
     );
   }
 
   void _navigateToForm(BuildContext context, [MaintenanceRequest? request]) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MaintenanceFormScreen(request: request),
-      ),
-    );
+    context.push(AppRoutes.maintenanceNew, extra: request);
   }
 
   Future<void> _assignRequest(MaintenanceRequest request) async {

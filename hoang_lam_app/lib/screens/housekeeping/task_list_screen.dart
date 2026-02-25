@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
 import '../../providers/housekeeping_provider.dart';
+import '../../router/app_router.dart';
 import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/housekeeping/task_card.dart';
 import '../../widgets/housekeeping/task_filter_sheet.dart';
-import 'task_detail_screen.dart';
-import 'task_form_screen.dart';
 
 /// Screen showing list of housekeeping tasks
 class TaskListScreen extends ConsumerStatefulWidget {
@@ -267,16 +267,10 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   }
 
   void _viewTask(HousekeepingTask task) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => TaskDetailScreen(task: task)),
-    );
+    context.push('${AppRoutes.housekeepingTaskDetail}/${task.id}', extra: task);
   }
 
   void _createTask() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const TaskFormScreen()),
-    );
+    context.push(AppRoutes.housekeepingNewTask);
   }
 }

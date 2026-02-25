@@ -11,7 +11,8 @@ import '../../providers/guest_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/guests/guest_history_widget.dart';
-import 'guest_form_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_router.dart';
 
 /// Screen showing detailed information about a single guest
 class GuestDetailScreen extends ConsumerStatefulWidget {
@@ -485,8 +486,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   }
 
   Future<void> _navigateToEdit() async {
-    final result = await Navigator.of(context).push<Guest>(
-      MaterialPageRoute(builder: (_) => GuestFormScreen(guest: _guest)),
+    final result = await context.push<Guest>(
+      AppRoutes.guestForm,
+      extra: _guest,
     );
     if (result != null && mounted) {
       setState(() {

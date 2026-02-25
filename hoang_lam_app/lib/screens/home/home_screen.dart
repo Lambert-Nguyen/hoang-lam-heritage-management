@@ -379,12 +379,12 @@ class HomeScreen extends ConsumerWidget {
                   ? TimeOfDay.fromDateTime(
                       booking.actualCheckOut!,
                     ).format(context)
-                  : '12:00')
+                  : '${l10n.expectedPrefix}: 12:00')
             : (booking.actualCheckIn != null
                   ? TimeOfDay.fromDateTime(
                       booking.actualCheckIn!,
                     ).format(context)
-                  : '14:00');
+                  : '${l10n.expectedPrefix}: 14:00');
 
         final roomNumber = booking.roomNumber ?? booking.room.toString();
         final guestName = booking.guestDetails?.fullName ?? l10n.guest;

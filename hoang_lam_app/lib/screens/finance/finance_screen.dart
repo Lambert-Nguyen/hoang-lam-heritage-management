@@ -13,7 +13,6 @@ import '../../widgets/common/app_card.dart';
 import '../../widgets/common/error_display.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/finance/finance_chart.dart';
-import 'finance_form_screen.dart';
 
 /// Finance screen with transactions and reports
 /// Phase 2.3 - Financial Management Frontend
@@ -124,11 +123,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   }
 
   Future<void> _navigateToForm(EntryType type) async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (context) => FinanceFormScreen(entryType: type),
-        fullscreenDialog: true,
-      ),
+    final result = await context.push<bool>(
+      AppRoutes.financeForm,
+      extra: {'entryType': type},
     );
     if (result == true) {
       _refreshData();
@@ -266,8 +263,8 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   }
 
   String _getMonthYearText(int month, int year) {
-    final l10n = context.l10n;
-    return '${l10n.month} $month, $year';
+    final locale = Localizations.localeOf(context).toString();
+    return DateFormat.yMMMM(locale).format(DateTime(year, month));
   }
 
   Widget _buildSummaryItem({
@@ -525,12 +522,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   }
 
   Future<void> _editEntry(FinancialEntry entry) async {
-    final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (context) =>
-            FinanceFormScreen(entryType: entry.entryType, entry: entry),
-        fullscreenDialog: true,
-      ),
+    final result = await context.push<bool>(
+      AppRoutes.financeForm,
+      extra: {'entryType': entry.entryType, 'entry': entry},
     );
     if (result == true) {
       _refreshData();

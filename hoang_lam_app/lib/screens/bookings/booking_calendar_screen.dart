@@ -8,7 +8,6 @@ import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_card.dart';
-import 'booking_detail_screen.dart';
 import '../../core/theme/app_colors.dart';
 
 /// Booking Calendar Screen - Phase 1.9.4
@@ -461,11 +460,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
   }
 
   void _navigateToBookingDetail(Booking booking) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => BookingDetailScreen(bookingId: booking.id),
-      ),
-    );
+    context.push('${AppRoutes.bookings}/${booking.id}');
   }
 
   void _showFilterDialog() {

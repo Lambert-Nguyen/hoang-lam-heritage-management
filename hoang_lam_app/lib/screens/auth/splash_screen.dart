@@ -21,12 +21,19 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  bool _showStatusText = false;
 
   @override
   void initState() {
     super.initState();
     _setupAnimations();
     _checkAuthStatus();
+    // Show feedback text after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() => _showStatusText = true);
+      }
+    });
   }
 
   void _setupAnimations() {
@@ -176,6 +183,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         ),
                       ),
                     ),
+
+                    // Feedback text after delay
+                    if (_showStatusText) ...[
+                      const SizedBox(height: 16),
+                      AnimatedOpacity(
+                        opacity: _showStatusText ? 1.0 : 0.0,
+                        duration: const Duration(milliseconds: 400),
+                        child: Text(
+                          context.l10n.checkingCredentials,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.white.withValues(alpha: 0.7),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

@@ -4,7 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
 import '../../providers/guest_provider.dart';
-import '../../screens/guests/guest_form_screen.dart';
+import 'package:go_router/go_router.dart';
+import '../../router/app_router.dart';
 
 /// Guest Quick Search Widget
 ///
@@ -250,12 +251,7 @@ class _GuestQuickSearchState extends ConsumerState<GuestQuickSearch> {
           TextButton.icon(
             onPressed: () async {
               _removeOverlay();
-              final result = await Navigator.of(context).push<Guest>(
-                MaterialPageRoute(
-                  builder: (context) => const GuestFormScreen(),
-                  fullscreenDialog: true,
-                ),
-              );
+              final result = await context.push<Guest>(AppRoutes.guestForm);
               if (result != null) {
                 setState(() {
                   _selectedGuest = result;
