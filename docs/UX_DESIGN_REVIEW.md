@@ -6,6 +6,7 @@
 - **Round 1 Implementation**: Fixed 6 issues (role-based nav, collapsible booking form, quick actions, calendar toggle, More menu)
 - **Round 2** (2026-02-24): Rigorous re-audit — found 13 remaining issues
 - **Round 2 Implementation** (2026-02-24): All 13 issues fixed
+- **Round 3** (2026-02-25): Data connectivity audit — traced all User Guide workflows through code, found 12 data-flow gaps
 
 ---
 
@@ -71,6 +72,59 @@
 - `hoang_lam_app/lib/screens/rooms/room_management_screen.dart` — GoRouter migration
 - `hoang_lam_app/lib/router/app_router.dart` — new routes (guest, finance form, minibar form, booking edit via extra)
 - `hoang_lam_app/lib/l10n/app_localizations.dart` — 8 new l10n string pairs for Round 2
+
+---
+
+## Round 3 — Data Connectivity Audit (Open Issues)
+
+> **Method**: Traced every workflow from [USER_GUIDE.md](USER_GUIDE.md) through the actual Dart source code, checking that each user action correctly updates all related providers and UI state.
+
+### Critical — Broken daily workflows
+
+| # | Issue | File(s) | Detail |
+|---|-------|---------|--------|
+| 1 | **Dashboard stale after detail-screen check-in/check-out** | `booking_detail_screen.dart` `:567–571, :615–619` | `_handleCheckIn` and `_handleCheckOut` invalidate `bookingByIdProvider`, `roomsProvider`, `allRoomsProvider` — but NOT `dashboardSummaryProvider` or `todayBookingsProvider`. User goes back to dashboard and sees old stats/counts until pull-to-refresh. (Dashboard quick-action buttons DO invalidate correctly — this only affects the detail screen path.) |
+| 2 | **Checkout does not auto-set room to "Cleaning"** | `booking_detail_screen.dart` `:615–619` | After checkout the booking changes to `checkedOut`, but no room status update is triggered. Room stays "Occupied" on the dashboard. Staff must manually long-press → Cleaning. The User Guide (§7 "After Checkout") notes this as a manual step, but it should be automated. |
+| 3 | **Completing housekeeping task does not change room back to "Available"** | `task_detail_screen.dart` `:446–468` | `_completeTask()` only invalidates `housekeepingTasksProvider`. No call to update room status or invalidate `roomsProvider`. Room stays "Cleaning" until manually changed. |
+| 4 | **Current booking query misses long-stay guests** | `room_detail_screen.dart` `:318–323` | `_buildCurrentBookingSection` uses `BookingsByRoomParams(from: now-1day, to: now+1day)`. A guest who checked in 3+ days ago will not appear as the "current booking" even though the room is occupied. Should query by `status == checkedIn` instead of date range, or widen the window to cover the booking's full date range. |
+
+### Medium — Degraded experience
+
+| # | Issue | File(s) | Detail |
+|---|-------|---------|--------|
+| 5 | **Dashboard not refreshed after creating a new booking** | `booking_form_screen.dart` `:813–816` | After `createBooking()`, invalidates `bookingsProvider`, `activeBookingsProvider`, `calendarBookingsProvider` — but NOT `dashboardSummaryProvider` or `todayBookingsProvider`. A walk-in booking won't show in today's arrivals until pull-to-refresh. |
+| 6 | **Minibar POS checkout doesn't invalidate folio providers** | `minibar_provider.dart` `:289–297` | `_invalidateProviders()` refreshes minibar sales providers only. If the user was viewing the folio before adding minibar items, the folio screen shows stale data. Should invalidate `folioProvider(bookingId)` after processing cart. |
+| 7 | **Creating maintenance request doesn't set room to "Maintenance"** | `housekeeping_provider.dart` `:313–329` | `createMaintenanceRequest()` only invalidates housekeeping providers. No room status update. Dashboard still shows room as "Available" even though a maintenance ticket exists. |
+| 8 | **Night audit refresh uses `Future.delayed` instead of awaiting data** | `night_audit_screen.dart` `:82–85` | `_refreshData()` calls `ref.invalidate(todayAuditProvider)` then `await Future.delayed(300ms)`. The `RefreshIndicator` spinner dismisses before fresh data actually arrives. Should `await ref.read(todayAuditProvider.future)` instead. |
+| 9 | **Room detail status change doesn't invalidate dashboard** | `room_detail_screen.dart` `:265–288` | `_quickStatusChange()` and `_changeStatus()` invalidate `roomsProvider` and `roomByIdProvider` but NOT `dashboardSummaryProvider`. Available-room count on dashboard stays stale until pull-to-refresh. |
+
+### Minor — Polish & labeling
+
+| # | Issue | File(s) | Detail |
+|---|-------|---------|--------|
+| 10 | **Receipt "Share" and "Download" both labeled `l10n.save`** | `receipt_preview_screen.dart` `:252–264` | Two buttons — one calls `_shareReceipt`, one calls `_downloadReceipt` — both display "Save". Share button should use a "Share" label. |
+| 11 | **Profile edit pencil navigates to password change** | `settings_screen.dart` `:366–371` | `_buildProfileSection()` has an edit icon that pushes `AppRoutes.passwordChange` instead of a profile edit screen. Misleading — either remove the pencil or add a real profile edit route. |
+| 12 | **Notification badge has no auto-refresh** | `home_screen.dart` (\_NotificationIconButton) | `unreadNotificationCountProvider` is fetched once on mount. No periodic polling or WebSocket listener, so badge count goes stale during the session. |
+
+### Summary of affected User Guide workflows
+
+| User Guide Section | Round 3 Issues |
+|--------------------|---------------|
+| §3 Walk-in Guest (create booking) | #5 — dashboard not refreshed |
+| §5 Checking In (from detail) | #1 — dashboard stale |
+| §6 During Stay (minibar) | #6 — folio stale after minibar |
+| §7 Checking Out (from detail) | #1 #2 — dashboard stale, room not set to Cleaning |
+| §8 Housekeeping (complete task) | #3 — room not set to Available |
+| §10 Night Audit (refresh) | #8 — stale data |
+| §13 Room Management (status change) | #4 #9 — current booking missing, dashboard stale |
+
+### Recommended fix priority
+
+1. **#1 + #5** (provider invalidation) — add `dashboardSummaryProvider` and `todayBookingsProvider` invalidation to `booking_detail_screen.dart` check-in/check-out and `booking_form_screen.dart` create. Low risk, high impact.
+2. **#2 + #3** (room status automation) — after checkout, auto-set room to Cleaning; after task completion, auto-set room to Available. Requires `roomStateProvider.notifier.updateRoomStatus()` calls.
+3. **#4** (current booking query) — change `_buildCurrentBookingSection` to filter by `status == checkedIn` without date restriction, or use the booking's actual date range.
+4. **#6 + #9** (cross-provider invalidation) — add folio invalidation in minibar provider; add dashboard invalidation in room detail.
+5. **#7 + #8 + #10 + #11 + #12** — remaining medium/minor fixes.
 
 ---
 
