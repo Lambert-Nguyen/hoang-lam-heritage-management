@@ -540,9 +540,9 @@ class HomeScreen extends ConsumerWidget {
 
       if (context.mounted) {
         if (isCheckIn) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.checkedInSuccess)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.checkedInSuccess)));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -552,10 +552,7 @@ class HomeScreen extends ConsumerWidget {
                 onPressed: () {
                   context.push(
                     '${AppRoutes.receipt}/${booking.id}',
-                    extra: {
-                      'guestName': guestName,
-                      'roomNumber': roomNumber,
-                    },
+                    extra: {'guestName': guestName, 'roomNumber': roomNumber},
                   );
                 },
               ),
