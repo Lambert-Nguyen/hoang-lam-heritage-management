@@ -8,6 +8,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/config/app_constants.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
+import '../../models/room.dart';
 import '../../providers/dashboard_provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../providers/notification_provider.dart';
@@ -524,6 +525,12 @@ class HomeScreen extends ConsumerWidget {
         await ref.read(bookingNotifierProvider.notifier).checkIn(booking.id);
       } else {
         await ref.read(bookingNotifierProvider.notifier).checkOut(booking.id);
+        // Auto-set room to Cleaning after checkout (consistent with detail screen)
+        if (booking.room > 0) {
+          await ref
+              .read(roomStateProvider.notifier)
+              .updateRoomStatus(booking.room, RoomStatus.cleaning);
+        }
       }
 
       // Refresh dashboard data
@@ -532,13 +539,30 @@ class HomeScreen extends ConsumerWidget {
       ref.invalidate(roomsProvider);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isCheckIn ? l10n.checkedInSuccess : l10n.checkedOutSuccess,
+        if (isCheckIn) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.checkedInSuccess)),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.checkoutSuccessViewReceipt),
+              action: SnackBarAction(
+                label: l10n.viewReceipt,
+                onPressed: () {
+                  context.push(
+                    '${AppRoutes.receipt}/${booking.id}',
+                    extra: {
+                      'guestName': guestName,
+                      'roomNumber': roomNumber,
+                    },
+                  );
+                },
+              ),
+              duration: const Duration(seconds: 5),
             ),
-          ),
-        );
+          );
+        }
       }
     } catch (e) {
       if (context.mounted) {

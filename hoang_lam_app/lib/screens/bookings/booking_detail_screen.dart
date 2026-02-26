@@ -524,7 +524,7 @@ class BookingDetailScreen extends ConsumerWidget {
   String _getPaymentMethodLabel(BuildContext context, PaymentMethod method) {
     switch (method) {
       case PaymentMethod.cash:
-        return context.l10n.income;
+        return context.l10n.cash;
       case PaymentMethod.bankTransfer:
         return 'Bank Transfer';
       case PaymentMethod.momo:
@@ -545,12 +545,15 @@ class BookingDetailScreen extends ConsumerWidget {
     WidgetRef ref,
     Booking booking,
   ) async {
+    final roomNumber = booking.roomNumber ?? '${booking.room}';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${context.l10n.confirm} ${context.l10n.checkIn}'),
+        title: Text(context.l10n.confirmCheckInQuestion),
         content: Text(
-          '${context.l10n.confirm} ${context.l10n.checkIn} ${booking.guestName}?',
+          context.l10n.confirmCheckInMessage
+              .replaceAll('{guestName}', booking.guestName)
+              .replaceAll('{roomNumber}', roomNumber),
         ),
         actions: [
           TextButton(
@@ -574,11 +577,9 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(dashboardSummaryProvider);
         ref.invalidate(todayBookingsProvider);
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${context.l10n.checkIn} ${context.l10n.success}'),
-            ),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(context.l10n.success)));
         }
       } catch (e) {
         if (context.mounted) {
@@ -595,12 +596,15 @@ class BookingDetailScreen extends ConsumerWidget {
     WidgetRef ref,
     Booking booking,
   ) async {
+    final checkoutRoomNumber = booking.roomNumber ?? '${booking.room}';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('${context.l10n.confirm} ${context.l10n.checkOut}'),
+        title: Text(context.l10n.confirmCheckOutQuestion),
         content: Text(
-          '${context.l10n.confirm} ${context.l10n.checkOut} ${booking.guestName}?',
+          context.l10n.confirmCheckOutMessage
+              .replaceAll('{guestName}', booking.guestName)
+              .replaceAll('{roomNumber}', checkoutRoomNumber),
         ),
         actions: [
           TextButton(
@@ -664,11 +668,16 @@ class BookingDetailScreen extends ConsumerWidget {
     WidgetRef ref,
     Booking booking,
   ) async {
+    final cancelRoomNumber = booking.roomNumber ?? '${booking.room}';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.cancel),
-        content: Text('${context.l10n.areYouSure} ${booking.guestName}?'),
+        title: Text(context.l10n.confirmCancelQuestion),
+        content: Text(
+          context.l10n.confirmCancelMessage
+              .replaceAll('{guestName}', booking.guestName)
+              .replaceAll('{roomNumber}', cancelRoomNumber),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -713,11 +722,16 @@ class BookingDetailScreen extends ConsumerWidget {
     WidgetRef ref,
     Booking booking,
   ) async {
+    final noShowRoomNumber = booking.roomNumber ?? '${booking.room}';
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.noShow),
-        content: Text('${context.l10n.noShow} ${booking.guestName}?'),
+        title: Text(context.l10n.confirmNoShowQuestion),
+        content: Text(
+          context.l10n.confirmNoShowMessage
+              .replaceAll('{guestName}', booking.guestName)
+              .replaceAll('{roomNumber}', noShowRoomNumber),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -787,6 +801,9 @@ class BookingDetailScreen extends ConsumerWidget {
         await ref
             .read(bookingNotifierProvider.notifier)
             .deleteBooking(bookingId);
+        ref.invalidate(dashboardSummaryProvider);
+        ref.invalidate(todayBookingsProvider);
+        ref.invalidate(roomsProvider);
         if (context.mounted) {
           Navigator.of(context).pop();
           ScaffoldMessenger.of(

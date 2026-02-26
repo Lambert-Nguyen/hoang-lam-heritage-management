@@ -1841,6 +1841,12 @@ class AppLocalizations {
   String get shareReceipt => translate('share_receipt');
   String get downloadReceipt => translate('download_receipt');
   String get editProfile => translate('edit_profile');
+
+  // Round 4 — UX dialog improvements
+  String get confirmCancelQuestion => translate('confirm_cancel_question');
+  String get confirmCancelMessage => translate('confirm_cancel_message');
+  String get confirmNoShowQuestion => translate('confirm_no_show_question');
+  String get confirmNoShowMessage => translate('confirm_no_show_message');
 }
 
 // Vietnamese translations
@@ -3526,6 +3532,13 @@ const Map<String, String> _viTranslations = {
   'share_receipt': 'Chia sẻ',
   'download_receipt': 'Tải xuống',
   'edit_profile': 'Chỉnh sửa hồ sơ',
+  // Round 4 — dialog improvements
+  'confirm_cancel_question': 'Xác nhận hủy đặt phòng?',
+  'confirm_cancel_message':
+      'Hủy đặt phòng của khách {guestName} - Phòng {roomNumber}?',
+  'confirm_no_show_question': 'Đánh dấu không đến?',
+  'confirm_no_show_message':
+      'Đánh dấu khách {guestName} - Phòng {roomNumber} không đến?',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -5210,6 +5223,12 @@ const Map<String, String> _enTranslations = {
   'share_receipt': 'Share',
   'download_receipt': 'Download',
   'edit_profile': 'Edit Profile',
+  // Round 4 — dialog improvements
+  'confirm_cancel_question': 'Confirm cancellation?',
+  'confirm_cancel_message':
+      'Cancel booking for {guestName} - Room {roomNumber}?',
+  'confirm_no_show_question': 'Mark as no-show?',
+  'confirm_no_show_message': 'Mark {guestName} - Room {roomNumber} as no-show?',
 };
 
 // Delegate
