@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
+import '../../providers/dashboard_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../widgets/guests/guest_quick_search.dart';
 import '../../core/theme/app_colors.dart';
@@ -814,6 +815,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       ref.invalidate(bookingsProvider);
       ref.invalidate(activeBookingsProvider);
       ref.invalidate(calendarBookingsProvider);
+      ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(todayBookingsProvider);
 
       if (mounted) {
         Navigator.of(context).pop();

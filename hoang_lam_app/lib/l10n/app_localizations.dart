@@ -1836,6 +1836,11 @@ class AppLocalizations {
   String get adminReportsCategory => translate('admin_reports_category');
   String get expectedPrefix => translate('expected_prefix');
   String get checkingCredentials => translate('checking_credentials');
+
+  // Round 3 — data connectivity fixes
+  String get shareReceipt => translate('share_receipt');
+  String get downloadReceipt => translate('download_receipt');
+  String get editProfile => translate('edit_profile');
 }
 
 // Vietnamese translations
@@ -3517,6 +3522,10 @@ const Map<String, String> _viTranslations = {
   'admin_reports_category': 'Quản trị & Báo cáo',
   'expected_prefix': 'Dự kiến',
   'checking_credentials': 'Đang kiểm tra đăng nhập...',
+  // Round 3
+  'share_receipt': 'Chia sẻ',
+  'download_receipt': 'Tải xuống',
+  'edit_profile': 'Chỉnh sửa hồ sơ',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -5197,6 +5206,10 @@ const Map<String, String> _enTranslations = {
   'admin_reports_category': 'Admin & Reports',
   'expected_prefix': 'Expected',
   'checking_credentials': 'Checking credentials...',
+  // Round 3
+  'share_receipt': 'Share',
+  'download_receipt': 'Download',
+  'edit_profile': 'Edit Profile',
 };
 
 // Delegate

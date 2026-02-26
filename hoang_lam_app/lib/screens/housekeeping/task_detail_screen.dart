@@ -6,7 +6,10 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
+import '../../models/room.dart';
+import '../../providers/dashboard_provider.dart';
 import '../../providers/housekeeping_provider.dart';
+import '../../providers/room_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/housekeeping/assign_task_dialog.dart';
@@ -461,9 +464,18 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _task = updatedTask;
         });
         ref.invalidate(housekeepingTasksProvider);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.taskCompleted)));
+        // Auto-set room to Available after cleaning task completion
+        if (_task.room != null) {
+          await ref
+              .read(roomStateProvider.notifier)
+              .updateRoomStatus(_task.room!, RoomStatus.available);
+          ref.invalidate(dashboardSummaryProvider);
+        }
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.taskCompleted)));
+        }
       }
     }
   }

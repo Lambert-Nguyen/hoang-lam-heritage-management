@@ -364,7 +364,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.edit_outlined),
+            icon: const Icon(Icons.key_outlined),
+            tooltip: l10n.changePassword,
             onPressed: () {
               context.push(AppRoutes.passwordChange);
             },

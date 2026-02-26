@@ -252,7 +252,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
                 child: OutlinedButton.icon(
                   onPressed: _shareReceipt,
                   icon: const Icon(Icons.share),
-                  label: Text(l10n.save),
+                  label: Text(l10n.shareReceipt),
                 ),
               ),
               const SizedBox(width: 16),
@@ -260,7 +260,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
                 child: FilledButton.icon(
                   onPressed: _downloadReceipt,
                   icon: const Icon(Icons.download),
-                  label: Text(l10n.save),
+                  label: Text(l10n.downloadReceipt),
                 ),
               ),
             ],

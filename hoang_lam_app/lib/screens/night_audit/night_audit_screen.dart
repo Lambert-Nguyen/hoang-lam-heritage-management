@@ -81,7 +81,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
 
   Future<void> _refreshData() async {
     ref.invalidate(todayAuditProvider);
-    await Future.delayed(const Duration(milliseconds: 300));
+    await ref.read(todayAuditProvider.future);
   }
 
   Future<void> _selectDate() async {

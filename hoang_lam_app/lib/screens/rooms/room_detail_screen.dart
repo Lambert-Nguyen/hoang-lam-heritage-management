@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
+import '../../providers/dashboard_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/common/app_card.dart';
@@ -43,6 +44,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       // Also refresh the provider so other screens get updated data
       ref.invalidate(roomsProvider);
       ref.invalidate(roomByIdProvider(_room.id));
+      ref.invalidate(dashboardSummaryProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -275,6 +277,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
       });
       ref.invalidate(roomsProvider);
       ref.invalidate(roomByIdProvider(_room.id));
+      ref.invalidate(dashboardSummaryProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -315,10 +318,11 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   }
 
   Widget _buildCurrentBookingSection() {
+    // Use a wide date range to catch long-stay guests (up to 1 year back)
     final now = DateTime.now();
     final params = BookingsByRoomParams(
       roomId: _room.id,
-      from: now.subtract(const Duration(days: 1)),
+      from: now.subtract(const Duration(days: 365)),
       to: now.add(const Duration(days: 1)),
     );
     final bookingsAsync = ref.watch(bookingsByRoomProvider(params));

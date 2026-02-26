@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -549,10 +550,34 @@ class HomeScreen extends ConsumerWidget {
   }
 }
 
-/// Notification icon button with unread badge
-class _NotificationIconButton extends ConsumerWidget {
+/// Notification icon button with unread badge and periodic auto-refresh
+class _NotificationIconButton extends ConsumerStatefulWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_NotificationIconButton> createState() =>
+      _NotificationIconButtonState();
+}
+
+class _NotificationIconButtonState
+    extends ConsumerState<_NotificationIconButton> {
+  late final Timer _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Auto-refresh unread count every 60 seconds
+    _refreshTimer = Timer.periodic(const Duration(seconds: 60), (_) {
+      ref.invalidate(unreadNotificationCountProvider);
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final unreadAsync = ref.watch(unreadNotificationCountProvider);
     final unreadCount = unreadAsync.valueOrNull ?? 0;
 

@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/minibar.dart';
 import '../repositories/minibar_repository.dart';
+import 'folio_provider.dart';
 import 'settings_provider.dart';
 
 part 'minibar_provider.freezed.dart';
@@ -293,6 +294,9 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
       _ref.invalidate(salesByBookingProvider(id));
       _ref.invalidate(unchargedSalesProvider(id));
       _ref.invalidate(salesSummaryProvider(id));
+      // Refresh folio so charges appear if folio screen is open
+      _ref.invalidate(bookingFolioProvider(id));
+      _ref.invalidate(folioItemsByBookingProvider(id));
     }
   }
 }

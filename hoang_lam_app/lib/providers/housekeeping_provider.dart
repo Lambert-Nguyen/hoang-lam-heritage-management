@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/housekeeping.dart';
+import '../models/room.dart';
 import '../repositories/housekeeping_repository.dart';
+import 'room_provider.dart';
 
 part 'housekeeping_provider.freezed.dart';
 
@@ -322,6 +324,12 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         requests: [...state.requests, newRequest],
       );
       _invalidateProviders();
+      // Auto-set room to Maintenance when creating a maintenance request
+      if (request.room != null) {
+        await _ref
+            .read(roomStateProvider.notifier)
+            .updateRoomStatus(request.room!, RoomStatus.maintenance);
+      }
       return newRequest;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());

@@ -5,7 +5,9 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
+import '../../models/room.dart';
 import '../../providers/booking_provider.dart';
+import '../../providers/dashboard_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_status_badge.dart';
@@ -569,6 +571,8 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(bookingByIdProvider(bookingId));
         ref.invalidate(roomsProvider);
         ref.invalidate(allRoomsProvider);
+        ref.invalidate(dashboardSummaryProvider);
+        ref.invalidate(todayBookingsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -614,9 +618,17 @@ class BookingDetailScreen extends ConsumerWidget {
     if (confirmed == true && context.mounted) {
       try {
         await ref.read(bookingNotifierProvider.notifier).checkOut(bookingId);
+        // Auto-set room to Cleaning after checkout
+        if (booking.room > 0) {
+          await ref
+              .read(roomStateProvider.notifier)
+              .updateRoomStatus(booking.room, RoomStatus.cleaning);
+        }
         ref.invalidate(bookingByIdProvider(bookingId));
         ref.invalidate(roomsProvider);
         ref.invalidate(allRoomsProvider);
+        ref.invalidate(dashboardSummaryProvider);
+        ref.invalidate(todayBookingsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -679,6 +691,8 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(bookingByIdProvider(bookingId));
         ref.invalidate(roomsProvider);
         ref.invalidate(allRoomsProvider);
+        ref.invalidate(dashboardSummaryProvider);
+        ref.invalidate(todayBookingsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
@@ -726,6 +740,8 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(bookingByIdProvider(bookingId));
         ref.invalidate(roomsProvider);
         ref.invalidate(allRoomsProvider);
+        ref.invalidate(dashboardSummaryProvider);
+        ref.invalidate(todayBookingsProvider);
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
