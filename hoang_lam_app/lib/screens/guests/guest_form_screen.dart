@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -487,7 +488,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
               child: AppButton(
                 label: context.l10n.cancel,
                 isOutlined: true,
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.pop(),
               ),
             ),
             AppSpacing.gapHorizontalMd,
@@ -560,7 +561,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
             backgroundColor: AppColors.success,
           ),
         );
-        Navigator.pop(context, result);
+        context.pop(result);
       } else {
         // Show error if result is null but no exception was thrown
         ScaffoldMessenger.of(context).showSnackBar(
