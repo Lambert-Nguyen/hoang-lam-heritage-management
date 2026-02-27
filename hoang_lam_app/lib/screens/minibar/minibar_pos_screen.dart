@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -9,6 +10,7 @@ import '../../models/minibar.dart';
 import '../../models/booking.dart';
 import '../../providers/minibar_provider.dart';
 import '../../providers/booking_provider.dart';
+import '../../router/app_router.dart';
 import '../../widgets/common/offline_banner.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/minibar/minibar_item_grid.dart';
@@ -46,75 +48,89 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.inventory_2),
-            onPressed: () => Navigator.pushNamed(context, '/minibar/inventory'),
+            onPressed: () => context.push(AppRoutes.minibarInventory),
             tooltip: l10n.inventoryManagement,
           ),
         ],
       ),
-      body: Row(
-        children: [
-          // Left side: Item selection
-          Expanded(
-            flex: 2,
-            child: Column(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final isWide = constraints.maxWidth >= 600;
+
+          final itemPanel = Column(
+            children: [
+              // Booking selector
+              _buildBookingSelector(),
+              const Divider(height: 1),
+
+              // Category filter
+              categoriesAsync.when(
+                data: (categories) => _buildCategoryFilter(categories),
+                loading: () => const SizedBox(
+                  height: 48,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+              const Divider(height: 1),
+
+              // Search bar
+              _buildSearchBar(),
+              const Divider(height: 1),
+
+              // Item grid
+              Expanded(
+                child: itemsAsync.when(
+                  data: (items) => _buildItemGrid(items),
+                  loading: () => const LoadingIndicator(),
+                  error: (error, _) => EmptyState(
+                    icon: Icons.error_outline,
+                    title: l10n.error,
+                    subtitle: error.toString(),
+                  ),
+                ),
+              ),
+            ],
+          );
+
+          final cartPanel = MinibarCartPanel(
+            cartState: cartState,
+            booking: _selectedBooking,
+            onCheckout: _handleCheckout,
+            onClear: _handleClearCart,
+            onRemoveItem: _handleRemoveItem,
+            onUpdateQuantity: _handleUpdateQuantity,
+          );
+
+          if (isWide) {
+            // Side-by-side layout for tablets and wide screens
+            return Row(
               children: [
-                // Booking selector
-                _buildBookingSelector(),
-                const Divider(height: 1),
-
-                // Category filter
-                categoriesAsync.when(
-                  data: (categories) => _buildCategoryFilter(categories),
-                  loading: () => const SizedBox(
-                    height: 48,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                  error: (_, __) => const SizedBox.shrink(),
-                ),
-                const Divider(height: 1),
-
-                // Search bar
-                _buildSearchBar(),
-                const Divider(height: 1),
-
-                // Item grid
-                Expanded(
-                  child: itemsAsync.when(
-                    data: (items) => _buildItemGrid(items),
-                    loading: () => const LoadingIndicator(),
-                    error: (error, _) => EmptyState(
-                      icon: Icons.error_outline,
-                      title: l10n.error,
-                      subtitle: error.toString(),
-                    ),
-                  ),
-                ),
+                Expanded(flex: 2, child: itemPanel),
+                const VerticalDivider(width: 1),
+                Expanded(flex: 1, child: cartPanel),
               ],
-            ),
-          ),
+            );
+          }
 
-          // Vertical divider
-          const VerticalDivider(width: 1),
-
-          // Right side: Cart
-          Expanded(
-            flex: 1,
-            child: MinibarCartPanel(
-              cartState: cartState,
-              booking: _selectedBooking,
-              onCheckout: _handleCheckout,
-              onClear: _handleClearCart,
-              onRemoveItem: _handleRemoveItem,
-              onUpdateQuantity: _handleUpdateQuantity,
-            ),
-          ),
-        ],
+          // Stacked layout for narrow phone screens
+          return Column(
+            children: [
+              Expanded(child: itemPanel),
+              const Divider(height: 1),
+              SizedBox(
+                height: constraints.maxHeight * 0.35,
+                child: cartPanel,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildBookingSelector() {
-    final todayBookingsAsync = ref.watch(todayBookingsProvider);
+    final activeBookingsAsync = ref.watch(activeBookingsProvider);
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -126,14 +142,15 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           const Icon(Icons.hotel, color: AppColors.primary),
           AppSpacing.gapHorizontalMd,
           Expanded(
-            child: todayBookingsAsync.when(
-              data: (response) {
-                // Combine check-ins to get currently checked-in bookings
-                final checkedInBookings = response.checkIns
+            child: activeBookingsAsync.when(
+              data: (bookings) {
+                // Show all currently checked-in bookings (not just today's)
+                final checkedInBookings = bookings
                     .where((b) => b.status == BookingStatus.checkedIn)
                     .toList();
                 return DropdownButtonFormField<Booking>(
-                  initialValue: _selectedBooking,
+                  // ignore: deprecated_member_use
+                  value: _selectedBooking,
                   hint: Text(AppLocalizations.of(context)!.selectBooking),
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),

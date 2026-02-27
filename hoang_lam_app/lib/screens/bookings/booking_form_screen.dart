@@ -35,6 +35,7 @@ class BookingFormScreen extends ConsumerStatefulWidget {
 
 class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _rateController = TextEditingController();
 
   // Form fields
   int? _selectedRoomId;
@@ -59,6 +60,16 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     if (widget.booking != null) {
       _initializeFromBooking(widget.booking!);
     }
+    // Sync controller with initial rate
+    if (_ratePerNight > 0) {
+      _rateController.text = _ratePerNight.toStringAsFixed(0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _rateController.dispose();
+    super.dispose();
   }
 
   void _initializeFromBooking(Booking booking) {
@@ -237,6 +248,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                 final room = rooms.firstWhere((r) => r.id == value);
                 if (room.baseRate != null && _ratePerNight == 0) {
                   _ratePerNight = room.baseRate!.toDouble();
+                  _rateController.text = _ratePerNight.toStringAsFixed(0);
                 }
               }
             });
@@ -482,7 +494,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Widget _buildRateField() {
     return TextFormField(
-      initialValue: _ratePerNight > 0 ? _ratePerNight.toStringAsFixed(0) : '',
+      controller: _rateController,
       decoration: InputDecoration(
         labelText: '${context.l10n.ratePerNight} (VND) *',
         border: const OutlineInputBorder(),

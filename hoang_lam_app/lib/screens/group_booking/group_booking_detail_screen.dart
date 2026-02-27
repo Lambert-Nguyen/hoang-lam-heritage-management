@@ -6,7 +6,9 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/group_booking.dart';
+import '../../models/room.dart';
 import '../../providers/group_booking_provider.dart';
+import '../../providers/room_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/error_display.dart';
@@ -338,7 +340,7 @@ class _GroupBookingDetailScreenState
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: AppButton(
-                  label: 'Check-in',
+                  label: l10n.checkIn,
                   onPressed: _isLoading ? null : () => _checkIn(booking),
                   icon: Icons.login,
                   isLoading: _isLoading,
@@ -347,7 +349,7 @@ class _GroupBookingDetailScreenState
             ] else if (booking.status == GroupBookingStatus.checkedIn) ...[
               Expanded(
                 child: AppButton(
-                  label: 'Check-out',
+                  label: l10n.checkOut,
                   onPressed: _isLoading ? null : () => _checkOut(booking),
                   icon: Icons.logout,
                   isLoading: _isLoading,
@@ -408,7 +410,7 @@ class _GroupBookingDetailScreenState
       return;
     }
     final confirmed = await _showConfirmDialog(
-      'Check-in',
+      context.l10n.checkIn,
       '${context.l10n.confirmGroupCheckIn} ${booking.name}?',
     );
     if (confirmed != true) return;
@@ -430,7 +432,7 @@ class _GroupBookingDetailScreenState
 
   Future<void> _checkOut(GroupBooking booking) async {
     final confirmed = await _showConfirmDialog(
-      'Check-out',
+      context.l10n.checkOut,
       '${context.l10n.confirmGroupCheckOut} ${booking.name}?',
     );
     if (confirmed != true) return;
@@ -473,56 +475,98 @@ class _GroupBookingDetailScreenState
   }
 
   Future<void> _showRoomAssignmentDialog(GroupBooking booking) async {
-    final controller = TextEditingController(text: booking.rooms.join(', '));
-    final result = await showDialog<String>(
+    final roomsAsync = ref.read(roomsProvider);
+    final allRooms = roomsAsync.valueOrNull ?? <Room>[];
+    // Pre-select rooms that are already assigned
+    final preselectedIds = Set<int>.from(booking.rooms);
+    final selectedIds = Set<int>.from(preselectedIds);
+
+    final result = await showDialog<Set<int>>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(context.l10n.assignRoomsLabel),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('${context.l10n.roomsNeeded}: ${booking.roomCount}'),
-            const SizedBox(height: AppSpacing.md),
-            TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                labelText: context.l10n.roomIdListLabel,
-                hintText: context.l10n.roomIdListHint,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final l10n = AppLocalizations.of(context)!;
+            return AlertDialog(
+              title: Text(l10n.assignRoomsLabel),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${l10n.roomsNeeded}: ${booking.roomCount}'
+                      ' · ${l10n.selected}: ${selectedIds.length}',
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    Flexible(
+                      child: allRooms.isEmpty
+                          ? Center(child: Text(l10n.noRoomsAvailable))
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: allRooms.length,
+                              itemBuilder: (context, index) {
+                                final room = allRooms[index];
+                                final isSelected = selectedIds.contains(
+                                  room.id,
+                                );
+                                return CheckboxListTile(
+                                  value: isSelected,
+                                  title: Text(
+                                    '${room.number}${room.name != null ? " - ${room.name}" : ""}',
+                                  ),
+                                  subtitle: Text(
+                                    room.roomTypeName ?? '',
+                                    style: TextStyle(
+                                      color: room.status == RoomStatus.available
+                                          ? AppColors.success
+                                          : AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  secondary: Icon(
+                                    room.status == RoomStatus.available
+                                        ? Icons.check_circle
+                                        : Icons.info_outline,
+                                    color: room.status == RoomStatus.available
+                                        ? AppColors.success
+                                        : AppColors.warning,
+                                  ),
+                                  onChanged: (checked) {
+                                    setDialogState(() {
+                                      if (checked == true) {
+                                        selectedIds.add(room.id);
+                                      } else {
+                                        selectedIds.remove(room.id);
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(context.l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: Text(context.l10n.save),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-    if (result == null || result.isEmpty) return;
-    final roomIds = result
-        .split(',')
-        .map((e) => int.tryParse(e.trim()))
-        .whereType<int>()
-        .toList();
-    if (roomIds.isEmpty) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(context.l10n.invalidRoomList),
-            backgroundColor: AppColors.warning,
-          ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: Text(l10n.cancel),
+                ),
+                ElevatedButton(
+                  onPressed: selectedIds.isEmpty
+                      ? null
+                      : () => Navigator.pop(dialogContext, selectedIds),
+                  child: Text(l10n.save),
+                ),
+              ],
+            );
+          },
         );
-      }
-      return;
-    }
+      },
+    );
+    if (result == null || result.isEmpty) return;
+    final roomIds = result.toList();
     setState(() => _isLoading = true);
     try {
       final success = await ref

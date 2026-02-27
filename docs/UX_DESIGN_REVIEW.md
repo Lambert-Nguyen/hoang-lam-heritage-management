@@ -9,6 +9,7 @@
 - **Round 3** (2026-02-25): Data connectivity audit — traced all User Guide workflows through code, found 12 data-flow gaps
 - **Round 3 Implementation** (2026-02-26): All 12 issues fixed
 - **Round 4** (2026-02-27): Comprehensive UX + use case audit — screen-by-screen review of all 48 screens, found 60 UX issues + 30 missing use cases
+- **Round 4 Implementation** (2026-02-27): All 8 Critical issues fixed
 
 ---
 
@@ -131,18 +132,31 @@
 
 ---
 
-### Critical Issues (Bugs / Broken Workflows)
+### Critical Issues (Bugs / Broken Workflows) — ALL FIXED
 
-| # | Screen | Issue |
-|---|--------|-------|
-| 1 | **Minibar POS** | **Layout broken on phones** — uses `Row(Expanded(flex:2), Expanded(flex:1))` split-pane. On portrait phone the cart panel is ~120px wide and unusable. Needs responsive breakpoint (stacked layout on narrow screens). |
-| 2 | **Minibar POS** | **Booking selector only shows today's check-ins**, not all currently checked-in guests. A guest who checked in 3 days ago does not appear. Use `BookingStatus.checkedIn` filter without date restriction. |
-| 3 | **Minibar POS** | **Inventory navigation uses `Navigator.pushNamed`** instead of GoRouter — likely broken route. Migrate to `context.push()`. |
-| 4 | **Booking Form** | **Rate field does not visually update** when room is selected. `TextFormField` uses `initialValue` which is read once; subsequent `setState` on `_ratePerNight` does not update the displayed text. Use a `TextEditingController` instead. |
-| 5 | **Group Booking Detail** | **Room assignment asks for comma-separated database IDs**, not room numbers/names. Replace with a multi-select room picker dialog. |
-| 6 | **Night Audit** | **Date selector creates an audit but always displays today's audit** — `todayAuditProvider` is watched regardless of `_selectedDate`. Need a date-parameterized provider. |
-| 7 | **Settings** | **Price Management visible to all roles** — no role guard. Should be restricted to Owner only (or Owner+Manager without edit). |
-| 8 | **Main Scaffold** | **Null role defaults to owner nav** — if user role fails to load, user gets full Owner access. Should fall back to most restrictive role. |
+| # | Screen | Issue | Fix Applied |
+|---|--------|-------|-------------|
+| 1 | **Minibar POS** | **Layout broken on phones** | Replaced fixed `Row(Expanded)` with `LayoutBuilder` — side-by-side at ≥600px, stacked `Column` with cart at 35% height on phones |
+| 2 | **Minibar POS** | **Booking selector only shows today's check-ins** | Switched from `todayBookingsProvider` to `activeBookingsProvider` — shows all confirmed + checked-in bookings regardless of date |
+| 3 | **Minibar POS** | **Inventory navigation uses `Navigator.pushNamed`** | Migrated to `context.push(AppRoutes.minibarInventory)` via GoRouter |
+| 4 | **Booking Form** | **Rate field does not visually update** | Added `TextEditingController` synced on room selection — controller text updates when rate auto-fills from room base rate |
+| 5 | **Group Booking Detail** | **Room assignment asks for comma-separated IDs** | Replaced text input with multi-select `CheckboxListTile` dialog showing room number, name, type, and availability status icon |
+| 6 | **Night Audit** | **Date selector always displays today's audit** | Added `auditByDateProvider` (FutureProvider.family parameterized by date) — UI now watches selected date, delegates to `todayAuditProvider` when date is today |
+| 7 | **Settings** | **Price Management visible to all roles** | Added `UserRole.owner` guard on settings tile + `redirect` guards on all 5 pricing routes in `app_router.dart` |
+| 8 | **Main Scaffold** | **Null role defaults to owner nav** | Separated `null` case from owner/manager — null role now gets staff-level nav (no Finance tab) |
+
+### Files Changed (Round 4 Critical)
+
+- `hoang_lam_app/lib/screens/minibar/minibar_pos_screen.dart` — responsive LayoutBuilder, activeBookingsProvider, GoRouter migration
+- `hoang_lam_app/lib/screens/booking/booking_form_screen.dart` — TextEditingController for rate field with dispose()
+- `hoang_lam_app/lib/screens/group_booking/group_booking_detail_screen.dart` — multi-select CheckboxListTile room picker, l10n Check-in/Check-out
+- `hoang_lam_app/lib/screens/night_audit/night_audit_screen.dart` — auditByDateProvider usage, normalized date, l10n Check-in/Check-out
+- `hoang_lam_app/lib/providers/night_audit_provider.dart` — new auditByDateProvider (FutureProvider.family)
+- `hoang_lam_app/lib/screens/settings/settings_screen.dart` — owner-only pricing tile guard
+- `hoang_lam_app/lib/router/app_router.dart` — redirect guards on 5 pricing routes
+- `hoang_lam_app/lib/widgets/main_scaffold.dart` — null role defaults to staff-level nav
+- `hoang_lam_app/lib/l10n/app_localizations.dart` — 2 new l10n string pairs (selected, noRoomsAvailable)
+- `hoang_lam_app/test/screens/night_audit/night_audit_screen_test.dart` — updated test expectations for l10n strings
 
 ### Major Issues (Poor UX / Data Gaps)
 

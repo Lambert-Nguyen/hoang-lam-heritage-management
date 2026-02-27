@@ -1014,6 +1014,8 @@ class AppLocalizations {
   String get roomsCountSuffix => translate('rooms_count_suffix');
   String get guestsCountSuffix => translate('guests_count_suffix');
   String get roomsNeeded => translate('rooms_needed');
+  String get selected => translate('selected');
+  String get noRoomsAvailable => translate('no_rooms_available');
   String get checkInDateLabel => translate('check_in_date_label');
   String get checkOutDateLabel => translate('check_out_date_label');
   String get groupUpdated => translate('group_updated');
@@ -2755,6 +2757,8 @@ const Map<String, String> _viTranslations = {
   'rooms_count_suffix': 'phòng',
   'guests_count_suffix': 'khách',
   'rooms_needed': 'Số phòng cần',
+  'selected': 'Đã chọn',
+  'no_rooms_available': 'Không có phòng',
   'check_in_date_label': 'Ngày nhận phòng',
   'check_out_date_label': 'Ngày trả phòng',
   'group_updated': 'Đã cập nhật',
@@ -4448,6 +4452,8 @@ const Map<String, String> _enTranslations = {
   'rooms_count_suffix': 'rooms',
   'guests_count_suffix': 'guests',
   'rooms_needed': 'Rooms needed',
+  'selected': 'Selected',
+  'no_rooms_available': 'No rooms available',
   'check_in_date_label': 'Check-in date',
   'check_out_date_label': 'Check-out date',
   'group_updated': 'Updated',

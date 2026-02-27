@@ -21,12 +21,18 @@ class NightAuditScreen extends ConsumerStatefulWidget {
 }
 
 class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
-  DateTime _selectedDate = DateTime.now();
+  late DateTime _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final todayAuditAsync = ref.watch(todayAuditProvider);
+    final auditAsync = ref.watch(auditByDateProvider(_selectedDate));
     final state = ref.watch(nightAuditNotifierProvider);
 
     return Scaffold(
@@ -47,7 +53,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _refreshData,
-        child: todayAuditAsync.when(
+        child: auditAsync.when(
           data: (audit) => _buildAuditContent(context, audit),
           loading: () => LayoutBuilder(
             builder: (context, constraints) => SingleChildScrollView(
@@ -72,7 +78,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: todayAuditAsync.maybeWhen(
+      bottomNavigationBar: auditAsync.maybeWhen(
         data: (audit) => _buildBottomActions(context, audit, state),
         orElse: () => null,
       ),
@@ -80,8 +86,9 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
   }
 
   Future<void> _refreshData() async {
+    ref.invalidate(auditByDateProvider(_selectedDate));
     ref.invalidate(todayAuditProvider);
-    await ref.read(todayAuditProvider.future);
+    await ref.read(auditByDateProvider(_selectedDate).future);
   }
 
   Future<void> _selectDate() async {
@@ -93,9 +100,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     );
 
     if (date != null) {
-      setState(() => _selectedDate = date);
-      // Create or fetch audit for selected date
-      await ref.read(nightAuditNotifierProvider.notifier).createAudit(date);
+      setState(() => _selectedDate = DateTime(date.year, date.month, date.day));
     }
   }
 
@@ -302,13 +307,13 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
           Row(
             children: [
               _buildStatItem(
-                'Check-in',
+                context.l10n.checkIn,
                 audit.checkInsToday.toString(),
                 Icons.login,
                 color: AppColors.success,
               ),
               _buildStatItem(
-                'Check-out',
+                context.l10n.checkOut,
                 audit.checkOutsToday.toString(),
                 Icons.logout,
                 color: AppColors.info,
@@ -604,7 +609,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
   }
 
   Future<void> _recalculateAudit() async {
-    final audit = ref.read(todayAuditProvider).valueOrNull;
+    final audit = ref.read(auditByDateProvider(_selectedDate)).valueOrNull;
     if (audit == null) return;
 
     final result = await ref
@@ -613,6 +618,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
     if (!mounted) return;
 
     if (result != null) {
+      ref.invalidate(auditByDateProvider(_selectedDate));
       ref.invalidate(todayAuditProvider);
       ScaffoldMessenger.of(
         context,
@@ -656,6 +662,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
       if (!mounted) return;
 
       if (result != null) {
+        ref.invalidate(auditByDateProvider(_selectedDate));
         ref.invalidate(todayAuditProvider);
         ScaffoldMessenger.of(
           context,

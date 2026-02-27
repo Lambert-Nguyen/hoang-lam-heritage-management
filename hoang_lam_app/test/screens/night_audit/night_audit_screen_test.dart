@@ -128,8 +128,8 @@ void main() {
 
       // Booking stats section
       expect(find.text('Thống kê đặt phòng'), findsOneWidget);
-      expect(find.text('Check-in'), findsOneWidget);
-      expect(find.text('Check-out'), findsOneWidget);
+      expect(find.text('Nhận phòng'), findsOneWidget);
+      expect(find.text('Trả phòng'), findsOneWidget);
       expect(find.text('3'), findsOneWidget); // check-ins
     });
 

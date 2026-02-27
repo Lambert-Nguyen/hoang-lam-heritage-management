@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/config/app_constants.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/biometric_provider.dart';
 import '../../providers/notification_provider.dart';
@@ -117,15 +118,16 @@ class SettingsScreen extends ConsumerWidget {
               context.push(AppRoutes.roomManagement);
             },
           ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.sell,
-            title: l10n.priceManagement,
-            subtitle: l10n.ratePlansPromotions,
-            onTap: () {
-              context.push(AppRoutes.pricing);
-            },
-          ),
+          if (currentUser?.role == UserRole.owner)
+            _buildSettingsTile(
+              context,
+              icon: Icons.sell,
+              title: l10n.priceManagement,
+              subtitle: l10n.ratePlansPromotions,
+              onTap: () {
+                context.push(AppRoutes.pricing);
+              },
+            ),
 
           const Divider(),
 

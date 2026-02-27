@@ -137,7 +137,6 @@ class _RoleBasedBottomNav extends ConsumerWidget {
 
       case UserRole.owner:
       case UserRole.manager:
-      default:
         // Owner/Manager: Home | Bookings | Finance | More | Settings
         return [
           _NavItem(
@@ -157,6 +156,41 @@ class _RoleBasedBottomNav extends ConsumerWidget {
             selectedIcon: Icons.account_balance_wallet,
             label: l10n.finance,
             route: AppRoutes.finance,
+          ),
+          _NavItem(
+            icon: Icons.grid_view_outlined,
+            selectedIcon: Icons.grid_view,
+            label: l10n.more,
+            route: AppRoutes.more,
+          ),
+          _NavItem(
+            icon: Icons.settings_outlined,
+            selectedIcon: Icons.settings,
+            label: l10n.settings,
+            route: AppRoutes.settings,
+          ),
+        ];
+
+      case null:
+        // Unknown/null role: restrict to staff-level nav (no Finance)
+        return [
+          _NavItem(
+            icon: Icons.home_outlined,
+            selectedIcon: Icons.home,
+            label: l10n.home,
+            route: AppRoutes.home,
+          ),
+          _NavItem(
+            icon: Icons.calendar_month_outlined,
+            selectedIcon: Icons.calendar_month,
+            label: l10n.bookings,
+            route: AppRoutes.bookings,
+          ),
+          _NavItem(
+            icon: Icons.cleaning_services_outlined,
+            selectedIcon: Icons.cleaning_services,
+            label: l10n.housekeepingTasks,
+            route: AppRoutes.housekeepingTasks,
           ),
           _NavItem(
             icon: Icons.grid_view_outlined,

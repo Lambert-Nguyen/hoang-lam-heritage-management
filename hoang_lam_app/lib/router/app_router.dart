@@ -7,6 +7,7 @@ import '../models/booking.dart';
 import '../models/finance.dart';
 import '../models/guest.dart';
 import '../models/minibar.dart';
+import '../models/user.dart';
 import '../providers/auth_provider.dart';
 import '../models/room.dart';
 import '../models/housekeeping.dart';
@@ -450,20 +451,35 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Pricing routes (outside shell for full screen)
+      // Pricing routes (outside shell for full screen) — Owner only
       GoRoute(
         path: AppRoutes.pricing,
         name: 'pricing',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) => const PricingManagementScreen(),
       ),
       GoRoute(
         path: AppRoutes.ratePlanNew,
         name: 'ratePlanNew',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) => const RatePlanFormScreen(),
       ),
       GoRoute(
         path: AppRoutes.ratePlanEdit,
         name: 'ratePlanEdit',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
@@ -478,11 +494,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.dateOverrideNew,
         name: 'dateOverrideNew',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) => const DateRateOverrideFormScreen(),
       ),
       GoRoute(
         path: AppRoutes.dateOverrideEdit,
         name: 'dateOverrideEdit',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
