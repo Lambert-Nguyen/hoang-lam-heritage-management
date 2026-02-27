@@ -1847,6 +1847,8 @@ class AppLocalizations {
   String get confirmCancelMessage => translate('confirm_cancel_message');
   String get confirmNoShowQuestion => translate('confirm_no_show_question');
   String get confirmNoShowMessage => translate('confirm_no_show_message');
+  String get checkoutMustBeAfterCheckin =>
+      translate('checkout_must_be_after_checkin');
 }
 
 // Vietnamese translations
@@ -3539,6 +3541,7 @@ const Map<String, String> _viTranslations = {
   'confirm_no_show_question': 'Đánh dấu không đến?',
   'confirm_no_show_message':
       'Đánh dấu khách {guestName} - Phòng {roomNumber} không đến?',
+  'checkout_must_be_after_checkin': 'Ngày trả phòng phải sau ngày nhận phòng',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -5229,6 +5232,8 @@ const Map<String, String> _enTranslations = {
       'Cancel booking for {guestName} - Room {roomNumber}?',
   'confirm_no_show_question': 'Mark as no-show?',
   'confirm_no_show_message': 'Mark {guestName} - Room {roomNumber} as no-show?',
+  'checkout_must_be_after_checkin':
+      'Check-out date must be after check-in date',
 };
 
 // Delegate

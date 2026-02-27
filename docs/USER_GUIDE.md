@@ -254,9 +254,8 @@ If the guest leaves after the standard 12:00 checkout time:
 
 ### After Checkout
 
-- The room status automatically needs to be changed to **Cleaning**
-- Long-press the room on the dashboard → select **Cleaning**
-- Housekeeping will be notified
+- The room status **automatically changes to Cleaning** after checkout — no manual action needed
+- Housekeeping will see the room needs cleaning on their task list
 
 ---
 
@@ -290,10 +289,10 @@ Your bottom nav shows **Tasks** and **Inspections** tabs.
 
 After a guest checks out:
 
-1. Long-press the room on dashboard → set to **Cleaning**
-2. Go to **Housekeeping** (from bottom nav or More menu)
-3. Create a task: select room, assign to housekeeper, set priority
-4. When housekeeping marks it complete, change room back to **Available**
+1. The room **automatically changes to Cleaning** after checkout
+2. Go to **Housekeeping** (from bottom nav or More menu) to create or review tasks
+3. Assign tasks to housekeepers with priority levels
+4. When housekeeping marks the task complete, the room **automatically changes back to Available**
 
 ---
 
@@ -449,7 +448,7 @@ Exported bookings are marked as "declared" so you won't accidentally submit dupl
 
 ### Common Mistakes to Avoid
 
-1. **Don't forget to change room status after checkout** — Long-press the room → set to Cleaning, then to Available after cleaning
+1. **Room status updates automatically** — After checkout the room changes to Cleaning, and after task completion it changes back to Available. You can still long-press a room to override if needed
 2. **Don't skip the folio review before checkout** — Always tap "View Folio" to verify charges
 3. **Record deposits when received** — Expand the optional section in booking form and enter the deposit amount
 4. **Close the night audit every day** — This locks financial records and prevents accidental edits

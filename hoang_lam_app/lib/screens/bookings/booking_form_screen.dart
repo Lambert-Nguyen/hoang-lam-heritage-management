@@ -702,11 +702,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
     if (!_checkOutDate.isAfter(_checkInDate)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${context.l10n.checkOut} must be after ${context.l10n.checkIn}',
-          ),
-        ),
+        SnackBar(content: Text(context.l10n.checkoutMustBeAfterCheckin)),
       );
       return;
     }

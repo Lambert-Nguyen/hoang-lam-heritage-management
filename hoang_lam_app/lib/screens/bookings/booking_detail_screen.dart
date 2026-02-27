@@ -499,44 +499,46 @@ class BookingDetailScreen extends ConsumerWidget {
   }
 
   String _getBookingSourceLabel(BuildContext context, BookingSource source) {
+    final l10n = context.l10n;
     switch (source) {
       case BookingSource.walkIn:
-        return 'Walk-in';
+        return l10n.bookingSourceWalkIn;
       case BookingSource.phone:
-        return context.l10n.phoneNumber;
+        return l10n.bookingSourcePhone;
       case BookingSource.bookingCom:
-        return 'Booking.com';
+        return l10n.bookingSourceBookingCom;
       case BookingSource.agoda:
-        return 'Agoda';
+        return l10n.bookingSourceAgoda;
       case BookingSource.airbnb:
-        return 'Airbnb';
+        return l10n.bookingSourceAirbnb;
       case BookingSource.traveloka:
-        return 'Traveloka';
+        return l10n.bookingSourceTraveloka;
       case BookingSource.otherOta:
-        return 'OTA';
+        return l10n.bookingSourceOtherOta;
       case BookingSource.website:
-        return 'Website';
+        return l10n.bookingSourceWebsite;
       case BookingSource.other:
-        return context.l10n.undefined;
+        return l10n.bookingSourceOther;
     }
   }
 
   String _getPaymentMethodLabel(BuildContext context, PaymentMethod method) {
+    final l10n = context.l10n;
     switch (method) {
       case PaymentMethod.cash:
-        return context.l10n.cash;
+        return l10n.paymentMethodCash;
       case PaymentMethod.bankTransfer:
-        return 'Bank Transfer';
+        return l10n.paymentMethodBankTransfer;
       case PaymentMethod.momo:
-        return 'MoMo';
+        return l10n.paymentMethodMomo;
       case PaymentMethod.vnpay:
-        return 'VNPay';
+        return l10n.paymentMethodVnpay;
       case PaymentMethod.card:
-        return 'Card';
+        return l10n.paymentMethodCard;
       case PaymentMethod.otaCollect:
-        return 'OTA';
+        return l10n.paymentMethodOtaCollect;
       case PaymentMethod.other:
-        return context.l10n.undefined;
+        return l10n.paymentMethodOther;
     }
   }
 
@@ -577,9 +579,9 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(dashboardSummaryProvider);
         ref.invalidate(todayBookingsProvider);
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(context.l10n.success)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.checkedInSuccess)),
+          );
         }
       } catch (e) {
         if (context.mounted) {
