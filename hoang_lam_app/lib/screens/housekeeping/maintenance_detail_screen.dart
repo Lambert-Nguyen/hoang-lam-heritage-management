@@ -10,6 +10,7 @@ import '../../models/user.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/housekeeping_provider.dart';
 import '../../widgets/common/app_button.dart';
+import '../../core/utils/error_utils.dart';
 import '../../widgets/common/app_card.dart';
 
 /// Screen showing detailed information about a maintenance request
@@ -565,20 +566,29 @@ class _MaintenanceDetailScreenState
     );
 
     if (userId != null && mounted) {
-      final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final result = await notifier.assignMaintenanceRequest(
-        _request.id,
-        userId,
-      );
-      if (result != null && mounted) {
-        setState(() {
-          _request = result;
-        });
-        ref.invalidate(maintenanceRequestsProvider);
-        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.taskAssigned)));
+      try {
+        final notifier = ref.read(housekeepingNotifierProvider.notifier);
+        final result = await notifier.assignMaintenanceRequest(
+          _request.id,
+          userId,
+        );
+        if (result != null && mounted) {
+          setState(() {
+            _request = result;
+          });
+          ref.invalidate(maintenanceRequestsProvider);
+          ref.invalidate(maintenanceRequestByIdProvider(_request.id));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.taskAssigned)));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(getLocalizedErrorMessage(e, l10n)),
+            backgroundColor: AppColors.error,
+          ));
+        }
       }
     }
   }
@@ -591,20 +601,29 @@ class _MaintenanceDetailScreenState
     );
 
     if (notes != null && mounted) {
-      final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final updatedRequest = await notifier.completeMaintenanceRequest(
-        _request.id,
-        resolutionNotes: notes.isNotEmpty ? notes : null,
-      );
-      if (updatedRequest != null && mounted) {
-        setState(() {
-          _request = updatedRequest;
-        });
-        ref.invalidate(maintenanceRequestsProvider);
-        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.maintenanceRequestCompleted)),
+      try {
+        final notifier = ref.read(housekeepingNotifierProvider.notifier);
+        final updatedRequest = await notifier.completeMaintenanceRequest(
+          _request.id,
+          resolutionNotes: notes.isNotEmpty ? notes : null,
         );
+        if (updatedRequest != null && mounted) {
+          setState(() {
+            _request = updatedRequest;
+          });
+          ref.invalidate(maintenanceRequestsProvider);
+          ref.invalidate(maintenanceRequestByIdProvider(_request.id));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.maintenanceRequestCompleted)),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(getLocalizedErrorMessage(e, l10n)),
+            backgroundColor: AppColors.error,
+          ));
+        }
       }
     }
   }
@@ -617,20 +636,29 @@ class _MaintenanceDetailScreenState
     );
 
     if (reason != null && mounted) {
-      final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final updatedRequest = await notifier.holdMaintenanceRequest(
-        _request.id,
-        reason: reason.isNotEmpty ? reason : null,
-      );
-      if (updatedRequest != null && mounted) {
-        setState(() {
-          _request = updatedRequest;
-        });
-        ref.invalidate(maintenanceRequestsProvider);
-        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.requestOnHold)));
+      try {
+        final notifier = ref.read(housekeepingNotifierProvider.notifier);
+        final updatedRequest = await notifier.holdMaintenanceRequest(
+          _request.id,
+          reason: reason.isNotEmpty ? reason : null,
+        );
+        if (updatedRequest != null && mounted) {
+          setState(() {
+            _request = updatedRequest;
+          });
+          ref.invalidate(maintenanceRequestsProvider);
+          ref.invalidate(maintenanceRequestByIdProvider(_request.id));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.requestOnHold)));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(getLocalizedErrorMessage(e, l10n)),
+            backgroundColor: AppColors.error,
+          ));
+        }
       }
     }
   }
@@ -656,19 +684,28 @@ class _MaintenanceDetailScreenState
     );
 
     if (confirmed == true && mounted) {
-      final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final updatedRequest = await notifier.resumeMaintenanceRequest(
-        _request.id,
-      );
-      if (updatedRequest != null && mounted) {
-        setState(() {
-          _request = updatedRequest;
-        });
-        ref.invalidate(maintenanceRequestsProvider);
-        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.requestContinued)));
+      try {
+        final notifier = ref.read(housekeepingNotifierProvider.notifier);
+        final updatedRequest = await notifier.resumeMaintenanceRequest(
+          _request.id,
+        );
+        if (updatedRequest != null && mounted) {
+          setState(() {
+            _request = updatedRequest;
+          });
+          ref.invalidate(maintenanceRequestsProvider);
+          ref.invalidate(maintenanceRequestByIdProvider(_request.id));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.requestContinued)));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(getLocalizedErrorMessage(e, l10n)),
+            backgroundColor: AppColors.error,
+          ));
+        }
       }
     }
   }
@@ -695,19 +732,28 @@ class _MaintenanceDetailScreenState
     );
 
     if (confirmed == true && mounted) {
-      final notifier = ref.read(housekeepingNotifierProvider.notifier);
-      final updatedRequest = await notifier.cancelMaintenanceRequest(
-        _request.id,
-      );
-      if (updatedRequest != null && mounted) {
-        setState(() {
-          _request = updatedRequest;
-        });
-        ref.invalidate(maintenanceRequestsProvider);
-        ref.invalidate(maintenanceRequestByIdProvider(_request.id));
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.requestCancelled)));
+      try {
+        final notifier = ref.read(housekeepingNotifierProvider.notifier);
+        final updatedRequest = await notifier.cancelMaintenanceRequest(
+          _request.id,
+        );
+        if (updatedRequest != null && mounted) {
+          setState(() {
+            _request = updatedRequest;
+          });
+          ref.invalidate(maintenanceRequestsProvider);
+          ref.invalidate(maintenanceRequestByIdProvider(_request.id));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.requestCancelled)));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(getLocalizedErrorMessage(e, l10n)),
+            backgroundColor: AppColors.error,
+          ));
+        }
       }
     }
   }

@@ -12,6 +12,7 @@ import '../../providers/room_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/error_display.dart';
+import '../../core/utils/error_utils.dart';
 import '../../widgets/common/loading_indicator.dart';
 
 /// Screen for displaying group booking details
@@ -108,7 +109,7 @@ class _GroupBookingDetailScreenState
         data: (booking) => _buildContent(booking),
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorDisplay(
-          message: '${l10n.error}: $e',
+          message: getLocalizedErrorMessage(e, l10n),
           onRetry: () =>
               ref.invalidate(groupBookingByIdProvider(widget.bookingId)),
         ),
@@ -394,6 +395,13 @@ class _GroupBookingDetailScreenState
         ).showSnackBar(SnackBar(content: Text(context.l10n.confirmedMsg)));
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(getLocalizedErrorMessage(e, context.l10n)),
+          backgroundColor: AppColors.error,
+        ));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -425,6 +433,13 @@ class _GroupBookingDetailScreenState
         ).showSnackBar(SnackBar(content: Text(context.l10n.checkedInMsg)));
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(getLocalizedErrorMessage(e, context.l10n)),
+          backgroundColor: AppColors.error,
+        ));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -447,6 +462,13 @@ class _GroupBookingDetailScreenState
         ).showSnackBar(SnackBar(content: Text(context.l10n.checkedOutMsg)));
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(getLocalizedErrorMessage(e, context.l10n)),
+          backgroundColor: AppColors.error,
+        ));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -468,6 +490,13 @@ class _GroupBookingDetailScreenState
           context,
         ).showSnackBar(SnackBar(content: Text(context.l10n.cancelledStatus)));
         context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(getLocalizedErrorMessage(e, context.l10n)),
+          backgroundColor: AppColors.error,
+        ));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -578,6 +607,13 @@ class _GroupBookingDetailScreenState
         );
         ref.invalidate(groupBookingByIdProvider(widget.bookingId));
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(getLocalizedErrorMessage(e, context.l10n)),
+          backgroundColor: AppColors.error,
+        ));
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -605,13 +641,20 @@ class _GroupBookingDetailScreenState
 
   Future<String?> _showInputDialog(String title, String hint) {
     final controller = TextEditingController();
+    final formKey = GlobalKey<FormState>();
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(hintText: hint),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: controller,
+            decoration: InputDecoration(hintText: hint),
+            validator: (v) => v == null || v.trim().isEmpty
+                ? context.l10n.cancelReasonRequired
+                : null,
+          ),
         ),
         actions: [
           TextButton(
@@ -619,7 +662,11 @@ class _GroupBookingDetailScreenState
             child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, controller.text),
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(context, controller.text.trim());
+              }
+            },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(context.l10n.confirm),
           ),

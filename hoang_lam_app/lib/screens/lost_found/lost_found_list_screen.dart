@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/lost_found.dart';
 import '../../providers/lost_found_provider.dart';
 import '../../widgets/common/app_card.dart';
+import '../../core/utils/error_utils.dart';
 import '../../widgets/common/error_display.dart';
 import '../../widgets/common/loading_indicator.dart';
 
@@ -138,7 +139,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
       },
       loading: () => const LoadingIndicator(),
       error: (error, _) => ErrorDisplay(
-        message: '${AppLocalizations.of(context)!.error}: $error',
+        message: getLocalizedErrorMessage(error, AppLocalizations.of(context)!),
         onRetry: () => ref.invalidate(lostFoundItemsProvider),
       ),
     );
@@ -147,9 +148,17 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
   List<LostFoundItem> _filterItems(List<LostFoundItem> items, bool? claimed) {
     return items.where((item) {
       if (claimed != null) {
-        final isClaimed = item.status == LostFoundStatus.claimed;
-        if (isClaimed != claimed) {
-          return false;
+        if (claimed) {
+          // "Completed" tab: show claimed, donated, disposed items
+          final isCompleted = item.status == LostFoundStatus.claimed ||
+              item.status == LostFoundStatus.donated ||
+              item.status == LostFoundStatus.disposed;
+          if (!isCompleted) return false;
+        } else {
+          // "Pending" tab: show found and stored items
+          final isPending = item.status == LostFoundStatus.found ||
+              item.status == LostFoundStatus.stored;
+          if (!isPending) return false;
         }
       }
       if (_categoryFilter != null && item.category != _categoryFilter) {

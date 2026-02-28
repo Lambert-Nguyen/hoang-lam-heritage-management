@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/utils/error_utils.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/booking.dart';
 import '../../models/room.dart';
+import '../../providers/booking_provider.dart';
 import '../../providers/room_provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../router/app_router.dart';
@@ -230,7 +233,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
                       color: AppColors.error,
                     ),
                     AppSpacing.gapVerticalMd,
-                    Text('${context.l10n.error}: $error'),
+                    Text(getLocalizedErrorMessage(error, context.l10n)),
                     AppSpacing.gapVerticalMd,
                     ElevatedButton(
                       onPressed: () => ref.invalidate(allRoomsProvider),
@@ -433,7 +436,27 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
     }
   }
 
-  void _confirmDeleteRoom(Room room) {
+  Future<void> _confirmDeleteRoom(Room room) async {
+    // Check for active bookings before allowing deletion
+    final filter = BookingFilter(
+      roomId: room.id,
+      status: BookingStatus.confirmed,
+    );
+    final bookings = await ref.read(filteredBookingsProvider(filter).future).catchError((_) => <Booking>[]);
+    final hasActive = bookings.isNotEmpty;
+
+    if (!mounted) return;
+
+    if (hasActive) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(context.l10n.cannotDeleteRoomWithBookings),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(

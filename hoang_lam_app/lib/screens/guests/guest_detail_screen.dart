@@ -60,7 +60,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                 AppIconButton(
                   icon: Icons.more_vert,
                   onPressed: () => _showMoreActions(context),
-                  tooltip: 'Menu',
+                  tooltip: context.l10n.more,
                 ),
               ],
               flexibleSpace: FlexibleSpaceBar(
@@ -375,7 +375,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.l10n.edit,
+          context.l10n.quickActions,
           style: Theme.of(
             context,
           ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),

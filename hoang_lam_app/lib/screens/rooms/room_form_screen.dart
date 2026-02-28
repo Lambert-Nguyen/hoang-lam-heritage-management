@@ -5,6 +5,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room.dart';
 import '../../providers/room_provider.dart';
+import '../../widgets/common/unsaved_changes_guard.dart';
 
 /// Room Form Screen for creating and editing rooms
 ///
@@ -39,6 +40,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
   List<String> _amenities = [];
 
   bool _isLoading = false;
+  bool _isDirty = false;
   bool get _isEditing => widget.room != null;
 
   // Common amenities for quick selection
@@ -83,7 +85,9 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
   Widget build(BuildContext context) {
     final roomTypesAsync = ref.watch(roomTypesProvider);
 
-    return Scaffold(
+    return UnsavedChangesGuard(
+      hasUnsavedChanges: _isDirty && !_isLoading,
+      child: Scaffold(
       appBar: AppBar(
         title: Text(
           _isEditing ? context.l10n.editRoom : context.l10n.addNewRoom,
@@ -99,6 +103,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
       ),
       body: Form(
         key: _formKey,
+        onChanged: () { if (!_isDirty) setState(() => _isDirty = true); },
         child: ListView(
           padding: AppSpacing.paddingScreen,
           children: [
@@ -321,6 +326,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
           ],
         ),
       ),
+    ),
     );
   }
 

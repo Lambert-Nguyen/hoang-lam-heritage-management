@@ -1,12 +1,28 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../core/theme/app_colors.dart';
 import '../models/user.dart';
 import '../providers/auth_provider.dart';
 import '../router/app_router.dart';
 import '../l10n/app_localizations.dart';
 
-/// Main scaffold with role-based bottom navigation
+/// Provider that periodically checks connectivity
+final connectivityProvider = StreamProvider<bool>((ref) {
+  return Stream.periodic(const Duration(seconds: 10), (_) async {
+    try {
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(const Duration(seconds: 5));
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }).asyncMap((future) => future);
+});
+
+/// Main scaffold with role-based bottom navigation and offline banner
 class MainScaffold extends ConsumerWidget {
   final Widget child;
 
@@ -14,7 +30,35 @@ class MainScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(body: child, bottomNavigationBar: _RoleBasedBottomNav());
+    final connectivity = ref.watch(connectivityProvider);
+    final isOffline = connectivity.whenOrNull(data: (v) => !v) ?? false;
+
+    return Scaffold(
+      body: Column(
+        children: [
+          if (isOffline)
+            MaterialBanner(
+              content: Text(
+                context.l10n.errorNoNetwork,
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+              ),
+              leading: const Icon(Icons.wifi_off, color: Colors.white),
+              backgroundColor: AppColors.warning,
+              actions: [
+                TextButton(
+                  onPressed: () => ref.invalidate(connectivityProvider),
+                  child: Text(
+                    context.l10n.retry,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          Expanded(child: child),
+        ],
+      ),
+      bottomNavigationBar: _RoleBasedBottomNav(),
+    );
   }
 }
 

@@ -89,6 +89,12 @@ class MoreMenuScreen extends ConsumerWidget {
               route: AppRoutes.groupBookings,
               color: Colors.indigo,
             ),
+            _MenuItem(
+              icon: Icons.person_search,
+              label: l10n.guestManagement,
+              route: AppRoutes.guests,
+              color: Colors.cyan,
+            ),
           ],
         ),
       );

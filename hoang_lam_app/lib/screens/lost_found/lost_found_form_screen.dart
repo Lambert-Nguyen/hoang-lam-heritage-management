@@ -6,6 +6,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/lost_found.dart';
 import '../../providers/lost_found_provider.dart';
+import '../../providers/room_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/app_input.dart';
@@ -34,8 +35,11 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
   late TextEditingController _notesController;
   late TextEditingController _contactNotesController;
 
+  late TextEditingController _foundByController;
+
   LostFoundCategory _selectedCategory = LostFoundCategory.other;
   DateTime _foundDate = DateTime.now();
+  int? _selectedRoomId;
   bool _guestContacted = false;
   bool _isLoading = false;
   bool _isInitialized = false;
@@ -50,6 +54,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
     _estimatedValueController = TextEditingController();
     _notesController = TextEditingController();
     _contactNotesController = TextEditingController();
+    _foundByController = TextEditingController();
   }
 
   @override
@@ -61,6 +66,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
     _estimatedValueController.dispose();
     _notesController.dispose();
     _contactNotesController.dispose();
+    _foundByController.dispose();
     super.dispose();
   }
 
@@ -76,6 +82,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
     _notesController.text = item.notes;
     _contactNotesController.text = item.contactNotes;
     _selectedCategory = item.category;
+    _selectedRoomId = item.room;
     _guestContacted = item.guestContacted;
     try {
       _foundDate = DateTime.parse(item.foundDate);
@@ -190,6 +197,8 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                 padding: AppSpacing.paddingCard,
                 child: Column(
                   children: [
+                    _buildRoomDropdown(l10n),
+                    const SizedBox(height: AppSpacing.md),
                     AppTextField(
                       controller: _foundLocationController,
                       label: l10n.foundLocationLabel,
@@ -202,6 +211,12 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                       controller: _storageLocationController,
                       label: l10n.storageLocationLabel,
                       hint: l10n.storageLocationHint,
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AppTextField(
+                      controller: _foundByController,
+                      label: l10n.foundByLabel,
+                      hint: l10n.foundByHint,
                     ),
                   ],
                 ),
@@ -271,6 +286,31 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
     );
   }
 
+  Widget _buildRoomDropdown(AppLocalizations l10n) {
+    final roomsAsync = ref.watch(allRoomsProvider);
+    return roomsAsync.when(
+      data: (rooms) => DropdownButtonFormField<int?>(
+        value: _selectedRoomId,
+        decoration: InputDecoration(
+          labelText: l10n.room,
+          border: const OutlineInputBorder(),
+        ),
+        items: [
+          DropdownMenuItem<int?>(value: null, child: Text('—')),
+          ...rooms.map(
+            (r) => DropdownMenuItem<int?>(
+              value: r.id,
+              child: Text('${r.number}${r.name != null ? " - ${r.name}" : ""}'),
+            ),
+          ),
+        ],
+        onChanged: (v) => setState(() => _selectedRoomId = v),
+      ),
+      loading: () => const LinearProgressIndicator(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
+  }
+
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -294,6 +334,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
           itemName: _itemNameController.text,
           description: _descriptionController.text,
           category: _selectedCategory,
+          room: _selectedRoomId,
           foundLocation: _foundLocationController.text,
           storageLocation: _storageLocationController.text,
           guestContacted: _guestContacted,
@@ -315,6 +356,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
           itemName: _itemNameController.text,
           description: _descriptionController.text,
           category: _selectedCategory,
+          room: _selectedRoomId,
           foundLocation: _foundLocationController.text,
           storageLocation: _storageLocationController.text,
           foundDate: _foundDate.toIso8601String().split('T')[0],

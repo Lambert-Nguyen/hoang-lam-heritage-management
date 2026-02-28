@@ -11,6 +11,7 @@ import '../../providers/guest_provider.dart';
 import '../../widgets/common/app_button.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/app_input.dart';
+import '../../widgets/common/unsaved_changes_guard.dart';
 
 /// Screen for creating or editing a guest
 class GuestFormScreen extends ConsumerStatefulWidget {
@@ -25,6 +26,7 @@ class GuestFormScreen extends ConsumerStatefulWidget {
 class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  bool _isDirty = false;
 
   // Controllers
   late final TextEditingController _fullNameController;
@@ -96,7 +98,9 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return UnsavedChangesGuard(
+      hasUnsavedChanges: _isDirty && !_isLoading,
+      child: Scaffold(
       appBar: AppBar(
         title: Text(
           _isEditing ? context.l10n.editGuestTitle : context.l10n.addGuest,
@@ -113,6 +117,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
       ),
       body: Form(
         key: _formKey,
+        onChanged: () { if (!_isDirty) setState(() => _isDirty = true); },
         child: SingleChildScrollView(
           padding: AppSpacing.paddingScreen,
           child: Column(
@@ -152,6 +157,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
         ),
       ),
       bottomNavigationBar: _buildBottomBar(),
+    ),
     );
   }
 

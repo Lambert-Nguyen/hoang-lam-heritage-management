@@ -242,7 +242,14 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
               label: context.l10n.occupied,
               color: AppColors.occupied,
               isSelected: _room.status == RoomStatus.occupied,
-              onTap: () => _quickStatusChange(RoomStatus.occupied),
+              onTap: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(context.l10n.occupiedRequiresBooking),
+                    backgroundColor: AppColors.warning,
+                  ),
+                );
+              },
             ),
             _QuickActionChip(
               icon: Icons.cleaning_services,
@@ -423,7 +430,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
             ),
             TextButton(
               onPressed: () {
-                context.go(AppRoutes.bookings);
+                context.push('${AppRoutes.bookings}?roomId=${_room.id}');
               },
               child: Text(context.l10n.viewAll),
             ),
@@ -515,7 +522,7 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                 icon: Icons.book_online,
                 onPressed: _room.status == RoomStatus.available
                     ? () {
-                        context.push(AppRoutes.newBooking);
+                        context.push(AppRoutes.newBooking, extra: {'preselectedRoomId': _room.id});
                       }
                     : null,
               ),

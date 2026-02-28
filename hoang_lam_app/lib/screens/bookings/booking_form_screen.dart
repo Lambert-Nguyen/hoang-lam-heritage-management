@@ -8,6 +8,7 @@ import '../../providers/dashboard_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../widgets/guests/guest_quick_search.dart';
 import '../../core/theme/app_colors.dart';
+import '../../widgets/common/unsaved_changes_guard.dart';
 
 /// Booking Form Screen - Phase 1.9.6
 ///
@@ -50,6 +51,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   String _specialRequests = '';
   String _internalNotes = '';
   bool _isSubmitting = false;
+  bool _isDirty = false;
 
   @override
   void initState() {
@@ -90,7 +92,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
   Widget build(BuildContext context) {
     final isEdit = widget.booking != null;
 
-    return Scaffold(
+    return UnsavedChangesGuard(
+      hasUnsavedChanges: _isDirty && !_isSubmitting,
+      child: Scaffold(
       appBar: AppBar(
         title: Text(
           isEdit ? context.l10n.editBooking : context.l10n.createBooking,
@@ -98,6 +102,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       ),
       body: Form(
         key: _formKey,
+        onChanged: _markDirty,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -170,7 +175,12 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           ],
         ),
       ),
+    ),
     );
+  }
+
+  void _markDirty() {
+    if (!_isDirty) setState(() => _isDirty = true);
   }
 
   Widget _buildRoomSelection() {

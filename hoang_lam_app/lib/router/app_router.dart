@@ -27,6 +27,7 @@ import '../screens/finance/receipt_preview_screen.dart';
 import '../screens/minibar/minibar_screens.dart';
 import '../screens/guests/guest_detail_screen.dart';
 import '../screens/guests/guest_form_screen.dart';
+import '../screens/guests/guest_list_screen.dart';
 import '../screens/finance/finance_form_screen.dart';
 import '../screens/folio/folio_screens.dart';
 import '../screens/night_audit/night_audit_screen.dart';
@@ -117,6 +118,7 @@ class AppRoutes {
   static const String financialCategories = '/financial-categories';
   static const String staffManagement = '/staff-management';
   // Guest routes
+  static const String guests = '/guests';
   static const String guestDetail = '/guests/detail';
   static const String guestForm = '/guests/form';
   // Finance form route
@@ -526,6 +528,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.financialCategories,
         name: 'financialCategories',
         builder: (context, state) => const FinancialCategoryScreen(),
+      ),
+
+      // Guest list route (outside shell for full screen)
+      GoRoute(
+        path: AppRoutes.guests,
+        name: 'guests',
+        builder: (context, state) => const GuestListScreen(),
       ),
 
       // Guest routes (outside shell for full screen)

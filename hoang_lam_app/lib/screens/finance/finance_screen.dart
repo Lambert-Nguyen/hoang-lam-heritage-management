@@ -12,6 +12,7 @@ import '../../router/app_router.dart';
 import '../../widgets/common/app_card.dart';
 import '../../widgets/common/error_display.dart';
 import '../../widgets/common/loading_indicator.dart';
+import '../../core/utils/error_utils.dart';
 import '../../widgets/finance/finance_chart.dart';
 
 /// Finance screen with transactions and reports
@@ -25,12 +26,18 @@ class FinanceScreen extends ConsumerStatefulWidget {
 
 class _FinanceScreenState extends ConsumerState<FinanceScreen> {
   EntryType? _filterType;
+  DateTime? _dateFrom;
+  DateTime? _dateTo;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final monthlySummaryAsync = ref.watch(currentMonthSummaryProvider);
-    final filter = FinancialEntryFilter(entryType: _filterType);
+    final filter = FinancialEntryFilter(
+      entryType: _filterType,
+      dateFrom: _dateFrom,
+      dateTo: _dateTo,
+    );
     final entriesAsync = ref.watch(filteredEntriesProvider(filter));
 
     return Scaffold(
@@ -64,6 +71,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
               // Filter tabs
               _buildFilterTabs(context, l10n),
 
+              // Date range filter
+              _buildDateRangeBar(l10n),
+
               // Transaction list
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
@@ -73,39 +83,10 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
           ),
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          FloatingActionButton.extended(
-            heroTag: 'expense',
-            onPressed: () => _navigateToForm(EntryType.expense),
-            backgroundColor: AppColors.expense,
-            icon: const Icon(Icons.remove, color: Colors.white),
-            label: Text(
-              l10n.expense,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          AppSpacing.gapVerticalMd,
-          FloatingActionButton.extended(
-            heroTag: 'income',
-            onPressed: () => _navigateToForm(EntryType.income),
-            backgroundColor: AppColors.income,
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: Text(
-              l10n.income,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showAddEntrySheet(l10n),
+        icon: const Icon(Icons.add),
+        label: Text(l10n.addEntry),
       ),
     );
   }
@@ -120,6 +101,35 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       ref.read(currentMonthSummaryProvider.future),
       ref.read(financialEntriesProvider.future),
     ]);
+  }
+
+  void _showAddEntrySheet(AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.arrow_downward, color: AppColors.income),
+              title: Text(l10n.addIncome),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToForm(EntryType.income);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.arrow_upward, color: AppColors.expense),
+              title: Text(l10n.addExpense),
+              onTap: () {
+                Navigator.pop(context);
+                _navigateToForm(EntryType.expense);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _navigateToForm(EntryType type) async {
@@ -181,7 +191,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         error: (error, _) => Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Text(
-            '${l10n.dataLoadError}: $error',
+            getLocalizedErrorMessage(error, l10n),
             style: const TextStyle(color: AppColors.onPrimary),
           ),
         ),
@@ -345,6 +355,85 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     );
   }
 
+  Widget _buildDateRangeBar(AppLocalizations l10n) {
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final hasFilter = _dateFrom != null || _dateTo != null;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.date_range, size: 18, color: AppColors.textSecondary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: InkWell(
+              onTap: _pickDateRange,
+              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.xs,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: hasFilter
+                        ? AppColors.primary
+                        : AppColors.textHint.withValues(alpha: 0.3),
+                  ),
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                ),
+                child: Text(
+                  hasFilter
+                      ? '${_dateFrom != null ? dateFormat.format(_dateFrom!) : '...'}'
+                          ' – '
+                          '${_dateTo != null ? dateFormat.format(_dateTo!) : '...'}'
+                      : l10n.dateRange,
+                  style: TextStyle(
+                    color: hasFilter
+                        ? AppColors.primary
+                        : AppColors.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          if (hasFilter)
+            IconButton(
+              icon: const Icon(Icons.clear, size: 18),
+              onPressed: () => setState(() {
+                _dateFrom = null;
+                _dateTo = null;
+              }),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickDateRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 2),
+      lastDate: now,
+      initialDateRange: _dateFrom != null && _dateTo != null
+          ? DateTimeRange(start: _dateFrom!, end: _dateTo!)
+          : null,
+    );
+    if (picked != null) {
+      setState(() {
+        _dateFrom = picked.start;
+        _dateTo = picked.end;
+      });
+    }
+  }
+
   Widget _buildTransactionList(
     BuildContext context,
     AsyncValue<List<FinancialEntryListItem>> entriesAsync,
@@ -405,7 +494,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       },
       loading: () => const LoadingIndicator(),
       error: (error, stack) => ErrorDisplay(
-        message: '${context.l10n.dataLoadError}: $error',
+        message: getLocalizedErrorMessage(error, context.l10n),
         onRetry: _refreshData,
       ),
     );
@@ -565,7 +654,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }

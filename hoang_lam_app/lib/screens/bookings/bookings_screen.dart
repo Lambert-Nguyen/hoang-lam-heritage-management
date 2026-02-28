@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../models/booking.dart';
 import '../../providers/booking_provider.dart';
 import '../../router/app_router.dart';
@@ -77,7 +78,19 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                 final filteredBookings = _applySearchFilter(bookings);
 
                 if (filteredBookings.isEmpty) {
-                  return _buildEmptyState();
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      ref.invalidate(filteredBookingsProvider(filter));
+                    },
+                    child: ListView(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: _buildEmptyState(),
+                        ),
+                      ],
+                    ),
+                  );
                 }
 
                 return RefreshIndicator(
@@ -118,7 +131,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      error.toString(),
+                      getLocalizedErrorMessage(error, context.l10n),
                       style: Theme.of(context).textTheme.bodySmall,
                       textAlign: TextAlign.center,
                     ),

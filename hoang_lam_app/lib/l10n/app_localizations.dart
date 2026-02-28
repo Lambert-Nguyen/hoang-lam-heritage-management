@@ -1851,6 +1851,22 @@ class AppLocalizations {
   String get confirmNoShowMessage => translate('confirm_no_show_message');
   String get checkoutMustBeAfterCheckin =>
       translate('checkout_must_be_after_checkin');
+  // Round 4 — Major fixes
+  String get occupiedRequiresBooking =>
+      translate('occupied_requires_booking');
+  String get cannotDeleteRoomWithBookings =>
+      translate('cannot_delete_room_with_bookings');
+  String get unsavedChangesTitle => translate('unsaved_changes_title');
+  String get unsavedChangesMessage => translate('unsaved_changes_message');
+  String get discardChanges => translate('discard_changes');
+  String get keepEditing => translate('keep_editing');
+  String get cancelReasonRequired => translate('cancel_reason_required');
+  String get actionFailed => translate('action_failed');
+  String get foundByLabel => translate('found_by_label');
+  String get foundByHint => translate('found_by_hint');
+  String get addIncome => translate('add_income');
+  String get addExpense => translate('add_expense');
+  String get addEntry => translate('add_entry');
 }
 
 // Vietnamese translations
@@ -3546,6 +3562,22 @@ const Map<String, String> _viTranslations = {
   'confirm_no_show_message':
       'Đánh dấu khách {guestName} - Phòng {roomNumber} không đến?',
   'checkout_must_be_after_checkin': 'Ngày trả phòng phải sau ngày nhận phòng',
+  // Round 4 — Major fixes
+  'occupied_requires_booking':
+      'Trạng thái "Có khách" chỉ được đặt qua nhận phòng. Hãy tạo đặt phòng trước.',
+  'cannot_delete_room_with_bookings':
+      'Không thể xóa phòng có đặt phòng đang hoạt động.',
+  'unsaved_changes_title': 'Thay đổi chưa lưu',
+  'unsaved_changes_message': 'Bạn có thay đổi chưa lưu. Bạn có muốn hủy bỏ?',
+  'discard_changes': 'Hủy bỏ',
+  'keep_editing': 'Tiếp tục chỉnh sửa',
+  'cancel_reason_required': 'Vui lòng nhập lý do hủy.',
+  'action_failed': 'Thao tác thất bại. Vui lòng thử lại.',
+  'found_by_label': 'Người tìm thấy',
+  'found_by_hint': 'Tên nhân viên tìm thấy',
+  'add_income': 'Thêm thu',
+  'add_expense': 'Thêm chi',
+  'add_entry': 'Thêm mục',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -5240,6 +5272,23 @@ const Map<String, String> _enTranslations = {
   'confirm_no_show_message': 'Mark {guestName} - Room {roomNumber} as no-show?',
   'checkout_must_be_after_checkin':
       'Check-out date must be after check-in date',
+  // Round 4 — Major fixes
+  'occupied_requires_booking':
+      '"Occupied" status can only be set via check-in. Please create a booking first.',
+  'cannot_delete_room_with_bookings':
+      'Cannot delete room with active bookings.',
+  'unsaved_changes_title': 'Unsaved Changes',
+  'unsaved_changes_message':
+      'You have unsaved changes. Do you want to discard them?',
+  'discard_changes': 'Discard',
+  'keep_editing': 'Keep Editing',
+  'cancel_reason_required': 'Please enter a cancellation reason.',
+  'action_failed': 'Action failed. Please try again.',
+  'found_by_label': 'Found by',
+  'found_by_hint': 'Staff member who found it',
+  'add_income': 'Add Income',
+  'add_expense': 'Add Expense',
+  'add_entry': 'Add Entry',
 };
 
 // Delegate

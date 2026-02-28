@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/booking.dart';
 import '../../models/room.dart';
@@ -73,7 +74,7 @@ class BookingDetailScreen extends ConsumerWidget {
                   color: AppColors.error,
                 ),
                 const SizedBox(height: 16),
-                Text('${context.l10n.error}: $error'),
+                Text(getLocalizedErrorMessage(error, context.l10n)),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
@@ -96,10 +97,15 @@ class BookingDetailScreen extends ConsumerWidget {
       decimalDigits: 0,
     );
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Room and Status Section
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(bookingByIdProvider(bookingId));
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            // Room and Status Section
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -342,6 +348,7 @@ class BookingDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -587,7 +594,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }
@@ -659,7 +666,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }
@@ -713,7 +720,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }
@@ -767,7 +774,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }
@@ -816,7 +823,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }
@@ -858,7 +865,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }
@@ -900,7 +907,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
       }
     }
