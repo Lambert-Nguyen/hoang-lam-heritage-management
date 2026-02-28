@@ -488,13 +488,13 @@ class _StaffTile extends StatelessWidget {
 // Staff Detail Bottom Sheet
 // ============================================================
 
-class _StaffDetailSheet extends StatelessWidget {
+class _StaffDetailSheet extends ConsumerWidget {
   final User user;
 
   const _StaffDetailSheet({required this.user});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final roleColor = _getRoleColor(user.role);
     final initial = user.displayName.isNotEmpty
         ? user.displayName[0].toUpperCase()
@@ -633,11 +633,87 @@ class _StaffDetailSheet extends StatelessWidget {
               ),
             ),
 
+            // Reset Password button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: const Icon(Icons.lock_reset),
+                  label: Text(context.l10n.resetPassword),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppColors.warning,
+                    side: const BorderSide(color: AppColors.warning),
+                  ),
+                  onPressed: () => _resetPassword(context, ref),
+                ),
+              ),
+            ),
+
             AppSpacing.gapVerticalMd,
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _resetPassword(BuildContext context, WidgetRef ref) async {
+    final l10n = context.l10n;
+    final passwordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final newPassword = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.resetPassword),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: passwordController,
+            obscureText: true,
+            decoration: InputDecoration(
+              labelText: l10n.newPassword,
+              border: const OutlineInputBorder(),
+            ),
+            validator: (v) {
+              if (v == null || v.length < 6) return l10n.passwordMinLength;
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(ctx, passwordController.text);
+              }
+            },
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (newPassword != null && context.mounted) {
+      final success = await ref
+          .read(authStateProvider.notifier)
+          .resetUserPassword(user.id, newPassword);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success
+                  ? l10n.passwordResetSuccess
+                  : l10n.passwordResetFailed,
+            ),
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildDetailRow(

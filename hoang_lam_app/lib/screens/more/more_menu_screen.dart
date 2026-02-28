@@ -10,65 +10,120 @@ import '../../providers/auth_provider.dart';
 import '../../router/app_router.dart';
 
 /// More menu screen — grid of all features, role-filtered, with category sections
-class MoreMenuScreen extends ConsumerWidget {
+class MoreMenuScreen extends ConsumerStatefulWidget {
   const MoreMenuScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MoreMenuScreen> createState() => _MoreMenuScreenState();
+}
+
+class _MoreMenuScreenState extends ConsumerState<MoreMenuScreen> {
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final currentUser = ref.watch(currentUserProvider);
     final role = currentUser?.role;
 
-    final sections = _buildMenuSections(l10n, role);
+    final allSections = _buildMenuSections(l10n, role);
+
+    // Filter sections based on search query
+    final sections = _searchQuery.isEmpty
+        ? allSections
+        : _filterSections(allSections, _searchQuery);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.allFeatures)),
-      body: ListView.builder(
-        padding: AppSpacing.paddingScreen,
-        itemCount: sections.length,
-        itemBuilder: (context, index) {
-          final section = sections[index];
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (index > 0) const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: Text(
-                  section.title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: AppColors.textSecondary,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: l10n.searchFeatures,
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
                 ),
               ),
-              GridView.count(
-                crossAxisCount: 3,
-                mainAxisSpacing: AppSpacing.md,
-                crossAxisSpacing: AppSpacing.md,
-                childAspectRatio: 1.0,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: section.items
-                    .map(
-                      (item) => _MenuTile(
-                        icon: item.icon,
-                        label: item.label,
-                        color: item.color,
-                        onTap: () => context.push(item.route),
-                      ),
-                    )
-                    .toList(),
-              ),
-            ],
-          );
-        },
+              onChanged: (value) => setState(() => _searchQuery = value.trim()),
+            ),
+          ),
+          Expanded(
+            child: sections.isEmpty
+                ? Center(
+                    child: Text(
+                      l10n.noResultsFound,
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    itemCount: sections.length,
+                    itemBuilder: (context, index) {
+                      final section = sections[index];
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (index > 0) const SizedBox(height: AppSpacing.lg),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                            child: Text(
+                              section.title,
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                          GridView.count(
+                            crossAxisCount: 3,
+                            mainAxisSpacing: AppSpacing.md,
+                            crossAxisSpacing: AppSpacing.md,
+                            childAspectRatio: 1.0,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: section.items
+                                .map(
+                                  (item) => _MenuTile(
+                                    icon: item.icon,
+                                    label: item.label,
+                                    color: item.color,
+                                    onTap: () => context.push(item.route),
+                                  ),
+                                )
+                                .toList(),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
 
-  List<_MenuSection> _buildMenuSections(AppLocalizations l10n, UserRole? role) {
+  List<_MenuSection> _filterSections(
+    List<_MenuSection> sections,
+    String query,
+  ) {
+    final lowerQuery = query.toLowerCase();
+    final filtered = <_MenuSection>[];
+    for (final section in sections) {
+      final matchingItems = section.items
+          .where((item) => item.label.toLowerCase().contains(lowerQuery))
+          .toList();
+      if (matchingItems.isNotEmpty) {
+        filtered.add(_MenuSection(title: section.title, items: matchingItems));
+      }
+    }
+    return filtered;
+  }
+
+  static List<_MenuSection> _buildMenuSections(AppLocalizations l10n, UserRole? role) {
     final sections = <_MenuSection>[];
 
     // Booking Management section
@@ -171,6 +226,15 @@ class MoreMenuScreen extends ConsumerWidget {
           color: Colors.lime,
         ),
       ];
+
+      adminItems.add(
+        _MenuItem(
+          icon: Icons.history,
+          label: l10n.auditLog,
+          route: AppRoutes.auditLog,
+          color: Colors.grey,
+        ),
+      );
 
       // Pricing — owner only
       if (role?.canEditRates ?? false) {

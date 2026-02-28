@@ -54,9 +54,9 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(text: l10n.today),
-            Tab(text: l10n.all),
-            Tab(text: l10n.myTasks),
+            Tab(text: _tabLabel(l10n.today, ref.watch(todayTasksProvider))),
+            Tab(text: _tabLabel(l10n.all, ref.watch(filteredTasksProvider(_filter)))),
+            Tab(text: _tabLabel(l10n.myTasks, ref.watch(myTasksProvider))),
           ],
         ),
       ),
@@ -85,7 +85,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
             message: l10n.noTasksScheduledToday,
           );
         }
-        return _buildTaskList(tasks);
+        return _buildTaskList(tasks, showPriorityHint: true);
       },
       loading: () => const LoadingIndicator(),
       error: (error, _) => _buildErrorState(error.toString()),
@@ -132,7 +132,50 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
     );
   }
 
-  Widget _buildTaskList(List<HousekeepingTask> tasks) {
+  /// Sort tasks by priority: checkout cleans first (rooms with upcoming
+  /// check-ins need to be cleaned before new guests arrive), then by
+  /// scheduled date (earliest first), then by creation date (oldest first).
+  void _sortByPriority(List<HousekeepingTask> tasks) {
+    tasks.sort((a, b) {
+      // 1. Task type priority: checkout_clean > stay_clean > others
+      final typePriority = _taskTypePriority(a.taskType)
+          .compareTo(_taskTypePriority(b.taskType));
+      if (typePriority != 0) return typePriority;
+
+      // 2. Scheduled date: earliest first
+      final dateCompare = a.scheduledDate.compareTo(b.scheduledDate);
+      if (dateCompare != 0) return dateCompare;
+
+      // 3. Created date: oldest first (waiting longest = most urgent)
+      final aCreated = a.createdAt;
+      final bCreated = b.createdAt;
+      if (aCreated != null && bCreated != null) {
+        return aCreated.compareTo(bCreated);
+      }
+      return 0;
+    });
+  }
+
+  /// Lower number = higher priority.
+  int _taskTypePriority(HousekeepingTaskType type) {
+    switch (type) {
+      case HousekeepingTaskType.checkoutClean:
+        return 0; // Highest: room has upcoming check-in
+      case HousekeepingTaskType.stayClean:
+        return 1; // Guest currently staying
+      case HousekeepingTaskType.inspection:
+        return 2;
+      case HousekeepingTaskType.deepClean:
+        return 3;
+      case HousekeepingTaskType.maintenance:
+        return 4;
+    }
+  }
+
+  Widget _buildTaskList(
+    List<HousekeepingTask> tasks, {
+    bool showPriorityHint = false,
+  }) {
     final l10n = AppLocalizations.of(context)!;
     // Group tasks by status
     final pendingTasks = tasks
@@ -149,11 +192,19 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         )
         .toList();
 
+    // Sort each group by priority when requested (Today tab)
+    if (showPriorityHint) {
+      _sortByPriority(pendingTasks);
+      _sortByPriority(inProgressTasks);
+    }
+
     return RefreshIndicator(
       onRefresh: _refreshTasks,
       child: ListView(
         padding: AppSpacing.paddingScreen,
         children: [
+          // Priority hint banner for the Today tab
+          if (showPriorityHint) _buildPriorityHint(l10n),
           if (pendingTasks.isNotEmpty) ...[
             _buildSectionHeader(l10n.pending, pendingTasks.length),
             ...pendingTasks.map(
@@ -175,6 +226,25 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
               (task) => TaskCard(task: task, onTap: () => _viewTask(task)),
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriorityHint(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        children: [
+          Icon(Icons.sort, size: 14, color: AppColors.textSecondary),
+          AppSpacing.gapHorizontalXs,
+          Text(
+            l10n.sortedByPriority,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
         ],
       ),
     );
@@ -242,6 +312,11 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         ),
       ),
     );
+  }
+
+  String _tabLabel(String label, AsyncValue<List<HousekeepingTask>> async) {
+    final count = async.valueOrNull?.length;
+    return count != null ? '$label ($count)' : label;
   }
 
   Future<void> _refreshTasks() async {

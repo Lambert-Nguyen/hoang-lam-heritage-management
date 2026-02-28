@@ -84,6 +84,12 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   AppSpacing.gapVerticalLg,
 
+                  // KPI Metrics (UC-22 RevPAR & UC-23 ADR)
+                  if (dashboard.roomStatus.total > 0) ...[
+                    _buildKpiCard(context, l10n, dashboard),
+                    AppSpacing.gapVerticalLg,
+                  ],
+
                   // Room status section
                   _buildSectionHeader(context, l10n.roomStatus, Icons.hotel),
                   AppSpacing.gapVerticalMd,
@@ -205,6 +211,94 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  // UC-22 & UC-23: KPI metrics card (RevPAR & ADR)
+  Widget _buildKpiCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    dashboard,
+  ) {
+    final totalRooms = dashboard.roomStatus.total as int;
+    final occupiedRooms = dashboard.roomStatus.occupied as int;
+    final todayRevenue = dashboard.today.revenue as double;
+
+    final adr = occupiedRooms > 0 ? todayRevenue / occupiedRooms : 0.0;
+    final revpar = totalRooms > 0 ? todayRevenue / totalRooms : 0.0;
+
+    final currencyFormat = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'đ',
+      decimalDigits: 0,
+    );
+
+    return AppCard(
+      child: Padding(
+        padding: AppSpacing.paddingCard,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.analytics, size: 20, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.keyMetrics,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _buildMetricItem(
+                    'ADR',
+                    currencyFormat.format(adr),
+                    l10n.averageDailyRate,
+                  ),
+                ),
+                Expanded(
+                  child: _buildMetricItem(
+                    'RevPAR',
+                    currencyFormat.format(revpar),
+                    l10n.revenuePerAvailableRoom,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetricItem(String label, String value, String tooltip) {
+    return Tooltip(
+      message: tooltip,
+      child: Column(
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildDateHeader(BuildContext context) {
     final now = DateTime.now();
     final locale = context.l10n.locale.languageCode;
@@ -281,32 +375,49 @@ class HomeScreen extends ConsumerWidget {
           );
         }
 
-        return Wrap(
-          spacing: AppSpacing.roomCardSpacing,
-          runSpacing: AppSpacing.roomCardSpacing,
-          children: rooms.map((room) {
-            return RoomStatusCard(
-              room: room,
-              onTap: () {
-                // Navigate to room detail
-                context.push(AppRoutes.roomDetail, extra: room);
-              },
-              onLongPress: () async {
-                // Show quick status update
-                final newStatus = await QuickStatusBottomSheet.show(
-                  context,
-                  room,
+        final l10n = context.l10n;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: AppSpacing.roomCardSpacing,
+              runSpacing: AppSpacing.roomCardSpacing,
+              children: rooms.map((room) {
+                return RoomStatusCard(
+                  room: room,
+                  onTap: () {
+                    // Navigate to room detail
+                    context.push(AppRoutes.roomDetail, extra: room);
+                  },
+                  onLongPress: () async {
+                    // Show quick status update
+                    final newStatus = await QuickStatusBottomSheet.show(
+                      context,
+                      room,
+                    );
+                    if (newStatus != null) {
+                      await ref
+                          .read(roomStateProvider.notifier)
+                          .updateRoomStatus(room.id, newStatus);
+                      // Refresh dashboard stats after room status change
+                      ref.invalidate(dashboardSummaryProvider);
+                    }
+                  },
                 );
-                if (newStatus != null) {
-                  await ref
-                      .read(roomStateProvider.notifier)
-                      .updateRoomStatus(room.id, newStatus);
-                  // Refresh dashboard stats after room status change
-                  ref.invalidate(dashboardSummaryProvider);
-                }
-              },
-            );
-          }).toList(),
+              }).toList(),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.sm),
+              child: Text(
+                l10n.longPressToChangeStatus,
+                style: TextStyle(
+                  color: AppColors.textHint,
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          ],
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -327,23 +438,24 @@ class HomeScreen extends ConsumerWidget {
       spacing: AppSpacing.md,
       runSpacing: AppSpacing.sm,
       children: [
-        _buildLegendItem(l10n.available, AppColors.available),
-        _buildLegendItem(l10n.occupied, AppColors.occupied),
-        _buildLegendItem(l10n.cleaning, AppColors.cleaning),
-        _buildLegendItem(l10n.maintenance, AppColors.maintenance),
-        _buildLegendItem(l10n.blocked, AppColors.blocked),
+        _buildLegendItem(l10n.available, AppColors.available, icon: Icons.check),
+        _buildLegendItem(l10n.occupied, AppColors.occupied, icon: Icons.person),
+        _buildLegendItem(l10n.cleaning, AppColors.cleaning, icon: Icons.cleaning_services),
+        _buildLegendItem(l10n.maintenance, AppColors.maintenance, icon: Icons.build),
+        _buildLegendItem(l10n.blocked, AppColors.blocked, icon: Icons.block),
       ],
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(String label, Color color, {IconData? icon}) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: 16,
+          height: 16,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          child: icon != null ? Icon(icon, size: 10, color: Colors.white) : null,
         ),
         AppSpacing.gapHorizontalXs,
         Text(
@@ -639,11 +751,11 @@ class _NotificationIconButtonState
 }
 
 /// Compact action button for quick check-in/check-out on dashboard cards
-class _QuickActionButton extends StatelessWidget {
+class _QuickActionButton extends StatefulWidget {
   final String label;
   final Color color;
   final IconData icon;
-  final VoidCallback onPressed;
+  final Future<void> Function() onPressed;
 
   const _QuickActionButton({
     required this.label,
@@ -653,18 +765,42 @@ class _QuickActionButton extends StatelessWidget {
   });
 
   @override
+  State<_QuickActionButton> createState() => _QuickActionButtonState();
+}
+
+class _QuickActionButtonState extends State<_QuickActionButton> {
+  bool _isLoading = false;
+
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 32,
+      height: 36,
       child: FilledButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 16),
-        label: Text(label, style: const TextStyle(fontSize: 12)),
+        onPressed: _isLoading
+            ? null
+            : () async {
+                setState(() => _isLoading = true);
+                try {
+                  await widget.onPressed();
+                } finally {
+                  if (mounted) setState(() => _isLoading = false);
+                }
+              },
+        icon: _isLoading
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            : Icon(widget.icon, size: 16),
+        label: Text(widget.label, style: const TextStyle(fontSize: 12)),
         style: FilledButton.styleFrom(
-          backgroundColor: color,
+          backgroundColor: widget.color,
           padding: const EdgeInsets.symmetric(horizontal: 10),
           minimumSize: Size.zero,
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
     );

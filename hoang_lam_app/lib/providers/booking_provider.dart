@@ -306,6 +306,17 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     }
   }
 
+  /// Swap room for a checked-in booking
+  Future<Booking> swapRoom(int bookingId, int newRoomId, {String? reason}) async {
+    try {
+      final result = await _repository.swapRoom(bookingId, newRoomId, reason: reason);
+      await loadBookings();
+      return result;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   /// Cancel a booking
   Future<Booking> cancelBooking(int id, {String? reason}) async {
     try {
@@ -330,6 +341,50 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
       return booking;
     } catch (error) {
       rethrow;
+    }
+  }
+
+  /// Extend stay by updating the checkout date
+  Future<Booking?> extendStay(int bookingId, DateTime newCheckOutDate) async {
+    try {
+      final result = await _repository.extendStay(bookingId, newCheckOutDate);
+      await loadBookings();
+      return result;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Split payment across multiple methods
+  Future<Booking?> splitPayment(
+    int bookingId,
+    List<Map<String, dynamic>> splits,
+  ) async {
+    try {
+      final result = await _repository.splitPayment(bookingId, splits);
+      await loadBookings();
+      return result;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Process a partial refund
+  Future<Booking?> partialRefund(
+    int bookingId, {
+    required int amount,
+    required String reason,
+  }) async {
+    try {
+      final result = await _repository.partialRefund(
+        bookingId,
+        amount: amount,
+        reason: reason,
+      );
+      await loadBookings();
+      return result;
+    } catch (e) {
+      return null;
     }
   }
 

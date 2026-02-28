@@ -178,6 +178,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
+  /// Admin reset password for a staff user
+  Future<bool> resetUserPassword(int userId, String newPassword) async {
+    try {
+      await _repository.resetUserPassword(userId, newPassword);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Refresh session by validating/refreshing the token with the server
   /// Returns true if session is still valid
   Future<bool> refreshSession() async {

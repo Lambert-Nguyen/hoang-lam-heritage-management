@@ -230,28 +230,16 @@ class SettingsScreen extends ConsumerWidget {
             title: l10n.syncData,
             subtitle: l10n.lastUpdateJustNow,
             trailing: _buildComingSoonBadge(l10n),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.featureComingSoon),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: null,
+            enabled: false,
           ),
           _buildSettingsTile(
             context,
             icon: Icons.backup,
             title: l10n.backup,
             trailing: _buildComingSoonBadge(l10n),
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(l10n.featureComingSoon),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
+            onTap: null,
+            enabled: false,
           ),
 
           const Divider(),
@@ -422,8 +410,10 @@ class SettingsScreen extends ConsumerWidget {
     Color? textColor,
     Widget? trailing,
     VoidCallback? onTap,
+    bool enabled = true,
   }) {
     return ListTile(
+      enabled: enabled,
       leading: Icon(icon, color: textColor ?? AppColors.primary),
       title: Text(title, style: TextStyle(color: textColor, fontSize: 16)),
       subtitle: subtitle != null
@@ -720,7 +710,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
         AppSpacing.gapVerticalSm,
         const Text(
-          '© 2024 Hoàng Lâm Heritage Suites. All rights reserved.',
+          '© 2026 Hoàng Lâm Heritage Suites. All rights reserved.',
           style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
         ),
       ],
@@ -758,6 +748,25 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildHelpItem(IconData icon, String title, String description) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 18, color: AppColors.primary),
+            const SizedBox(width: 8),
+            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 26),
+          child: Text(description),
+        ),
+      ],
+    );
+  }
+
   void _showHelpDialog(BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
@@ -768,35 +777,15 @@ class SettingsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '📋 ${l10n.helpRoomManagement}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(l10n.helpRoomManagementDesc),
+              _buildHelpItem(Icons.meeting_room, l10n.helpRoomManagement, l10n.helpRoomManagementDesc),
               const SizedBox(height: 12),
-              Text(
-                '📅 ${l10n.helpBookings}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(l10n.helpBookingsDesc),
+              _buildHelpItem(Icons.calendar_month, l10n.helpBookings, l10n.helpBookingsDesc),
               const SizedBox(height: 12),
-              Text(
-                '🧹 ${l10n.helpHousekeeping}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(l10n.helpHousekeepingDesc),
+              _buildHelpItem(Icons.cleaning_services, l10n.helpHousekeeping, l10n.helpHousekeepingDesc),
               const SizedBox(height: 12),
-              Text(
-                '💰 ${l10n.helpFinance}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(l10n.helpFinanceDesc),
+              _buildHelpItem(Icons.account_balance_wallet, l10n.helpFinance, l10n.helpFinanceDesc),
               const SizedBox(height: 12),
-              Text(
-                '🌙 ${l10n.helpNightAudit}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(l10n.helpNightAuditDesc),
+              _buildHelpItem(Icons.nightlight, l10n.helpNightAudit, l10n.helpNightAuditDesc),
             ],
           ),
         ),

@@ -110,6 +110,7 @@ class AppLocalizations {
   String get forgotPassword => translate('forgot_password');
   String get contactAdminResetPassword =>
       translate('contact_admin_reset_password');
+  String get forgotPasswordContact => translate('forgot_password_contact');
   String get enableBiometricTitle => translate('enable_biometric_title');
   String get enableBiometricMessage => translate('enable_biometric_message');
   String get biometricEnabled => translate('biometric_enabled');
@@ -131,6 +132,9 @@ class AppLocalizations {
   String get newPasswordMustBeDifferent =>
       translate('new_password_must_be_different');
   String get passwordsDoNotMatch => translate('passwords_do_not_match');
+  String get resetPassword => translate('reset_password');
+  String get passwordResetSuccess => translate('password_reset_success');
+  String get passwordResetFailed => translate('password_reset_failed');
   String get apartmentManagement => translate('apartment_management');
 
   // ===== DASHBOARD =====
@@ -151,6 +155,7 @@ class AppLocalizations {
   String get newBooking => translate('new_booking');
   String get noRooms => translate('no_rooms');
   String get roomLoadError => translate('room_load_error');
+  String get longPressToChangeStatus => translate('long_press_to_change_status');
   String get noCheckoutToday => translate('no_checkout_today');
   String get noCheckinToday => translate('no_checkin_today');
   String get guest => translate('guest');
@@ -222,6 +227,10 @@ class AppLocalizations {
   String get earlyCheckInRecorded => translate('early_check_in_recorded');
   String get lateCheckOutRecorded => translate('late_check_out_recorded');
   String get feesAndCharges => translate('fees_and_charges');
+  String get earlyDeparture => translate('early_departure');
+  String get scheduledNights => translate('scheduled_nights');
+  String get actualNights => translate('actual_nights');
+  String get adjustedTotal => translate('adjusted_total');
 
   // ===== ROOM =====
   String get roomManagement => translate('room_management');
@@ -294,6 +303,7 @@ class AppLocalizations {
   String get age => translate('age');
   String get yearsOld => translate('years_old');
   String get call => translate('call');
+  String get rebook => translate('rebook');
   String get removeVip => translate('remove_vip');
   String get markVip => translate('mark_vip');
   String get markedAsVip => translate('marked_as_vip');
@@ -395,6 +405,7 @@ class AppLocalizations {
   String get noTasksScheduledToday => translate('no_tasks_scheduled_today');
   String get noTasksCreated => translate('no_tasks_created');
   String get noTasksAssigned => translate('no_tasks_assigned');
+  String get sortedByPriority => translate('sorted_by_priority');
   String get pending => translate('pending');
   String get inProgress => translate('in_progress');
   String get completed => translate('completed');
@@ -748,6 +759,7 @@ class AppLocalizations {
   // Group Booking
   String get depositVnd => translate('deposit_vnd');
   String get discountPercent => translate('discount_percent');
+  String get invalidDiscountPercent => translate('invalid_discount_percent');
   String get depositPaidLabel => translate('deposit_paid_label');
   String get bookingCreated => translate('booking_created');
   String get pleaseAssignRoomsFirst => translate('please_assign_rooms_first');
@@ -756,6 +768,7 @@ class AppLocalizations {
   String get roomIdList => translate('room_id_list');
   String get invalidRoomList => translate('invalid_room_list');
   String get roomsAssigned => translate('rooms_assigned');
+  String get autoCalculatedTotal => translate('auto_calculated_total');
 
   // Financial Category
   String get categoryNameRequired => translate('category_name_required');
@@ -1821,6 +1834,8 @@ class AppLocalizations {
   String get confirmCheckOutMessage => translate('confirm_check_out_message');
   String get guestManagement => translate('guest_management');
   String get allFeatures => translate('all_features');
+  String get searchFeatures => translate('search_features');
+  String get noResultsFound => translate('no_results_found');
   String get operations => translate('operations');
   String get messaging => translate('messaging');
   String get declaration => translate('declaration');
@@ -1867,6 +1882,54 @@ class AppLocalizations {
   String get addIncome => translate('add_income');
   String get addExpense => translate('add_expense');
   String get addEntry => translate('add_entry');
+  // UC-2: Room swap mid-stay
+  String get swapRoom => translate('swap_room');
+  String get roomSwapped => translate('room_swapped');
+  // UC-3: Extend stay
+  String get extendStay => translate('extend_stay');
+  String get stayExtended => translate('stay_extended');
+  String get selectNewCheckoutDate => translate('select_new_checkout_date');
+  String get additionalNights => translate('additional_nights');
+  String get additionalCost => translate('additional_cost');
+  String get newCheckoutDate => translate('new_checkout_date');
+
+  // UC-22 & UC-23: KPI metrics (RevPAR & ADR)
+  String get keyMetrics => translate('key_metrics');
+  String get averageDailyRate => translate('average_daily_rate');
+  String get revenuePerAvailableRoom => translate('revenue_per_available_room');
+
+  // UC-9: Split payment
+  String get splitPayment => translate('split_payment');
+  String get paymentSplitSuccess => translate('payment_split_success');
+  String get addPaymentMethod => translate('add_payment_method');
+  String get remaining => translate('remaining');
+
+  // UC-10: Partial refund
+  String get partialRefund => translate('partial_refund');
+  String get refundAmount => translate('refund_amount');
+  String get refundExceedsTotal => translate('refund_exceeds_total');
+  String get refundProcessed => translate('refund_processed');
+
+  // UC-29: Audit trail
+  String get auditLog => translate('audit_log');
+  String get activityLog => translate('activity_log');
+  String get allActivities => translate('all_activities');
+  String get noActivities => translate('no_activities');
+
+  // UC-11: Outstanding balance
+  String get markAsPaid => translate('mark_as_paid');
+  String get balanceSettled => translate('balance_settled');
+
+  // UC-18: Guest preferences
+  String get guestPreferences => translate('guest_preferences');
+  String get preferencesSaved => translate('preferences_saved');
+  String get roomPreference => translate('room_preference');
+  String get dietaryNotes => translate('dietary_notes');
+  String get specialNeeds => translate('special_needs');
+
+  // UC-27: Financial export
+  String get exportData => translate('export_data');
+  String get selectDateRange => translate('select_date_range');
 }
 
 // Vietnamese translations
@@ -1940,6 +2003,8 @@ const Map<String, String> _viTranslations = {
   'forgot_password': 'Quên mật khẩu?',
   'contact_admin_reset_password':
       'Vui lòng liên hệ quản trị viên để đặt lại mật khẩu',
+  'forgot_password_contact':
+      'Vui lòng liên hệ quản lý để đặt lại mật khẩu.\nĐiện thoại: 0236 XXX XXXX',
   'enable_biometric_title': 'Kích hoạt đăng nhập sinh trắc học',
   'enable_biometric_message':
       'Bạn có muốn sử dụng vân tay hoặc Face ID để đăng nhập nhanh hơn trong lần tới?',
@@ -1960,6 +2025,9 @@ const Map<String, String> _viTranslations = {
   'please_confirm_new_password': 'Vui lòng xác nhận mật khẩu mới',
   'new_password_must_be_different': 'Mật khẩu mới phải khác mật khẩu hiện tại',
   'passwords_do_not_match': 'Mật khẩu xác nhận không khớp',
+  'reset_password': 'Đặt lại mật khẩu',
+  'password_reset_success': 'Đặt lại mật khẩu thành công',
+  'password_reset_failed': 'Đặt lại mật khẩu thất bại',
   'apartment_management': 'Quản lý căn hộ',
 
   // ===== DASHBOARD =====
@@ -1980,6 +2048,7 @@ const Map<String, String> _viTranslations = {
   'new_booking': 'Đặt phòng mới',
   'no_rooms': 'Chưa có phòng nào',
   'room_load_error': 'Lỗi tải dữ liệu phòng',
+  'long_press_to_change_status': 'Nhấn giữ phòng để thay đổi trạng thái',
   'no_checkout_today': 'Không có check-out hôm nay',
   'no_checkin_today': 'Không có check-in hôm nay',
   'guest': 'Khách',
@@ -2051,6 +2120,10 @@ const Map<String, String> _viTranslations = {
   'early_check_in_recorded': 'Đã ghi nhận phí nhận sớm',
   'late_check_out_recorded': 'Đã ghi nhận phí trả muộn',
   'fees_and_charges': 'Phí & Phụ thu',
+  'early_departure': 'Trả phòng sớm',
+  'scheduled_nights': 'Số đêm dự kiến',
+  'actual_nights': 'Số đêm thực tế',
+  'adjusted_total': 'Tổng tiền điều chỉnh',
 
   // ===== ROOM =====
   'room_management': 'Quản lý phòng',
@@ -2123,6 +2196,7 @@ const Map<String, String> _viTranslations = {
   'age': 'Tuổi',
   'years_old': 'tuổi',
   'call': 'Gọi điện',
+  'rebook': 'Đặt phòng lại',
   'remove_vip': 'Bỏ VIP',
   'mark_vip': 'Đánh dấu VIP',
   'marked_as_vip': 'đã được đánh dấu VIP',
@@ -2224,6 +2298,7 @@ const Map<String, String> _viTranslations = {
       'Không có công việc nào được lên lịch cho hôm nay',
   'no_tasks_created': 'Chưa có công việc nào được tạo',
   'no_tasks_assigned': 'Bạn chưa được phân công công việc nào',
+  'sorted_by_priority': 'Sắp xếp theo độ ưu tiên',
   'pending': 'Chờ xử lý',
   'in_progress': 'Đang làm',
   'completed': 'Hoàn thành',
@@ -2554,6 +2629,7 @@ const Map<String, String> _viTranslations = {
   'disposed_success': 'Đã xử lý đồ vật',
   'deposit_vnd': 'Đặt cọc (VNĐ)',
   'discount_percent': 'Giảm giá (%)',
+  'invalid_discount_percent': 'Phần trăm giảm giá phải từ 0 đến 100',
   'deposit_paid_label': 'Đã thanh toán đặt cọc',
   'booking_created': 'Đã tạo đặt phòng',
   'please_assign_rooms_first': 'Vui lòng phân phòng trước',
@@ -2562,6 +2638,7 @@ const Map<String, String> _viTranslations = {
   'room_id_list': 'Danh sách ID phòng',
   'invalid_room_list': 'Danh sách phòng không hợp lệ',
   'rooms_assigned': 'Đã phân phòng',
+  'auto_calculated_total': '{rooms} phòng × {rate} × {nights} đêm = {total}',
   'category_name_required': 'Tên danh mục *',
   'category_name_hint': 'VD: Tiền điện',
   'please_enter_category_name': 'Vui lòng nhập tên danh mục',
@@ -3535,6 +3612,8 @@ const Map<String, String> _viTranslations = {
       'Trả phòng cho khách {guestName} - Phòng {roomNumber}?',
   'guest_management': 'Quản lý khách',
   'all_features': 'Tất cả tính năng',
+  'search_features': 'Tìm kiếm tính năng...',
+  'no_results_found': 'Không tìm thấy kết quả',
   'operations': 'Vận hành',
   'messaging': 'Tin nhắn',
   'declaration': 'Khai báo',
@@ -3578,6 +3657,47 @@ const Map<String, String> _viTranslations = {
   'add_income': 'Thêm thu',
   'add_expense': 'Thêm chi',
   'add_entry': 'Thêm mục',
+  // UC-2: Room swap mid-stay
+  'swap_room': 'Đổi phòng',
+  'room_swapped': 'Đã đổi phòng thành công',
+  // UC-3: Extend stay
+  'extend_stay': 'Gia hạn lưu trú',
+  'stay_extended': 'Đã gia hạn lưu trú thành công',
+  'select_new_checkout_date': 'Chọn ngày trả phòng mới',
+  'additional_nights': 'Số đêm thêm',
+  'additional_cost': 'Chi phí thêm',
+  'new_checkout_date': 'Ngày trả phòng mới',
+  // UC-22 & UC-23: KPI metrics (RevPAR & ADR)
+  'key_metrics': 'Chỉ số chính',
+  'average_daily_rate': 'Giá phòng trung bình/ngày',
+  'revenue_per_available_room': 'Doanh thu/phòng khả dụng',
+  // UC-9: Split payment
+  'split_payment': 'Tách thanh toán',
+  'payment_split_success': 'Đã tách thanh toán thành công',
+  'add_payment_method': 'Thêm phương thức',
+  'remaining': 'Còn lại',
+  // UC-10: Partial refund
+  'partial_refund': 'Hoàn tiền một phần',
+  'refund_amount': 'Số tiền hoàn',
+  'refund_exceeds_total': 'Số tiền hoàn vượt quá tổng',
+  'refund_processed': 'Đã xử lý hoàn tiền',
+  // UC-29: Audit trail
+  'audit_log': 'Nhật ký hoạt động',
+  'activity_log': 'Lịch sử hoạt động',
+  'all_activities': 'Tất cả hoạt động',
+  'no_activities': 'Chưa có hoạt động nào',
+  // UC-11: Outstanding balance
+  'mark_as_paid': 'Đánh dấu đã thanh toán',
+  'balance_settled': 'Đã thanh toán công nợ',
+  // UC-18: Guest preferences
+  'guest_preferences': 'Sở thích khách',
+  'preferences_saved': 'Đã lưu sở thích',
+  'room_preference': 'Phòng ưa thích',
+  'dietary_notes': 'Ghi chú ẩm thực',
+  'special_needs': 'Nhu cầu đặc biệt',
+  // UC-27: Financial export
+  'export_data': 'Xuất dữ liệu',
+  'select_date_range': 'Chọn khoảng thời gian',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -3650,6 +3770,8 @@ const Map<String, String> _enTranslations = {
   'forgot_password': 'Forgot password?',
   'contact_admin_reset_password':
       'Please contact administrator to reset password',
+  'forgot_password_contact':
+      'Please contact the manager to reset your password.\nPhone: 0236 XXX XXXX',
   'enable_biometric_title': 'Enable biometric login',
   'enable_biometric_message':
       'Do you want to use fingerprint or Face ID for faster login next time?',
@@ -3670,6 +3792,9 @@ const Map<String, String> _enTranslations = {
   'new_password_must_be_different':
       'New password must be different from current password',
   'passwords_do_not_match': 'Passwords do not match',
+  'reset_password': 'Reset password',
+  'password_reset_success': 'Password reset successfully',
+  'password_reset_failed': 'Password reset failed',
   'apartment_management': 'Apartment management',
 
   // ===== DASHBOARD =====
@@ -3690,6 +3815,7 @@ const Map<String, String> _enTranslations = {
   'new_booking': 'New booking',
   'no_rooms': 'No rooms yet',
   'room_load_error': 'Error loading room data',
+  'long_press_to_change_status': 'Long press a room to change status',
   'no_checkout_today': 'No check-out today',
   'no_checkin_today': 'No check-in today',
   'guest': 'Guest',
@@ -3761,6 +3887,10 @@ const Map<String, String> _enTranslations = {
   'early_check_in_recorded': 'Early check-in fee recorded',
   'late_check_out_recorded': 'Late check-out fee recorded',
   'fees_and_charges': 'Fees & Charges',
+  'early_departure': 'Early Departure',
+  'scheduled_nights': 'Scheduled nights',
+  'actual_nights': 'Actual nights',
+  'adjusted_total': 'Adjusted total',
 
   // ===== ROOM =====
   'room_management': 'Room management',
@@ -3833,6 +3963,7 @@ const Map<String, String> _enTranslations = {
   'age': 'Age',
   'years_old': 'years old',
   'call': 'Call',
+  'rebook': 'Rebook',
   'remove_vip': 'Remove VIP',
   'mark_vip': 'Mark VIP',
   'marked_as_vip': 'marked as VIP',
@@ -3933,6 +4064,7 @@ const Map<String, String> _enTranslations = {
   'no_tasks_scheduled_today': 'No tasks scheduled for today',
   'no_tasks_created': 'No tasks created yet',
   'no_tasks_assigned': 'You have not been assigned any tasks',
+  'sorted_by_priority': 'Sorted by priority',
   'pending': 'Pending',
   'in_progress': 'In progress',
   'completed': 'Completed',
@@ -4265,6 +4397,7 @@ const Map<String, String> _enTranslations = {
   'disposed_success': 'Item disposed',
   'deposit_vnd': 'Deposit (VND)',
   'discount_percent': 'Discount (%)',
+  'invalid_discount_percent': 'Discount percent must be between 0 and 100',
   'deposit_paid_label': 'Deposit paid',
   'booking_created': 'Booking created',
   'please_assign_rooms_first': 'Please assign rooms first',
@@ -4273,6 +4406,7 @@ const Map<String, String> _enTranslations = {
   'room_id_list': 'Room ID list',
   'invalid_room_list': 'Invalid room list',
   'rooms_assigned': 'Rooms assigned',
+  'auto_calculated_total': '{rooms} rooms × {rate} × {nights} nights = {total}',
   'category_name_required': 'Category name *',
   'category_name_hint': 'Ex: Electricity',
   'please_enter_category_name': 'Please enter category name',
@@ -5245,6 +5379,8 @@ const Map<String, String> _enTranslations = {
       'Check out guest {guestName} - Room {roomNumber}?',
   'guest_management': 'Guest Management',
   'all_features': 'All Features',
+  'search_features': 'Search features...',
+  'no_results_found': 'No results found',
   'operations': 'Operations',
   'messaging': 'Messaging',
   'declaration': 'Declaration',
@@ -5289,6 +5425,47 @@ const Map<String, String> _enTranslations = {
   'add_income': 'Add Income',
   'add_expense': 'Add Expense',
   'add_entry': 'Add Entry',
+  // UC-2: Room swap mid-stay
+  'swap_room': 'Swap Room',
+  'room_swapped': 'Room swapped successfully',
+  // UC-3: Extend stay
+  'extend_stay': 'Extend Stay',
+  'stay_extended': 'Stay extended successfully',
+  'select_new_checkout_date': 'Select new checkout date',
+  'additional_nights': 'Additional nights',
+  'additional_cost': 'Additional cost',
+  'new_checkout_date': 'New checkout date',
+  // UC-22 & UC-23: KPI metrics (RevPAR & ADR)
+  'key_metrics': 'Key Metrics',
+  'average_daily_rate': 'Average Daily Rate',
+  'revenue_per_available_room': 'Revenue Per Available Room',
+  // UC-9: Split payment
+  'split_payment': 'Split Payment',
+  'payment_split_success': 'Payment split successfully',
+  'add_payment_method': 'Add method',
+  'remaining': 'Remaining',
+  // UC-10: Partial refund
+  'partial_refund': 'Partial Refund',
+  'refund_amount': 'Refund amount',
+  'refund_exceeds_total': 'Refund exceeds total amount',
+  'refund_processed': 'Refund processed successfully',
+  // UC-29: Audit trail
+  'audit_log': 'Activity Log',
+  'activity_log': 'Activity History',
+  'all_activities': 'All activities',
+  'no_activities': 'No activities yet',
+  // UC-11: Outstanding balance
+  'mark_as_paid': 'Mark as paid',
+  'balance_settled': 'Balance settled',
+  // UC-18: Guest preferences
+  'guest_preferences': 'Guest Preferences',
+  'preferences_saved': 'Preferences saved',
+  'room_preference': 'Room preference',
+  'dietary_notes': 'Dietary notes',
+  'special_needs': 'Special needs',
+  // UC-27: Financial export
+  'export_data': 'Export Data',
+  'select_date_range': 'Select date range',
 };
 
 // Delegate

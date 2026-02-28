@@ -45,43 +45,34 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         title: Text(l10n.finance),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: _showFilterDialog,
-            tooltip: l10n.filter,
-          ),
-          IconButton(
             icon: const Icon(Icons.bar_chart),
             onPressed: _navigateToReports,
             tooltip: l10n.reports,
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _refreshData,
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            children: [
-              // Monthly summary
-              _buildMonthlySummary(context, l10n, monthlySummaryAsync),
+      body: Column(
+        children: [
+          // Monthly summary
+          _buildMonthlySummary(context, l10n, monthlySummaryAsync),
 
-              // Weekly chart (GAP-012 fix)
-              _buildChart(monthlySummaryAsync),
+          // Weekly chart (GAP-012 fix)
+          _buildChart(monthlySummaryAsync),
 
-              // Filter tabs
-              _buildFilterTabs(context, l10n),
+          // Filter tabs
+          _buildFilterTabs(context, l10n),
 
-              // Date range filter
-              _buildDateRangeBar(l10n),
+          // Date range filter
+          _buildDateRangeBar(l10n),
 
-              // Transaction list
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.5,
-                child: _buildTransactionList(context, entriesAsync),
-              ),
-            ],
+          // Transaction list takes remaining space
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: _refreshData,
+              child: _buildTransactionList(context, entriesAsync),
+            ),
           ),
-        ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddEntrySheet(l10n),
@@ -144,19 +135,6 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
 
   void _navigateToReports() {
     context.push(AppRoutes.reports);
-  }
-
-  void _showFilterDialog() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => _FilterBottomSheet(
-        currentFilter: _filterType,
-        onFilterChanged: (type) {
-          setState(() => _filterType = type);
-          Navigator.pop(context);
-        },
-      ),
-    );
   }
 
   Widget _buildChart(AsyncValue<MonthlyFinancialSummary> summaryAsync) {
@@ -441,25 +419,33 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
     return entriesAsync.when(
       data: (entries) {
         if (entries.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.receipt_long_outlined,
-                  size: 64,
-                  color: AppColors.textSecondary.withValues(alpha: 0.5),
-                ),
-                AppSpacing.gapVerticalMd,
-                Text(
-                  context.l10n.noData,
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 16,
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              SizedBox(
+                height: 200,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.receipt_long_outlined,
+                        size: 64,
+                        color: AppColors.textSecondary.withValues(alpha: 0.5),
+                      ),
+                      AppSpacing.gapVerticalMd,
+                      Text(
+                        context.l10n.noData,
+                        style: const TextStyle(
+                          color: AppColors.textSecondary,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         }
 
@@ -467,6 +453,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         final groups = _groupEntriesByDate(entries);
 
         return ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(),
           padding: AppSpacing.paddingScreen,
           itemCount: groups.length,
           itemBuilder: (context, index) {
@@ -658,77 +645,6 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         }
       }
     }
-  }
-}
-
-/// Filter bottom sheet
-class _FilterBottomSheet extends StatelessWidget {
-  final EntryType? currentFilter;
-  final Function(EntryType?) onFilterChanged;
-
-  const _FilterBottomSheet({
-    required this.currentFilter,
-    required this.onFilterChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Container(
-      padding: AppSpacing.paddingAll,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.filter,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          AppSpacing.gapVerticalMd,
-          _buildOption(context, null, l10n.all, Icons.list),
-          _buildOption(
-            context,
-            EntryType.income,
-            l10n.income,
-            Icons.arrow_downward,
-          ),
-          _buildOption(
-            context,
-            EntryType.expense,
-            l10n.expense,
-            Icons.arrow_upward,
-          ),
-          AppSpacing.gapVerticalMd,
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOption(
-    BuildContext context,
-    EntryType? type,
-    String label,
-    IconData icon,
-  ) {
-    final isSelected = currentFilter == type;
-
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isSelected ? AppColors.primary : AppColors.textSecondary,
-      ),
-      title: Text(
-        label,
-        style: TextStyle(
-          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? AppColors.primary : null,
-        ),
-      ),
-      trailing: isSelected
-          ? const Icon(Icons.check, color: AppColors.primary)
-          : null,
-      onTap: () => onFilterChanged(type),
-    );
   }
 }
 

@@ -27,8 +27,9 @@ import '../../widgets/common/unsaved_changes_guard.dart';
 /// - Room availability
 class BookingFormScreen extends ConsumerStatefulWidget {
   final Booking? booking; // null for new booking, provided for edit
+  final int? prefilledGuestId; // pre-select guest for rebook flow
 
-  const BookingFormScreen({super.key, this.booking});
+  const BookingFormScreen({super.key, this.booking, this.prefilledGuestId});
 
   @override
   ConsumerState<BookingFormScreen> createState() => _BookingFormScreenState();
@@ -61,6 +62,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     _checkOutDate = DateTime(now.year, now.month, now.day + 1);
     if (widget.booking != null) {
       _initializeFromBooking(widget.booking!);
+    } else if (widget.prefilledGuestId != null) {
+      _selectedGuestId = widget.prefilledGuestId;
     }
     // Sync controller with initial rate
     if (_ratePerNight > 0) {

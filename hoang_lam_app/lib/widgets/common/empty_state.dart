@@ -7,19 +7,26 @@ import '../../core/theme/app_spacing.dart';
 class EmptyState extends StatelessWidget {
   final IconData icon;
   final String title;
-  final String message;
+  final String? message;
+  final String? subtitle;
   final Widget? action;
+  final String? actionLabel;
+  final VoidCallback? onAction;
 
   const EmptyState({
     super.key,
-    required this.icon,
+    this.icon = Icons.inbox_outlined,
     required this.title,
-    required this.message,
+    this.message,
+    this.subtitle,
     this.action,
+    this.actionLabel,
+    this.onAction,
   });
 
   @override
   Widget build(BuildContext context) {
+    final displayMessage = message ?? subtitle;
     return Center(
       child: Padding(
         padding: AppSpacing.paddingScreen,
@@ -36,15 +43,23 @@ class EmptyState extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            AppSpacing.gapVerticalSm,
-            Text(
-              message,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-              textAlign: TextAlign.center,
-            ),
+            if (displayMessage != null) ...[
+              AppSpacing.gapVerticalSm,
+              Text(
+                displayMessage,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
             if (action != null) ...[AppSpacing.gapVerticalLg, action!],
+            if (action == null &&
+                actionLabel != null &&
+                onAction != null) ...[
+              AppSpacing.gapVerticalLg,
+              ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
+            ],
           ],
         ),
       ),

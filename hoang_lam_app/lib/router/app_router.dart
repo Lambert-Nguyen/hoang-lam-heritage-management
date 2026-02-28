@@ -55,6 +55,7 @@ import '../screens/finance/financial_category_screen.dart';
 import '../screens/settings/staff_management_screen.dart';
 import '../l10n/app_localizations.dart';
 import '../screens/more/more_menu_screen.dart';
+import '../screens/audit_log/audit_log_screen.dart';
 import '../widgets/main_scaffold.dart';
 
 /// Route names
@@ -112,6 +113,8 @@ class AppRoutes {
   static const String notifications = '/notifications';
   static const String sendMessage = '/send-message';
   static const String messageHistory = '/message-history';
+  // Audit log
+  static const String auditLog = '/audit-log';
   // More menu
   static const String more = '/more';
   // Settings sub-routes
@@ -453,6 +456,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      // Audit log
+      GoRoute(
+        path: AppRoutes.auditLog,
+        name: 'auditLog',
+        builder: (context, state) => const AuditLogScreen(),
+      ),
+
       // Pricing routes (outside shell for full screen) — Owner only
       GoRoute(
         path: AppRoutes.pricing,
@@ -612,13 +622,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: BookingsScreen()),
             routes: [
               // New Booking (or edit if extra contains a Booking)
+              // Also supports Map extras with 'prefilledGuest' for rebook
               GoRoute(
                 path: 'new',
                 name: 'newBooking',
                 parentNavigatorKey: _rootNavigatorKey,
                 builder: (context, state) {
-                  final booking = state.extra as Booking?;
-                  return BookingFormScreen(booking: booking);
+                  final extra = state.extra;
+                  if (extra is Booking) {
+                    return BookingFormScreen(booking: extra);
+                  }
+                  if (extra is Map && extra.containsKey('prefilledGuest')) {
+                    final guest = extra['prefilledGuest'] as Guest;
+                    return BookingFormScreen(prefilledGuestId: guest.id);
+                  }
+                  return const BookingFormScreen();
                 },
               ),
               // Booking Detail

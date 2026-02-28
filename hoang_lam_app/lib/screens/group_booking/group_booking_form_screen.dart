@@ -36,6 +36,7 @@ class _GroupBookingFormScreenState
   late TextEditingController _totalAmountController;
   late TextEditingController _depositAmountController;
   late TextEditingController _discountController;
+  late TextEditingController _ratePerNightController;
   late TextEditingController _specialRequestsController;
   late TextEditingController _notesController;
 
@@ -44,6 +45,7 @@ class _GroupBookingFormScreenState
   bool _depositPaid = false;
   bool _isLoading = false;
   bool _isInitialized = false;
+  bool _totalManuallyEdited = false;
 
   @override
   void initState() {
@@ -57,6 +59,7 @@ class _GroupBookingFormScreenState
     _totalAmountController = TextEditingController();
     _depositAmountController = TextEditingController();
     _discountController = TextEditingController(text: '0');
+    _ratePerNightController = TextEditingController();
     _specialRequestsController = TextEditingController();
     _notesController = TextEditingController();
   }
@@ -72,6 +75,7 @@ class _GroupBookingFormScreenState
     _totalAmountController.dispose();
     _depositAmountController.dispose();
     _discountController.dispose();
+    _ratePerNightController.dispose();
     _specialRequestsController.dispose();
     _notesController.dispose();
     super.dispose();
@@ -96,6 +100,36 @@ class _GroupBookingFormScreenState
       _checkInDate = DateTime.parse(booking.checkInDate);
       _checkOutDate = DateTime.parse(booking.checkOutDate);
     } catch (_) {}
+  }
+
+  int get _numberOfNights =>
+      _checkOutDate.difference(_checkInDate).inDays.clamp(0, 9999);
+
+  void _recalculateTotal() {
+    if (_totalManuallyEdited) return;
+    final rooms = int.tryParse(_roomCountController.text) ?? 0;
+    final rate = double.tryParse(_ratePerNightController.text) ?? 0;
+    final nights = _numberOfNights;
+    if (rooms > 0 && rate > 0 && nights > 0) {
+      final total = rooms * rate * nights;
+      _totalAmountController.text = total.toStringAsFixed(0);
+    }
+    setState(() {});
+  }
+
+  String? get _autoCalculatedHelper {
+    final rooms = int.tryParse(_roomCountController.text) ?? 0;
+    final rate = double.tryParse(_ratePerNightController.text) ?? 0;
+    final nights = _numberOfNights;
+    if (rooms > 0 && rate > 0 && nights > 0) {
+      final total = (rooms * rate * nights).toStringAsFixed(0);
+      return context.l10n.autoCalculatedTotal
+          .replaceAll('{rooms}', '$rooms')
+          .replaceAll('{rate}', rate.toStringAsFixed(0))
+          .replaceAll('{nights}', '$nights')
+          .replaceAll('{total}', total);
+    }
+    return null;
   }
 
   @override
@@ -158,6 +192,7 @@ class _GroupBookingFormScreenState
                             controller: _roomCountController,
                             label: '${context.l10n.numberOfRooms} *',
                             keyboardType: TextInputType.number,
+                            onChanged: (_) => _recalculateTotal(),
                             validator: (v) =>
                                 v == null ||
                                     v.isEmpty ||
@@ -242,6 +277,7 @@ class _GroupBookingFormScreenState
                             );
                           }
                         });
+                        _recalculateTotal();
                       },
                       DateTime.now(),
                     ),
@@ -249,7 +285,10 @@ class _GroupBookingFormScreenState
                     _buildDatePicker(
                       context.l10n.checkOutDateRequired,
                       _checkOutDate,
-                      (d) => setState(() => _checkOutDate = d),
+                      (d) {
+                        setState(() => _checkOutDate = d);
+                        _recalculateTotal();
+                      },
                       _checkInDate.add(const Duration(days: 1)),
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -279,9 +318,18 @@ class _GroupBookingFormScreenState
                 child: Column(
                   children: [
                     AppTextField(
+                      controller: _ratePerNightController,
+                      label: context.l10n.ratePerNight,
+                      keyboardType: TextInputType.number,
+                      onChanged: (_) => _recalculateTotal(),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                    AppTextField(
                       controller: _totalAmountController,
                       label: '${context.l10n.totalAmountVnd} *',
                       keyboardType: TextInputType.number,
+                      helper: _autoCalculatedHelper,
+                      onChanged: (_) => _totalManuallyEdited = true,
                       validator: (v) =>
                           v == null || v.isEmpty || double.tryParse(v) == null
                           ? context.l10n.invalid
@@ -303,6 +351,15 @@ class _GroupBookingFormScreenState
                             controller: _discountController,
                             label: context.l10n.discountPercent,
                             keyboardType: TextInputType.number,
+                            validator: (v) {
+                              if (v != null && v.isNotEmpty) {
+                                final val = double.tryParse(v);
+                                if (val == null || val < 0 || val > 100) {
+                                  return context.l10n.invalidDiscountPercent;
+                                }
+                              }
+                              return null;
+                            },
                           ),
                         ),
                       ],

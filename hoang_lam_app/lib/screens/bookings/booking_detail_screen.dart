@@ -52,7 +52,7 @@ class BookingDetailScreen extends ConsumerWidget {
                 },
               ),
               IconButton(
-                icon: const Icon(Icons.delete),
+                icon: const Icon(Icons.delete, color: AppColors.error),
                 onPressed: () => _showDeleteConfirmation(context, ref),
               ),
             ];
@@ -135,7 +135,8 @@ class BookingDetailScreen extends ConsumerWidget {
           // Guest Information
           _buildSection(
             context,
-            title: '👤 ${context.l10n.guestInfo}',
+            icon: Icons.person,
+            title: context.l10n.guestInfo,
             children: [
               _buildInfoRow(context.l10n.name, booking.guestName),
               if (booking.guestPhone.isNotEmpty)
@@ -150,7 +151,8 @@ class BookingDetailScreen extends ConsumerWidget {
           // Dates and Times
           _buildSection(
             context,
-            title: '📅 ${context.l10n.timeLabel}',
+            icon: Icons.schedule,
+            title: context.l10n.timeLabel,
             children: [
               _buildInfoRow(
                 context.l10n.expectedCheckin,
@@ -182,7 +184,8 @@ class BookingDetailScreen extends ConsumerWidget {
           // Payment Information
           _buildSection(
             context,
-            title: '💰 ${context.l10n.payment}',
+            icon: Icons.payments,
+            title: context.l10n.payment,
             children: [
               _buildInfoRow(
                 context.l10n.ratePerNight,
@@ -214,7 +217,8 @@ class BookingDetailScreen extends ConsumerWidget {
               booking.status == BookingStatus.confirmed)
             _buildSection(
               context,
-              title: '⏰ ${context.l10n.feesAndCharges}',
+              icon: Icons.timer,
+            title: context.l10n.feesAndCharges,
               children: [
                 if (booking.earlyCheckInFee > 0) ...[
                   _buildInfoRow(
@@ -236,8 +240,25 @@ class BookingDetailScreen extends ConsumerWidget {
                     context.l10n.balanceDue,
                     currencyFormat.format(booking.calculatedBalanceDue),
                     bold: true,
-                    valueColor: AppColors.warning,
+                    valueColor: booking.calculatedBalanceDue > 0
+                        ? AppColors.error
+                        : AppColors.success,
                   ),
+                  if (booking.calculatedBalanceDue > 0 && !booking.isPaid)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          onPressed: () => _handleMarkAsPaid(context, ref, booking),
+                          icon: const Icon(Icons.check_circle_outline, size: 18),
+                          label: Text(context.l10n.markAsPaid),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.success,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
                 // Fee action buttons
                 if (booking.status == BookingStatus.checkedIn ||
@@ -316,7 +337,8 @@ class BookingDetailScreen extends ConsumerWidget {
           // Booking Source and Notes
           _buildSection(
             context,
-            title: '📋 ${context.l10n.bookingInfo}',
+            icon: Icons.info_outline,
+            title: context.l10n.bookingInfo,
             children: [
               _buildInfoRow(
                 context.l10n.source,
@@ -354,6 +376,7 @@ class BookingDetailScreen extends ConsumerWidget {
 
   Widget _buildSection(
     BuildContext context, {
+    required IconData icon,
     required String title,
     required List<Widget> children,
   }) {
@@ -377,11 +400,17 @@ class BookingDetailScreen extends ConsumerWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Text(
-              title,
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            child: Row(
+              children: [
+                Icon(icon, size: 20, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ],
             ),
           ),
           const Divider(height: 1),
@@ -424,7 +453,7 @@ class BookingDetailScreen extends ConsumerWidget {
                 fontSize: 14,
                 fontWeight: bold ? FontWeight.bold : FontWeight.normal,
                 color:
-                    valueColor ?? (highlight ? AppColors.info : Colors.black87),
+                    valueColor ?? (highlight ? AppColors.info : null),
               ),
               textAlign: TextAlign.right,
             ),
@@ -465,6 +494,63 @@ class BookingDetailScreen extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.info,
               foregroundColor: AppColors.onPrimary,
+              padding: const EdgeInsets.all(16),
+            ),
+          ),
+        ],
+
+        // Swap room button
+        if (booking.status == BookingStatus.checkedIn) ...[
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => _handleSwapRoom(context, ref, booking),
+            icon: const Icon(Icons.swap_horiz),
+            label: Text(context.l10n.swapRoom),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.primary,
+              padding: const EdgeInsets.all(16),
+            ),
+          ),
+        ],
+
+        // Extend stay button
+        if (booking.status == BookingStatus.checkedIn) ...[
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => _handleExtendStay(context, ref, booking),
+            icon: const Icon(Icons.date_range),
+            label: Text(context.l10n.extendStay),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.info,
+              padding: const EdgeInsets.all(16),
+            ),
+          ),
+        ],
+
+        // Split payment button
+        if (booking.status == BookingStatus.checkedIn) ...[
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => _handleSplitPayment(context, ref, booking),
+            icon: const Icon(Icons.call_split),
+            label: Text(context.l10n.splitPayment),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.success,
+              padding: const EdgeInsets.all(16),
+            ),
+          ),
+        ],
+
+        // Partial refund button
+        if (booking.status == BookingStatus.checkedIn ||
+            booking.status == BookingStatus.checkedOut) ...[
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: () => _handlePartialRefund(context, ref, booking),
+            icon: const Icon(Icons.money_off),
+            label: Text(context.l10n.partialRefund),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.warning,
               padding: const EdgeInsets.all(16),
             ),
           ),
@@ -606,15 +692,61 @@ class BookingDetailScreen extends ConsumerWidget {
     Booking booking,
   ) async {
     final checkoutRoomNumber = booking.roomNumber ?? '${booking.room}';
+    final now = DateTime.now();
+    final isEarlyDeparture = now.isBefore(booking.checkOutDate);
+
+    // Calculate night difference for early departure
+    final scheduledNights =
+        booking.checkOutDate.difference(booking.checkInDate).inDays;
+    final actualNights =
+        now.difference(booking.checkInDate).inDays.clamp(1, scheduledNights);
+
+    Widget content;
+    if (isEarlyDeparture) {
+      final currencyFormat = NumberFormat.currency(
+        locale: 'vi_VN',
+        symbol: booking.currency == 'VND' ? 'đ' : booking.currency,
+        decimalDigits: 0,
+      );
+      final adjustedTotal = actualNights * booking.nightlyRate;
+      content = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            context.l10n.confirmCheckOutMessage
+                .replaceAll('{guestName}', booking.guestName)
+                .replaceAll('{roomNumber}', checkoutRoomNumber),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            '${context.l10n.earlyDeparture}:',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.warning,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text('${context.l10n.scheduledNights}: $scheduledNights'),
+          Text('${context.l10n.actualNights}: $actualNights'),
+          Text(
+            '${context.l10n.adjustedTotal}: ${currencyFormat.format(adjustedTotal)}',
+          ),
+        ],
+      );
+    } else {
+      content = Text(
+        context.l10n.confirmCheckOutMessage
+            .replaceAll('{guestName}', booking.guestName)
+            .replaceAll('{roomNumber}', checkoutRoomNumber),
+      );
+    }
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(context.l10n.confirmCheckOutQuestion),
-        content: Text(
-          context.l10n.confirmCheckOutMessage
-              .replaceAll('{guestName}', booking.guestName)
-              .replaceAll('{roomNumber}', checkoutRoomNumber),
-        ),
+        content: content,
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -668,6 +800,187 @@ class BookingDetailScreen extends ConsumerWidget {
             context,
           ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
         }
+      }
+    }
+  }
+
+  Future<void> _handleSwapRoom(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
+    // Load available rooms
+    final roomsAsync = await ref.read(allRoomsProvider.future);
+    final availableRooms = roomsAsync
+        .where((r) => r.status == RoomStatus.available)
+        .toList();
+
+    if (!context.mounted) return;
+
+    if (availableRooms.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(context.l10n.noRoomsAvailable)),
+      );
+      return;
+    }
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (ctx) {
+        int? selectedRoomId;
+        final reasonController = TextEditingController();
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text(context.l10n.swapRoom),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DropdownButtonFormField<int>(
+                  decoration: InputDecoration(
+                    labelText: context.l10n.selectRoom,
+                    border: const OutlineInputBorder(),
+                  ),
+                  items: availableRooms
+                      .map(
+                        (r) => DropdownMenuItem<int>(
+                          value: r.id,
+                          child: Text(
+                            '${r.number} - ${r.roomTypeName ?? ""}',
+                          ),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (v) => setState(() => selectedRoomId = v),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: reasonController,
+                  decoration: InputDecoration(
+                    labelText: context.l10n.reason,
+                    border: const OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(context.l10n.cancel),
+              ),
+              ElevatedButton(
+                onPressed: selectedRoomId != null
+                    ? () => Navigator.pop(ctx, {
+                          'roomId': selectedRoomId,
+                          'reason': reasonController.text,
+                        })
+                    : null,
+                child: Text(context.l10n.confirm),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (result != null && context.mounted) {
+      try {
+        await ref.read(bookingNotifierProvider.notifier).swapRoom(
+              booking.id,
+              result['roomId'] as int,
+              reason: result['reason'] as String?,
+            );
+        ref.invalidate(bookingByIdProvider(bookingId));
+        ref.invalidate(roomsProvider);
+        ref.invalidate(allRoomsProvider);
+        ref.invalidate(dashboardSummaryProvider);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.roomSwapped)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getLocalizedErrorMessage(e, context.l10n)),
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handleExtendStay(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
+    final l10n = context.l10n;
+    final currentCheckout = booking.checkOutDate;
+
+    final newDate = await showDatePicker(
+      context: context,
+      initialDate: currentCheckout.add(const Duration(days: 1)),
+      firstDate: currentCheckout.add(const Duration(days: 1)),
+      lastDate: currentCheckout.add(const Duration(days: 365)),
+      helpText: l10n.selectNewCheckoutDate,
+    );
+
+    if (newDate == null || !context.mounted) return;
+
+    final additionalNights = newDate.difference(currentCheckout).inDays;
+    final additionalCost = additionalNights * booking.nightlyRate;
+
+    // Confirm with user
+    final currencyFormat = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: 'đ',
+      decimalDigits: 0,
+    );
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.extendStay),
+        content: Text(
+          '${l10n.additionalNights}: $additionalNights\n'
+          '${l10n.additionalCost}: ${currencyFormat.format(additionalCost)}\n\n'
+          '${l10n.newCheckoutDate}: ${DateFormat("dd/MM/yyyy").format(newDate)}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    try {
+      await ref
+          .read(bookingNotifierProvider.notifier)
+          .extendStay(booking.id, newDate);
+      ref.invalidate(bookingByIdProvider(bookingId));
+      ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(todayBookingsProvider);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.stayExtended)),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(getLocalizedErrorMessage(e, context.l10n)),
+          ),
+        );
       }
     }
   }
@@ -911,5 +1224,344 @@ class BookingDetailScreen extends ConsumerWidget {
         }
       }
     }
+  }
+
+  Future<void> _handleSplitPayment(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
+    final l10n = context.l10n;
+    final result = await showDialog<List<Map<String, dynamic>>>(
+      context: context,
+      builder: (ctx) => _SplitPaymentDialog(
+        totalAmount: booking.totalAmount,
+        l10n: l10n,
+      ),
+    );
+
+    if (result != null && result.isNotEmpty && context.mounted) {
+      try {
+        final notifier = ref.read(bookingNotifierProvider.notifier);
+        final updated = await notifier.splitPayment(booking.id, result);
+        if (updated != null && context.mounted) {
+          ref.invalidate(bookingByIdProvider(booking.id));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.paymentSplitSuccess)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _handlePartialRefund(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
+    final l10n = context.l10n;
+    final amountController = TextEditingController();
+    final reasonController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.partialRefund),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('${l10n.totalAmount}: ${_formatCurrency(booking.totalAmount)}'),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: amountController,
+                decoration: InputDecoration(
+                  labelText: l10n.refundAmount,
+                  border: const OutlineInputBorder(),
+                  suffixText: 'VND',
+                ),
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  if (v == null || v.isEmpty) return l10n.pleaseEnterValue;
+                  final amount = int.tryParse(v);
+                  if (amount == null || amount <= 0) return l10n.pleaseEnterValue;
+                  if (amount > booking.totalAmount) {
+                    return l10n.refundExceedsTotal;
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: reasonController,
+                decoration: InputDecoration(
+                  labelText: l10n.reason,
+                  border: const OutlineInputBorder(),
+                ),
+                maxLines: 2,
+                validator: (v) =>
+                    v == null || v.isEmpty ? l10n.pleaseEnterValue : null,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(ctx, true);
+              }
+            },
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      try {
+        final amount = int.parse(amountController.text);
+        final notifier = ref.read(bookingNotifierProvider.notifier);
+        final updated = await notifier.partialRefund(
+          booking.id,
+          amount: amount,
+          reason: reasonController.text,
+        );
+        if (updated != null && context.mounted) {
+          ref.invalidate(bookingByIdProvider(booking.id));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.refundProcessed)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: $e')),
+          );
+        }
+      }
+    }
+    amountController.dispose();
+    reasonController.dispose();
+  }
+
+  Future<void> _handleMarkAsPaid(
+    BuildContext context,
+    WidgetRef ref,
+    Booking booking,
+  ) async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.markAsPaid),
+        content: Text(l10n.confirmAction),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      try {
+        final update = BookingUpdate.fromBooking(booking).copyWith(isPaid: true);
+        await ref.read(bookingNotifierProvider.notifier).updateBooking(booking.id, update);
+        ref.invalidate(bookingByIdProvider(booking.id));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.balanceSettled)),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: $e')),
+          );
+        }
+      }
+    }
+  }
+
+  String _formatCurrency(int amount) {
+    return '${amount.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.')}đ';
+  }
+}
+
+/// Dialog for splitting payment across multiple methods
+class _SplitPaymentDialog extends StatefulWidget {
+  final int totalAmount;
+  final AppLocalizations l10n;
+
+  const _SplitPaymentDialog({
+    required this.totalAmount,
+    required this.l10n,
+  });
+
+  @override
+  State<_SplitPaymentDialog> createState() => _SplitPaymentDialogState();
+}
+
+class _PaymentSplit {
+  PaymentMethod method;
+  int amount;
+  _PaymentSplit({required this.method, this.amount = 0});
+}
+
+class _SplitPaymentDialogState extends State<_SplitPaymentDialog> {
+  final List<_PaymentSplit> _splits = [
+    _PaymentSplit(method: PaymentMethod.cash),
+    _PaymentSplit(method: PaymentMethod.bankTransfer),
+  ];
+
+  int get _totalSplit => _splits.fold(0, (sum, s) => sum + s.amount);
+  int get _remaining => widget.totalAmount - _totalSplit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    return AlertDialog(
+      title: Text(l10n.splitPayment),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '${l10n.totalAmount}: ${_fmt(widget.totalAmount)}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            ...List.generate(_splits.length, (i) => _buildSplitRow(i)),
+            const SizedBox(height: 8),
+            if (_splits.length < 4)
+              TextButton.icon(
+                onPressed: () => setState(() {
+                  _splits.add(_PaymentSplit(method: PaymentMethod.momo));
+                }),
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(l10n.addPaymentMethod),
+              ),
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(l10n.remaining,
+                    style: const TextStyle(fontWeight: FontWeight.bold)),
+                Text(
+                  _fmt(_remaining),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: _remaining == 0
+                        ? AppColors.success
+                        : AppColors.error,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        ElevatedButton(
+          onPressed: _remaining == 0
+              ? () {
+                  final result = _splits
+                      .where((s) => s.amount > 0)
+                      .map((s) => {
+                            'method': s.method.name,
+                            'amount': s.amount,
+                          })
+                      .toList();
+                  Navigator.pop(context, result);
+                }
+              : null,
+          child: Text(l10n.confirm),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSplitRow(int index) {
+    final split = _splits[index];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: DropdownButtonFormField<PaymentMethod>(
+              value: split.method,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              ),
+              items: PaymentMethod.values
+                  .map((m) => DropdownMenuItem(
+                        value: m,
+                        child: Text(m.displayName, style: const TextStyle(fontSize: 13)),
+                      ))
+                  .toList(),
+              onChanged: (v) {
+                if (v != null) setState(() => split.method = v);
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: TextFormField(
+              initialValue: split.amount > 0 ? split.amount.toString() : '',
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                isDense: true,
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (v) {
+                setState(() {
+                  split.amount = int.tryParse(v) ?? 0;
+                });
+              },
+            ),
+          ),
+          if (_splits.length > 2)
+            IconButton(
+              icon: const Icon(Icons.remove_circle_outline, size: 20),
+              onPressed: () => setState(() => _splits.removeAt(index)),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 32),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _fmt(int amount) {
+    return '${amount.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.')}đ';
   }
 }

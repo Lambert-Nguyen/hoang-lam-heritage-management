@@ -160,6 +160,14 @@ class AuthRepository {
         .toList();
   }
 
+  /// Admin reset password for another user
+  Future<void> resetUserPassword(int userId, String newPassword) async {
+    await _apiClient.post(
+      AppConstants.authAdminResetPasswordEndpoint,
+      data: {'user_id': userId, 'new_password': newPassword},
+    );
+  }
+
   /// Check if user is currently authenticated (has stored tokens)
   Future<bool> isAuthenticated() async {
     try {

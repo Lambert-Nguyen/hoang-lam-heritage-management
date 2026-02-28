@@ -38,6 +38,8 @@ class AppConstants {
   static const String authMeEndpoint = '/auth/me/';
   static const String authPasswordChangeEndpoint = '/auth/password/change/';
   static const String authStaffEndpoint = '/auth/staff/';
+  static const String authAdminResetPasswordEndpoint =
+      '/auth/admin-reset-password/';
   static const String dashboardEndpoint = '/dashboard/';
   static const String roomsEndpoint = '/rooms/';
   static const String roomTypesEndpoint = '/room-types/';

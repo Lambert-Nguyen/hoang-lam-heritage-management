@@ -11,7 +11,7 @@ import '../../models/booking.dart';
 import '../../providers/minibar_provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../router/app_router.dart';
-import '../../widgets/common/offline_banner.dart';
+import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/minibar/minibar_item_grid.dart';
 import '../../widgets/minibar/minibar_cart_panel.dart';

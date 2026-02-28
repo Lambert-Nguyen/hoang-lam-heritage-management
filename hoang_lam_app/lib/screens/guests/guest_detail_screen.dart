@@ -174,8 +174,14 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   }
 
   Widget _buildInfoTab() {
-    return SingleChildScrollView(
-      padding: AppSpacing.paddingScreen,
+    return RefreshIndicator(
+      onRefresh: () async {
+        final updated = await ref.read(guestByIdProvider(_guest.id).future);
+        if (mounted) setState(() => _guest = updated);
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: AppSpacing.paddingScreen,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -206,6 +212,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           AppSpacing.gapVerticalXl,
         ],
       ),
+    ),
     );
   }
 
@@ -389,6 +396,20 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                 icon: Icons.phone,
                 isOutlined: true,
                 onPressed: () => _launchPhone(_guest.phone),
+              ),
+            ),
+            AppSpacing.gapHorizontalMd,
+            Expanded(
+              child: AppButton(
+                label: context.l10n.rebook,
+                icon: Icons.replay,
+                isOutlined: true,
+                onPressed: () {
+                  context.push(
+                    AppRoutes.newBooking,
+                    extra: {'prefilledGuest': _guest},
+                  );
+                },
               ),
             ),
             AppSpacing.gapHorizontalMd,

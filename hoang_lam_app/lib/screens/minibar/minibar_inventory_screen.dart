@@ -7,7 +7,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 import '../../providers/minibar_provider.dart';
-import '../../widgets/common/offline_banner.dart';
+import '../../widgets/common/empty_state.dart';
 import '../../widgets/common/loading_indicator.dart';
 import '../../widgets/minibar/minibar_item_list_tile.dart';
 import 'package:go_router/go_router.dart';

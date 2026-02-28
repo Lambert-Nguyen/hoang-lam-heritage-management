@@ -426,6 +426,37 @@ class BookingRepository {
     );
   }
 
+  /// Swap room for a checked-in booking
+  Future<Booking> swapRoom(int bookingId, int newRoomId, {String? reason}) async {
+    final data = <String, dynamic>{
+      'new_room': newRoomId,
+      if (reason != null) 'reason': reason,
+    };
+
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$bookingId/swap-room/',
+      data: data,
+    );
+    if (response.data == null) {
+      throw Exception('Failed to swap room');
+    }
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Extend stay by updating the checkout date
+  Future<Booking> extendStay(int bookingId, DateTime newCheckOutDate) async {
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$bookingId/extend-stay/',
+      data: {
+        'new_check_out_date': newCheckOutDate.toIso8601String().split('T')[0],
+      },
+    );
+    if (response.data == null) {
+      throw Exception('Failed to extend stay');
+    }
+    return Booking.fromJson(response.data!);
+  }
+
   /// Cancel a booking
   Future<Booking> cancelBooking(int id, {String? cancellationReason}) async {
     return updateBookingStatus(
@@ -438,6 +469,37 @@ class BookingRepository {
   /// Mark as no-show
   Future<Booking> markAsNoShow(int id, {String? notes}) async {
     return updateBookingStatus(id, BookingStatus.noShow, notes: notes);
+  }
+
+  /// Split payment across multiple methods
+  Future<Booking> splitPayment(
+    int bookingId,
+    List<Map<String, dynamic>> splits,
+  ) async {
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$bookingId/split-payment/',
+      data: {'splits': splits},
+    );
+    if (response.data == null) {
+      throw Exception('Failed to split payment');
+    }
+    return Booking.fromJson(response.data!);
+  }
+
+  /// Process a partial refund
+  Future<Booking> partialRefund(
+    int bookingId, {
+    required int amount,
+    required String reason,
+  }) async {
+    final response = await _apiClient.post<Map<String, dynamic>>(
+      '${AppConstants.bookingsEndpoint}$bookingId/partial-refund/',
+      data: {'amount': amount, 'reason': reason},
+    );
+    if (response.data == null) {
+      throw Exception('Failed to process refund');
+    }
+    return Booking.fromJson(response.data!);
   }
 
   // ==================== Cache Helpers ====================

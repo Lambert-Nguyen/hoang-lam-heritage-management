@@ -98,61 +98,6 @@ class LoadingOverlay extends StatelessWidget {
   }
 }
 
-/// Empty state widget
-class EmptyState extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  const EmptyState({
-    super.key,
-    this.icon = Icons.inbox_outlined,
-    required this.title,
-    this.subtitle,
-    this.actionLabel,
-    this.onAction,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: AppSpacing.paddingAll,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 64, color: AppColors.textHint),
-            AppSpacing.gapVerticalMd,
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            if (subtitle != null) ...[
-              AppSpacing.gapVerticalSm,
-              Text(
-                subtitle!,
-                style: const TextStyle(fontSize: 14, color: AppColors.textHint),
-                textAlign: TextAlign.center,
-              ),
-            ],
-            if (actionLabel != null && onAction != null) ...[
-              AppSpacing.gapVerticalLg,
-              ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 /// Error state widget
 class ErrorState extends StatelessWidget {
   final String message;

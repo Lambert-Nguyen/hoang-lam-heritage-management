@@ -194,6 +194,14 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                       });
                     },
                   ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedDate = DateTime.now();
+                      });
+                    },
+                    child: Text(context.l10n.today),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.chevron_right),
                     onPressed: () {

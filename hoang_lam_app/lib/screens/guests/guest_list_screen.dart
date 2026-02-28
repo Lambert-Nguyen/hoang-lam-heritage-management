@@ -67,6 +67,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
         controller: _searchController,
         decoration: InputDecoration(
           hintText: context.l10n.searchGuests,
+          helperText: context.l10n.searchMinChars,
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _searchController.text.isNotEmpty
               ? IconButton(
@@ -131,7 +132,10 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             onTap: () => setState(() => _searchType = 'id_number'),
           ),
           AppSpacing.gapHorizontalMd,
-          const VerticalDivider(width: 1),
+          SizedBox(
+            height: 24,
+            child: VerticalDivider(width: 1, color: AppColors.divider),
+          ),
           AppSpacing.gapHorizontalMd,
           _FilterChip(
             label: 'VIP',
