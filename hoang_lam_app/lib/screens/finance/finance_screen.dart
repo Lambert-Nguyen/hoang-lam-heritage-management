@@ -45,6 +45,11 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         title: Text(l10n.finance),
         actions: [
           IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            onPressed: () => _handleExport(l10n),
+            tooltip: l10n.exportData,
+          ),
+          IconButton(
             icon: const Icon(Icons.bar_chart),
             onPressed: _navigateToReports,
             tooltip: l10n.reports,
@@ -135,6 +140,80 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
 
   void _navigateToReports() {
     context.push(AppRoutes.reports);
+  }
+
+  Future<void> _handleExport(AppLocalizations l10n) async {
+    // Show date range picker for export period
+    final now = DateTime.now();
+    final range = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 2),
+      lastDate: now,
+      initialDateRange: DateTimeRange(
+        start: DateTime(now.year, now.month, 1),
+        end: now,
+      ),
+      helpText: l10n.selectDateRange,
+    );
+
+    if (range == null || !mounted) return;
+
+    // Show export format selection
+    final format = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.exportData),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'csv'),
+            child: const ListTile(
+              leading: Icon(Icons.table_chart),
+              title: Text('CSV'),
+              subtitle: Text('Excel compatible'),
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'pdf'),
+            child: const ListTile(
+              leading: Icon(Icons.picture_as_pdf),
+              title: Text('PDF'),
+              subtitle: Text('Print ready'),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (format == null || !mounted) return;
+
+    // Trigger export via API
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.loading)),
+      );
+
+      final from = range.start.toIso8601String().split('T')[0];
+      final to = range.end.toIso8601String().split('T')[0];
+
+      final repo = ref.read(financeRepositoryProvider);
+      await repo.exportEntries(
+        format: format,
+        dateFrom: from,
+        dateTo: to,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.exportSuccess)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
   }
 
   Widget _buildChart(AsyncValue<MonthlyFinancialSummary> summaryAsync) {

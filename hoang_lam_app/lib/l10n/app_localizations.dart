@@ -1917,6 +1917,7 @@ class AppLocalizations {
   String get noActivities => translate('no_activities');
 
   // UC-11: Outstanding balance
+  String get confirmAction => translate('confirm_action');
   String get markAsPaid => translate('mark_as_paid');
   String get balanceSettled => translate('balance_settled');
 
@@ -3687,6 +3688,7 @@ const Map<String, String> _viTranslations = {
   'all_activities': 'Tất cả hoạt động',
   'no_activities': 'Chưa có hoạt động nào',
   // UC-11: Outstanding balance
+  'confirm_action': 'Bạn có chắc chắn muốn thực hiện?',
   'mark_as_paid': 'Đánh dấu đã thanh toán',
   'balance_settled': 'Đã thanh toán công nợ',
   // UC-18: Guest preferences
@@ -5455,6 +5457,7 @@ const Map<String, String> _enTranslations = {
   'all_activities': 'All activities',
   'no_activities': 'No activities yet',
   // UC-11: Outstanding balance
+  'confirm_action': 'Are you sure you want to proceed?',
   'mark_as_paid': 'Mark as paid',
   'balance_settled': 'Balance settled',
   // UC-18: Guest preferences

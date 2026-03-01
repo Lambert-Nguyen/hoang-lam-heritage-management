@@ -201,6 +201,10 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           _buildStatsSection(),
           AppSpacing.gapVerticalLg,
 
+          // Preferences section
+          _buildPreferencesSection(),
+          AppSpacing.gapVerticalLg,
+
           // Notes section
           if (_guest.notes.isNotEmpty) ...[
             _buildNotesSection(),
@@ -348,6 +352,179 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       totalSpent: totalSpent,
       isVip: _guest.isVip,
     );
+  }
+
+  Widget _buildPreferencesSection() {
+    final l10n = context.l10n;
+    final prefs = _guest.preferences;
+    final roomPref = prefs['room_preference'] as String? ?? '';
+    final dietary = prefs['dietary_notes'] as String? ?? '';
+    final specialNeeds = prefs['special_needs'] as String? ?? '';
+    final hasPreferences =
+        roomPref.isNotEmpty || dietary.isNotEmpty || specialNeeds.isNotEmpty;
+
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.tune, size: 20, color: AppColors.textSecondary),
+              AppSpacing.gapHorizontalSm,
+              Expanded(
+                child: Text(
+                  l10n.guestPreferences,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 20),
+                onPressed: () => _showEditPreferencesDialog(),
+                tooltip: l10n.edit,
+              ),
+            ],
+          ),
+          if (hasPreferences) ...[
+            AppSpacing.gapVerticalSm,
+            if (roomPref.isNotEmpty)
+              _buildPreferenceRow(Icons.bed, l10n.roomPreference, roomPref),
+            if (dietary.isNotEmpty)
+              _buildPreferenceRow(
+                  Icons.restaurant, l10n.dietaryNotes, dietary),
+            if (specialNeeds.isNotEmpty)
+              _buildPreferenceRow(
+                  Icons.accessibility, l10n.specialNeeds, specialNeeds),
+          ] else
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.sm),
+              child: Text(
+                l10n.noData,
+                style:
+                    const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreferenceRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: AppColors.textSecondary),
+          AppSpacing.gapHorizontalSm,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label,
+                    style: const TextStyle(
+                        fontSize: 12, color: AppColors.textSecondary)),
+                Text(value, style: const TextStyle(fontSize: 14)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showEditPreferencesDialog() async {
+    final l10n = context.l10n;
+    final prefs = _guest.preferences;
+    final roomController =
+        TextEditingController(text: prefs['room_preference'] as String? ?? '');
+    final dietaryController =
+        TextEditingController(text: prefs['dietary_notes'] as String? ?? '');
+    final specialController =
+        TextEditingController(text: prefs['special_needs'] as String? ?? '');
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.guestPreferences),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: roomController,
+                decoration: InputDecoration(
+                  labelText: l10n.roomPreference,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.bed),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: dietaryController,
+                decoration: InputDecoration(
+                  labelText: l10n.dietaryNotes,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.restaurant),
+                ),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: specialController,
+                decoration: InputDecoration(
+                  labelText: l10n.specialNeeds,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.accessibility),
+                ),
+                maxLines: 2,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.save),
+          ),
+        ],
+      ),
+    );
+
+    if (saved == true && mounted) {
+      try {
+        final newPrefs = <String, dynamic>{
+          'room_preference': roomController.text,
+          'dietary_notes': dietaryController.text,
+          'special_needs': specialController.text,
+        };
+        final repo = ref.read(guestRepositoryProvider);
+        final updated =
+            await repo.patchGuest(_guest.id, {'preferences': newPrefs});
+        if (mounted) {
+          setState(() => _guest = updated);
+          ref.invalidate(guestByIdProvider(_guest.id));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.preferencesSaved)),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: $e')),
+          );
+        }
+      }
+    }
+    roomController.dispose();
+    dietaryController.dispose();
+    specialController.dispose();
   }
 
   Widget _buildNotesSection() {

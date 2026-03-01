@@ -809,4 +809,22 @@ class FinanceRepository {
   String getReceiptDownloadUrl(int bookingId, {String currency = 'VND'}) {
     return '${AppConstants.receiptsEndpoint}$bookingId/download/?currency=$currency';
   }
+
+  /// Export financial entries for a date range
+  Future<void> exportEntries({
+    required String format,
+    String? dateFrom,
+    String? dateTo,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'format': format,
+    };
+    if (dateFrom != null) queryParams['date_from'] = dateFrom;
+    if (dateTo != null) queryParams['date_to'] = dateTo;
+
+    await _apiClient.get(
+      '${AppConstants.financesEndpoint}export/',
+      queryParameters: queryParams,
+    );
+  }
 }

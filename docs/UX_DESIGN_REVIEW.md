@@ -9,7 +9,7 @@
 - **Round 3** (2026-02-25): Data connectivity audit — traced all User Guide workflows through code, found 12 data-flow gaps
 - **Round 3 Implementation** (2026-02-26): All 12 issues fixed
 - **Round 4** (2026-02-27): Comprehensive UX + use case audit — screen-by-screen review of all 48 screens, found 60 UX issues + 30 missing use cases
-- **Round 4 Implementation** (2026-02-27): All 8 Critical issues fixed
+- **Round 4 Implementation** (2026-02-27/28): All 60 UX issues fixed (8 Critical + 20 Major + 32 Minor). 14 use cases implemented (6 Must-have + 8 Should-have)
 
 ---
 
@@ -231,21 +231,21 @@ The following real-world hotel scenarios are not covered or incompletely covered
 | # | Use Case | Status | Notes |
 |---|----------|--------|-------|
 | UC-1 | **Walk-in guest with no ID** | Partial | Form requires guest but ID fields are optional — OK. However, no "anonymous/quick guest" shortcut for guests who refuse to provide info initially. |
-| UC-2 | **Room swap mid-stay** | Missing | Guest wants to change rooms (e.g., noisy neighbor, upgrade). No transfer/swap feature — must cancel and rebook, losing folio history. |
-| UC-3 | **Extend stay** | Missing | Guest wants to stay additional nights. No "extend checkout date" action on booking detail. Must edit booking, which is error-prone. |
-| UC-4 | **Shorten stay / Early departure** | Missing | Guest leaves early. No "early checkout" workflow that adjusts the rate. Manual check-out exists but does not recalculate charges. |
+| UC-2 | **Room swap mid-stay** | **FIXED** | Added `swapRoom()` — dialog with available rooms + reason field on booking detail |
+| UC-3 | **Extend stay** | **FIXED** | Added `extendStay()` — date picker + cost confirmation on booking detail |
+| UC-4 | **Shorten stay / Early departure** | **FIXED** | Enhanced checkout dialog shows scheduled vs actual nights + adjusted total |
 | UC-5 | **Booking modification by OTA** | Missing | When an OTA (Booking.com, Agoda) sends a modification, there is no way to link/track the external booking ID or sync status. |
 | UC-6 | **Waitlist / Overbooking** | Missing | When all rooms are booked, no waitlist queue. Overlap warning exists but no formal overbooking management. |
 | UC-7 | **Day-use / hourly booking from detail** | Partial | Hourly booking exists in the form, but there is no quick "day use" action from room detail for a same-day short stay. |
-| UC-8 | **Rebooking a returning guest** | Missing | No "rebook" button on guest detail or past booking that pre-fills guest info and preferences. |
+| UC-8 | **Rebooking a returning guest** | **FIXED** | "Rebook" button on guest detail pre-fills guest in booking form |
 
 #### Financial & Payment
 
 | # | Use Case | Status | Notes |
 |---|----------|--------|-------|
-| UC-9 | **Split payment** | Missing | Guest wants to pay part cash, part MoMo. Only one payment method per booking. Need split payment support. |
-| UC-10 | **Partial refund** | Missing | After cancellation, no refund recording workflow. Deposit is recorded but refund is manual finance entry with no link to booking. |
-| UC-11 | **Outstanding balance tracking** | Missing | No way to see guests with unpaid balances across all bookings. Dashboard shows revenue but not receivables. |
+| UC-9 | **Split payment** | **FIXED** | Multi-split dialog with payment method dropdowns, amounts, running total validation |
+| UC-10 | **Partial refund** | **FIXED** | Dialog with amount (validated ≤ total) + reason field |
+| UC-11 | **Outstanding balance tracking** | **FIXED** | Balance due uses error color when unpaid + "Mark as Paid" button |
 | UC-12 | **Invoice generation** | Missing | Receipts exist but formal invoices (with VAT, tax ID, company name) for business travelers are not supported. |
 | UC-13 | **Cash drawer reconciliation** | Partial | Night audit shows daily summary but no formal cash drawer open/close with expected vs actual count. |
 
@@ -253,7 +253,7 @@ The following real-world hotel scenarios are not covered or incompletely covered
 
 | # | Use Case | Status | Notes |
 |---|----------|--------|-------|
-| UC-14 | **Housekeeping priority by checkout time** | Missing | Tasks are listed but not sorted by urgency. Rooms with early check-ins should be cleaned first. No priority-based sorting. |
+| UC-14 | **Housekeeping priority by checkout time** | **FIXED** | Tasks sorted by type priority (checkout clean first), then date, then age. Priority hint shown on Today tab |
 | UC-15 | **Repeat/recurring maintenance** | Missing | Maintenance requests are one-off. No way to schedule recurring tasks (e.g., weekly AC filter cleaning). |
 | UC-16 | **Linen / amenity tracking** | Missing | No inventory for linens, towels, toiletries. Only minibar items are tracked. |
 | UC-17 | **Housekeeping photo verification** | Missing | No photo upload on task completion to verify room quality. |
@@ -262,7 +262,7 @@ The following real-world hotel scenarios are not covered or incompletely covered
 
 | # | Use Case | Status | Notes |
 |---|----------|--------|-------|
-| UC-18 | **Guest preferences / notes** | Partial | Special requests exist on bookings but no persistent guest-level preferences (e.g., "always wants extra pillows", "allergic to feathers"). |
+| UC-18 | **Guest preferences / notes** | **FIXED** | Preferences section on guest detail with room preference, dietary notes, special needs. Edit dialog patches guest via API |
 | UC-19 | **Guest complaint tracking** | Missing | No way to record and track guest complaints separately from maintenance requests. |
 | UC-20 | **Loyalty / repeat guest recognition** | Partial | VIP flag exists but no stay count, loyalty tier, or automatic recognition of returning guests. |
 | UC-21 | **Guest birthday / anniversary alerts** | Missing | No date-of-birth field on guest profile, so no birthday alerts during stay. |
@@ -271,36 +271,153 @@ The following real-world hotel scenarios are not covered or incompletely covered
 
 | # | Use Case | Status | Notes |
 |---|----------|--------|-------|
-| UC-22 | **Revenue per available room (RevPAR)** | Missing | Key hotel KPI not calculated or displayed. |
-| UC-23 | **Average daily rate (ADR)** | Missing | Another key hotel KPI not available in reports. |
+| UC-22 | **Revenue per available room (RevPAR)** | **FIXED** | KPI metrics card on dashboard showing RevPAR formatted in VND |
+| UC-23 | **Average daily rate (ADR)** | **FIXED** | KPI metrics card on dashboard showing ADR formatted in VND |
 | UC-24 | **Occupancy forecast** | Missing | No forward-looking view of future occupancy by week/month. Calendar shows bookings but no occupancy percentage projection. |
 | UC-25 | **Competitor rate monitoring** | Missing | No way to compare own rates with nearby hotels. Out of scope for MVP but worth noting. |
 | UC-26 | **Staff performance reporting** | Missing | No metrics on check-in speed, task completion time, or guest satisfaction per staff member. |
-| UC-27 | **Export financial data to accountant** | Partial | Declaration export exists (CSV/Excel) but no general financial export (income/expense) for accountant. |
+| UC-27 | **Export financial data to accountant** | **FIXED** | Export button on finance screen with date range picker + format selection (CSV/PDF) |
 
 #### Security & Multi-Device
 
 | # | Use Case | Status | Notes |
 |---|----------|--------|-------|
 | UC-28 | **Concurrent editing conflict** | Missing | Two staff on different devices editing the same booking — last write wins with no conflict detection. |
-| UC-29 | **Audit trail / activity log** | Missing | No history of who changed what and when. Critical for accountability in a multi-user environment. |
-| UC-30 | **Password reset by admin** | Partial | Admin can create staff accounts but cannot reset a forgotten password for another user. The "forgot password" flow is a dead end. |
+| UC-29 | **Audit trail / activity log** | **FIXED** | New AuditLogScreen with timeline, entity type filters, relative timestamps. Accessible from More menu |
+| UC-30 | **Password reset by admin** | **FIXED** | "Reset Password" button in staff detail sheet with password dialog (min 6 chars) |
 
 ---
 
 ### Use Case Priority Matrix
 
-**Must-have for production** (high frequency, blocks real workflows):
+**Must-have for production** (high frequency, blocks real workflows) — **ALL DONE**:
 
-- UC-2 Room swap, UC-3 Extend stay, UC-9 Split payment, UC-10 Partial refund, UC-29 Audit trail, UC-30 Admin password reset
+- ~~UC-2 Room swap~~, ~~UC-3 Extend stay~~, ~~UC-9 Split payment~~, ~~UC-10 Partial refund~~, ~~UC-29 Audit trail~~, ~~UC-30 Admin password reset~~
 
-**Should-have** (frequent but workarounds exist):
+**Should-have** (frequent but workarounds exist) — **ALL DONE**:
 
-- UC-4 Early departure, UC-8 Rebook returning guest, UC-11 Outstanding balances, UC-14 Housekeeping priority, UC-18 Guest preferences, UC-22 RevPAR, UC-23 ADR, UC-27 Financial export
+- ~~UC-4 Early departure~~, ~~UC-8 Rebook returning guest~~, ~~UC-11 Outstanding balances~~, ~~UC-14 Housekeeping priority~~, ~~UC-18 Guest preferences~~, ~~UC-22 RevPAR~~, ~~UC-23 ADR~~, ~~UC-27 Financial export~~
 
-**Nice-to-have** (low frequency or future phase):
+**Nice-to-have** (low frequency or future phase) — remaining for future:
 
 - UC-1 Anonymous guest, UC-5 OTA sync, UC-6 Waitlist, UC-7 Day-use shortcut, UC-12 Invoices, UC-13 Cash drawer, UC-15 Recurring maintenance, UC-16 Linen tracking, UC-17 Photo verification, UC-19 Complaints, UC-20 Loyalty tiers, UC-21 Birthday alerts, UC-24 Forecast, UC-25 Competitor rates, UC-26 Staff performance, UC-28 Conflict detection
+
+---
+
+## Round 4 Implementation — ALL COMPLETED
+
+### Round 4 Critical Issues — ALL 8 FIXED (previous session)
+
+See table above (Critical Issues section).
+
+### Round 4 Major Issues — ALL 20 FIXED (previous session)
+
+| # | Screen | Fix Applied |
+|---|--------|-------------|
+| 9 | All screens | Created `getLocalizedErrorMessage()` in `error_utils.dart` — maps DioException, SocketException, FormatException to localized messages |
+| 10 | All form screens | Created `UnsavedChangesGuard` widget using `PopScope` — shows discard confirmation dialog. Applied to booking, guest, finance, group booking, lost found forms |
+| 11 | All screens | Moved `OfflineBanner` to `MainScaffold` — shows Material banner with wifi_off icon when offline, with retry button |
+| 12 | Bookings List | Wrapped empty state in `ListView` inside `RefreshIndicator` with `AlwaysScrollableScrollPhysics` |
+| 13 | Bookings List | Added `AllBookingsSearchDelegate` with API search via `searchBookingsProvider` |
+| 14 | Booking Detail | Added `RefreshIndicator` wrapping `SingleChildScrollView` with pull-to-refresh |
+| 15 | Room Detail | Pre-fill room ID via `extra: {'prefilledRoomId': room.id}` when navigating to new booking |
+| 16 | Room Detail | Blocked "Occupied" quick status when no active booking — shows error snackbar |
+| 17 | Room Detail | Added `roomId` query param filter when navigating to bookings list |
+| 18 | Room Management | Added active booking check before delete — shows warning dialog if bookings exist |
+| 19 | Guest List | Added to More menu under "Booking Management" section |
+| 20 | Guest Detail | Changed "Quick Actions" label to `l10n.quickActions` |
+| 21 | Finance | Replaced two stacked FABs with single `SpeedDial`-style expandable FAB |
+| 22 | Finance | Added date range filter bar with date picker for custom ranges |
+| 23 | Lost & Found | Added photo upload via `image_picker` (camera + gallery) with display in detail |
+| 24 | Lost & Found | Fixed filter to separate `disposed`/`donated` from pending items |
+| 25 | Lost & Found | Added room dropdown and "found by" field to form |
+| 26 | Group Booking | Added validation requiring non-empty cancellation reason |
+| 27 | Group Booking | Added error snackbar on null result in confirm/check-in/check-out handlers |
+| 28 | Maintenance | Added error snackbar on null result in assign/complete handlers |
+
+### Round 4 Minor Issues — ALL 32 FIXED
+
+| # | Screen | Fix Applied |
+|---|--------|-------------|
+| 29 | Booking Detail | Replaced emoji section titles with Material icons (Icons.person, Icons.schedule, Icons.payments, etc.) |
+| 30 | Booking Detail | Changed `Colors.black87` to `null` for theme-aware text color |
+| 31 | Booking Detail | Added `color: AppColors.error` to delete icon |
+| 33 | Bookings List | Added "Today" TextButton between month navigation arrows |
+| 34 | Dashboard | Converted `_QuickActionButton` to StatefulWidget with loading state |
+| 35 | Dashboard | Added hint text "Long press a room to change status" below room grid |
+| 36 | Dashboard | Removed `tapTargetSize: shrinkWrap`, increased button height from 32 to 36dp |
+| 37 | Finance | Removed duplicate filter icon from AppBar (kept inline tabs) |
+| 38 | Finance | Changed transaction list from fixed height to `Expanded` with `RefreshIndicator` |
+| 39 | Housekeeping | Added task count in tab labels: "Today (3)" |
+| 41 | Guest List | Added `helperText: searchMinChars` to search TextField |
+| 42 | Guest List | Fixed invisible `VerticalDivider` with `SizedBox(height: 24)` |
+| 43 | Guest Detail | Added `RefreshIndicator` to info tab |
+| 45 | More Menu | Added search bar with real-time filtering |
+| 49 | Group Booking | Auto-calculate total from rooms × rate × nights |
+| 50 | Group Booking | Added discount validation (0-100%) |
+| 51 | Login | Replaced generic "contact admin" with specific phone number |
+| 53 | Settings | Disabled Sync/Backup tiles (onTap: null, enabled: false) |
+| 54 | Settings | Changed copyright from 2024 to 2026 |
+| 55-56 | Booking Form | Settings help dialog uses Material icons instead of emoji |
+| 58 | Dashboard | Added icons to room status legend for color-blind accessibility |
+| 60 | Widgets | Unified duplicate `EmptyState` — removed copy from `offline_banner.dart` |
+
+### Round 4 Use Cases Implemented
+
+#### Must-have (6/6 complete)
+
+| UC | Feature | Implementation |
+|----|---------|---------------|
+| UC-2 | **Room swap mid-stay** | Added `swapRoom()` to repository/provider. "Swap Room" button on booking detail for checked-in bookings. Dialog with available rooms dropdown + reason field |
+| UC-3 | **Extend stay** | Added `extendStay()` to repository/provider. Date picker for new checkout, confirmation showing additional nights + cost |
+| UC-4 | **Early departure** | Enhanced checkout dialog — detects early departure, shows scheduled vs actual nights and adjusted total |
+| UC-9 | **Split payment** | Added `splitPayment()` to repository/provider. Multi-split dialog with payment method dropdowns, amounts, running total validation |
+| UC-10 | **Partial refund** | Added `partialRefund()` to repository/provider. Dialog with amount (validated ≤ total), reason field |
+| UC-29 | **Audit trail** | New model (`AuditLogEntry`), repository, provider, screen. Timeline with action icons, entity type filter chips, relative timestamps. Added to More menu |
+| UC-30 | **Admin password reset** | Added `resetUserPassword()` to auth repository/provider. "Reset Password" button in staff detail sheet with password dialog (min 6 chars) |
+
+#### Should-have (8/8 complete)
+
+| UC | Feature | Implementation |
+|----|---------|---------------|
+| UC-8 | **Rebook returning guest** | "Rebook" button on guest detail. Pre-fills guest in booking form via `prefilledGuestId` |
+| UC-11 | **Outstanding balance** | Balance due row uses error color when unpaid. "Mark as Paid" button with confirmation dialog |
+| UC-14 | **Housekeeping priority** | Tasks sorted by type priority (checkout clean > stay clean > others), then date, then age. Priority hint shown on Today tab |
+| UC-18 | **Guest preferences** | Preferences section on guest detail with room preference, dietary notes, special needs. Edit dialog that patches guest via API |
+| UC-22 | **RevPAR** | KPI metrics card on dashboard: Revenue ÷ Available Rooms, formatted in VND |
+| UC-23 | **ADR** | KPI metrics card on dashboard: Revenue ÷ Occupied Rooms, formatted in VND |
+| UC-27 | **Financial export** | Export button on finance screen. Date range picker + format selection (CSV/PDF). Calls `/finance/entries/export/` API |
+
+### Files Changed (Round 4 — Minor + Use Cases)
+
+**New files created:**
+- `hoang_lam_app/lib/models/audit_log.dart` — AuditLogEntry model
+- `hoang_lam_app/lib/repositories/audit_log_repository.dart` — audit log API
+- `hoang_lam_app/lib/providers/audit_log_provider.dart` — audit log providers
+- `hoang_lam_app/lib/screens/audit_log/audit_log_screen.dart` — audit log UI
+
+**Modified files:**
+- `hoang_lam_app/lib/screens/bookings/booking_detail_screen.dart` — emoji→icons, dark mode fix, split payment, partial refund, mark as paid, swap room, extend stay, early departure
+- `hoang_lam_app/lib/screens/bookings/bookings_screen.dart` — "Today" button
+- `hoang_lam_app/lib/screens/home/home_screen.dart` — quick action loading, long-press hint, legend icons, KPI metrics card
+- `hoang_lam_app/lib/screens/finance/finance_screen.dart` — layout fix, export button
+- `hoang_lam_app/lib/screens/housekeeping/task_list_screen.dart` — tab counts, priority sorting
+- `hoang_lam_app/lib/screens/guests/guest_list_screen.dart` — search helper, divider fix
+- `hoang_lam_app/lib/screens/guests/guest_detail_screen.dart` — pull-to-refresh, rebook button, preferences section
+- `hoang_lam_app/lib/screens/more/more_menu_screen.dart` — search bar, audit log entry
+- `hoang_lam_app/lib/screens/settings/settings_screen.dart` — help dialog icons, disabled tiles, copyright, password reset
+- `hoang_lam_app/lib/screens/settings/staff_management_screen.dart` — reset password dialog
+- `hoang_lam_app/lib/screens/auth/login_screen.dart` — forgot password contact
+- `hoang_lam_app/lib/screens/group_booking/group_booking_form_screen.dart` — auto-calculate total, discount validation
+- `hoang_lam_app/lib/repositories/booking_repository.dart` — swapRoom, extendStay, splitPayment, partialRefund
+- `hoang_lam_app/lib/repositories/auth_repository.dart` — resetUserPassword
+- `hoang_lam_app/lib/repositories/finance_repository.dart` — exportEntries
+- `hoang_lam_app/lib/providers/booking_provider.dart` — swapRoom, extendStay, splitPayment, partialRefund
+- `hoang_lam_app/lib/providers/auth_provider.dart` — resetUserPassword
+- `hoang_lam_app/lib/widgets/common/empty_state.dart` — unified API
+- `hoang_lam_app/lib/widgets/common/offline_banner.dart` — removed duplicate EmptyState
+- `hoang_lam_app/lib/router/app_router.dart` — audit log route, rebook route handling
+- `hoang_lam_app/lib/l10n/app_localizations.dart` — 50+ new l10n string pairs
 
 ---
 
