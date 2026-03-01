@@ -73,7 +73,7 @@ jobs:
         BUILD_NUMBER: ${{ github.run_number }}
 
     - name: Upload APK artifact
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: app-release
         path: hoang_lam_app/build/app/outputs/flutter-apk/app-release.apk
