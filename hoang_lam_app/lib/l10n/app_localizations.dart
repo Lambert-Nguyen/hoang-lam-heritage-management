@@ -155,7 +155,8 @@ class AppLocalizations {
   String get newBooking => translate('new_booking');
   String get noRooms => translate('no_rooms');
   String get roomLoadError => translate('room_load_error');
-  String get longPressToChangeStatus => translate('long_press_to_change_status');
+  String get longPressToChangeStatus =>
+      translate('long_press_to_change_status');
   String get noCheckoutToday => translate('no_checkout_today');
   String get noCheckinToday => translate('no_checkin_today');
   String get guest => translate('guest');
@@ -1871,8 +1872,7 @@ class AppLocalizations {
   String get checkoutMustBeAfterCheckin =>
       translate('checkout_must_be_after_checkin');
   // Round 4 — Major fixes
-  String get occupiedRequiresBooking =>
-      translate('occupied_requires_booking');
+  String get occupiedRequiresBooking => translate('occupied_requires_booking');
   String get cannotDeleteRoomWithBookings =>
       translate('cannot_delete_room_with_bookings');
   String get unsavedChangesTitle => translate('unsaved_changes_title');

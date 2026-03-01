@@ -427,7 +427,11 @@ class BookingRepository {
   }
 
   /// Swap room for a checked-in booking
-  Future<Booking> swapRoom(int bookingId, int newRoomId, {String? reason}) async {
+  Future<Booking> swapRoom(
+    int bookingId,
+    int newRoomId, {
+    String? reason,
+  }) async {
     final data = <String, dynamic>{
       'new_room': newRoomId,
       if (reason != null) 'reason': reason,

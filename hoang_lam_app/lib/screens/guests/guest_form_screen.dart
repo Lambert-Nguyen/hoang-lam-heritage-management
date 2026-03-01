@@ -101,63 +101,68 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
     return UnsavedChangesGuard(
       hasUnsavedChanges: _isDirty && !_isLoading,
       child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _isEditing ? context.l10n.editGuestTitle : context.l10n.addGuest,
+        appBar: AppBar(
+          title: Text(
+            _isEditing ? context.l10n.editGuestTitle : context.l10n.addGuest,
+          ),
+          actions: [
+            if (_isEditing)
+              AppIconButton(
+                icon: _isVip ? Icons.star : Icons.star_border,
+                color: _isVip ? AppColors.warning : null,
+                onPressed: () => setState(() => _isVip = !_isVip),
+                tooltip: _isVip ? context.l10n.removeVip : context.l10n.markVip,
+              ),
+          ],
         ),
-        actions: [
-          if (_isEditing)
-            AppIconButton(
-              icon: _isVip ? Icons.star : Icons.star_border,
-              color: _isVip ? AppColors.warning : null,
-              onPressed: () => setState(() => _isVip = !_isVip),
-              tooltip: _isVip ? context.l10n.removeVip : context.l10n.markVip,
+        body: Form(
+          key: _formKey,
+          onChanged: () {
+            if (!_isDirty) setState(() => _isDirty = true);
+          },
+          child: SingleChildScrollView(
+            padding: AppSpacing.paddingScreen,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Required information
+                _buildSectionHeader(
+                  context.l10n.requiredInfo,
+                  isRequired: true,
+                ),
+                AppSpacing.gapVerticalSm,
+                _buildRequiredSection(),
+                AppSpacing.gapVerticalLg,
+
+                // ID information
+                _buildSectionHeader(context.l10n.identityDocument),
+                AppSpacing.gapVerticalSm,
+                _buildIdSection(),
+                AppSpacing.gapVerticalLg,
+
+                // Personal information
+                _buildSectionHeader(context.l10n.personalInfo),
+                AppSpacing.gapVerticalSm,
+                _buildPersonalSection(),
+                AppSpacing.gapVerticalLg,
+
+                // Address
+                _buildSectionHeader(context.l10n.address),
+                AppSpacing.gapVerticalSm,
+                _buildAddressSection(),
+                AppSpacing.gapVerticalLg,
+
+                // Notes
+                _buildSectionHeader(context.l10n.internalNotes),
+                AppSpacing.gapVerticalSm,
+                _buildNotesSection(),
+                AppSpacing.gapVerticalXl,
+              ],
             ),
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        onChanged: () { if (!_isDirty) setState(() => _isDirty = true); },
-        child: SingleChildScrollView(
-          padding: AppSpacing.paddingScreen,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Required information
-              _buildSectionHeader(context.l10n.requiredInfo, isRequired: true),
-              AppSpacing.gapVerticalSm,
-              _buildRequiredSection(),
-              AppSpacing.gapVerticalLg,
-
-              // ID information
-              _buildSectionHeader(context.l10n.identityDocument),
-              AppSpacing.gapVerticalSm,
-              _buildIdSection(),
-              AppSpacing.gapVerticalLg,
-
-              // Personal information
-              _buildSectionHeader(context.l10n.personalInfo),
-              AppSpacing.gapVerticalSm,
-              _buildPersonalSection(),
-              AppSpacing.gapVerticalLg,
-
-              // Address
-              _buildSectionHeader(context.l10n.address),
-              AppSpacing.gapVerticalSm,
-              _buildAddressSection(),
-              AppSpacing.gapVerticalLg,
-
-              // Notes
-              _buildSectionHeader(context.l10n.internalNotes),
-              AppSpacing.gapVerticalSm,
-              _buildNotesSection(),
-              AppSpacing.gapVerticalXl,
-            ],
           ),
         ),
+        bottomNavigationBar: _buildBottomBar(),
       ),
-      bottomNavigationBar: _buildBottomBar(),
-    ),
     );
   }
 

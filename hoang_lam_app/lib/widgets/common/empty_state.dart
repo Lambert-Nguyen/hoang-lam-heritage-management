@@ -54,9 +54,7 @@ class EmptyState extends StatelessWidget {
               ),
             ],
             if (action != null) ...[AppSpacing.gapVerticalLg, action!],
-            if (action == null &&
-                actionLabel != null &&
-                onAction != null) ...[
+            if (action == null && actionLabel != null && onAction != null) ...[
               AppSpacing.gapVerticalLg,
               ElevatedButton(onPressed: onAction, child: Text(actionLabel!)),
             ],

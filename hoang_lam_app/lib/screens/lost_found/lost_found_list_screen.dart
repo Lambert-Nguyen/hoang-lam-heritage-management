@@ -150,13 +150,15 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
       if (claimed != null) {
         if (claimed) {
           // "Completed" tab: show claimed, donated, disposed items
-          final isCompleted = item.status == LostFoundStatus.claimed ||
+          final isCompleted =
+              item.status == LostFoundStatus.claimed ||
               item.status == LostFoundStatus.donated ||
               item.status == LostFoundStatus.disposed;
           if (!isCompleted) return false;
         } else {
           // "Pending" tab: show found and stored items
-          final isPending = item.status == LostFoundStatus.found ||
+          final isPending =
+              item.status == LostFoundStatus.found ||
               item.status == LostFoundStatus.stored;
           if (!isPending) return false;
         }

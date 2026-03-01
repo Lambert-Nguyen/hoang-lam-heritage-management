@@ -26,7 +26,11 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
+    _selectedDate = DateTime(
+      DateTime.now().year,
+      DateTime.now().month,
+      DateTime.now().day,
+    );
   }
 
   @override
@@ -646,14 +650,14 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
       final repo = ref.read(nightAuditNotifierProvider.notifier);
       await repo.exportAudit(audit.id, format: format);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.exportSuccess)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.exportSuccess)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.error}: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
     }
   }
 

@@ -55,7 +55,12 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
           controller: _tabController,
           tabs: [
             Tab(text: _tabLabel(l10n.today, ref.watch(todayTasksProvider))),
-            Tab(text: _tabLabel(l10n.all, ref.watch(filteredTasksProvider(_filter)))),
+            Tab(
+              text: _tabLabel(
+                l10n.all,
+                ref.watch(filteredTasksProvider(_filter)),
+              ),
+            ),
             Tab(text: _tabLabel(l10n.myTasks, ref.watch(myTasksProvider))),
           ],
         ),
@@ -156,8 +161,9 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
   void _sortByPriority(List<HousekeepingTask> tasks) {
     tasks.sort((a, b) {
       // 1. Task type priority: checkout_clean > stay_clean > others
-      final typePriority = _taskTypePriority(a.taskType)
-          .compareTo(_taskTypePriority(b.taskType));
+      final typePriority = _taskTypePriority(
+        a.taskType,
+      ).compareTo(_taskTypePriority(b.taskType));
       if (typePriority != 0) return typePriority;
 
       // 2. Scheduled date: earliest first

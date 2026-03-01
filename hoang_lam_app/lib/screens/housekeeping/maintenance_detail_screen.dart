@@ -584,10 +584,12 @@ class _MaintenanceDetailScreenState
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(getLocalizedErrorMessage(e, l10n)),
-            backgroundColor: AppColors.error,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getLocalizedErrorMessage(e, l10n)),
+              backgroundColor: AppColors.error,
+            ),
+          );
         }
       }
     }
@@ -619,10 +621,12 @@ class _MaintenanceDetailScreenState
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(getLocalizedErrorMessage(e, l10n)),
-            backgroundColor: AppColors.error,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getLocalizedErrorMessage(e, l10n)),
+              backgroundColor: AppColors.error,
+            ),
+          );
         }
       }
     }
@@ -654,10 +658,12 @@ class _MaintenanceDetailScreenState
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(getLocalizedErrorMessage(e, l10n)),
-            backgroundColor: AppColors.error,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getLocalizedErrorMessage(e, l10n)),
+              backgroundColor: AppColors.error,
+            ),
+          );
         }
       }
     }
@@ -701,10 +707,12 @@ class _MaintenanceDetailScreenState
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(getLocalizedErrorMessage(e, l10n)),
-            backgroundColor: AppColors.error,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getLocalizedErrorMessage(e, l10n)),
+              backgroundColor: AppColors.error,
+            ),
+          );
         }
       }
     }
@@ -749,10 +757,12 @@ class _MaintenanceDetailScreenState
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(getLocalizedErrorMessage(e, l10n)),
-            backgroundColor: AppColors.error,
-          ));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(getLocalizedErrorMessage(e, l10n)),
+              backgroundColor: AppColors.error,
+            ),
+          );
         }
       }
     }

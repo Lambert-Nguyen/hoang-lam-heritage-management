@@ -522,7 +522,10 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
                 icon: Icons.book_online,
                 onPressed: _room.status == RoomStatus.available
                     ? () {
-                        context.push(AppRoutes.newBooking, extra: {'preselectedRoomId': _room.id});
+                        context.push(
+                          AppRoutes.newBooking,
+                          extra: {'preselectedRoomId': _room.id},
+                        );
                       }
                     : null,
               ),

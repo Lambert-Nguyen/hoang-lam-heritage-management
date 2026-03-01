@@ -212,11 +212,7 @@ class HomeScreen extends ConsumerWidget {
   }
 
   // UC-22 & UC-23: KPI metrics card (RevPAR & ADR)
-  Widget _buildKpiCard(
-    BuildContext context,
-    AppLocalizations l10n,
-    dashboard,
-  ) {
+  Widget _buildKpiCard(BuildContext context, AppLocalizations l10n, dashboard) {
     final totalRooms = dashboard.roomStatus.total as int;
     final occupiedRooms = dashboard.roomStatus.occupied as int;
     final todayRevenue = dashboard.today.revenue as double;
@@ -289,10 +285,7 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ],
       ),
@@ -438,10 +431,22 @@ class HomeScreen extends ConsumerWidget {
       spacing: AppSpacing.md,
       runSpacing: AppSpacing.sm,
       children: [
-        _buildLegendItem(l10n.available, AppColors.available, icon: Icons.check),
+        _buildLegendItem(
+          l10n.available,
+          AppColors.available,
+          icon: Icons.check,
+        ),
         _buildLegendItem(l10n.occupied, AppColors.occupied, icon: Icons.person),
-        _buildLegendItem(l10n.cleaning, AppColors.cleaning, icon: Icons.cleaning_services),
-        _buildLegendItem(l10n.maintenance, AppColors.maintenance, icon: Icons.build),
+        _buildLegendItem(
+          l10n.cleaning,
+          AppColors.cleaning,
+          icon: Icons.cleaning_services,
+        ),
+        _buildLegendItem(
+          l10n.maintenance,
+          AppColors.maintenance,
+          icon: Icons.build,
+        ),
         _buildLegendItem(l10n.blocked, AppColors.blocked, icon: Icons.block),
       ],
     );
@@ -455,7 +460,9 @@ class HomeScreen extends ConsumerWidget {
           width: 16,
           height: 16,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          child: icon != null ? Icon(icon, size: 10, color: Colors.white) : null,
+          child: icon != null
+              ? Icon(icon, size: 10, color: Colors.white)
+              : null,
         ),
         AppSpacing.gapHorizontalXs,
         Text(

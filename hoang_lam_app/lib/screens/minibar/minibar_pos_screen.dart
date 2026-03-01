@@ -118,10 +118,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
             children: [
               Expanded(child: itemPanel),
               const Divider(height: 1),
-              SizedBox(
-                height: constraints.maxHeight * 0.35,
-                child: cartPanel,
-              ),
+              SizedBox(height: constraints.maxHeight * 0.35, child: cartPanel),
             ],
           );
         },

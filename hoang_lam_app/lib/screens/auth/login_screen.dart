@@ -335,9 +335,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       : () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                context.l10n.forgotPasswordContact,
-                              ),
+                              content: Text(context.l10n.forgotPasswordContact),
                               duration: const Duration(seconds: 5),
                             ),
                           );

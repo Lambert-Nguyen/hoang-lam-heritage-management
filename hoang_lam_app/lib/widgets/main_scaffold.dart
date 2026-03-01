@@ -13,8 +13,9 @@ import '../l10n/app_localizations.dart';
 final connectivityProvider = StreamProvider<bool>((ref) {
   return Stream.periodic(const Duration(seconds: 10), (_) async {
     try {
-      final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 5));
+      final result = await InternetAddress.lookup(
+        'google.com',
+      ).timeout(const Duration(seconds: 5));
       return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
     } catch (_) {
       return false;

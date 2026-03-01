@@ -816,9 +816,7 @@ class FinanceRepository {
     String? dateFrom,
     String? dateTo,
   }) async {
-    final queryParams = <String, dynamic>{
-      'format': format,
-    };
+    final queryParams = <String, dynamic>{'format': format};
     if (dateFrom != null) queryParams['date_from'] = dateFrom;
     if (dateTo != null) queryParams['date_to'] = dateTo;
 

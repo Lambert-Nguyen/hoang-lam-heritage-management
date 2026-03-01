@@ -307,9 +307,17 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   }
 
   /// Swap room for a checked-in booking
-  Future<Booking> swapRoom(int bookingId, int newRoomId, {String? reason}) async {
+  Future<Booking> swapRoom(
+    int bookingId,
+    int newRoomId, {
+    String? reason,
+  }) async {
     try {
-      final result = await _repository.swapRoom(bookingId, newRoomId, reason: reason);
+      final result = await _repository.swapRoom(
+        bookingId,
+        newRoomId,
+        reason: reason,
+      );
       await loadBookings();
       return result;
     } catch (error) {

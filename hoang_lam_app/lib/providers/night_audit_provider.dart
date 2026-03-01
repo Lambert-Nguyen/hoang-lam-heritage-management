@@ -29,7 +29,8 @@ final todayAuditProvider = FutureProvider.autoDispose<NightAudit>((ref) async {
 final auditByDateProvider = FutureProvider.autoDispose
     .family<NightAudit, DateTime>((ref, date) async {
       final now = DateTime.now();
-      final isToday = date.year == now.year &&
+      final isToday =
+          date.year == now.year &&
           date.month == now.month &&
           date.day == now.day;
       if (isToday) {

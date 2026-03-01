@@ -182,41 +182,41 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: AppSpacing.paddingScreen,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Contact information
-          _buildContactSection(),
-          AppSpacing.gapVerticalLg,
-
-          // ID information
-          _buildIdSection(),
-          AppSpacing.gapVerticalLg,
-
-          // Personal information
-          _buildPersonalSection(),
-          AppSpacing.gapVerticalLg,
-
-          // Stats section
-          _buildStatsSection(),
-          AppSpacing.gapVerticalLg,
-
-          // Preferences section
-          _buildPreferencesSection(),
-          AppSpacing.gapVerticalLg,
-
-          // Notes section
-          if (_guest.notes.isNotEmpty) ...[
-            _buildNotesSection(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Contact information
+            _buildContactSection(),
             AppSpacing.gapVerticalLg,
-          ],
 
-          // Quick actions
-          _buildQuickActions(),
-          AppSpacing.gapVerticalXl,
-        ],
+            // ID information
+            _buildIdSection(),
+            AppSpacing.gapVerticalLg,
+
+            // Personal information
+            _buildPersonalSection(),
+            AppSpacing.gapVerticalLg,
+
+            // Stats section
+            _buildStatsSection(),
+            AppSpacing.gapVerticalLg,
+
+            // Preferences section
+            _buildPreferencesSection(),
+            AppSpacing.gapVerticalLg,
+
+            // Notes section
+            if (_guest.notes.isNotEmpty) ...[
+              _buildNotesSection(),
+              AppSpacing.gapVerticalLg,
+            ],
+
+            // Quick actions
+            _buildQuickActions(),
+            AppSpacing.gapVerticalXl,
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -374,10 +374,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               Expanded(
                 child: Text(
                   l10n.guestPreferences,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               IconButton(
@@ -392,18 +391,22 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             if (roomPref.isNotEmpty)
               _buildPreferenceRow(Icons.bed, l10n.roomPreference, roomPref),
             if (dietary.isNotEmpty)
-              _buildPreferenceRow(
-                  Icons.restaurant, l10n.dietaryNotes, dietary),
+              _buildPreferenceRow(Icons.restaurant, l10n.dietaryNotes, dietary),
             if (specialNeeds.isNotEmpty)
               _buildPreferenceRow(
-                  Icons.accessibility, l10n.specialNeeds, specialNeeds),
+                Icons.accessibility,
+                l10n.specialNeeds,
+                specialNeeds,
+              ),
           ] else
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.sm),
               child: Text(
                 l10n.noData,
-                style:
-                    const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 13,
+                ),
               ),
             ),
         ],
@@ -423,9 +426,13 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: const TextStyle(
-                        fontSize: 12, color: AppColors.textSecondary)),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
                 Text(value, style: const TextStyle(fontSize: 14)),
               ],
             ),
@@ -438,12 +445,15 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
   Future<void> _showEditPreferencesDialog() async {
     final l10n = context.l10n;
     final prefs = _guest.preferences;
-    final roomController =
-        TextEditingController(text: prefs['room_preference'] as String? ?? '');
-    final dietaryController =
-        TextEditingController(text: prefs['dietary_notes'] as String? ?? '');
-    final specialController =
-        TextEditingController(text: prefs['special_needs'] as String? ?? '');
+    final roomController = TextEditingController(
+      text: prefs['room_preference'] as String? ?? '',
+    );
+    final dietaryController = TextEditingController(
+      text: prefs['dietary_notes'] as String? ?? '',
+    );
+    final specialController = TextEditingController(
+      text: prefs['special_needs'] as String? ?? '',
+    );
 
     final saved = await showDialog<bool>(
       context: context,
@@ -505,20 +515,21 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           'special_needs': specialController.text,
         };
         final repo = ref.read(guestRepositoryProvider);
-        final updated =
-            await repo.patchGuest(_guest.id, {'preferences': newPrefs});
+        final updated = await repo.patchGuest(_guest.id, {
+          'preferences': newPrefs,
+        });
         if (mounted) {
           setState(() => _guest = updated);
           ref.invalidate(guestByIdProvider(_guest.id));
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.preferencesSaved)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.preferencesSaved)));
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
         }
       }
     }

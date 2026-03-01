@@ -156,7 +156,7 @@ void main() {
 
       // Check snackbar is shown
       expect(
-        find.text('Vui lòng liên hệ quản trị viên để đặt lại mật khẩu'),
+        find.textContaining('Vui lòng liên hệ quản lý để đặt lại mật khẩu'),
         findsOneWidget,
       );
     });

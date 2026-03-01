@@ -188,30 +188,26 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
 
     // Trigger export via API
     try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.loading)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.loading)));
 
       final from = range.start.toIso8601String().split('T')[0];
       final to = range.end.toIso8601String().split('T')[0];
 
       final repo = ref.read(financeRepositoryProvider);
-      await repo.exportEntries(
-        format: format,
-        dateFrom: from,
-        dateTo: to,
-      );
+      await repo.exportEntries(format: format, dateFrom: from, dateTo: to);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.exportSuccess)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.exportSuccess)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     }
   }
@@ -445,8 +441,8 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                 child: Text(
                   hasFilter
                       ? '${_dateFrom != null ? dateFormat.format(_dateFrom!) : '...'}'
-                          ' – '
-                          '${_dateTo != null ? dateFormat.format(_dateTo!) : '...'}'
+                            ' – '
+                            '${_dateTo != null ? dateFormat.format(_dateTo!) : '...'}'
                       : l10n.dateRange,
                   style: TextStyle(
                     color: hasFilter
@@ -718,9 +714,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))),
+          );
         }
       }
     }

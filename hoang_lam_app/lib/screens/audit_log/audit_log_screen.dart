@@ -126,17 +126,11 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
       ),
       subtitle: Text(
         '${entry.userName} · ${entry.entityType}',
-        style: TextStyle(
-          fontSize: 12,
-          color: AppColors.textSecondary,
-        ),
+        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
       trailing: Text(
         time,
-        style: TextStyle(
-          fontSize: 11,
-          color: AppColors.textSecondary,
-        ),
+        style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.sm,

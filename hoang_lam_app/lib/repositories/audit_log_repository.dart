@@ -6,7 +6,7 @@ class AuditLogRepository {
   final ApiClient _apiClient;
 
   AuditLogRepository({ApiClient? apiClient})
-      : _apiClient = apiClient ?? ApiClient();
+    : _apiClient = apiClient ?? ApiClient();
 
   /// Get audit log entries with optional filters
   Future<List<AuditLogEntry>> getAuditLogs({

@@ -104,87 +104,89 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     return UnsavedChangesGuard(
       hasUnsavedChanges: _isDirty && !_isSubmitting,
       child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          isEdit ? context.l10n.editBooking : context.l10n.createBooking,
+        appBar: AppBar(
+          title: Text(
+            isEdit ? context.l10n.editBooking : context.l10n.createBooking,
+          ),
         ),
-      ),
-      body: Form(
-        key: _formKey,
-        onChanged: _markDirty,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // Room Selection
-            _buildRoomSelection(),
-            const SizedBox(height: 16),
+        body: Form(
+          key: _formKey,
+          onChanged: _markDirty,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              // Room Selection
+              _buildRoomSelection(),
+              const SizedBox(height: 16),
 
-            // Guest Selection
-            _buildGuestSelection(),
-            const SizedBox(height: 16),
+              // Guest Selection
+              _buildGuestSelection(),
+              const SizedBox(height: 16),
 
-            // Dates
-            _buildDateSection(),
-            const SizedBox(height: 16),
+              // Dates
+              _buildDateSection(),
+              const SizedBox(height: 16),
 
-            // Number of Guests
-            _buildNumberOfGuestsField(),
-            const SizedBox(height: 16),
+              // Number of Guests
+              _buildNumberOfGuestsField(),
+              const SizedBox(height: 16),
 
-            // Rate per night
-            _buildRateField(),
-            const SizedBox(height: 16),
+              // Rate per night
+              _buildRateField(),
+              const SizedBox(height: 16),
 
-            // Total amount (calculated)
-            _buildTotalDisplay(),
-            const SizedBox(height: 16),
+              // Total amount (calculated)
+              _buildTotalDisplay(),
+              const SizedBox(height: 16),
 
-            // Optional fields — collapsed by default for quick walk-in bookings
-            ExpansionTile(
-              title: Text(context.l10n.optionalFields),
-              leading: const Icon(Icons.tune),
-              initiallyExpanded: isEdit,
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: const EdgeInsets.only(bottom: 8),
-              children: [
-                // Booking Source
-                _buildSourceSelection(),
-                const SizedBox(height: 16),
+              // Optional fields — collapsed by default for quick walk-in bookings
+              ExpansionTile(
+                title: Text(context.l10n.optionalFields),
+                leading: const Icon(Icons.tune),
+                initiallyExpanded: isEdit,
+                tilePadding: EdgeInsets.zero,
+                childrenPadding: const EdgeInsets.only(bottom: 8),
+                children: [
+                  // Booking Source
+                  _buildSourceSelection(),
+                  const SizedBox(height: 16),
 
-                // Payment Method
-                _buildPaymentMethodSelection(),
-                const SizedBox(height: 16),
+                  // Payment Method
+                  _buildPaymentMethodSelection(),
+                  const SizedBox(height: 16),
 
-                // Deposit
-                _buildDepositField(),
-                const SizedBox(height: 16),
+                  // Deposit
+                  _buildDepositField(),
+                  const SizedBox(height: 16),
 
-                // Special Requests
-                _buildSpecialRequestsField(),
-                const SizedBox(height: 16),
+                  // Special Requests
+                  _buildSpecialRequestsField(),
+                  const SizedBox(height: 16),
 
-                // Internal Notes
-                _buildInternalNotesField(),
-              ],
-            ),
-            const SizedBox(height: 24),
-
-            // Submit Button
-            ElevatedButton(
-              onPressed: _isSubmitting ? null : _handleSubmit,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(16),
+                  // Internal Notes
+                  _buildInternalNotesField(),
+                ],
               ),
-              child: _isSubmitting
-                  ? const CircularProgressIndicator()
-                  : Text(
-                      isEdit ? context.l10n.update : context.l10n.createBooking,
-                    ),
-            ),
-          ],
+              const SizedBox(height: 24),
+
+              // Submit Button
+              ElevatedButton(
+                onPressed: _isSubmitting ? null : _handleSubmit,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(16),
+                ),
+                child: _isSubmitting
+                    ? const CircularProgressIndicator()
+                    : Text(
+                        isEdit
+                            ? context.l10n.update
+                            : context.l10n.createBooking,
+                      ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 
@@ -270,7 +272,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                   _rateController.text = _ThousandsSeparatorFormatter()
                       .formatEditUpdate(
                         TextEditingValue.empty,
-                        TextEditingValue(text: _ratePerNight.toStringAsFixed(0)),
+                        TextEditingValue(
+                          text: _ratePerNight.toStringAsFixed(0),
+                        ),
                       )
                       .text;
                 }

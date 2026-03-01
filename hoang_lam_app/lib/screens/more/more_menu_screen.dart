@@ -59,7 +59,9 @@ class _MoreMenuScreenState extends ConsumerState<MoreMenuScreen> {
                     ),
                   )
                 : ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                    ),
                     itemCount: sections.length,
                     itemBuilder: (context, index) {
                       final section = sections[index];
@@ -68,14 +70,17 @@ class _MoreMenuScreenState extends ConsumerState<MoreMenuScreen> {
                         children: [
                           if (index > 0) const SizedBox(height: AppSpacing.lg),
                           Padding(
-                            padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.sm,
+                            ),
                             child: Text(
                               section.title,
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                color: AppColors.textSecondary,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
+                              style: Theme.of(context).textTheme.titleSmall
+                                  ?.copyWith(
+                                    color: AppColors.textSecondary,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
                             ),
                           ),
                           GridView.count(
@@ -123,7 +128,10 @@ class _MoreMenuScreenState extends ConsumerState<MoreMenuScreen> {
     return filtered;
   }
 
-  static List<_MenuSection> _buildMenuSections(AppLocalizations l10n, UserRole? role) {
+  static List<_MenuSection> _buildMenuSections(
+    AppLocalizations l10n,
+    UserRole? role,
+  ) {
     final sections = <_MenuSection>[];
 
     // Booking Management section

@@ -442,7 +442,9 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
       roomId: room.id,
       status: BookingStatus.confirmed,
     );
-    final bookings = await ref.read(filteredBookingsProvider(filter).future).catchError((_) => <Booking>[]);
+    final bookings = await ref
+        .read(filteredBookingsProvider(filter).future)
+        .catchError((_) => <Booking>[]);
     final hasActive = bookings.isNotEmpty;
 
     if (!mounted) return;

@@ -88,128 +88,167 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
     return UnsavedChangesGuard(
       hasUnsavedChanges: _isDirty && !_isLoading,
       child: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          _isEditing ? context.l10n.editRoom : context.l10n.addNewRoom,
+        appBar: AppBar(
+          title: Text(
+            _isEditing ? context.l10n.editRoom : context.l10n.addNewRoom,
+          ),
+          actions: [
+            if (_isEditing)
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                onPressed: _confirmDelete,
+                tooltip: context.l10n.deleteRoom,
+              ),
+          ],
         ),
-        actions: [
-          if (_isEditing)
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: _confirmDelete,
-              tooltip: context.l10n.deleteRoom,
-            ),
-        ],
-      ),
-      body: Form(
-        key: _formKey,
-        onChanged: () { if (!_isDirty) setState(() => _isDirty = true); },
-        child: ListView(
-          padding: AppSpacing.paddingScreen,
-          children: [
-            // Room Number
-            TextFormField(
-              controller: _numberController,
-              decoration: InputDecoration(
-                labelText: context.l10n.roomNumberLabel,
-                hintText: context.l10n.roomNumberHint,
-                prefixIcon: const Icon(Icons.meeting_room),
-              ),
-              textCapitalization: TextCapitalization.characters,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return context.l10n.pleaseEnterRoomNumber;
-                }
-                return null;
-              },
-            ),
-
-            AppSpacing.gapVerticalMd,
-
-            // Room Name (optional)
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: context.l10n.roomNameOptional,
-                hintText: context.l10n.exampleRoomName,
-                prefixIcon: const Icon(Icons.label_outline),
-              ),
-            ),
-
-            AppSpacing.gapVerticalMd,
-
-            // Room Type Dropdown
-            roomTypesAsync.when(
-              data: (roomTypes) => DropdownButtonFormField<int>(
-                initialValue: _selectedRoomTypeId,
+        body: Form(
+          key: _formKey,
+          onChanged: () {
+            if (!_isDirty) setState(() => _isDirty = true);
+          },
+          child: ListView(
+            padding: AppSpacing.paddingScreen,
+            children: [
+              // Room Number
+              TextFormField(
+                controller: _numberController,
                 decoration: InputDecoration(
-                  labelText: '${context.l10n.roomType} *',
-                  prefixIcon: const Icon(Icons.category),
+                  labelText: context.l10n.roomNumberLabel,
+                  hintText: context.l10n.roomNumberHint,
+                  prefixIcon: const Icon(Icons.meeting_room),
                 ),
-                items: roomTypes
-                    .map(
-                      (type) => DropdownMenuItem(
-                        value: type.id,
-                        child: Text('${type.name} - ${type.formattedBaseRate}'),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) =>
-                    setState(() => _selectedRoomTypeId = value),
+                textCapitalization: TextCapitalization.characters,
                 validator: (value) {
-                  if (value == null) {
-                    return context.l10n.pleaseSelectRoomType;
+                  if (value == null || value.trim().isEmpty) {
+                    return context.l10n.pleaseEnterRoomNumber;
                   }
                   return null;
                 },
               ),
-              loading: () => const LinearProgressIndicator(),
-              error: (_, __) => Text(context.l10n.cannotLoadRoomTypes),
-            ),
 
-            AppSpacing.gapVerticalMd,
+              AppSpacing.gapVerticalMd,
 
-            // Floor
-            Row(
-              children: [
-                Expanded(
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: context.l10n.floor,
-                      prefixIcon: const Icon(Icons.stairs),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove_circle_outline),
-                          onPressed: _floor > 1
-                              ? () => setState(() => _floor--)
-                              : null,
+              // Room Name (optional)
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: context.l10n.roomNameOptional,
+                  hintText: context.l10n.exampleRoomName,
+                  prefixIcon: const Icon(Icons.label_outline),
+                ),
+              ),
+
+              AppSpacing.gapVerticalMd,
+
+              // Room Type Dropdown
+              roomTypesAsync.when(
+                data: (roomTypes) => DropdownButtonFormField<int>(
+                  initialValue: _selectedRoomTypeId,
+                  decoration: InputDecoration(
+                    labelText: '${context.l10n.roomType} *',
+                    prefixIcon: const Icon(Icons.category),
+                  ),
+                  items: roomTypes
+                      .map(
+                        (type) => DropdownMenuItem(
+                          value: type.id,
+                          child: Text(
+                            '${type.name} - ${type.formattedBaseRate}',
+                          ),
                         ),
-                        Text(
-                          '$_floor',
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.add_circle_outline),
-                          onPressed: _floor < 20
-                              ? () => setState(() => _floor++)
-                              : null,
-                        ),
-                      ],
+                      )
+                      .toList(),
+                  onChanged: (value) =>
+                      setState(() => _selectedRoomTypeId = value),
+                  validator: (value) {
+                    if (value == null) {
+                      return context.l10n.pleaseSelectRoomType;
+                    }
+                    return null;
+                  },
+                ),
+                loading: () => const LinearProgressIndicator(),
+                error: (_, __) => Text(context.l10n.cannotLoadRoomTypes),
+              ),
+
+              AppSpacing.gapVerticalMd,
+
+              // Floor
+              Row(
+                children: [
+                  Expanded(
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: context.l10n.floor,
+                        prefixIcon: const Icon(Icons.stairs),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            onPressed: _floor > 1
+                                ? () => setState(() => _floor--)
+                                : null,
+                          ),
+                          Text(
+                            '$_floor',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.add_circle_outline),
+                            onPressed: _floor < 20
+                                ? () => setState(() => _floor++)
+                                : null,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+                ],
+              ),
+
+              AppSpacing.gapVerticalLg,
+
+              // Status (only for editing)
+              if (_isEditing) ...[
+                Text(
+                  context.l10n.status,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
+                AppSpacing.gapVerticalSm,
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: RoomStatus.values
+                      .map(
+                        (status) => ChoiceChip(
+                          label: Text(status.localizedName(context.l10n)),
+                          selected: _status == status,
+                          selectedColor: status.color.withValues(alpha: 0.3),
+                          avatar: Icon(
+                            status.icon,
+                            size: 18,
+                            color: status.color,
+                          ),
+                          onSelected: (selected) {
+                            if (selected) {
+                              setState(() => _status = status);
+                            }
+                          },
+                        ),
+                      )
+                      .toList(),
+                ),
+                AppSpacing.gapVerticalLg,
               ],
-            ),
 
-            AppSpacing.gapVerticalLg,
-
-            // Status (only for editing)
-            if (_isEditing) ...[
+              // Amenities
               Text(
-                context.l10n.status,
+                context.l10n.amenities,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -219,114 +258,82 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: RoomStatus.values
+                children: _getCommonAmenities(context)
                     .map(
-                      (status) => ChoiceChip(
-                        label: Text(status.localizedName(context.l10n)),
-                        selected: _status == status,
-                        selectedColor: status.color.withValues(alpha: 0.3),
-                        avatar: Icon(
-                          status.icon,
-                          size: 18,
-                          color: status.color,
-                        ),
+                      (amenity) => FilterChip(
+                        label: Text(amenity),
+                        selected: _amenities.contains(amenity),
                         onSelected: (selected) {
-                          if (selected) {
-                            setState(() => _status = status);
-                          }
+                          setState(() {
+                            if (selected) {
+                              _amenities.add(amenity);
+                            } else {
+                              _amenities.remove(amenity);
+                            }
+                          });
                         },
                       ),
                     )
                     .toList(),
               ),
+
               AppSpacing.gapVerticalLg,
+
+              // Notes
+              TextFormField(
+                controller: _notesController,
+                decoration: InputDecoration(
+                  labelText: context.l10n.roomNotes,
+                  hintText: context.l10n.roomNotes,
+                  prefixIcon: const Icon(Icons.notes),
+                  alignLabelWithHint: true,
+                ),
+                maxLines: 3,
+              ),
+
+              AppSpacing.gapVerticalMd,
+
+              // Active Status
+              SwitchListTile(
+                title: Text(context.l10n.roomIsActive),
+                subtitle: Text(
+                  _isActive
+                      ? context.l10n.roomCanBeBooked
+                      : context.l10n.roomDisabled,
+                ),
+                value: _isActive,
+                onChanged: (value) => setState(() => _isActive = value),
+                secondary: Icon(
+                  _isActive ? Icons.check_circle : Icons.cancel,
+                  color: _isActive ? AppColors.success : AppColors.error,
+                ),
+              ),
+
+              AppSpacing.gapVerticalXl,
+
+              // Save Button
+              ElevatedButton.icon(
+                onPressed: _isLoading ? null : _saveRoom,
+                icon: _isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.save),
+                label: Text(
+                  _isEditing ? context.l10n.update : context.l10n.addRoom,
+                ),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(56),
+                ),
+              ),
+
+              AppSpacing.gapVerticalXl,
             ],
-
-            // Amenities
-            Text(
-              context.l10n.amenities,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            AppSpacing.gapVerticalSm,
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _getCommonAmenities(context)
-                  .map(
-                    (amenity) => FilterChip(
-                      label: Text(amenity),
-                      selected: _amenities.contains(amenity),
-                      onSelected: (selected) {
-                        setState(() {
-                          if (selected) {
-                            _amenities.add(amenity);
-                          } else {
-                            _amenities.remove(amenity);
-                          }
-                        });
-                      },
-                    ),
-                  )
-                  .toList(),
-            ),
-
-            AppSpacing.gapVerticalLg,
-
-            // Notes
-            TextFormField(
-              controller: _notesController,
-              decoration: InputDecoration(
-                labelText: context.l10n.roomNotes,
-                hintText: context.l10n.roomNotes,
-                prefixIcon: const Icon(Icons.notes),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 3,
-            ),
-
-            AppSpacing.gapVerticalMd,
-
-            // Active Status
-            SwitchListTile(
-              title: Text(context.l10n.roomIsActive),
-              subtitle: Text(
-                _isActive
-                    ? context.l10n.roomCanBeBooked
-                    : context.l10n.roomDisabled,
-              ),
-              value: _isActive,
-              onChanged: (value) => setState(() => _isActive = value),
-              secondary: Icon(
-                _isActive ? Icons.check_circle : Icons.cancel,
-                color: _isActive ? AppColors.success : AppColors.error,
-              ),
-            ),
-
-            AppSpacing.gapVerticalXl,
-
-            // Save Button
-            ElevatedButton.icon(
-              onPressed: _isLoading ? null : _saveRoom,
-              icon: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Icon(Icons.save),
-              label: Text(
-                _isEditing ? context.l10n.update : context.l10n.addRoom,
-              ),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(56),
-              ),
-            ),
-
-            AppSpacing.gapVerticalXl,
-          ],
+          ),
         ),
       ),
-    ),
     );
   }
 

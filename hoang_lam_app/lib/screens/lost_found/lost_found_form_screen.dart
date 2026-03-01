@@ -306,6 +306,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
     final roomsAsync = ref.watch(allRoomsProvider);
     return roomsAsync.when(
       data: (rooms) => DropdownButtonFormField<int?>(
+        // ignore: deprecated_member_use
         value: _selectedRoomId,
         decoration: InputDecoration(
           labelText: l10n.room,

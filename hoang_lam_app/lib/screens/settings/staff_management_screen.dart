@@ -706,9 +706,7 @@ class _StaffDetailSheet extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              success
-                  ? l10n.passwordResetSuccess
-                  : l10n.passwordResetFailed,
+              success ? l10n.passwordResetSuccess : l10n.passwordResetFailed,
             ),
           ),
         );

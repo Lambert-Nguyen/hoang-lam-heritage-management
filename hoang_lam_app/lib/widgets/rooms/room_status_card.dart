@@ -77,119 +77,123 @@ class RoomDetailCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final statusName = room.status.localizedName(context.l10n);
     return Semantics(
-      label: '${context.l10n.room} ${room.number}, ${room.roomTypeName ?? ""}, $statusName',
+      label:
+          '${context.l10n.room} ${room.number}, ${room.roomTypeName ?? ""}, $statusName',
       button: onTap != null,
       child: Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header row
-              Row(
-                children: [
-                  // Room number
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.sm,
-                      vertical: AppSpacing.xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
-                    ),
-                    child: Text(
-                      room.number,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  // Room type
-                  Expanded(
-                    child: Text(
-                      room.roomTypeName ?? 'Unknown',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  // Status chip
-                  GestureDetector(
-                    onTap: onStatusTap,
-                    child: Container(
+        elevation: 2,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header row
+                Row(
+                  children: [
+                    // Room number
+                    Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: AppSpacing.sm,
                         vertical: AppSpacing.xs,
                       ),
                       decoration: BoxDecoration(
-                        color: room.status.color.withValues(alpha: 0.15),
+                        color: AppColors.primary,
                         borderRadius: BorderRadius.circular(
                           AppSpacing.radiusSm,
                         ),
-                        border: Border.all(color: room.status.color),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            room.status.icon,
-                            size: 16,
-                            color: room.status.color,
-                          ),
-                          const SizedBox(width: AppSpacing.xs),
-                          Text(
-                            room.status.localizedName(context.l10n),
-                            style: TextStyle(
-                              color: room.status.color,
-                              fontWeight: FontWeight.w500,
+                      child: Text(
+                        room.number,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              // Details row
-              Row(
-                children: [
-                  // Floor
-                  _InfoChip(
-                    icon: Icons.stairs,
-                    label: '${context.l10n.floor} ${room.floor}',
-                  ),
-                  const SizedBox(width: AppSpacing.sm),
-                  // Rate
-                  _InfoChip(
-                    icon: Icons.attach_money,
-                    label: room.formattedRate,
-                  ),
-                ],
-              ),
-              // Notes (if any)
-              if (room.notes != null && room.notes!.isNotEmpty) ...[
-                const SizedBox(height: AppSpacing.sm),
-                Text(
-                  room.notes!,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                    const SizedBox(width: AppSpacing.sm),
+                    // Room type
+                    Expanded(
+                      child: Text(
+                        room.roomTypeName ?? 'Unknown',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    // Status chip
+                    GestureDetector(
+                      onTap: onStatusTap,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: AppSpacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: room.status.color.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(
+                            AppSpacing.radiusSm,
+                          ),
+                          border: Border.all(color: room.status.color),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              room.status.icon,
+                              size: 16,
+                              color: room.status.color,
+                            ),
+                            const SizedBox(width: AppSpacing.xs),
+                            Text(
+                              room.status.localizedName(context.l10n),
+                              style: TextStyle(
+                                color: room.status.color,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: AppSpacing.sm),
+                // Details row
+                Row(
+                  children: [
+                    // Floor
+                    _InfoChip(
+                      icon: Icons.stairs,
+                      label: '${context.l10n.floor} ${room.floor}',
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    // Rate
+                    _InfoChip(
+                      icon: Icons.attach_money,
+                      label: room.formattedRate,
+                    ),
+                  ],
+                ),
+                // Notes (if any)
+                if (room.notes != null && room.notes!.isNotEmpty) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    room.notes!,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
-    ),
     );
   }
 }
