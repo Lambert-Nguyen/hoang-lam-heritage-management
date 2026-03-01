@@ -176,7 +176,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             // Handle invalid deep link or missing extra
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(child: Text(context.l10n.roomInfoNotFound)),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(context.l10n.roomInfoNotFound),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context.go(AppRoutes.home),
+                      child: Text(context.l10n.goHome),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
           return RoomDetailScreen(room: room);
@@ -259,7 +271,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (task == null || task is! HousekeepingTask) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(child: Text(context.l10n.taskInfoNotFound)),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(context.l10n.taskInfoNotFound),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context.go(AppRoutes.home),
+                      child: Text(context.l10n.goHome),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
 
@@ -288,7 +312,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (request == null || request is! MaintenanceRequest) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(child: Text(context.l10n.maintenanceNotFound)),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(context.l10n.maintenanceNotFound),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context.go(AppRoutes.home),
+                      child: Text(context.l10n.goHome),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
 
@@ -433,7 +469,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (extra == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(child: Text(context.l10n.guestNotFound)),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(context.l10n.guestNotFound),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context.go(AppRoutes.home),
+                      child: Text(context.l10n.goHome),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
           return MessageTemplateScreen(
@@ -556,7 +604,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (guest == null || guest is! Guest) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
-              body: Center(child: Text(context.l10n.guestNotFound)),
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(context.l10n.guestNotFound),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context.go(AppRoutes.home),
+                      child: Text(context.l10n.goHome),
+                    ),
+                  ],
+                ),
+              ),
             );
           }
           return GuestDetailScreen(guest: guest);

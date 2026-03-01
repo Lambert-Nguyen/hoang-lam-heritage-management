@@ -40,6 +40,11 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
         title: Text(l10n.nightAuditTitle),
         actions: [
           IconButton(
+            icon: const Icon(Icons.print),
+            onPressed: () => _exportAudit(l10n),
+            tooltip: l10n.exportReport,
+          ),
+          IconButton(
             icon: const Icon(Icons.history),
             onPressed: _showAuditHistory,
             tooltip: l10n.historyLabel,
@@ -606,6 +611,50 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _exportAudit(AppLocalizations l10n) async {
+    final audit = ref.read(auditByDateProvider(_selectedDate)).valueOrNull;
+    if (audit == null) return;
+
+    final format = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(l10n.exportReport),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'csv'),
+            child: const ListTile(
+              leading: Icon(Icons.table_chart),
+              title: Text('CSV'),
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'pdf'),
+            child: const ListTile(
+              leading: Icon(Icons.picture_as_pdf),
+              title: Text('PDF'),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (format == null || !mounted) return;
+
+    try {
+      final repo = ref.read(nightAuditNotifierProvider.notifier);
+      await repo.exportAudit(audit.id, format: format);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.exportSuccess)),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${l10n.error}: $e')),
+      );
+    }
   }
 
   Future<void> _recalculateAudit() async {

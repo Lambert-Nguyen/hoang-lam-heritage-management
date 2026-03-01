@@ -10,6 +10,7 @@
 - **Round 3 Implementation** (2026-02-26): All 12 issues fixed
 - **Round 4** (2026-02-27): Comprehensive UX + use case audit — screen-by-screen review of all 48 screens, found 60 UX issues + 30 missing use cases
 - **Round 4 Implementation** (2026-02-27/28): All 60 UX issues fixed (8 Critical + 20 Major + 32 Minor). 14 use cases implemented (6 Must-have + 8 Should-have)
+- **Round 5 Review & Fix** (2026-03-01): Post-implementation audit — verified all 14 use cases + all UX fixes. Found 6 remaining gaps, all fixed
 
 ---
 
@@ -418,6 +419,47 @@ See table above (Critical Issues section).
 - `hoang_lam_app/lib/widgets/common/offline_banner.dart` — removed duplicate EmptyState
 - `hoang_lam_app/lib/router/app_router.dart` — audit log route, rebook route handling
 - `hoang_lam_app/lib/l10n/app_localizations.dart` — 50+ new l10n string pairs
+
+---
+
+## Round 5 — Post-Implementation Audit & Fixes
+
+> **Date**: 2026-03-01
+> **Method**: Comprehensive review of all 14 implemented use cases and all Round 4 UX fixes. Three parallel review agents verified repository methods, provider logic, UI implementation, l10n usage, and `context.mounted` checks.
+
+### Verification Results
+
+- **14/14 use cases**: All correctly implemented (repository, provider, UI, l10n, error handling)
+- **27/28 Critical+Major fixes**: Verified correct
+- **1 gap found**: Lost & Found photo upload was documented but not implemented
+
+### Issues Found & Fixed
+
+| # | Issue | Fix Applied |
+|---|-------|-------------|
+| 23 | **Lost & Found photo upload missing** | Added `_buildPhotoSection()` with camera/gallery via `image_picker`, preview with remove button. Added photo display in detail screen with `Image.network` and error placeholder |
+| 40 | **Housekeeping filter only applies to "All" tab** | Added `_applyFilter()` method — now filters Today and My Tasks tabs client-side using status, taskType, room, and assignedTo |
+| 46 | **Night audit no print/export** | Added export button (print icon) to AppBar. Dialog for CSV/PDF format selection. Added `exportAudit()` to repository and provider |
+| 55 | **Booking form currency no thousand-separator** | Added `_ThousandsSeparatorFormatter` (Vietnamese dot style: 1.500.000) to rate and deposit fields with ₫ suffix |
+| 57 | **Zero `Semantics` widgets** | Added `Semantics` to `RoomStatusCard` and `RoomDetailCard` with room number + status labels for screen readers |
+| 59 | **Routes using `state.extra` break on deep links** | Added "Go Home" button to 5 error fallback screens (room detail, task detail, maintenance detail, send message, guest detail) |
+
+### Files Changed (Round 5)
+
+**New l10n strings:**
+- `addPhoto`, `takePhoto`, `chooseFromGallery`, `removePhoto`
+
+**Modified files:**
+- `hoang_lam_app/lib/screens/lost_found/lost_found_form_screen.dart` — photo picker UI (camera + gallery)
+- `hoang_lam_app/lib/screens/lost_found/lost_found_detail_screen.dart` — photo display with error placeholder
+- `hoang_lam_app/lib/screens/housekeeping/task_list_screen.dart` — `_applyFilter()` for Today/My Tasks tabs
+- `hoang_lam_app/lib/screens/night_audit/night_audit_screen.dart` — export button + `_exportAudit()` method
+- `hoang_lam_app/lib/screens/bookings/booking_form_screen.dart` — `_ThousandsSeparatorFormatter` on rate/deposit fields
+- `hoang_lam_app/lib/widgets/rooms/room_status_card.dart` — `Semantics` on both card widgets
+- `hoang_lam_app/lib/repositories/night_audit_repository.dart` — `exportAudit()` method
+- `hoang_lam_app/lib/providers/night_audit_provider.dart` — `exportAudit()` method
+- `hoang_lam_app/lib/router/app_router.dart` — "Go Home" button on 5 deep-link error screens
+- `hoang_lam_app/lib/l10n/app_localizations.dart` — 4 new l10n string pairs
 
 ---
 

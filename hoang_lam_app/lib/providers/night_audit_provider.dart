@@ -196,6 +196,11 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
     }
   }
 
+  /// Export an audit report
+  Future<void> exportAudit(int id, {required String format}) async {
+    await _repository.exportAudit(id, format: format);
+  }
+
   /// Delete an audit
   Future<bool> deleteAudit(int id) async {
     state = state.copyWith(isLoading: true, error: null);

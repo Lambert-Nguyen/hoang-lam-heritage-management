@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../l10n/app_localizations.dart';
@@ -65,9 +66,14 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
     } else if (widget.prefilledGuestId != null) {
       _selectedGuestId = widget.prefilledGuestId;
     }
-    // Sync controller with initial rate
+    // Sync controller with initial rate (formatted with thousand separators)
     if (_ratePerNight > 0) {
-      _rateController.text = _ratePerNight.toStringAsFixed(0);
+      _rateController.text = _ThousandsSeparatorFormatter()
+          .formatEditUpdate(
+            TextEditingValue.empty,
+            TextEditingValue(text: _ratePerNight.toStringAsFixed(0)),
+          )
+          .text;
     }
   }
 
@@ -261,7 +267,12 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
                 final room = rooms.firstWhere((r) => r.id == value);
                 if (room.baseRate != null && _ratePerNight == 0) {
                   _ratePerNight = room.baseRate!.toDouble();
-                  _rateController.text = _ratePerNight.toStringAsFixed(0);
+                  _rateController.text = _ThousandsSeparatorFormatter()
+                      .formatEditUpdate(
+                        TextEditingValue.empty,
+                        TextEditingValue(text: _ratePerNight.toStringAsFixed(0)),
+                      )
+                      .text;
                 }
               }
             });
@@ -512,18 +523,23 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         labelText: '${context.l10n.ratePerNight} (VND) *',
         border: const OutlineInputBorder(),
         prefixIcon: const Icon(Icons.attach_money),
+        suffixText: '₫',
       ),
       keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        _ThousandsSeparatorFormatter(),
+      ],
       validator: (value) {
         if (value == null || value.isEmpty) return context.l10n.pleaseEnterRate;
-        final number = double.tryParse(value);
+        final number = double.tryParse(value.replaceAll('.', ''));
         if (number == null || number <= 0) {
           return context.l10n.rateMustBePositive;
         }
         return null;
       },
       onChanged: (value) {
-        final number = double.tryParse(value);
+        final number = double.tryParse(value.replaceAll('.', ''));
         if (number != null) {
           setState(() {
             _ratePerNight = number;
@@ -621,10 +637,15 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         labelText: '${context.l10n.deposit} (VND)',
         border: const OutlineInputBorder(),
         prefixIcon: const Icon(Icons.account_balance_wallet),
+        suffixText: '₫',
       ),
       keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        _ThousandsSeparatorFormatter(),
+      ],
       onChanged: (value) {
-        final number = double.tryParse(value);
+        final number = double.tryParse(value.replaceAll('.', ''));
         setState(() {
           _depositAmount = number ?? 0;
         });
@@ -864,5 +885,35 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         });
       }
     }
+  }
+}
+
+/// Formats numbers with dot thousand separators (Vietnamese style: 1.500.000)
+class _ThousandsSeparatorFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    if (newValue.text.isEmpty) return newValue;
+
+    final number = int.tryParse(newValue.text.replaceAll('.', ''));
+    if (number == null) return oldValue;
+
+    final formatted = _format(number);
+    return TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+
+  String _format(int number) {
+    final str = number.toString();
+    final buffer = StringBuffer();
+    for (var i = 0; i < str.length; i++) {
+      if (i > 0 && (str.length - i) % 3 == 0) buffer.write('.');
+      buffer.write(str[i]);
+    }
+    return buffer.toString();
   }
 }

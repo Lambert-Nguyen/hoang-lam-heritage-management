@@ -78,14 +78,15 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
 
     return todayTasksAsync.when(
       data: (tasks) {
-        if (tasks.isEmpty) {
+        final filtered = _applyFilter(tasks);
+        if (filtered.isEmpty) {
           return EmptyState(
             icon: Icons.check_circle_outline,
             title: l10n.noTasks,
             message: l10n.noTasksScheduledToday,
           );
         }
-        return _buildTaskList(tasks, showPriorityHint: true);
+        return _buildTaskList(filtered, showPriorityHint: true);
       },
       loading: () => const LoadingIndicator(),
       error: (error, _) => _buildErrorState(error.toString()),
@@ -118,18 +119,35 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
 
     return myTasksAsync.when(
       data: (tasks) {
-        if (tasks.isEmpty) {
+        final filtered = _applyFilter(tasks);
+        if (filtered.isEmpty) {
           return EmptyState(
             icon: Icons.person_outline,
             title: l10n.noTasks,
             message: l10n.noTasksAssigned,
           );
         }
-        return _buildTaskList(tasks);
+        return _buildTaskList(filtered);
       },
       loading: () => const LoadingIndicator(),
       error: (error, _) => _buildErrorState(error.toString()),
     );
+  }
+
+  /// Apply the current filter to a list of tasks (client-side).
+  List<HousekeepingTask> _applyFilter(List<HousekeepingTask> tasks) {
+    if (_filter == const HousekeepingTaskFilter()) return tasks;
+    return tasks.where((t) {
+      if (_filter.status != null && t.status != _filter.status) return false;
+      if (_filter.taskType != null && t.taskType != _filter.taskType) {
+        return false;
+      }
+      if (_filter.roomId != null && t.room != _filter.roomId) return false;
+      if (_filter.assignedTo != null && t.assignedTo != _filter.assignedTo) {
+        return false;
+      }
+      return true;
+    }).toList();
   }
 
   /// Sort tasks by priority: checkout cleans first (rooms with upcoming

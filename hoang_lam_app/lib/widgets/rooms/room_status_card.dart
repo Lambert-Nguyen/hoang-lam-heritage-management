@@ -21,33 +21,38 @@ class RoomStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      color: room.status.color.withValues(alpha: 0.15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        side: BorderSide(color: room.status.color, width: 2),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        child: SizedBox(
-          width: 80,
-          height: 80,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                room.number,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: room.status.color,
+    final statusName = room.status.localizedName(context.l10n);
+    return Semantics(
+      label: '${context.l10n.room} ${room.number}, $statusName',
+      button: true,
+      child: Card(
+        elevation: 2,
+        color: room.status.color.withValues(alpha: 0.15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          side: BorderSide(color: room.status.color, width: 2),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          onLongPress: onLongPress,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          child: SizedBox(
+            width: 80,
+            height: 80,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  room.number,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: room.status.color,
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              Icon(room.status.icon, color: room.status.color, size: 20),
-            ],
+                const SizedBox(height: AppSpacing.xs),
+                Icon(room.status.icon, color: room.status.color, size: 20),
+              ],
+            ),
           ),
         ),
       ),
@@ -70,7 +75,11 @@ class RoomDetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final statusName = room.status.localizedName(context.l10n);
+    return Semantics(
+      label: '${context.l10n.room} ${room.number}, ${room.roomTypeName ?? ""}, $statusName',
+      button: onTap != null,
+      child: Card(
       elevation: 2,
       child: InkWell(
         onTap: onTap,
@@ -180,6 +189,7 @@ class RoomDetailCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

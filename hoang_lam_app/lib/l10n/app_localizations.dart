@@ -745,6 +745,10 @@ class AppLocalizations {
   String get guestContacted => translate('guest_contacted');
   String get contactNotes => translate('contact_notes');
   String get additionalInfo => translate('additional_info');
+  String get addPhoto => translate('add_photo');
+  String get takePhoto => translate('take_photo');
+  String get chooseFromGallery => translate('choose_from_gallery');
+  String get removePhoto => translate('remove_photo');
   String get estimatedValueVnd => translate('estimated_value_vnd');
   String get addNew => translate('add_new');
   String get itemCreated => translate('item_created');
@@ -2618,6 +2622,10 @@ const Map<String, String> _viTranslations = {
   'guest_contacted': 'Đã liên hệ khách',
   'contact_notes': 'Ghi chú liên hệ',
   'additional_info': 'Thông tin bổ sung',
+  'add_photo': 'Thêm ảnh',
+  'take_photo': 'Chụp ảnh',
+  'choose_from_gallery': 'Chọn từ thư viện',
+  'remove_photo': 'Xóa ảnh',
   'estimated_value_vnd': 'Giá trị ước tính (VNĐ)',
   'add_new': 'Thêm mới',
   'item_created': 'Đã thêm mới',
@@ -4387,6 +4395,10 @@ const Map<String, String> _enTranslations = {
   'guest_contacted': 'Guest contacted',
   'contact_notes': 'Contact notes',
   'additional_info': 'Additional information',
+  'add_photo': 'Add photo',
+  'take_photo': 'Take photo',
+  'choose_from_gallery': 'Choose from gallery',
+  'remove_photo': 'Remove photo',
   'estimated_value_vnd': 'Estimated value (VND)',
   'add_new': 'Add new',
   'item_created': 'Item created',

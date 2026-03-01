@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
@@ -44,6 +47,9 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
   bool _isLoading = false;
   bool _isInitialized = false;
 
+  File? _selectedImage;
+  String? _existingImageUrl;
+
   @override
   void initState() {
     super.initState();
@@ -84,6 +90,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
     _selectedCategory = item.category;
     _selectedRoomId = item.room;
     _guestContacted = item.guestContacted;
+    _existingImageUrl = item.image;
     try {
       _foundDate = DateTime.parse(item.foundDate);
     } catch (_) {}
@@ -269,6 +276,15 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: AppSpacing.lg),
+            _SectionTitle(title: l10n.addPhoto),
+            const SizedBox(height: AppSpacing.sm),
+            AppCard(
+              child: Padding(
+                padding: AppSpacing.paddingCard,
+                child: _buildPhotoSection(l10n),
+              ),
+            ),
             const SizedBox(height: AppSpacing.xl),
             SizedBox(
               width: double.infinity,
@@ -319,6 +335,81 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
       lastDate: DateTime.now(),
     );
     if (picked != null) setState(() => _foundDate = picked);
+  }
+
+  Widget _buildPhotoSection(AppLocalizations l10n) {
+    if (_selectedImage != null) {
+      return Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            child: Image.file(
+              _selectedImage!,
+              height: 200,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextButton.icon(
+            onPressed: () => setState(() => _selectedImage = null),
+            icon: const Icon(Icons.close),
+            label: Text(l10n.removePhoto),
+          ),
+        ],
+      );
+    }
+    if (_existingImageUrl != null && _existingImageUrl!.isNotEmpty) {
+      return Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            child: Image.network(
+              _existingImageUrl!,
+              height: 200,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          TextButton.icon(
+            onPressed: () => setState(() => _existingImageUrl = null),
+            icon: const Icon(Icons.close),
+            label: Text(l10n.removePhoto),
+          ),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _pickImage(ImageSource.camera),
+            icon: const Icon(Icons.camera_alt),
+            label: Text(l10n.takePhoto),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _pickImage(ImageSource.gallery),
+            icon: const Icon(Icons.photo_library),
+            label: Text(l10n.chooseFromGallery),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      maxWidth: 1024,
+      imageQuality: 80,
+    );
+    if (picked != null && mounted) {
+      setState(() => _selectedImage = File(picked.path));
+    }
   }
 
   Future<void> _handleSubmit() async {

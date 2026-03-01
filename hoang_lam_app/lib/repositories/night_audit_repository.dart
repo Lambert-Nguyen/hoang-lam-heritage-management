@@ -98,6 +98,14 @@ class NightAuditRepository {
     return NightAudit.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// Export a night audit report
+  Future<void> exportAudit(int id, {required String format}) async {
+    await _apiClient.get(
+      '$_endpoint$id/export/',
+      queryParameters: {'format': format},
+    );
+  }
+
   /// Delete a night audit (admin only)
   Future<void> deleteAudit(int id) async {
     await _apiClient.delete('$_endpoint$id/');
