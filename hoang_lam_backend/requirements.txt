@@ -31,7 +31,7 @@ pytest-django>=4.8,<5.0
 
 # Task Queue & Scheduling
 celery>=5.3,<6.0
-redis>=5.0,<6.0
+redis>=5.0,<8.0
 
 # Media Storage (S3 — optional, for cloud deployments)
 django-storages>=1.14,<2.0
