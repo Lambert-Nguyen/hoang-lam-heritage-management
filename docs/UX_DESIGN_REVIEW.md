@@ -11,6 +11,7 @@
 - **Round 4** (2026-02-27): Comprehensive UX + use case audit — screen-by-screen review of all 48 screens, found 60 UX issues + 30 missing use cases
 - **Round 4 Implementation** (2026-02-27/28): All 60 UX issues fixed (8 Critical + 20 Major + 32 Minor). 14 use cases implemented (6 Must-have + 8 Should-have)
 - **Round 5 Review & Fix** (2026-03-01): Post-implementation audit — verified all 14 use cases + all UX fixes. Found 6 remaining gaps, all fixed
+- **Round 6** (2026-03-02): Full-stack consistency audit — reviewed all providers, screens, router, models, backend API endpoints. Found 93 issues (21 Critical + 30 Major + 42 Minor)
 
 ---
 
@@ -481,3 +482,213 @@ These design decisions are correct and should be preserved:
 - **More menu** — all features accessible in 2 taps max
 - **Finance summary-first** — monthly totals prominent with drill-down to transactions
 - **Guest quick search** — inline search with 300ms debounce, no page navigation needed
+
+---
+
+## Round 6 — Full-Stack Consistency Audit
+
+> **Date**: 2026-03-02
+> **Method**: Comprehensive audit of all providers, screens, router, models, backend API, and l10n. Cross-referenced every implemented use case and workflow through all code layers (model → repository → provider → screen → router). 93 total issues found.
+
+---
+
+### A. Backend-Frontend API Mismatches (9 Critical + 5 Major)
+
+These are the highest-priority issues — they cause runtime crashes, 404s, or silent data loss.
+
+#### Critical — Endpoints Missing / Will Crash
+
+| # | Feature | Frontend Endpoint | Backend Status | Impact |
+|---|---------|-------------------|----------------|--------|
+| 1 | **Room swap** | `POST /bookings/{id}/swap-room/` | **Not implemented** | 404 — UC-2 broken |
+| 2 | **Extend stay** | `POST /bookings/{id}/extend-stay/` | **Not implemented** | 404 — UC-3 broken |
+| 3 | **Split payment** | `POST /bookings/{id}/split-payment/` | **Not implemented** | 404 — UC-9 broken |
+| 4 | **Partial refund** | `POST /bookings/{id}/partial-refund/` | **Not implemented** | 404 — UC-10 broken |
+| 5 | **Audit logs** | `GET /audit-logs/` | **No model, view, or URL** | Entire UC-29 broken |
+| 6 | **Calendar bookings** | `GET /bookings/calendar/` | Returns wrapped `{"bookings": [...]}` | Frontend expects raw array — **Dio type cast crash** |
+| 7 | **Payment deposits** | `payments/bookings/{id}/deposits/` | Backend URL uses singular `booking` | **404** — path mismatch |
+| 8 | **Folio items** | `folio-items/bookings/{id}/folio/` | Backend URL: `folio-items/booking/{id}/` | **404** — path mismatch |
+| 9 | **Booking date filters** | Sends `check_in_date_from/to` + `check_out_date_from/to` | Backend reads `check_in_from/to` only | **All date filtering silently fails** |
+
+#### Major — Features Non-Functional
+
+| # | Feature | Issue |
+|---|---------|-------|
+| 10 | **Admin password reset** | Frontend calls `/auth/admin-reset-password/` — no backend endpoint. UC-30 broken |
+| 11 | **Night audit export** | Frontend calls `GET /night-audits/{id}/export/` — no backend action |
+| 12 | **Finance export** | Frontend calls `GET /finance/entries/export/` — no backend action |
+| 13 | **Exchange rate** | Frontend expects `{"rates": {"USD_VND": ...}}`, backend returns array of objects |
+| 14 | **Night audit permissions** | `NightAuditViewSet` uses `IsAuthenticated` only — any user can create/close audits |
+
+---
+
+### B. Provider Layer — Data Flow Issues (5 Critical + 8 Major)
+
+#### Critical — Stale Data Across App
+
+| # | Issue | Files | Impact |
+|---|-------|-------|--------|
+| 15 | **Booking mutations don't invalidate dashboard, room, calendar providers** | booking_provider.dart | Dashboard, room map, calendar show stale data after every booking operation |
+| 16 | **Standalone FutureProviders never refreshed** — `activeBookingsProvider`, `todayBookingsProvider`, `calendarBookingsProvider` etc. cached indefinitely | booking_provider.dart | Lists show stale data until app restart |
+| 17 | **Dashboard provider never invalidated** by any mutation in the entire app | dashboard_provider.dart | Primary screen always shows stale stats |
+| 18 | **FinanceNotifier has no `Ref`** — cannot invalidate any related providers | finance_provider.dart | Finance summary, dashboard totals always stale after financial operations |
+| 19 | **Logout doesn't clear cached data** — non-autoDispose providers (booking, guest, room, finance, minibar) persist across user sessions | auth_provider.dart | **Data leak between user sessions** — User B sees User A's cached data |
+
+#### Major — Partial Invalidation / Silent Failures
+
+| # | Issue | Files |
+|---|-------|-------|
+| 20 | **Group booking mutations don't invalidate room/booking/dashboard providers** | group_booking_provider.dart |
+| 21 | **Group check-in/out doesn't update room status** | group_booking_provider.dart |
+| 22 | **`extendStay()`, `splitPayment()`, `partialRefund()` swallow errors silently** (return null, no error state) | booking_provider.dart |
+| 23 | **`bookingStatsProvider` computes stats from filtered data** — wrong counts when filter is active | booking_provider.dart |
+| 24 | **Folio `addCharge()`/`voidItem()` don't invalidate booking or finance providers** | folio_provider.dart |
+| 25 | **Housekeeping mutations don't invalidate dashboard** | housekeeping_provider.dart |
+| 26 | **Finance mutations have no try-catch** — exceptions propagate unhandled | finance_provider.dart |
+| 27 | **`auditByDateProvider` creates audits as a side effect of reading** — FutureProvider.family calls `createAudit()` for non-today dates, causing duplicates on rebuilds | night_audit_provider.dart |
+
+---
+
+### C. Router & Navigation Issues (7 Critical + 5 Major)
+
+#### Critical — Deep Links / Security
+
+| # | Issue | Route |
+|---|-------|-------|
+| 28 | **`roomDetail` has no path parameter** — relies on `state.extra`, deep link always fails | `/room-detail` |
+| 29 | **`guestDetail` uses `/guests/detail` not `/guests/:id`** — same deep link issue | `/guests/detail` |
+| 30 | **`housekeepingTaskDetail` has `:taskId` param but ignores it** — uses `state.extra` only | `/housekeeping/task/:taskId` |
+| 31 | **`maintenanceDetail` has `:requestId` but ignores it** — same pattern | `/housekeeping/maintenance/:requestId` |
+| 32 | **`sendMessage` does unchecked cast** `extra['guestId'] as int` — crashes on wrong type | `/send-message` |
+| 33 | **No role-based route guards** on finance, night audit, declaration, reports, staff management, audit log, financial categories | Multiple routes |
+| 34 | **`connectivityProvider` uses `dart:io` `InternetAddress.lookup`** — crashes on Flutter web | main_scaffold.dart |
+
+#### Major
+
+| # | Issue |
+|---|-------|
+| 35 | **`roomEdit` relies on `state.extra` with no fallback** — deep link shows empty form |
+| 36 | **Null role defaults to staff-level nav** instead of locked-down UI |
+| 37 | **Global redirect only checks authentication, not authorization** — any user can access any route via URL |
+| 38 | **`isOffline` defaults to `false` on error state** — offline banner hidden when connectivity check fails |
+| 39 | **`bookingDetail` doesn't validate `id > 0`** — `int.tryParse ?? 0` can show broken data |
+
+---
+
+### D. Screen UX Issues (6 Critical + 12 Major + 20+ Minor)
+
+#### Critical
+
+| # | Screen | Issue |
+|---|--------|-------|
+| 40 | **Bookings list** | Search clear button doesn't clear TextField (no `TextEditingController`) — shows stale text |
+| 41 | **Room management** | Delete only checks `confirmed` bookings — misses `checkedIn` and `pending`, allowing deletion of rooms with active guests |
+| 42 | **Home screen** | Missing `context.mounted` after async in `onLongPress` room status handler — can act on disposed state |
+| 43 | **Booking form** | `initialValue:` on `DropdownButtonFormField` — wrong parameter name (should be `value:`) |
+| 44 | **Lost & Found form** | Selected photo never included in create/update model — photo upload is broken |
+| 45 | **Folio screen** | Error banner uses same color for background and text — invisible |
+
+#### Major
+
+| # | Screen | Issue |
+|---|--------|-------|
+| 46 | **Booking detail** | `RefreshIndicator.onRefresh` doesn't await the future — spinner dismisses immediately |
+| 47 | **Booking detail** | Hardcoded `'vi'` locale for DateFormat — always Vietnamese regardless of app language |
+| 48 | **Booking detail** | "Early Check-In" button shows for `confirmed` bookings (guest hasn't arrived) |
+| 49 | **Booking detail** | Uses `Navigator.of(context).pop()` instead of GoRouter's `context.pop()` |
+| 50 | **Room detail** | Stale data from constructor — uses `widget.room` copy instead of watching provider |
+| 51 | **Room detail** | Edit doesn't refresh on return — no await/invalidation after push |
+| 52 | **Room detail** | No error feedback on quick status change failure |
+| 53 | **Finance** | Hardcoded English strings in export dialog ("CSV", "Excel compatible", "PDF", "Print ready") |
+| 54 | **Guest list** | Wrong context used after bottom-sheet pop — navigates with unmounted context |
+| 55 | **Task detail** | Room auto-set to "Available" after ANY task completion — should only apply to cleaning tasks |
+| 56 | **Lost & Found detail** | `try/finally` without `catch` — API errors propagate unhandled, no user feedback |
+| 57 | **Folio** | `context.mounted` checked on dialog context after pop — success snackbar never shown |
+
+#### Minor (Selected — 20+ total)
+
+| # | Screen | Issue |
+|---|--------|-------|
+| 58 | **Bookings list** | Error state not scrollable — RefreshIndicator can't work |
+| 59 | **Room management** | Error state same issue — no scrollable wrapper |
+| 60 | **Home screen** | Raw error messages (`$error`) instead of `getLocalizedErrorMessage()` |
+| 61 | **Booking form** | Rate not auto-updated when switching rooms (only fills when rate was 0) |
+| 62 | **Booking detail** | 0-night display for same-day check-in/out |
+| 63 | **Guest detail** | "VIP", "Email" labels hardcoded (not localized) |
+| 64 | **Minibar POS** | AppBar title "Minibar POS" hardcoded |
+| 65 | **Folio** | AppBar title "Folio" hardcoded |
+| 66 | **Night audit** | Hardcoded Vietnamese locale for date formatting |
+| 67 | **Settings** | Duplicate "Change Password" entry (profile section + security section) |
+| 68 | **More menu** | Operations section not role-gated — all roles see room management, minibar POS |
+| 69 | **Group booking** | Room assignment dialog shows all rooms regardless of availability |
+| 70 | **Guest detail** | Phone number is plain text — not tappable to call |
+| 71 | **Task detail** | No edit capability — only delete in popup menu |
+| 72 | **Maintenance list** | Incomplete provider invalidation — urgent/my tabs show stale data |
+
+---
+
+### E. Model & Serialization Issues (5 High + 4 Medium)
+
+| # | Issue | Model | Impact |
+|---|-------|-------|--------|
+| 73 | **Missing `BookingSource.expedia` and `BookingSource.googleHotel`** in Flutter enum — backend can return these values | booking.dart | **Deserialization crash** |
+| 74 | **Missing `PaymentMethod.zalopay`** in Flutter enum — backend has this value | booking.dart | **Deserialization crash** |
+| 75 | **`LostFoundItemCreate`/`Update` have no `image` field** — photo can never be submitted | lost_found.dart | Photo upload broken |
+| 76 | **Missing `discount_amount`, `discount_reason`** on Booking model | booking.dart | Backend data silently dropped |
+| 77 | **Missing `ota_commission`** on Booking model | booking.dart | Backend data silently dropped |
+| 78 | **AuditLogEntry model is a plain class** — no Freezed, `createdAt` is `String` not `DateTime`, no `toJson`, no pagination model | audit_log.dart | Inconsistent patterns |
+| 79 | **Guest model missing `preferred_room_type`, `preferred_floor`, `special_requests`, `total_spent`** fields that backend tracks | guest.dart | Backend data silently dropped |
+| 80 | **Guest preferences stored as untyped `Map<String, dynamic>`** — keys accessed by raw strings | guest.dart | Fragile, error-prone |
+| 81 | **Error utils don't handle `FormatException` or `DioException` by type** — fall through to generic message | error_utils.dart | Unclear error messages |
+
+---
+
+### F. Cross-Cutting Consistency Issues
+
+| # | Issue | Scope |
+|---|-------|-------|
+| 82 | **Mixed `Navigator.pop` vs `context.pop`** — 6+ screens use Flutter Navigator instead of GoRouter | guest_detail, task_detail, folio, booking_detail, lost_found |
+| 83 | **Inconsistent error message approach** — some screens use `getLocalizedErrorMessage()`, others use raw `$error` | home_screen, booking_form, room_detail vs booking_detail, finance |
+| 84 | **Inconsistent spacing system** — some screens use `AppSpacing.gapVerticalMd`, others use `SizedBox(height: 16)` | All screens |
+| 85 | **Non-autoDispose StateNotifiers hold data indefinitely** — booking, guest, room, housekeeping, finance, minibar providers | All providers |
+| 86 | **Inconsistent locale handling** — some DateFormat uses hardcode `'vi'`, others use `Localizations.localeOf(context)` | booking_detail, bookings_screen, night_audit vs finance_screen |
+| 87 | **No centralized error fallback widget** — 10+ routes have inline `Scaffold` error UIs with different layouts | app_router.dart |
+| 88 | **Double-fetching pattern** — multiple providers call both `loadItems()` (notifier state) AND `ref.invalidate(futureProvider)`, causing redundant API calls | lost_found, group_booking, housekeeping |
+
+---
+
+### Priority Fix Matrix
+
+#### P0 — Must Fix (Production Blockers)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| 1-5 | Add 5 missing backend endpoints (swap-room, extend-stay, split-payment, partial-refund, audit-logs) | Large |
+| 6 | Fix calendar response format mismatch (backend or frontend) | Small |
+| 7-8 | Fix URL path mismatches (payments/booking vs bookings, folio-items) | Small |
+| 9 | Align booking filter parameter names | Small |
+| 15-18 | Add cross-provider invalidation (booking→dashboard/room, finance→dashboard, group→all) | Medium |
+| 19 | Clear all cached providers on logout | Small |
+| 73-74 | Add missing enum values (expedia, googleHotel, zalopay) with unknown fallback | Small |
+
+#### P1 — Should Fix (Major UX Impact)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| 33 | Add role-based route guards on all sensitive routes | Medium |
+| 40 | Add TextEditingController to bookings search field | Small |
+| 41 | Check all booking statuses before room delete | Small |
+| 44-75 | Add image field to LostFoundItemCreate/Update | Small |
+| 46 | Await provider future in RefreshIndicator.onRefresh | Small |
+| 50-51 | Watch provider instead of local state in room_detail | Medium |
+| 55 | Only auto-set room to Available for cleaning task types | Small |
+
+#### P2 — Nice to Fix (Polish)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| 47, 66, 86 | Fix all hardcoded locale strings | Small |
+| 63-65 | Localize remaining hardcoded strings | Small |
+| 82 | Standardize on GoRouter `context.pop()` everywhere | Small |
+| 83 | Standardize on `getLocalizedErrorMessage()` everywhere | Medium |
+| 87 | Create shared `ErrorFallbackScreen` widget | Small |
