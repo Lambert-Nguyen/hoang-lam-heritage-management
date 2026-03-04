@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../models/housekeeping.dart';
 import '../models/room.dart';
 import '../repositories/housekeeping_repository.dart';
+import 'dashboard_provider.dart';
 import 'room_provider.dart';
 
 part 'housekeeping_provider.freezed.dart';
@@ -506,6 +507,7 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
     _ref.invalidate(maintenanceRequestsProvider);
     _ref.invalidate(urgentRequestsProvider);
     _ref.invalidate(myMaintenanceRequestsProvider);
+    _ref.invalidate(dashboardSummaryProvider);
   }
 }
 

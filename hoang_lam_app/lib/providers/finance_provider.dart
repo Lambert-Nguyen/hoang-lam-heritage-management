@@ -323,17 +323,23 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
     int? booking,
     String? receiptNumber,
   }) async {
-    final entry = await _repository.createIncome(
-      category: category,
-      amount: amount,
-      date: date,
-      description: description,
-      paymentMethod: paymentMethod,
-      booking: booking,
-      receiptNumber: receiptNumber,
-    );
-    await refresh();
-    return entry;
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final entry = await _repository.createIncome(
+        category: category,
+        amount: amount,
+        date: date,
+        description: description,
+        paymentMethod: paymentMethod,
+        booking: booking,
+        receiptNumber: receiptNumber,
+      );
+      await refresh();
+      return entry;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
   }
 
   /// Create expense entry
@@ -345,23 +351,35 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
     PaymentMethod paymentMethod = PaymentMethod.cash,
     String? receiptNumber,
   }) async {
-    final entry = await _repository.createExpense(
-      category: category,
-      amount: amount,
-      date: date,
-      description: description,
-      paymentMethod: paymentMethod,
-      receiptNumber: receiptNumber,
-    );
-    await refresh();
-    return entry;
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final entry = await _repository.createExpense(
+        category: category,
+        amount: amount,
+        date: date,
+        description: description,
+        paymentMethod: paymentMethod,
+        receiptNumber: receiptNumber,
+      );
+      await refresh();
+      return entry;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
   }
 
   /// Create entry from request (generic)
   Future<FinancialEntry> createEntry(FinancialEntryRequest request) async {
-    final entry = await _repository.createEntry(request);
-    await refresh();
-    return entry;
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final entry = await _repository.createEntry(request);
+      await refresh();
+      return entry;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
   }
 
   /// Update entry
@@ -369,15 +387,27 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
     int id,
     FinancialEntryRequest request,
   ) async {
-    final entry = await _repository.updateEntry(id, request);
-    await refresh();
-    return entry;
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      final entry = await _repository.updateEntry(id, request);
+      await refresh();
+      return entry;
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
   }
 
   /// Delete entry
   Future<void> deleteEntry(int id) async {
-    await _repository.deleteEntry(id);
-    await refresh();
+    try {
+      state = state.copyWith(isLoading: true, error: null);
+      await _repository.deleteEntry(id);
+      await refresh();
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString());
+      rethrow;
+    }
   }
 }
 

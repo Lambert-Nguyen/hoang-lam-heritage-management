@@ -380,7 +380,7 @@ class HomeScreen extends ConsumerWidget {
                   room: room,
                   onTap: () {
                     // Navigate to room detail
-                    context.push(AppRoutes.roomDetail, extra: room);
+                    context.push('${AppRoutes.roomDetail}/${room.id}', extra: room);
                   },
                   onLongPress: () async {
                     // Show quick status update
@@ -388,12 +388,33 @@ class HomeScreen extends ConsumerWidget {
                       context,
                       room,
                     );
-                    if (newStatus != null) {
-                      await ref
-                          .read(roomStateProvider.notifier)
-                          .updateRoomStatus(room.id, newStatus);
-                      // Refresh dashboard stats after room status change
-                      ref.invalidate(dashboardSummaryProvider);
+                    if (newStatus != null && context.mounted) {
+                      try {
+                        await ref
+                            .read(roomStateProvider.notifier)
+                            .updateRoomStatus(room.id, newStatus);
+                        // Refresh dashboard stats after room status change
+                        ref.invalidate(dashboardSummaryProvider);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l10n.updateStatus),
+                              backgroundColor: AppColors.success,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${l10n.errorOccurred}: ${e.toString()}',
+                              ),
+                              backgroundColor: AppColors.error,
+                            ),
+                          );
+                        }
+                      }
                     }
                   },
                 );

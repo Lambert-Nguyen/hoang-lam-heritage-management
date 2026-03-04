@@ -8,6 +8,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/errors/app_exceptions.dart';
 import '../models/auth.dart';
 import '../models/user.dart';
+import 'booking_provider.dart';
+import 'dashboard_provider.dart';
+import 'finance_provider.dart';
+import 'guest_provider.dart';
+import 'housekeeping_provider.dart';
+import 'night_audit_provider.dart';
+import 'room_provider.dart';
 import 'settings_provider.dart';
 import '../repositories/auth_repository.dart';
 
@@ -147,6 +154,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
       // Ignore logout errors
     } finally {
       _sessionTimer?.cancel();
+      // Clear all cached data providers
+      _ref.invalidate(bookingNotifierProvider);
+      _ref.invalidate(bookingsProvider);
+      _ref.invalidate(activeBookingsProvider);
+      _ref.invalidate(todayBookingsProvider);
+      _ref.invalidate(calendarBookingsProvider);
+      _ref.invalidate(dashboardSummaryProvider);
+      _ref.invalidate(roomsProvider);
+      _ref.invalidate(allRoomsProvider);
+      _ref.invalidate(guestsProvider);
+      _ref.invalidate(housekeepingTasksProvider);
+      _ref.invalidate(nightAuditsProvider);
+      _ref.invalidate(staffListProvider);
       state = const AuthState.unauthenticated();
     }
   }

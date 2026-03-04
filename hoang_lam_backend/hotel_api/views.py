@@ -24,6 +24,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import (
+    AuditLog,
     Booking,
     DateRateOverride,
     DeviceToken,
@@ -42,13 +43,15 @@ from .models import (
     MinibarSale,
     NightAudit,
     Notification,
+    Payment,
     RatePlan,
     Room,
     RoomInspection,
     RoomType,
 )
-from .permissions import IsManager, IsStaff, IsStaffOrManager
+from .permissions import IsManager, IsOwnerOrManager, IsStaff, IsStaffOrManager
 from .serializers import (  # Phase 3: Room Inspection serializers; Phase 4: Report serializers; RatePlan and DateRateOverride serializers; Phase 5: Notification serializers; Phase 5.3: Guest Messaging serializers
+    AuditLogSerializer,
     BookingListSerializer,
     BookingSerializer,
     BookingStatusUpdateSerializer,
@@ -66,6 +69,7 @@ from .serializers import (  # Phase 3: Room Inspection serializers; Phase 4: Rep
     DeviceTokenSerializer,
     ExchangeRateSerializer,
     ExpenseReportRequestSerializer,
+    ExtendStaySerializer,
     ExportReportRequestSerializer,
     FinancialCategoryListSerializer,
     FinancialCategorySerializer,
@@ -120,6 +124,7 @@ from .serializers import (  # Phase 3: Room Inspection serializers; Phase 4: Rep
     NotificationSerializer,
     OccupancyReportRequestSerializer,
     OutstandingDepositSerializer,
+    PartialRefundSerializer,
     PasswordChangeSerializer,
     PaymentListSerializer,
     PaymentSerializer,
@@ -144,6 +149,8 @@ from .serializers import (  # Phase 3: Room Inspection serializers; Phase 4: Rep
     RoomTypeListSerializer,
     RoomTypeSerializer,
     SendMessageSerializer,
+    SplitPaymentSerializer,
+    SwapRoomSerializer,
     UserProfileSerializer,
 )
 
@@ -1386,6 +1393,15 @@ class BookingViewSet(viewsets.ModelViewSet):
         if check_in_to:
             queryset = queryset.filter(check_in_date__lte=check_in_to)
 
+        # Filter by check-out date range
+        check_out_from = self.request.query_params.get("check_out_from")
+        if check_out_from:
+            queryset = queryset.filter(check_out_date__gte=check_out_from)
+
+        check_out_to = self.request.query_params.get("check_out_to")
+        if check_out_to:
+            queryset = queryset.filter(check_out_date__lte=check_out_to)
+
         return queryset.order_by(*self.ordering)
 
     def get_serializer_class(self):
@@ -1398,6 +1414,14 @@ class BookingViewSet(viewsets.ModelViewSet):
             return CheckInSerializer
         elif self.action == "check_out":
             return CheckOutSerializer
+        elif self.action == "swap_room":
+            return SwapRoomSerializer
+        elif self.action == "extend_stay":
+            return ExtendStaySerializer
+        elif self.action == "split_payment":
+            return SplitPaymentSerializer
+        elif self.action == "partial_refund":
+            return PartialRefundSerializer
         return BookingSerializer
 
     def perform_create(self, serializer):
@@ -1942,6 +1966,378 @@ class BookingViewSet(viewsets.ModelViewSet):
                 "start_date": start_date,
                 "end_date": end_date,
             },
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Swap room for a booking",
+        description="Swap the room assigned to a checked-in booking to a different available room.",
+        request=SwapRoomSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    )
+    @action(detail=True, methods=["post"], url_path="swap-room")
+    def swap_room(self, request, pk=None):
+        """Swap the room for a checked-in booking."""
+        from django.db import transaction
+        from django.utils import timezone
+
+        booking = self.get_object()
+
+        if booking.status != Booking.Status.CHECKED_IN:
+            return Response(
+                {"detail": "Chỉ có thể đổi phòng cho booking đang ở (checked-in)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from .serializers import SwapRoomSerializer
+
+        serializer = SwapRoomSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        new_room_id = serializer.validated_data["new_room"]
+        reason = serializer.validated_data.get("reason", "")
+        new_room = Room.objects.get(pk=new_room_id)
+        old_room = booking.room
+
+        if new_room.id == old_room.id:
+            return Response(
+                {"detail": "Phòng mới phải khác phòng hiện tại."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            # Update booking to new room
+            booking.room = new_room
+            if reason:
+                booking.notes = (
+                    f"{booking.notes}\n[Đổi phòng] {old_room.number} → {new_room.number}: {reason}"
+                    if booking.notes
+                    else f"[Đổi phòng] {old_room.number} → {new_room.number}: {reason}"
+                )
+            booking.save()
+
+            # Set old room to CLEANING
+            old_room.status = Room.Status.CLEANING
+            old_room.save()
+
+            # Set new room to OCCUPIED
+            new_room.status = Room.Status.OCCUPIED
+            new_room.save()
+
+            # Auto-create housekeeping task for old room
+            HousekeepingTask.objects.create(
+                room=old_room,
+                task_type=HousekeepingTask.TaskType.CHECKOUT_CLEAN,
+                status=HousekeepingTask.Status.PENDING,
+                scheduled_date=timezone.now().date(),
+                booking=booking,
+                created_by=request.user,
+                notes=f"Auto-created: Room swap cleaning for room {old_room.number}",
+            )
+
+        # Notify staff
+        from .services import PushNotificationService
+
+        PushNotificationService.notify_staff(
+            notification_type=Notification.NotificationType.GENERAL,
+            title=f"Đổi phòng: {old_room.number} → {new_room.number}",
+            body=f"{booking.guest.full_name} đã được chuyển từ phòng {old_room.number} sang phòng {new_room.number}",
+            data={
+                "booking_id": str(booking.id),
+                "old_room_number": old_room.number,
+                "new_room_number": new_room.number,
+                "action": "swap_room",
+            },
+            booking=booking,
+            exclude_user=request.user,
+        )
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Extend stay",
+        description="Extend the guest's stay by updating the check-out date.",
+        request=ExtendStaySerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    )
+    @action(detail=True, methods=["post"], url_path="extend-stay")
+    def extend_stay(self, request, pk=None):
+        """Extend the stay by updating the checkout date."""
+        from django.db import transaction
+
+        booking = self.get_object()
+
+        if booking.status != Booking.Status.CHECKED_IN:
+            return Response(
+                {"detail": "Chỉ có thể gia hạn cho booking đang ở (checked-in)."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from .serializers import ExtendStaySerializer
+
+        serializer = ExtendStaySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        new_check_out_date = serializer.validated_data["new_check_out_date"]
+        old_check_out_date = booking.check_out_date
+
+        if new_check_out_date <= booking.check_out_date:
+            return Response(
+                {"detail": "Ngày trả phòng mới phải sau ngày trả phòng hiện tại."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Check for overlapping bookings on this room
+        overlapping = (
+            Booking.objects.filter(
+                room=booking.room,
+                status__in=[
+                    Booking.Status.PENDING,
+                    Booking.Status.CONFIRMED,
+                    Booking.Status.CHECKED_IN,
+                ],
+                check_in_date__lt=new_check_out_date,
+                check_out_date__gt=booking.check_out_date,
+            )
+            .exclude(pk=booking.pk)
+            .exists()
+        )
+        if overlapping:
+            return Response(
+                {"detail": "Không thể gia hạn vì phòng đã có booking khác trong khoảng thời gian này."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            booking.check_out_date = new_check_out_date
+            # Recalculate total amount based on room rate and new night count
+            nights = (new_check_out_date - booking.check_in_date).days
+            if booking.room and booking.room.room_type:
+                booking.total_amount = booking.room.room_type.base_price * nights
+            booking.notes = (
+                f"{booking.notes}\n[Gia hạn] {old_check_out_date} → {new_check_out_date}"
+                if booking.notes
+                else f"[Gia hạn] {old_check_out_date} → {new_check_out_date}"
+            )
+            booking.save()
+
+        # Notify staff
+        from .services import PushNotificationService
+
+        PushNotificationService.notify_staff(
+            notification_type=Notification.NotificationType.GENERAL,
+            title=f"Gia hạn: Phòng {booking.room.number}",
+            body=f"{booking.guest.full_name} gia hạn đến {new_check_out_date}",
+            data={
+                "booking_id": str(booking.id),
+                "room_number": booking.room.number,
+                "action": "extend_stay",
+            },
+            booking=booking,
+            exclude_user=request.user,
+        )
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Split payment",
+        description="Split payment across multiple payment methods for a booking.",
+        request=SplitPaymentSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    )
+    @action(detail=True, methods=["post"], url_path="split-payment")
+    def split_payment(self, request, pk=None):
+        """Split payment across multiple methods."""
+        from django.db import transaction
+
+        booking = self.get_object()
+
+        if booking.status not in [
+            Booking.Status.CONFIRMED,
+            Booking.Status.CHECKED_IN,
+            Booking.Status.CHECKED_OUT,
+        ]:
+            return Response(
+                {"detail": "Không thể tách thanh toán cho booking ở trạng thái này."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from .serializers import SplitPaymentSerializer
+
+        serializer = SplitPaymentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        splits = serializer.validated_data["splits"]
+
+        # Calculate the total of all splits
+        total_splits = sum(int(s["amount"]) for s in splits)
+        expected_total = int(booking.total_amount + booking.additional_charges + booking.early_check_in_fee + booking.late_check_out_fee)
+
+        if total_splits != expected_total:
+            return Response(
+                {
+                    "detail": f"Tổng các khoản tách ({total_splits:,}đ) không khớp tổng booking ({expected_total:,}đ)."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            # Create Payment records for each split
+            from django.utils import timezone
+
+            for split in splits:
+                Payment.objects.create(
+                    booking=booking,
+                    payment_type=Payment.PaymentType.ROOM_CHARGE,
+                    amount=int(split["amount"]),
+                    currency=booking.currency,
+                    payment_method=split["method"],
+                    status=Payment.Status.COMPLETED,
+                    description=f"Tách thanh toán - {split['method']}",
+                    created_by=request.user,
+                )
+
+            # Update booking payment method to indicate split
+            booking.notes = (
+                f"{booking.notes}\n[Tách thanh toán] {len(splits)} phương thức"
+                if booking.notes
+                else f"[Tách thanh toán] {len(splits)} phương thức"
+            )
+            booking.save()
+
+        return Response(
+            BookingSerializer(booking).data,
+            status=status.HTTP_200_OK,
+        )
+
+    @extend_schema(
+        summary="Partial refund",
+        description="Process a partial refund for a booking.",
+        request=PartialRefundSerializer,
+        responses={200: BookingSerializer},
+        tags=["Booking Management"],
+    )
+    @action(detail=True, methods=["post"], url_path="partial-refund")
+    def partial_refund(self, request, pk=None):
+        """Process a partial refund."""
+        from django.db import transaction
+        from django.utils import timezone
+
+        booking = self.get_object()
+
+        if booking.status not in [
+            Booking.Status.CHECKED_IN,
+            Booking.Status.CHECKED_OUT,
+            Booking.Status.CANCELLED,
+        ]:
+            return Response(
+                {"detail": "Không thể hoàn tiền cho booking ở trạng thái này."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        from .serializers import PartialRefundSerializer
+
+        serializer = PartialRefundSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        refund_amount = serializer.validated_data["amount"]
+        reason = serializer.validated_data["reason"]
+
+        # Calculate total paid
+        total_paid = (
+            Payment.objects.filter(
+                booking=booking,
+                status=Payment.Status.COMPLETED,
+            )
+            .exclude(payment_type=Payment.PaymentType.REFUND)
+            .aggregate(total=models.Sum("amount"))["total"]
+            or booking.total_amount
+        )
+
+        # Calculate already refunded
+        already_refunded = (
+            Payment.objects.filter(
+                booking=booking,
+                payment_type=Payment.PaymentType.REFUND,
+                status=Payment.Status.COMPLETED,
+            ).aggregate(total=models.Sum("amount"))["total"]
+            or 0
+        )
+
+        max_refundable = total_paid - already_refunded
+        if refund_amount > max_refundable:
+            return Response(
+                {
+                    "detail": f"Số tiền hoàn ({refund_amount:,}đ) vượt quá số tiền có thể hoàn ({max_refundable:,}đ)."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            # Create refund Payment
+            Payment.objects.create(
+                booking=booking,
+                payment_type=Payment.PaymentType.REFUND,
+                amount=refund_amount,
+                currency=booking.currency,
+                payment_method=booking.payment_method,
+                status=Payment.Status.COMPLETED,
+                description=f"Hoàn tiền một phần: {reason}",
+                created_by=request.user,
+            )
+
+            # Create negative FinancialEntry
+            refund_category = FinancialCategory.objects.filter(
+                category_type=FinancialCategory.CategoryType.EXPENSE,
+                is_active=True,
+            ).first()
+            if refund_category:
+                FinancialEntry.objects.create(
+                    entry_type=FinancialEntry.EntryType.EXPENSE,
+                    category=refund_category,
+                    amount=refund_amount,
+                    currency=booking.currency,
+                    date=timezone.now().date(),
+                    description=f"Hoàn tiền phòng {booking.room.number} - {booking.guest.full_name}: {reason}",
+                    booking=booking,
+                    payment_method=booking.payment_method,
+                    created_by=request.user,
+                )
+
+            booking.notes = (
+                f"{booking.notes}\n[Hoàn tiền] {refund_amount:,}đ - {reason}"
+                if booking.notes
+                else f"[Hoàn tiền] {refund_amount:,}đ - {reason}"
+            )
+            booking.save()
+
+        # Notify staff
+        from .services import PushNotificationService
+
+        PushNotificationService.notify_staff(
+            notification_type=Notification.NotificationType.GENERAL,
+            title=f"Hoàn tiền: Phòng {booking.room.number}",
+            body=f"Hoàn {refund_amount:,}đ cho {booking.guest.full_name} - {reason}",
+            data={
+                "booking_id": str(booking.id),
+                "room_number": booking.room.number,
+                "action": "partial_refund",
+            },
+            booking=booking,
+            exclude_user=request.user,
+        )
+
+        return Response(
+            BookingSerializer(booking).data,
             status=status.HTTP_200_OK,
         )
 
@@ -7486,3 +7882,81 @@ class GuestMessageViewSet(viewsets.ReadOnlyModelViewSet):
         message.refresh_from_db()
 
         return Response(GuestMessageSerializer(message).data)
+
+
+# ==================== Audit Log Views ====================
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary="List audit logs",
+        description="Get list of audit log entries. Requires owner or manager role.",
+        parameters=[
+            OpenApiParameter(
+                name="entity_type",
+                type=str,
+                description="Filter by entity type (e.g., booking, room, guest)",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="action",
+                type=str,
+                description="Filter by action type",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="user_id",
+                type=int,
+                description="Filter by user ID",
+                required=False,
+            ),
+            OpenApiParameter(
+                name="limit",
+                type=int,
+                description="Limit the number of results",
+                required=False,
+            ),
+        ],
+        responses={200: AuditLogSerializer(many=True)},
+        tags=["Audit Logs"],
+    ),
+    retrieve=extend_schema(
+        summary="Get audit log entry details",
+        description="Get detailed information about a specific audit log entry.",
+        responses={200: AuditLogSerializer},
+        tags=["Audit Logs"],
+    ),
+)
+class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
+    """Read-only ViewSet for audit logs. Only accessible by owners and managers."""
+
+    serializer_class = AuditLogSerializer
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        """Get queryset with optional filtering."""
+        queryset = AuditLog.objects.select_related("user").all()
+
+        entity_type = self.request.query_params.get("entity_type")
+        if entity_type:
+            queryset = queryset.filter(entity_type=entity_type)
+
+        action = self.request.query_params.get("action")
+        if action:
+            queryset = queryset.filter(action=action)
+
+        user_id = self.request.query_params.get("user_id")
+        if user_id:
+            queryset = queryset.filter(user_id=user_id)
+
+        queryset = queryset.order_by(*self.ordering)
+
+        limit = self.request.query_params.get("limit")
+        if limit:
+            try:
+                queryset = queryset[: int(limit)]
+            except (ValueError, TypeError):
+                pass
+
+        return queryset

@@ -3,6 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/group_booking.dart';
 import '../repositories/group_booking_repository.dart';
+import 'booking_provider.dart';
+import 'dashboard_provider.dart';
+import 'room_provider.dart';
 
 part 'group_booking_provider.freezed.dart';
 
@@ -153,6 +156,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       await loadBookings();
       _ref.invalidate(groupBookingsProvider);
       _ref.invalidate(upcomingGroupBookingsProvider);
+      _invalidateCrossDomainProviders();
       return newBooking;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -184,6 +188,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(groupBookingByIdProvider(id));
       _ref.invalidate(groupBookingsProvider);
       _ref.invalidate(upcomingGroupBookingsProvider);
+      _invalidateCrossDomainProviders();
       return confirmedBooking;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -201,6 +206,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(groupBookingsProvider);
       _ref.invalidate(todayGroupCheckInsProvider);
       _ref.invalidate(activeGroupBookingsProvider);
+      _invalidateCrossDomainProviders();
       return checkedInBooking;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -218,6 +224,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(groupBookingsProvider);
       _ref.invalidate(todayGroupCheckOutsProvider);
       _ref.invalidate(activeGroupBookingsProvider);
+      _invalidateCrossDomainProviders();
       return checkedOutBooking;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -238,6 +245,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(groupBookingsProvider);
       _ref.invalidate(upcomingGroupBookingsProvider);
       _ref.invalidate(activeGroupBookingsProvider);
+      _invalidateCrossDomainProviders();
       return cancelledBooking;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -253,6 +261,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       await loadBookings();
       _ref.invalidate(groupBookingByIdProvider(id));
       _ref.invalidate(groupBookingsProvider);
+      _invalidateCrossDomainProviders();
       return updatedBooking;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -268,6 +277,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       await loadBookings();
       _ref.invalidate(groupBookingsProvider);
       _ref.invalidate(upcomingGroupBookingsProvider);
+      _invalidateCrossDomainProviders();
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
@@ -278,6 +288,13 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
   /// Select a booking
   void selectBooking(GroupBooking? booking) {
     state = state.copyWith(selectedBooking: booking);
+  }
+
+  /// Invalidate cross-domain providers affected by group booking changes
+  void _invalidateCrossDomainProviders() {
+    _ref.invalidate(roomsProvider);
+    _ref.invalidate(bookingsProvider);
+    _ref.invalidate(dashboardSummaryProvider);
   }
 
   /// Clear error message

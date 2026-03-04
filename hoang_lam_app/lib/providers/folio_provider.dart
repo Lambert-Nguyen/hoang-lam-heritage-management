@@ -147,6 +147,14 @@ class FolioNotifier extends StateNotifier<FolioState> {
       // Refresh folio data
       await refresh();
 
+      // Invalidate related providers
+      _ref.invalidate(financialEntriesProvider);
+      _ref.invalidate(dashboardSummaryProvider);
+      if (state.bookingId != null) {
+        _ref.invalidate(bookingByIdProvider(state.bookingId!));
+      }
+      _ref.invalidate(bookingsProvider);
+
       return true;
     } catch (e) {
       state = state.copyWith(
@@ -169,6 +177,14 @@ class FolioNotifier extends StateNotifier<FolioState> {
 
       // Refresh folio data
       await refresh();
+
+      // Invalidate related providers
+      _ref.invalidate(financialEntriesProvider);
+      _ref.invalidate(dashboardSummaryProvider);
+      if (state.bookingId != null) {
+        _ref.invalidate(bookingByIdProvider(state.bookingId!));
+      }
+      _ref.invalidate(bookingsProvider);
 
       return true;
     } catch (e) {

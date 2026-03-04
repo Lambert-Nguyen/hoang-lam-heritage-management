@@ -180,16 +180,16 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
     return AppColors.textSecondary;
   }
 
-  String _formatTime(String createdAt) {
+  String _formatTime(DateTime? createdAt) {
+    if (createdAt == null) return '';
     try {
-      final dt = DateTime.parse(createdAt);
       final now = DateTime.now();
-      final diff = now.difference(dt);
+      final diff = now.difference(createdAt);
 
       if (diff.inMinutes < 60) return '${diff.inMinutes}m';
       if (diff.inHours < 24) return '${diff.inHours}h';
       if (diff.inDays < 7) return '${diff.inDays}d';
-      return '${dt.day}/${dt.month}';
+      return '${createdAt.day}/${createdAt.month}';
     } catch (_) {
       return '';
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -464,8 +465,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           _task = updatedTask;
         });
         ref.invalidate(housekeepingTasksProvider);
-        // Auto-set room to Available after cleaning task completion
-        if (_task.room != null) {
+        // Auto-set room to Available only for cleaning-type tasks
+        final isCleaningTask =
+            _task.taskType == HousekeepingTaskType.checkoutClean ||
+            _task.taskType == HousekeepingTaskType.stayClean ||
+            _task.taskType == HousekeepingTaskType.deepClean;
+        if (_task.room != null && isCleaningTask) {
           await ref
               .read(roomStateProvider.notifier)
               .updateRoomStatus(_task.room!, RoomStatus.available);
@@ -541,7 +546,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
       final success = await notifier.deleteTask(_task.id);
       if (success && mounted) {
         ref.invalidate(housekeepingTasksProvider);
-        Navigator.pop(context);
+        context.pop();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l10n.taskDeleted)));

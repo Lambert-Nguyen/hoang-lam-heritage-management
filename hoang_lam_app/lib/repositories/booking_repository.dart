@@ -41,22 +41,22 @@ class BookingRepository {
       queryParams['source'] = source;
     }
     if (checkInFrom != null) {
-      queryParams['check_in_date_from'] = checkInFrom.toIso8601String().split(
+      queryParams['check_in_from'] = checkInFrom.toIso8601String().split(
         'T',
       )[0];
     }
     if (checkInTo != null) {
-      queryParams['check_in_date_to'] = checkInTo.toIso8601String().split(
+      queryParams['check_in_to'] = checkInTo.toIso8601String().split(
         'T',
       )[0];
     }
     if (checkOutFrom != null) {
-      queryParams['check_out_date_from'] = checkOutFrom.toIso8601String().split(
+      queryParams['check_out_from'] = checkOutFrom.toIso8601String().split(
         'T',
       )[0];
     }
     if (checkOutTo != null) {
-      queryParams['check_out_date_to'] = checkOutTo.toIso8601String().split(
+      queryParams['check_out_to'] = checkOutTo.toIso8601String().split(
         'T',
       )[0];
     }
@@ -326,7 +326,7 @@ class BookingRepository {
   // ==================== Calendar & Today ====================
 
   /// Get bookings for calendar view
-  Future<List<Booking>> getCalendarBookings({
+  Future<CalendarResponse> getCalendarBookings({
     required DateTime startDate,
     required DateTime endDate,
   }) async {
@@ -335,18 +335,16 @@ class BookingRepository {
       'end_date': endDate.toIso8601String().split('T')[0],
     };
 
-    final response = await _apiClient.get<List<dynamic>>(
+    final response = await _apiClient.get<Map<String, dynamic>>(
       '${AppConstants.bookingsEndpoint}calendar/',
       queryParameters: queryParams,
     );
 
     if (response.data == null) {
-      return [];
+      throw Exception('Failed to get calendar bookings');
     }
 
-    return response.data!
-        .map((json) => Booking.fromJson(json as Map<String, dynamic>))
-        .toList();
+    return CalendarResponse.fromJson(response.data!);
   }
 
   /// Get today's bookings (check-ins and check-outs)

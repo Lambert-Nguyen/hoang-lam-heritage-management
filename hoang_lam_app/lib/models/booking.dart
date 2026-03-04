@@ -205,6 +205,10 @@ enum BookingSource {
   airbnb,
   @JsonValue('traveloka')
   traveloka,
+  @JsonValue('expedia')
+  expedia,
+  @JsonValue('google_hotel')
+  googleHotel,
   @JsonValue('other_ota')
   otherOta,
   @JsonValue('other')
@@ -229,6 +233,10 @@ extension BookingSourceExtension on BookingSource {
         return 'Airbnb';
       case BookingSource.traveloka:
         return 'Traveloka';
+      case BookingSource.expedia:
+        return 'Expedia';
+      case BookingSource.googleHotel:
+        return 'Google Hotel';
       case BookingSource.otherOta:
         return 'OTA khác';
       case BookingSource.other:
@@ -252,6 +260,10 @@ extension BookingSourceExtension on BookingSource {
         return 'Airbnb';
       case BookingSource.traveloka:
         return 'Traveloka';
+      case BookingSource.expedia:
+        return 'Expedia';
+      case BookingSource.googleHotel:
+        return 'Google Hotel';
       case BookingSource.otherOta:
         return 'Other OTA';
       case BookingSource.other:
@@ -275,6 +287,10 @@ extension BookingSourceExtension on BookingSource {
         return Icons.house;
       case BookingSource.traveloka:
         return Icons.flight;
+      case BookingSource.expedia:
+        return Icons.travel_explore;
+      case BookingSource.googleHotel:
+        return Icons.travel_explore;
       case BookingSource.otherOta:
         return Icons.public;
       case BookingSource.other:
@@ -298,6 +314,10 @@ extension BookingSourceExtension on BookingSource {
         return const Color(0xFFFF5A5F); // Airbnb red
       case BookingSource.traveloka:
         return const Color(0xFF0194F3); // Traveloka blue
+      case BookingSource.expedia:
+        return const Color(0xFFFFCC00); // Expedia yellow
+      case BookingSource.googleHotel:
+        return const Color(0xFF4285F4); // Google blue
       case BookingSource.otherOta:
         return const Color(0xFF607D8B); // Blue grey
       case BookingSource.other:
@@ -322,6 +342,10 @@ extension BookingSourceExtension on BookingSource {
         return 'airbnb';
       case BookingSource.traveloka:
         return 'traveloka';
+      case BookingSource.expedia:
+        return 'expedia';
+      case BookingSource.googleHotel:
+        return 'google_hotel';
       case BookingSource.otherOta:
         return 'other_ota';
       case BookingSource.other:
@@ -335,6 +359,8 @@ extension BookingSourceExtension on BookingSource {
     BookingSource.agoda,
     BookingSource.airbnb,
     BookingSource.traveloka,
+    BookingSource.expedia,
+    BookingSource.googleHotel,
     BookingSource.otherOta,
   ].contains(this);
 
@@ -361,6 +387,10 @@ extension BookingSourceExtension on BookingSource {
         return 'Airbnb';
       case BookingSource.traveloka:
         return 'Traveloka';
+      case BookingSource.expedia:
+        return 'Expedia';
+      case BookingSource.googleHotel:
+        return 'Google Hotel';
       case BookingSource.otherOta:
         return l10n.bookingSourceOtherOta;
       case BookingSource.other:
@@ -381,6 +411,8 @@ enum PaymentMethod {
   vnpay,
   @JsonValue('card')
   card,
+  @JsonValue('zalopay')
+  zalopay,
   @JsonValue('ota_collect')
   otaCollect,
   @JsonValue('other')
@@ -401,6 +433,8 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'VNPay';
       case PaymentMethod.card:
         return 'Thẻ';
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return 'OTA thu hộ';
       case PaymentMethod.other:
@@ -420,6 +454,8 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'VNPay';
       case PaymentMethod.card:
         return 'Card';
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return 'OTA Collect';
       case PaymentMethod.other:
@@ -439,6 +475,8 @@ extension PaymentMethodExtension on PaymentMethod {
         return Icons.qr_code;
       case PaymentMethod.card:
         return Icons.credit_card;
+      case PaymentMethod.zalopay:
+        return Icons.phone_android;
       case PaymentMethod.otaCollect:
         return Icons.travel_explore;
       case PaymentMethod.other:
@@ -458,6 +496,8 @@ extension PaymentMethodExtension on PaymentMethod {
         return const Color(0xFF1A1F71); // VNPay blue
       case PaymentMethod.card:
         return const Color(0xFF9C27B0); // Purple
+      case PaymentMethod.zalopay:
+        return const Color(0xFF008FE5); // ZaloPay blue
       case PaymentMethod.otaCollect:
         return const Color(0xFF607D8B); // Blue grey
       case PaymentMethod.other:
@@ -477,6 +517,8 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'VNPay';
       case PaymentMethod.card:
         return l10n.paymentMethodCard;
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return l10n.paymentMethodOtaCollect;
       case PaymentMethod.other:
@@ -628,6 +670,15 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'nightly_rate', fromJson: _safeInt) required int nightlyRate,
     @JsonKey(name: 'total_amount', fromJson: _safeInt) required int totalAmount,
     @Default('VND') String currency,
+
+    // Discount & commission
+    @JsonKey(name: 'discount_amount', fromJson: _safeInt)
+    @Default(0)
+    int discountAmount,
+    @JsonKey(name: 'discount_reason') @Default('') String discountReason,
+    @JsonKey(name: 'ota_commission', fromJson: _safeInt)
+    @Default(0)
+    int otaCommission,
 
     // Payment
     @JsonKey(name: 'deposit_amount', fromJson: _safeInt)
@@ -1002,6 +1053,9 @@ sealed class BookingUpdate with _$BookingUpdate {
     @JsonKey(includeIfNull: false) BookingSource? source,
     @JsonKey(name: 'ota_reference', includeIfNull: false) String? otaReference,
     @JsonKey(name: 'nightly_rate', includeIfNull: false) int? nightlyRate,
+    @JsonKey(name: 'discount_amount', includeIfNull: false) int? discountAmount,
+    @JsonKey(name: 'discount_reason', includeIfNull: false) String? discountReason,
+    @JsonKey(name: 'ota_commission', includeIfNull: false) int? otaCommission,
     @JsonKey(name: 'deposit_amount', includeIfNull: false) int? depositAmount,
     @JsonKey(name: 'deposit_paid', includeIfNull: false) bool? depositPaid,
     @JsonKey(name: 'additional_charges', includeIfNull: false)
@@ -1036,6 +1090,9 @@ sealed class BookingUpdate with _$BookingUpdate {
       source: booking.source,
       otaReference: booking.otaReference,
       nightlyRate: booking.nightlyRate,
+      discountAmount: booking.discountAmount,
+      discountReason: booking.discountReason,
+      otaCommission: booking.otaCommission,
       depositAmount: booking.depositAmount,
       depositPaid: booking.depositPaid,
       additionalCharges: booking.additionalCharges,

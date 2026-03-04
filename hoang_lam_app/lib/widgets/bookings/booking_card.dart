@@ -33,7 +33,7 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM', 'vi');
+    final dateFormat = DateFormat('dd/MM', Localizations.localeOf(context).languageCode);
     final currencyFormat = NumberFormat.currency(
       locale: 'vi_VN',
       symbol: booking.currency == 'VND' ? 'đ' : booking.currency,
@@ -168,7 +168,7 @@ class BookingCard extends StatelessWidget {
                     booking.actualCheckIn != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'Check-in: ${DateFormat('HH:mm dd/MM', 'vi').format(booking.actualCheckIn!)}',
+                    'Check-in: ${DateFormat('HH:mm dd/MM', Localizations.localeOf(context).languageCode).format(booking.actualCheckIn!)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,
@@ -281,6 +281,18 @@ class BookingCard extends StatelessWidget {
           label: context.l10n.otherLabel,
           icon: Icons.more_horiz,
           color: AppColors.mutedAccent,
+        );
+      case BookingSource.expedia:
+        return (
+          label: 'Expedia',
+          icon: Icons.public,
+          color: const Color(0xFFFFCC00),
+        );
+      case BookingSource.googleHotel:
+        return (
+          label: 'Google Hotel',
+          icon: Icons.public,
+          color: const Color(0xFF4285F4),
         );
     }
   }

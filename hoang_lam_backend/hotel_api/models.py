@@ -2363,3 +2363,41 @@ class SensitiveDataAccessLog(models.Model):
     def __str__(self):
         username = self.user.username if self.user else "unknown"
         return f"{username} - {self.get_action_display()} - {self.timestamp}"
+
+
+class AuditLog(models.Model):
+    """General audit log for tracking all user actions across the system."""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="audit_logs",
+        verbose_name="Người thực hiện",
+    )
+    user_name = models.CharField(max_length=150, blank=True, verbose_name="Tên người dùng")
+    action = models.CharField(max_length=100, verbose_name="Hành động")
+    entity_type = models.CharField(max_length=50, verbose_name="Loại đối tượng")
+    entity_id = models.IntegerField(null=True, blank=True, verbose_name="ID đối tượng")
+    details = models.TextField(blank=True, default="", verbose_name="Chi tiết")
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="Địa chỉ IP")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Thời gian")
+
+    class Meta:
+        verbose_name = "Nhật ký hoạt động"
+        verbose_name_plural = "Nhật ký hoạt động"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["user", "-created_at"]),
+            models.Index(fields=["entity_type", "-created_at"]),
+            models.Index(fields=["entity_type", "entity_id"]),
+            models.Index(fields=["action", "-created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.user_name or 'unknown'} - {self.action} - {self.entity_type} - {self.created_at}"
+
+    def save(self, *args, **kwargs):
+        if self.user and not self.user_name:
+            self.user_name = self.user.get_full_name() or self.user.username
+        super().save(*args, **kwargs)

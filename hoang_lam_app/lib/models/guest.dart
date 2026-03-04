@@ -392,6 +392,14 @@ sealed class Guest with _$Guest {
     @Default({}) Map<String, dynamic> preferences,
     @Default('') String notes,
 
+    // Loyalty tracking
+    @JsonKey(name: 'preferred_room_type') int? preferredRoomType,
+    @JsonKey(name: 'preferred_floor') int? preferredFloor,
+    @JsonKey(name: 'special_requests') @Default('') String specialRequests,
+    @JsonKey(name: 'total_spent') @Default(0) int totalSpent,
+    @JsonKey(name: 'first_stay') DateTime? firstStay,
+    @JsonKey(name: 'last_stay') DateTime? lastStay,
+
     // Computed fields from backend
     @JsonKey(name: 'is_returning_guest') @Default(false) bool isReturningGuest,
     @JsonKey(name: 'is_foreign_guest') @Default(false) bool isForeignGuest,

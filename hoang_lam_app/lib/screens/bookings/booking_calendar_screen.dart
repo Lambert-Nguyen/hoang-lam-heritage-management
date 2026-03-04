@@ -73,7 +73,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
         children: [
           // Calendar widget
           calendarBookingsAsync.when(
-            data: (bookings) => _buildCalendar(bookings),
+            data: (calendarResponse) => _buildCalendar(calendarResponse.bookings),
             loading: () => const Center(
               child: Padding(
                 padding: EdgeInsets.all(16.0),
@@ -248,9 +248,9 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
     final bookingsAsync = ref.watch(calendarBookingsProvider(dateRange));
 
     return bookingsAsync.when(
-      data: (bookings) {
+      data: (calendarResponse) {
         // Filter bookings based on selected filter type
-        final filteredBookings = _filterBookings(bookings);
+        final filteredBookings = _filterBookings(calendarResponse.bookings);
 
         if (filteredBookings.isEmpty) {
           return Center(

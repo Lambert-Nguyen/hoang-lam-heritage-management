@@ -288,7 +288,7 @@ class DatePickerField extends StatelessWidget {
       initialDate: value ?? DateTime.now(),
       firstDate: firstDate ?? DateTime(2020),
       lastDate: lastDate ?? DateTime(2030),
-      locale: const Locale('vi'),
+      locale: Localizations.localeOf(context),
     );
     if (picked != null && onChanged != null) {
       onChanged!(picked);

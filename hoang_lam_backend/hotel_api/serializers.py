@@ -13,6 +13,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from .models import (
+    AuditLog,
     Booking,
     DateRateOverride,
     DeviceToken,
@@ -367,13 +368,21 @@ class GuestSerializer(serializers.ModelSerializer):
             "total_stays",
             "preferences",
             "notes",
+            # Loyalty tracking
+            "preferred_room_type",
+            "preferred_floor",
+            "special_requests",
+            "total_spent",
+            "first_stay",
+            "last_stay",
+            # Computed
             "is_returning_guest",
             "is_foreign_guest",
             "booking_count",
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "total_stays", "created_at", "updated_at"]
+        read_only_fields = ["id", "total_stays", "total_spent", "first_stay", "last_stay", "created_at", "updated_at"]
 
     @extend_schema_field(serializers.IntegerField)
     def get_booking_count(self, obj):
@@ -531,6 +540,11 @@ class BookingSerializer(serializers.ModelSerializer):
             "nightly_rate",
             "total_amount",
             "currency",
+            # Discount & commission
+            "discount_amount",
+            "discount_reason",
+            "ota_commission",
+            # Payment
             "deposit_amount",
             "deposit_paid",
             "additional_charges",
@@ -779,6 +793,98 @@ class LateCheckOutFeeSerializer(serializers.Serializer):
     def validate_fee(self, value):
         if value < 0:
             raise serializers.ValidationError("Phí không được âm.")
+        return value
+
+
+class SwapRoomSerializer(serializers.Serializer):
+    """Serializer for swap-room action."""
+
+    new_room = serializers.IntegerField(help_text="ID of the new room")
+    reason = serializers.CharField(required=False, allow_blank=True, default="")
+
+    def validate_new_room(self, value):
+        from .models import Room
+
+        try:
+            room = Room.objects.get(pk=value, is_active=True)
+        except Room.DoesNotExist:
+            raise serializers.ValidationError("Phòng không tồn tại hoặc đã bị vô hiệu hóa.")
+        if room.status != Room.Status.AVAILABLE:
+            raise serializers.ValidationError(
+                f"Phòng {room.number} hiện không trống (trạng thái: {room.get_status_display()})."
+            )
+        return value
+
+
+class ExtendStaySerializer(serializers.Serializer):
+    """Serializer for extend-stay action."""
+
+    new_check_out_date = serializers.DateField(
+        help_text="New check-out date (must be after current check-out date)"
+    )
+
+    def validate_new_check_out_date(self, value):
+        from datetime import date
+
+        if value <= date.today():
+            raise serializers.ValidationError("Ngày trả phòng mới phải sau hôm nay.")
+        return value
+
+
+class SplitPaymentSerializer(serializers.Serializer):
+    """Serializer for split-payment action."""
+
+    splits = serializers.ListField(
+        child=serializers.DictField(),
+        min_length=2,
+        help_text="List of payment splits, each with 'method' and 'amount'",
+    )
+
+    def validate_splits(self, value):
+        from .models import Booking
+
+        valid_methods = [choice[0] for choice in Booking.PaymentMethod.choices]
+        for i, split in enumerate(value):
+            if "method" not in split:
+                raise serializers.ValidationError(
+                    f"Split {i + 1}: Thiếu phương thức thanh toán ('method')."
+                )
+            if "amount" not in split:
+                raise serializers.ValidationError(
+                    f"Split {i + 1}: Thiếu số tiền ('amount')."
+                )
+            if split["method"] not in valid_methods:
+                raise serializers.ValidationError(
+                    f"Split {i + 1}: Phương thức '{split['method']}' không hợp lệ."
+                )
+            try:
+                amount = int(split["amount"])
+                if amount <= 0:
+                    raise serializers.ValidationError(
+                        f"Split {i + 1}: Số tiền phải lớn hơn 0."
+                    )
+            except (ValueError, TypeError):
+                raise serializers.ValidationError(
+                    f"Split {i + 1}: Số tiền không hợp lệ."
+                )
+        return value
+
+
+class PartialRefundSerializer(serializers.Serializer):
+    """Serializer for partial-refund action."""
+
+    amount = serializers.DecimalField(
+        max_digits=12,
+        decimal_places=0,
+        help_text="Refund amount in VND",
+    )
+    reason = serializers.CharField(
+        help_text="Reason for the refund",
+    )
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Số tiền hoàn phải lớn hơn 0.")
         return value
 
 
@@ -3331,3 +3437,26 @@ class PreviewMessageSerializer(serializers.Serializer):
     template = serializers.IntegerField()
     guest = serializers.IntegerField()
     booking = serializers.IntegerField(required=False, allow_null=True)
+
+
+# ==================== Audit Log Serializers ====================
+
+
+class AuditLogSerializer(serializers.ModelSerializer):
+    """Serializer for AuditLog model."""
+
+    user_id = serializers.IntegerField(source="user.id", read_only=True, allow_null=True)
+
+    class Meta:
+        model = AuditLog
+        fields = [
+            "id",
+            "action",
+            "entity_type",
+            "entity_id",
+            "user_id",
+            "user_name",
+            "details",
+            "created_at",
+        ]
+        read_only_fields = fields

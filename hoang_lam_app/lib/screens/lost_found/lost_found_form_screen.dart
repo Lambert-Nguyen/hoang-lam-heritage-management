@@ -433,6 +433,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
           contactNotes: _contactNotesController.text,
           estimatedValue: estimatedValue,
           notes: _notesController.text,
+          image: _selectedImage?.path,
         );
         final result = await notifier.updateItem(widget.itemId!, update);
         if (result != null && mounted) {
@@ -456,6 +457,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
           contactNotes: _contactNotesController.text,
           estimatedValue: estimatedValue,
           notes: _notesController.text,
+          image: _selectedImage?.path,
         );
         final result = await notifier.createItem(create);
         if (result != null && mounted) {

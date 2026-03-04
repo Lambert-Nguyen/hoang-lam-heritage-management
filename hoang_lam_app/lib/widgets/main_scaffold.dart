@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,14 +8,16 @@ import '../providers/auth_provider.dart';
 import '../router/app_router.dart';
 import '../l10n/app_localizations.dart';
 
-/// Provider that periodically checks connectivity
+/// Provider that periodically checks connectivity (web-safe, uses Dio)
 final connectivityProvider = StreamProvider<bool>((ref) {
+  final dio = Dio(BaseOptions(
+    connectTimeout: const Duration(seconds: 5),
+    receiveTimeout: const Duration(seconds: 5),
+  ));
   return Stream.periodic(const Duration(seconds: 10), (_) async {
     try {
-      final result = await InternetAddress.lookup(
-        'google.com',
-      ).timeout(const Duration(seconds: 5));
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+      final response = await dio.head('https://www.google.com/generate_204');
+      return response.statusCode == 204 || response.statusCode == 200;
     } catch (_) {
       return false;
     }

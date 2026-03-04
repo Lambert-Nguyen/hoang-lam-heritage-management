@@ -545,7 +545,7 @@ class FinanceRepository {
   /// Get deposits for a specific booking
   Future<List<Payment>> getBookingDeposits(int bookingId) async {
     final response = await _apiClient.get<dynamic>(
-      '${AppConstants.paymentsEndpoint}bookings/$bookingId/deposits/',
+      '${AppConstants.paymentsEndpoint}booking/$bookingId/deposits/',
     );
 
     if (response.data == null) {
@@ -670,7 +670,7 @@ class FinanceRepository {
   /// Get booking folio summary
   Future<BookingFolioSummary> getBookingFolio(int bookingId) async {
     final response = await _apiClient.get<Map<String, dynamic>>(
-      '${AppConstants.folioItemsEndpoint}bookings/$bookingId/folio/',
+      '${AppConstants.folioItemsEndpoint}booking/$bookingId/',
     );
     if (response.data == null) {
       throw Exception('Failed to get booking folio');

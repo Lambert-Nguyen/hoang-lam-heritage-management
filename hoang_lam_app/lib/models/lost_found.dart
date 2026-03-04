@@ -305,6 +305,8 @@ sealed class LostFoundItemCreate with _$LostFoundItemCreate {
     @JsonKey(name: 'contact_notes') @Default('') String contactNotes,
     // Notes
     @Default('') String notes,
+    // Image
+    String? image,
   }) = _LostFoundItemCreate;
 
   factory LostFoundItemCreate.fromJson(Map<String, dynamic> json) =>
@@ -336,6 +338,8 @@ sealed class LostFoundItemUpdate with _$LostFoundItemUpdate {
     @JsonKey(name: 'contact_notes') String? contactNotes,
     // Notes
     String? notes,
+    // Image
+    String? image,
   }) = _LostFoundItemUpdate;
 
   factory LostFoundItemUpdate.fromJson(Map<String, dynamic> json) =>

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -427,7 +428,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
         // Invalidate maintenance providers so lists refresh
         ref.invalidate(maintenanceRequestsProvider);
 
-        Navigator.pop(context, result);
+        context.pop(result);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

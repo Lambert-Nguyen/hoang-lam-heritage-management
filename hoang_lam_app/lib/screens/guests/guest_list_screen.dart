@@ -289,7 +289,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
   }
 
   void _navigateToDetail(BuildContext context, Guest guest) {
-    context.push(AppRoutes.guestDetail, extra: guest);
+    context.push('${AppRoutes.guestDetail}/${guest.id}', extra: guest);
   }
 
   void _navigateToForm(BuildContext context, [Guest? guest]) {

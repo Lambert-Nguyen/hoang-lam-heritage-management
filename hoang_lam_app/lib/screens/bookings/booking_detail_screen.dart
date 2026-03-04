@@ -100,6 +100,7 @@ class BookingDetailScreen extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(bookingByIdProvider(bookingId));
+        await ref.read(bookingByIdProvider(bookingId).future);
       },
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -265,13 +266,11 @@ class BookingDetailScreen extends ConsumerWidget {
                       ),
                   ],
                   // Fee action buttons
-                  if (booking.status == BookingStatus.checkedIn ||
-                      booking.status == BookingStatus.confirmed) ...[
+                  if (booking.status == BookingStatus.checkedIn) ...[
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        if (booking.status == BookingStatus.checkedIn ||
-                            booking.status == BookingStatus.confirmed)
+                        if (booking.status == BookingStatus.checkedIn)
                           Expanded(
                             child: OutlinedButton.icon(
                               onPressed: () => _handleRecordEarlyCheckIn(
@@ -626,6 +625,10 @@ class BookingDetailScreen extends ConsumerWidget {
         return l10n.bookingSourceWebsite;
       case BookingSource.other:
         return l10n.bookingSourceOther;
+      case BookingSource.expedia:
+        return 'Expedia';
+      case BookingSource.googleHotel:
+        return 'Google Hotel';
     }
   }
 
@@ -646,6 +649,8 @@ class BookingDetailScreen extends ConsumerWidget {
         return l10n.paymentMethodOtaCollect;
       case PaymentMethod.other:
         return l10n.paymentMethodOther;
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
     }
   }
 

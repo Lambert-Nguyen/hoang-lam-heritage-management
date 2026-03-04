@@ -6,6 +6,8 @@ import '../core/services/sync_manager.dart';
 import '../models/booking.dart';
 import '../models/offline_operation.dart';
 import '../repositories/booking_repository.dart';
+import 'dashboard_provider.dart';
+import 'room_provider.dart';
 
 part 'booking_provider.freezed.dart';
 
@@ -86,7 +88,7 @@ final bookingsByGuestProvider = FutureProvider.family<List<Booking>, int>((
 
 /// Provider for calendar bookings
 final calendarBookingsProvider =
-    FutureProvider.family<List<Booking>, DateRange>((ref, dateRange) async {
+    FutureProvider.family<CalendarResponse, DateRange>((ref, dateRange) async {
       final repository = ref.watch(bookingRepositoryProvider);
       return repository.getCalendarBookings(
         startDate: dateRange.start,
@@ -128,6 +130,19 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   BookingNotifier(this._repository, this._ref)
     : super(const AsyncValue.loading()) {
     loadBookings();
+  }
+
+  /// Invalidate all related providers after booking mutations
+  void _invalidateRelatedProviders({bool includeRooms = false}) {
+    _ref.invalidate(todayBookingsProvider);
+    _ref.invalidate(calendarBookingsProvider);
+    _ref.invalidate(dashboardSummaryProvider);
+    _ref.invalidate(bookingsProvider);
+    _ref.invalidate(activeBookingsProvider);
+    if (includeRooms) {
+      _ref.invalidate(roomsProvider);
+      _ref.invalidate(allRoomsProvider);
+    }
   }
 
   bool _isNetworkError(DioException e) {
@@ -174,6 +189,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     try {
       final newBooking = await _repository.createBooking(booking);
       await loadBookings();
+      _invalidateRelatedProviders();
       return newBooking;
     } on DioException catch (e) {
       if (_isNetworkError(e)) {
@@ -195,6 +211,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     try {
       final updatedBooking = await _repository.updateBooking(id, booking);
       await loadBookings();
+      _invalidateRelatedProviders();
       return updatedBooking;
     } on DioException catch (e) {
       if (_isNetworkError(e)) {
@@ -226,6 +243,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
       );
       // Reload bookings after status update
       await loadBookings();
+      _invalidateRelatedProviders(includeRooms: true);
       return updatedBooking;
     } catch (error) {
       rethrow;
@@ -238,6 +256,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
       final booking = await _repository.checkIn(id, actualCheckInNotes: notes);
       // Reload bookings after check-in
       await loadBookings();
+      _invalidateRelatedProviders(includeRooms: true);
       return booking;
     } catch (error) {
       rethrow;
@@ -254,6 +273,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
       );
       // Reload bookings after check-out
       await loadBookings();
+      _invalidateRelatedProviders(includeRooms: true);
       return booking;
     } catch (error) {
       rethrow;
@@ -277,6 +297,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         createFolioItem: createFolioItem,
       );
       await loadBookings();
+      _invalidateRelatedProviders();
       return booking;
     } catch (error) {
       rethrow;
@@ -300,6 +321,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         createFolioItem: createFolioItem,
       );
       await loadBookings();
+      _invalidateRelatedProviders();
       return booking;
     } catch (error) {
       rethrow;
@@ -319,6 +341,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         reason: reason,
       );
       await loadBookings();
+      _invalidateRelatedProviders(includeRooms: true);
       return result;
     } catch (error) {
       rethrow;
@@ -334,6 +357,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
       );
       // Reload bookings after cancellation
       await loadBookings();
+      _invalidateRelatedProviders(includeRooms: true);
       return booking;
     } catch (error) {
       rethrow;
@@ -346,6 +370,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
       final booking = await _repository.markAsNoShow(id, notes: notes);
       // Reload bookings after update
       await loadBookings();
+      _invalidateRelatedProviders();
       return booking;
     } catch (error) {
       rethrow;
@@ -357,9 +382,10 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     try {
       final result = await _repository.extendStay(bookingId, newCheckOutDate);
       await loadBookings();
+      _invalidateRelatedProviders();
       return result;
     } catch (e) {
-      return null;
+      rethrow;
     }
   }
 
@@ -371,9 +397,10 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     try {
       final result = await _repository.splitPayment(bookingId, splits);
       await loadBookings();
+      _invalidateRelatedProviders();
       return result;
     } catch (e) {
-      return null;
+      rethrow;
     }
   }
 
@@ -390,9 +417,10 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         reason: reason,
       );
       await loadBookings();
+      _invalidateRelatedProviders();
       return result;
     } catch (e) {
-      return null;
+      rethrow;
     }
   }
 
@@ -401,6 +429,7 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
     try {
       await _repository.deleteBooking(id);
       await loadBookings();
+      _invalidateRelatedProviders(includeRooms: true);
     } on DioException catch (e) {
       if (_isNetworkError(e)) {
         final syncManager = _ref.read(syncManagerProvider);

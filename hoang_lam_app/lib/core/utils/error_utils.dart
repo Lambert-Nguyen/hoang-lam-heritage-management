@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../../l10n/app_localizations.dart';
 import '../errors/app_exceptions.dart';
 
@@ -5,12 +7,48 @@ import '../errors/app_exceptions.dart';
 ///
 /// Priority:
 /// 1. AppException — uses getLocalizedMessage()
-/// 2. Pattern-matched common error strings
-/// 3. Falls back to generic error message
+/// 2. DioException — maps by type and status code
+/// 3. FormatException — data format error
+/// 4. Pattern-matched common error strings
+/// 5. Falls back to generic error message
 String getLocalizedErrorMessage(dynamic error, AppLocalizations l10n) {
   // Already a well-structured AppException
   if (error is AppException) {
     return error.getLocalizedMessage(l10n.isVietnamese ? 'vi' : 'en');
+  }
+
+  // DioException — map by type and HTTP status
+  if (error is DioException) {
+    switch (error.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return l10n.errorConnectionTimeout;
+      case DioExceptionType.connectionError:
+        return l10n.errorNoNetwork;
+      case DioExceptionType.badResponse:
+        final statusCode = error.response?.statusCode;
+        if (statusCode == 401) return l10n.errorSessionExpired;
+        if (statusCode == 403) return l10n.errorNoPermission;
+        if (statusCode == 404) return l10n.errorNotFound;
+        if (statusCode == 409) return l10n.errorConflict;
+        if (statusCode != null && statusCode >= 500) return l10n.errorServer;
+        // Try to extract detail message from response body
+        final data = error.response?.data;
+        if (data is Map && data.containsKey('detail')) {
+          return data['detail'].toString();
+        }
+        return l10n.errorGeneric;
+      case DioExceptionType.cancel:
+        return l10n.errorGeneric;
+      default:
+        return l10n.errorNoNetwork;
+    }
+  }
+
+  // FormatException — malformed data
+  if (error is FormatException) {
+    return l10n.errorGeneric;
   }
 
   final message = error.toString().toLowerCase();

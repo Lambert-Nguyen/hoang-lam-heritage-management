@@ -9,6 +9,9 @@ import '../models/guest.dart';
 import '../models/minibar.dart';
 import '../models/user.dart';
 import '../providers/auth_provider.dart';
+import '../providers/room_provider.dart';
+import '../providers/guest_provider.dart';
+import '../providers/housekeeping_provider.dart';
 import '../models/room.dart';
 import '../models/housekeeping.dart';
 import '../screens/auth/login_screen.dart';
@@ -168,12 +171,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // Room detail route (outside shell for full screen)
       GoRoute(
-        path: AppRoutes.roomDetail,
+        path: '${AppRoutes.roomDetail}/:roomId',
         name: 'roomDetail',
         builder: (context, state) {
+          // Try extra first (in-app navigation)
           final room = state.extra;
-          if (room == null || room is! Room) {
-            // Handle invalid deep link or missing extra
+          if (room != null && room is Room) {
+            return RoomDetailScreen(room: room);
+          }
+          // Fall back to fetching by ID (deep link)
+          final roomId = int.tryParse(state.pathParameters['roomId'] ?? '');
+          if (roomId == null || roomId <= 0) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
               body: Center(
@@ -191,7 +199,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             );
           }
-          return RoomDetailScreen(room: room);
+          return _RoomDeepLinkScreen(roomId: roomId);
         },
       ),
 
@@ -265,10 +273,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '${AppRoutes.housekeepingTaskDetail}/:taskId',
         name: 'housekeepingTaskDetail',
         builder: (context, state) {
-          // Task is passed via extra
+          // Try extra first (in-app navigation)
           final task = state.extra;
-
-          if (task == null || task is! HousekeepingTask) {
+          if (task != null && task is HousekeepingTask) {
+            return TaskDetailScreen(task: task);
+          }
+          // Fall back to fetching by ID (deep link)
+          final taskId = int.tryParse(state.pathParameters['taskId'] ?? '');
+          if (taskId == null || taskId <= 0) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
               body: Center(
@@ -286,8 +298,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             );
           }
-
-          return TaskDetailScreen(task: task);
+          return _TaskDeepLinkScreen(taskId: taskId);
         },
       ),
 
@@ -306,10 +317,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '${AppRoutes.maintenanceDetail}/:requestId',
         name: 'maintenanceDetail',
         builder: (context, state) {
-          // Request is passed via extra
+          // Try extra first (in-app navigation)
           final request = state.extra;
-
-          if (request == null || request is! MaintenanceRequest) {
+          if (request != null && request is MaintenanceRequest) {
+            return MaintenanceDetailScreen(request: request);
+          }
+          // Fall back to fetching by ID (deep link)
+          final requestId =
+              int.tryParse(state.pathParameters['requestId'] ?? '');
+          if (requestId == null || requestId <= 0) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
               body: Center(
@@ -327,8 +343,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             );
           }
-
-          return MaintenanceDetailScreen(request: request);
+          return _MaintenanceDeepLinkScreen(requestId: requestId);
         },
       ),
 
@@ -466,7 +481,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'sendMessage',
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
-          if (extra == null) {
+          final guestId = extra?['guestId'] as int?;
+          final guestName = extra?['guestName'] as String?;
+          if (extra == null || guestId == null || guestName == null) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
               body: Center(
@@ -485,8 +502,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             );
           }
           return MessageTemplateScreen(
-            guestId: extra['guestId'] as int,
-            guestName: extra['guestName'] as String,
+            guestId: guestId,
+            guestName: guestName,
             bookingId: extra['bookingId'] as int?,
           );
         },
@@ -597,11 +614,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // Guest routes (outside shell for full screen)
       GoRoute(
-        path: AppRoutes.guestDetail,
+        path: '${AppRoutes.guestDetail}/:guestId',
         name: 'guestDetail',
         builder: (context, state) {
+          // Try extra first (in-app navigation)
           final guest = state.extra;
-          if (guest == null || guest is! Guest) {
+          if (guest != null && guest is Guest) {
+            return GuestDetailScreen(guest: guest);
+          }
+          // Fall back to fetching by ID (deep link)
+          final guestId =
+              int.tryParse(state.pathParameters['guestId'] ?? '');
+          if (guestId == null || guestId <= 0) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
               body: Center(
@@ -619,7 +643,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               ),
             );
           }
-          return GuestDetailScreen(guest: guest);
+          return _GuestDeepLinkScreen(guestId: guestId);
         },
       ),
       GoRoute(
@@ -658,6 +682,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.staffManagement,
         name: 'staffManagement',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) => const StaffManagementScreen(),
       ),
 
@@ -725,6 +754,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.finance,
             name: 'finance',
+            redirect: (context, state) {
+              final user = ref.read(currentUserProvider);
+              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+                return AppRoutes.home;
+              }
+              return null;
+            },
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: FinanceScreen()),
           ),
@@ -750,6 +786,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.nightAudit,
             name: 'nightAudit',
+            redirect: (context, state) {
+              final user = ref.read(currentUserProvider);
+              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+                return AppRoutes.home;
+              }
+              return null;
+            },
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: NightAuditScreen()),
           ),
@@ -766,6 +809,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRoutes.reports,
             name: 'reports',
+            redirect: (context, state) {
+              final user = ref.read(currentUserProvider);
+              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+                return AppRoutes.home;
+              }
+              return null;
+            },
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: ReportScreen()),
           ),
@@ -924,4 +974,137 @@ class _AuthStateRefreshNotifier extends ChangeNotifier {
   }
 
   final Ref _ref;
+}
+
+/// Deep link wrapper: loads Room by ID from API
+class _RoomDeepLinkScreen extends ConsumerWidget {
+  final int roomId;
+  const _RoomDeepLinkScreen({required this.roomId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final roomAsync = ref.watch(roomByIdProvider(roomId));
+    return roomAsync.when(
+      data: (room) => RoomDetailScreen(room: room),
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(context.l10n.error)),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(context.l10n.roomInfoNotFound),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.go(AppRoutes.home),
+                child: Text(context.l10n.goHome),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Deep link wrapper: loads Guest by ID from API
+class _GuestDeepLinkScreen extends ConsumerWidget {
+  final int guestId;
+  const _GuestDeepLinkScreen({required this.guestId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final guestAsync = ref.watch(guestByIdProvider(guestId));
+    return guestAsync.when(
+      data: (guest) => GuestDetailScreen(guest: guest),
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(context.l10n.error)),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(context.l10n.guestNotFound),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.go(AppRoutes.home),
+                child: Text(context.l10n.goHome),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Deep link wrapper: loads HousekeepingTask by ID from API
+class _TaskDeepLinkScreen extends ConsumerWidget {
+  final int taskId;
+  const _TaskDeepLinkScreen({required this.taskId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final taskAsync = ref.watch(taskByIdProvider(taskId));
+    return taskAsync.when(
+      data: (task) => TaskDetailScreen(task: task),
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(context.l10n.error)),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(context.l10n.taskInfoNotFound),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.go(AppRoutes.home),
+                child: Text(context.l10n.goHome),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Deep link wrapper: loads MaintenanceRequest by ID from API
+class _MaintenanceDeepLinkScreen extends ConsumerWidget {
+  final int requestId;
+  const _MaintenanceDeepLinkScreen({required this.requestId});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final requestAsync =
+        ref.watch(maintenanceRequestByIdProvider(requestId));
+    return requestAsync.when(
+      data: (request) => MaintenanceDetailScreen(request: request),
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Scaffold(
+        appBar: AppBar(title: Text(context.l10n.error)),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(context.l10n.maintenanceNotFound),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => context.go(AppRoutes.home),
+                child: Text(context.l10n.goHome),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

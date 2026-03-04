@@ -24,6 +24,13 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
   BookingStatus? _selectedStatus;
   BookingSource? _selectedSource;
   String _searchQuery = '';
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -270,6 +277,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: TextField(
+        controller: _searchController,
         decoration: InputDecoration(
           hintText: context.l10n.searchGuestRoom,
           prefixIcon: const Icon(Icons.search),
@@ -277,6 +285,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
               ? IconButton(
                   icon: const Icon(Icons.clear),
                   onPressed: () {
+                    _searchController.clear();
                     setState(() {
                       _searchQuery = '';
                     });

@@ -26,30 +26,25 @@ class RoomDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
-  late Room _room;
-
-  @override
-  void initState() {
-    super.initState();
-    _room = widget.room;
+  /// Get the room from provider, falling back to widget.room
+  Room get _room {
+    final roomAsync = ref.read(roomByIdProvider(widget.room.id));
+    return roomAsync.valueOrNull ?? widget.room;
   }
 
   Future<void> _changeStatus() async {
-    final result = await RoomStatusDialog.show(context, _room);
+    final room = _room;
+    final result = await RoomStatusDialog.show(context, room);
     if (result != null && mounted) {
-      // Update local state with the new status returned from the dialog
-      setState(() {
-        _room = _room.copyWith(status: result);
-      });
-      // Also refresh the provider so other screens get updated data
+      // Refresh the provider so this screen and others get updated data
       ref.invalidate(roomsProvider);
-      ref.invalidate(roomByIdProvider(_room.id));
+      ref.invalidate(roomByIdProvider(room.id));
       ref.invalidate(dashboardSummaryProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${context.l10n.roomUpdated} ${_room.number}: ${result.localizedName(context.l10n)}',
+            '${context.l10n.roomUpdated} ${room.number}: ${result.localizedName(context.l10n)}',
           ),
           backgroundColor: AppColors.success,
         ),
@@ -59,6 +54,9 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Watch the provider to rebuild when room data changes
+    ref.watch(roomByIdProvider(widget.room.id));
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -68,7 +66,11 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           AppIconButton(
             icon: Icons.edit,
             onPressed: () async {
-              context.push(AppRoutes.roomEdit, extra: _room);
+              await context.push(AppRoutes.roomEdit, extra: _room);
+              if (mounted) {
+                ref.invalidate(roomByIdProvider(widget.room.id));
+                ref.invalidate(roomsProvider);
+              }
             },
             tooltip: context.l10n.edit,
           ),
@@ -274,22 +276,21 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
   Future<void> _quickStatusChange(RoomStatus newStatus) async {
     if (_room.status == newStatus) return;
 
+    final roomId = _room.id;
+    final roomNumber = _room.number;
     final success = await ref
         .read(roomStateProvider.notifier)
-        .updateRoomStatus(_room.id, newStatus);
+        .updateRoomStatus(roomId, newStatus);
 
     if (success && mounted) {
-      setState(() {
-        _room = _room.copyWith(status: newStatus);
-      });
       ref.invalidate(roomsProvider);
-      ref.invalidate(roomByIdProvider(_room.id));
+      ref.invalidate(roomByIdProvider(roomId));
       ref.invalidate(dashboardSummaryProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            '${context.l10n.roomUpdated} ${_room.number}: ${newStatus.localizedName(context.l10n)}',
+            '${context.l10n.roomUpdated} $roomNumber: ${newStatus.localizedName(context.l10n)}',
           ),
           backgroundColor: AppColors.success,
         ),

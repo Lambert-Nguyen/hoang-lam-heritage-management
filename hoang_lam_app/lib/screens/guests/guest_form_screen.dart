@@ -454,7 +454,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
                     DateTime.now().subtract(const Duration(days: 365 * 30)),
                 firstDate: firstDate,
                 lastDate: lastDate,
-                locale: const Locale('vi'),
+                locale: Localizations.localeOf(context),
               );
               if (picked != null) {
                 onChanged(picked);

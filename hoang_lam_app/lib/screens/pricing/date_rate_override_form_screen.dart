@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -477,7 +478,7 @@ class _DateRateOverrideFormScreenState
       final l10n = AppLocalizations.of(context)!;
       ref.invalidate(dateRateOverridesProvider);
       _showSuccess(l10n.dateRateDeleted);
-      Navigator.of(context).pop(true);
+      context.pop(true);
     } catch (e) {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;

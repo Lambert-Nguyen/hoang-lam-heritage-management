@@ -221,7 +221,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             : availableRooms;
 
         return DropdownButtonFormField<int>(
-          initialValue: _selectedRoomId,
+          value: _selectedRoomId,
           decoration: InputDecoration(
             labelText: '${context.l10n.roomNumber} *',
             border: const OutlineInputBorder(),
@@ -588,7 +588,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Widget _buildSourceSelection() {
     return DropdownButtonFormField<BookingSource>(
-      initialValue: _source,
+      value: _source,
       decoration: InputDecoration(
         labelText: '${context.l10n.source} *',
         border: const OutlineInputBorder(),
@@ -612,7 +612,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Widget _buildPaymentMethodSelection() {
     return DropdownButtonFormField<PaymentMethod>(
-      initialValue: _paymentMethod,
+      value: _paymentMethod,
       decoration: InputDecoration(
         labelText: '${context.l10n.paymentMethod} *',
         border: const OutlineInputBorder(),
@@ -708,6 +708,10 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         return l10n.bookingSourceWebsite;
       case BookingSource.other:
         return l10n.bookingSourceOther;
+      case BookingSource.expedia:
+        return 'Expedia';
+      case BookingSource.googleHotel:
+        return 'Google Hotel';
     }
   }
 
@@ -728,6 +732,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         return l10n.paymentMethodOtaCollect;
       case PaymentMethod.other:
         return l10n.paymentMethodOther;
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
     }
   }
 

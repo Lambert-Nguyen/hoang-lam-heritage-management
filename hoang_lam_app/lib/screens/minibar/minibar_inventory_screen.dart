@@ -50,7 +50,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
         actions: [
           IconButton(
             icon: const Icon(Icons.point_of_sale),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             tooltip: 'POS',
           ),
         ],

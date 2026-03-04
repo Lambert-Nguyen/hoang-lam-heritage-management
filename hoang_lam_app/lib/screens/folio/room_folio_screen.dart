@@ -128,7 +128,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                 margin: const EdgeInsets.only(bottom: 16),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.error,
+                  color: AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppColors.error),
                 ),

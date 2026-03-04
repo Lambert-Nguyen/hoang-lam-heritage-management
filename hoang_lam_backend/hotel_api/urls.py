@@ -6,6 +6,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (  # Phase 4: Reports; Phase 5: Notifications; Phase 5.3: Guest Messaging
+    AuditLogViewSet,
     BookingViewSet,
     ChannelPerformanceView,
     ComparativeReportView,
@@ -79,6 +80,8 @@ router.register(r"notifications", NotificationViewSet, basename="notification")
 # Phase 5.3: Guest Messaging
 router.register(r"message-templates", MessageTemplateViewSet, basename="messagetemplate")
 router.register(r"guest-messages", GuestMessageViewSet, basename="guestmessage")
+# Audit Logs
+router.register(r"audit-logs", AuditLogViewSet, basename="auditlog")
 
 urlpatterns = [
     # JWT Authentication

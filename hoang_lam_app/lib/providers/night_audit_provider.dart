@@ -25,7 +25,7 @@ final todayAuditProvider = FutureProvider.autoDispose<NightAudit>((ref) async {
 
 /// Provider for night audit by a specific date
 /// Delegates to todayAuditProvider when the date is today,
-/// otherwise creates or fetches an audit for the given date.
+/// otherwise fetches the audit for the given date.
 final auditByDateProvider = FutureProvider.autoDispose
     .family<NightAudit, DateTime>((ref, date) async {
       final now = DateTime.now();
@@ -37,8 +37,17 @@ final auditByDateProvider = FutureProvider.autoDispose
         return ref.watch(todayAuditProvider.future);
       }
       final repository = ref.watch(nightAuditRepositoryProvider);
-      final request = NightAuditRequest(auditDate: date);
-      return repository.createAudit(request);
+      // Use read-only fetch instead of createAudit to avoid
+      // side-effect creation on every provider rebuild/invalidation
+      final audits = await repository.getAudits(
+        dateFrom: date,
+        dateTo: date,
+      );
+      if (audits.isEmpty) {
+        throw Exception('No audit found for ${date.toIso8601String().split('T')[0]}');
+      }
+      // Fetch full audit detail by ID
+      return repository.getAudit(audits.first.id);
     });
 
 /// Provider for latest night audit

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -281,7 +282,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime.now().subtract(const Duration(days: 30)),
       lastDate: DateTime.now().add(const Duration(days: 365)),
-      locale: const Locale('vi', 'VN'),
+      locale: Localizations.localeOf(context),
     );
     if (date != null) {
       setState(() {
@@ -343,7 +344,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
         ref.invalidate(todayTasksProvider);
 
         final l10n = AppLocalizations.of(context)!;
-        Navigator.pop(context, result);
+        context.pop(result);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

@@ -440,12 +440,16 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
     // Check for active bookings before allowing deletion
     final filter = BookingFilter(
       roomId: room.id,
-      status: BookingStatus.confirmed,
     );
     final bookings = await ref
         .read(filteredBookingsProvider(filter).future)
         .catchError((_) => <Booking>[]);
-    final hasActive = bookings.isNotEmpty;
+    final hasActive = bookings.any(
+      (b) =>
+          b.status == BookingStatus.confirmed ||
+          b.status == BookingStatus.checkedIn ||
+          b.status == BookingStatus.pending,
+    );
 
     if (!mounted) return;
 
