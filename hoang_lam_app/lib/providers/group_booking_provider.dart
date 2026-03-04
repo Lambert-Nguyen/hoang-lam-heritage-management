@@ -295,6 +295,9 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
     _ref.invalidate(roomsProvider);
     _ref.invalidate(bookingsProvider);
     _ref.invalidate(dashboardSummaryProvider);
+    _ref.invalidate(calendarBookingsProvider);
+    _ref.invalidate(todayBookingsProvider);
+    _ref.invalidate(activeBookingsProvider);
   }
 
   /// Clear error message

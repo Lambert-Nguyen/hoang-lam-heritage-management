@@ -6,6 +6,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (  # Phase 4: Reports; Phase 5: Notifications; Phase 5.3: Guest Messaging
+    AdminResetPasswordView,
     AuditLogViewSet,
     BookingViewSet,
     ChannelPerformanceView,
@@ -91,6 +92,11 @@ urlpatterns = [
     path("auth/me/", UserProfileView.as_view(), name="user_profile"),
     path("auth/password/change/", PasswordChangeView.as_view(), name="password_change"),
     path("auth/staff/", StaffListView.as_view(), name="staff_list"),
+    path(
+        "auth/admin-reset-password/",
+        AdminResetPasswordView.as_view(),
+        name="admin_reset_password",
+    ),
     # Dashboard
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     # Reports (Phase 4)

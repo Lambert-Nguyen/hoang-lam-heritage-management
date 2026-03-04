@@ -144,6 +144,35 @@ class PasswordChangeSerializer(serializers.Serializer):
         return user
 
 
+class AdminResetPasswordSerializer(serializers.Serializer):
+    """Admin reset password serializer for resetting another user's password."""
+
+    user_id = serializers.IntegerField(required=True)
+    new_password = serializers.CharField(
+        required=True, write_only=True, style={"input_type": "password"}
+    )
+
+    def validate_user_id(self, value):
+        """Validate that the target user exists."""
+        try:
+            User.objects.get(pk=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Người dùng không tồn tại.")
+        return value
+
+    def validate_new_password(self, value):
+        """Validate password meets requirements."""
+        validate_password(value)
+        return value
+
+    def save(self):
+        """Reset the target user's password."""
+        user = User.objects.get(pk=self.validated_data["user_id"])
+        user.set_password(self.validated_data["new_password"])
+        user.save()
+        return user
+
+
 # ==================== Room Management Serializers ====================
 
 

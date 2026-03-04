@@ -77,7 +77,7 @@ class BookingDetailScreen extends ConsumerWidget {
                 Text(getLocalizedErrorMessage(error, context.l10n)),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => context.pop(),
                   child: Text(context.l10n.goBack),
                 ),
               ],
@@ -1145,7 +1145,7 @@ class BookingDetailScreen extends ConsumerWidget {
         ref.invalidate(todayBookingsProvider);
         ref.invalidate(roomsProvider);
         if (context.mounted) {
-          Navigator.of(context).pop();
+          context.pop();
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(context.l10n.success)));

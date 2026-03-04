@@ -51,6 +51,7 @@ from .models import (
 )
 from .permissions import IsManager, IsOwnerOrManager, IsStaff, IsStaffOrManager
 from .serializers import (  # Phase 3: Room Inspection serializers; Phase 4: Report serializers; RatePlan and DateRateOverride serializers; Phase 5: Notification serializers; Phase 5.3: Guest Messaging serializers
+    AdminResetPasswordSerializer,
     AuditLogSerializer,
     BookingListSerializer,
     BookingSerializer,
@@ -328,6 +329,23 @@ class PasswordChangeView(APIView):
 
         return Response(
             {"detail": "Mật khẩu đã được thay đổi thành công."}, status=status.HTTP_200_OK
+        )
+
+
+class AdminResetPasswordView(APIView):
+    """Admin reset password endpoint — allows managers/owners to reset another user's password."""
+
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = "password_change"
+
+    def post(self, request):
+        """Reset another user's password (admin action)."""
+        serializer = AdminResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"detail": "Mật khẩu đã được đặt lại thành công."}, status=status.HTTP_200_OK
         )
 
 
@@ -3022,7 +3040,7 @@ class NightAuditViewSet(viewsets.ModelViewSet):
     """
 
     queryset = NightAudit.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
 
     def get_serializer_class(self):
         """Return appropriate serializer based on action."""

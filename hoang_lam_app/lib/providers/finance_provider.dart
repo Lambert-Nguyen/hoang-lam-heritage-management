@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'dashboard_provider.dart';
+
 import '../models/finance.dart';
 import '../repositories/finance_repository.dart';
 
@@ -169,10 +171,11 @@ sealed class FinanceFilterState with _$FinanceFilterState {
 /// State notifier for finance management operations
 class FinanceNotifier extends StateNotifier<FinanceState> {
   final FinanceRepository _repository;
+  final Ref _ref;
   int _currentYear;
   int _currentMonth;
 
-  FinanceNotifier(this._repository)
+  FinanceNotifier(this._repository, this._ref)
     : _currentYear = DateTime.now().year,
       _currentMonth = DateTime.now().month,
       super(const FinanceState(isLoading: true)) {
@@ -216,6 +219,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
   /// Refresh all data
   Future<void> refresh() async {
     await _loadInitialData();
+    _ref.invalidate(dashboardSummaryProvider);
   }
 
   /// Load entries with filter
@@ -415,5 +419,5 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
 final financeNotifierProvider =
     StateNotifierProvider<FinanceNotifier, FinanceState>((ref) {
       final repository = ref.watch(financeRepositoryProvider);
-      return FinanceNotifier(repository);
+      return FinanceNotifier(repository, ref);
     });

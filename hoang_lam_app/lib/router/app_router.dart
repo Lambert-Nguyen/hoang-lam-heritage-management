@@ -521,10 +521,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Audit log
+      // Audit log — Manager/Owner only
       GoRoute(
         path: AppRoutes.auditLog,
         name: 'auditLog',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+            return AppRoutes.home;
+          }
+          return null;
+        },
         builder: (context, state) => const AuditLogScreen(),
       ),
 
@@ -598,10 +605,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Financial Categories management
+      // Financial Categories management — Manager/Owner only
       GoRoute(
         path: AppRoutes.financialCategories,
         name: 'financialCategories',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+            return AppRoutes.home;
+          }
+          return null;
+        },
         builder: (context, state) => const FinancialCategoryScreen(),
       ),
 
@@ -797,10 +811,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: NightAuditScreen()),
           ),
 
-          // Declaration Export
+          // Declaration Export — Manager/Owner only
           GoRoute(
             path: AppRoutes.declaration,
             name: 'declaration',
+            redirect: (context, state) {
+              final user = ref.read(currentUserProvider);
+              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+                return AppRoutes.home;
+              }
+              return null;
+            },
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: DeclarationExportScreen()),
           ),

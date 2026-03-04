@@ -422,7 +422,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
               backgroundColor: AppColors.success,
             ),
           );
-          Navigator.of(context).pop(true);
+          context.pop(true);
         }
       } else {
         final request = RatePlanCreateRequest(
@@ -459,7 +459,7 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
               backgroundColor: AppColors.success,
             ),
           );
-          Navigator.of(context).pop(true);
+          context.pop(true);
         }
       }
     } catch (e) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
@@ -384,7 +385,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             backgroundColor: AppColors.success,
           ),
         );
-        Navigator.of(context).pop(true);
+        context.pop(true);
       }
     } catch (e) {
       if (mounted) {
@@ -445,7 +446,7 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
             backgroundColor: AppColors.success,
           ),
         );
-        Navigator.of(context).pop(true);
+        context.pop(true);
       }
     } catch (e) {
       if (mounted) {

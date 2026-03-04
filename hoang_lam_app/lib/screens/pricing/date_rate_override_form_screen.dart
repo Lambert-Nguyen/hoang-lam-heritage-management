@@ -381,7 +381,7 @@ class _DateRateOverrideFormScreenState
         if (mounted) {
           ref.invalidate(dateRateOverridesProvider);
           _showSuccess(l10n.dateRateUpdated);
-          Navigator.of(context).pop(true);
+          context.pop(true);
         }
       } else if (_isBulkMode) {
         // Bulk create
@@ -406,7 +406,7 @@ class _DateRateOverrideFormScreenState
           _showSuccess(
             l10n.dateRateCreatedForDays.replaceAll('{days}', '$days'),
           );
-          Navigator.of(context).pop(true);
+          context.pop(true);
         }
       } else {
         // Single create
@@ -427,7 +427,7 @@ class _DateRateOverrideFormScreenState
         if (mounted) {
           ref.invalidate(dateRateOverridesProvider);
           _showSuccess(l10n.dateRateCreated);
-          Navigator.of(context).pop(true);
+          context.pop(true);
         }
       }
     } catch (e) {
