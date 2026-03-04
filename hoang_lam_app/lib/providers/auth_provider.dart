@@ -167,6 +167,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
       _ref.invalidate(housekeepingTasksProvider);
       _ref.invalidate(nightAuditsProvider);
       _ref.invalidate(staffListProvider);
+      _ref.invalidate(financialEntriesProvider);
+      _ref.invalidate(financialCategoriesProvider);
       state = const AuthState.unauthenticated();
     }
   }

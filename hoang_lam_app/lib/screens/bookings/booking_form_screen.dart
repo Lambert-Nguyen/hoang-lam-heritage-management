@@ -221,7 +221,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
             : availableRooms;
 
         return DropdownButtonFormField<int>(
-          value: _selectedRoomId,
+          initialValue: _selectedRoomId,
           decoration: InputDecoration(
             labelText: '${context.l10n.roomNumber} *',
             border: const OutlineInputBorder(),
@@ -588,7 +588,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Widget _buildSourceSelection() {
     return DropdownButtonFormField<BookingSource>(
-      value: _source,
+      initialValue: _source,
       decoration: InputDecoration(
         labelText: '${context.l10n.source} *',
         border: const OutlineInputBorder(),
@@ -612,7 +612,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
 
   Widget _buildPaymentMethodSelection() {
     return DropdownButtonFormField<PaymentMethod>(
-      value: _paymentMethod,
+      initialValue: _paymentMethod,
       decoration: InputDecoration(
         labelText: '${context.l10n.paymentMethod} *',
         border: const OutlineInputBorder(),
