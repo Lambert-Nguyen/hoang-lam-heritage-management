@@ -33,7 +33,10 @@ class BookingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM', Localizations.localeOf(context).languageCode);
+    final dateFormat = DateFormat(
+      'dd/MM',
+      Localizations.localeOf(context).languageCode,
+    );
     final currencyFormat = NumberFormat.currency(
       locale: 'vi_VN',
       symbol: booking.currency == 'VND' ? 'đ' : booking.currency,

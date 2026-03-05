@@ -7,13 +7,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dio/dio.dart';
 
 import 'package:hoang_lam_app/models/auth.dart';
+import 'package:hoang_lam_app/models/booking.dart';
 import 'package:hoang_lam_app/models/user.dart';
 import 'package:hoang_lam_app/providers/auth_provider.dart';
+import 'package:hoang_lam_app/providers/booking_provider.dart';
+import 'package:hoang_lam_app/providers/dashboard_provider.dart';
+import 'package:hoang_lam_app/providers/room_provider.dart';
+import 'package:hoang_lam_app/providers/guest_provider.dart';
+import 'package:hoang_lam_app/providers/housekeeping_provider.dart';
+import 'package:hoang_lam_app/providers/night_audit_provider.dart';
+import 'package:hoang_lam_app/providers/finance_provider.dart';
 import 'package:hoang_lam_app/repositories/auth_repository.dart';
+import 'package:hoang_lam_app/repositories/booking_repository.dart';
 
 import 'auth_provider_test.mocks.dart';
 
-@GenerateMocks([AuthRepository])
+@GenerateMocks([AuthRepository, BookingRepository])
 void main() {
   late MockAuthRepository mockRepository;
   late ProviderContainer container;
@@ -47,8 +56,46 @@ void main() {
 
   setUp(() {
     mockRepository = MockAuthRepository();
+    final mockBookingRepository = MockBookingRepository();
+    when(
+      mockBookingRepository.getBookings(
+        status: anyNamed('status'),
+        roomId: anyNamed('roomId'),
+        guestId: anyNamed('guestId'),
+        source: anyNamed('source'),
+        checkInFrom: anyNamed('checkInFrom'),
+        checkInTo: anyNamed('checkInTo'),
+        ordering: anyNamed('ordering'),
+      ),
+    ).thenAnswer((_) async => []);
     container = ProviderContainer(
-      overrides: [authRepositoryProvider.overrideWithValue(mockRepository)],
+      overrides: [
+        authRepositoryProvider.overrideWithValue(mockRepository),
+        // Override booking repository so BookingNotifier doesn't make real HTTP calls
+        bookingRepositoryProvider.overrideWithValue(mockBookingRepository),
+        // Override FutureProviders invalidated during logout to prevent real HTTP calls
+        bookingsProvider.overrideWith((ref) async => []),
+        activeBookingsProvider.overrideWith((ref) async => []),
+        todayBookingsProvider.overrideWith(
+          (ref) async => const TodayBookingsResponse(
+            checkIns: [],
+            checkOuts: [],
+            totalCheckIns: 0,
+            totalCheckOuts: 0,
+          ),
+        ),
+        dashboardSummaryProvider.overrideWith(
+          (ref) async => throw UnimplementedError(),
+        ),
+        roomsProvider.overrideWith((ref) async => []),
+        allRoomsProvider.overrideWith((ref) async => []),
+        guestsProvider.overrideWith((ref) async => []),
+        housekeepingTasksProvider.overrideWith((ref) async => []),
+        nightAuditsProvider.overrideWith((ref) async => []),
+        staffListProvider.overrideWith((ref) async => []),
+        financialCategoriesProvider.overrideWith((ref) async => []),
+        financialEntriesProvider.overrideWith((ref) async => []),
+      ],
     );
   });
 

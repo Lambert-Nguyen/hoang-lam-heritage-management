@@ -1054,7 +1054,8 @@ sealed class BookingUpdate with _$BookingUpdate {
     @JsonKey(name: 'ota_reference', includeIfNull: false) String? otaReference,
     @JsonKey(name: 'nightly_rate', includeIfNull: false) int? nightlyRate,
     @JsonKey(name: 'discount_amount', includeIfNull: false) int? discountAmount,
-    @JsonKey(name: 'discount_reason', includeIfNull: false) String? discountReason,
+    @JsonKey(name: 'discount_reason', includeIfNull: false)
+    String? discountReason,
     @JsonKey(name: 'ota_commission', includeIfNull: false) int? otaCommission,
     @JsonKey(name: 'deposit_amount', includeIfNull: false) int? depositAmount,
     @JsonKey(name: 'deposit_paid', includeIfNull: false) bool? depositPaid,

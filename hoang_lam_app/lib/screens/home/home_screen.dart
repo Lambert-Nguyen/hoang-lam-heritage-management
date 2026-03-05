@@ -380,7 +380,10 @@ class HomeScreen extends ConsumerWidget {
                   room: room,
                   onTap: () {
                     // Navigate to room detail
-                    context.push('${AppRoutes.roomDetail}/${room.id}', extra: room);
+                    context.push(
+                      '${AppRoutes.roomDetail}/${room.id}',
+                      extra: room,
+                    );
                   },
                   onLongPress: () async {
                     // Show quick status update

@@ -73,7 +73,8 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
         children: [
           // Calendar widget
           calendarBookingsAsync.when(
-            data: (calendarResponse) => _buildCalendar(calendarResponse.bookings),
+            data: (calendarResponse) =>
+                _buildCalendar(calendarResponse.bookings),
             loading: () => const Center(
               child: Padding(
                 padding: EdgeInsets.all(16.0),

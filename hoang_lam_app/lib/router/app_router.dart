@@ -323,8 +323,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             return MaintenanceDetailScreen(request: request);
           }
           // Fall back to fetching by ID (deep link)
-          final requestId =
-              int.tryParse(state.pathParameters['requestId'] ?? '');
+          final requestId = int.tryParse(
+            state.pathParameters['requestId'] ?? '',
+          );
           if (requestId == null || requestId <= 0) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
@@ -637,8 +638,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             return GuestDetailScreen(guest: guest);
           }
           // Fall back to fetching by ID (deep link)
-          final guestId =
-              int.tryParse(state.pathParameters['guestId'] ?? '');
+          final guestId = int.tryParse(state.pathParameters['guestId'] ?? '');
           if (guestId == null || guestId <= 0) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
@@ -770,7 +770,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'finance',
             redirect: (context, state) {
               final user = ref.read(currentUserProvider);
-              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+              if (user?.role != UserRole.owner &&
+                  user?.role != UserRole.manager) {
                 return AppRoutes.home;
               }
               return null;
@@ -802,7 +803,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'nightAudit',
             redirect: (context, state) {
               final user = ref.read(currentUserProvider);
-              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+              if (user?.role != UserRole.owner &&
+                  user?.role != UserRole.manager) {
                 return AppRoutes.home;
               }
               return null;
@@ -817,7 +819,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'declaration',
             redirect: (context, state) {
               final user = ref.read(currentUserProvider);
-              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+              if (user?.role != UserRole.owner &&
+                  user?.role != UserRole.manager) {
                 return AppRoutes.home;
               }
               return null;
@@ -832,7 +835,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             name: 'reports',
             redirect: (context, state) {
               final user = ref.read(currentUserProvider);
-              if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+              if (user?.role != UserRole.owner &&
+                  user?.role != UserRole.manager) {
                 return AppRoutes.home;
               }
               return null;
@@ -1007,9 +1011,8 @@ class _RoomDeepLinkScreen extends ConsumerWidget {
     final roomAsync = ref.watch(roomByIdProvider(roomId));
     return roomAsync.when(
       data: (room) => RoomDetailScreen(room: room),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(context.l10n.error)),
         body: Center(
@@ -1040,9 +1043,8 @@ class _GuestDeepLinkScreen extends ConsumerWidget {
     final guestAsync = ref.watch(guestByIdProvider(guestId));
     return guestAsync.when(
       data: (guest) => GuestDetailScreen(guest: guest),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(context.l10n.error)),
         body: Center(
@@ -1073,9 +1075,8 @@ class _TaskDeepLinkScreen extends ConsumerWidget {
     final taskAsync = ref.watch(taskByIdProvider(taskId));
     return taskAsync.when(
       data: (task) => TaskDetailScreen(task: task),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(context.l10n.error)),
         body: Center(
@@ -1103,13 +1104,11 @@ class _MaintenanceDeepLinkScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final requestAsync =
-        ref.watch(maintenanceRequestByIdProvider(requestId));
+    final requestAsync = ref.watch(maintenanceRequestByIdProvider(requestId));
     return requestAsync.when(
       data: (request) => MaintenanceDetailScreen(request: request),
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(context.l10n.error)),
         body: Center(

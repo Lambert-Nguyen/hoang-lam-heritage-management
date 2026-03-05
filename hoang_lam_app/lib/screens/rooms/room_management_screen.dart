@@ -438,9 +438,7 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
 
   Future<void> _confirmDeleteRoom(Room room) async {
     // Check for active bookings before allowing deletion
-    final filter = BookingFilter(
-      roomId: room.id,
-    );
+    final filter = BookingFilter(roomId: room.id);
     final bookings = await ref
         .read(filteredBookingsProvider(filter).future)
         .catchError((_) => <Booking>[]);

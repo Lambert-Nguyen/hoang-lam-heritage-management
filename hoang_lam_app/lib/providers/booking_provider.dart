@@ -166,8 +166,10 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         checkInTo: _currentFilter?.endDate,
         ordering: _currentFilter?.ordering ?? '-check_in_date',
       );
+      if (!mounted) return;
       state = AsyncValue.data(bookings);
     } catch (error, stackTrace) {
+      if (!mounted) return;
       state = AsyncValue.error(error, stackTrace);
     }
   }

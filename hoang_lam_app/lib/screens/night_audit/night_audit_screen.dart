@@ -172,7 +172,10 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                DateFormat('EEEE, dd/MM/yyyy', Localizations.localeOf(context).languageCode).format(audit.auditDate),
+                DateFormat(
+                  'EEEE, dd/MM/yyyy',
+                  Localizations.localeOf(context).languageCode,
+                ).format(audit.auditDate),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

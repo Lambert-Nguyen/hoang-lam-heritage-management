@@ -417,7 +417,10 @@ class _DateOverrideCard extends ConsumerWidget {
       symbol: 'đ',
       decimalDigits: 0,
     );
-    final dateFormat = DateFormat('EEEE, dd/MM/yyyy', Localizations.localeOf(context).languageCode);
+    final dateFormat = DateFormat(
+      'EEEE, dd/MM/yyyy',
+      Localizations.localeOf(context).languageCode,
+    );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),

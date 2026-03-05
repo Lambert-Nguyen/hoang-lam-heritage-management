@@ -46,9 +46,7 @@ class BookingRepository {
       )[0];
     }
     if (checkInTo != null) {
-      queryParams['check_in_to'] = checkInTo.toIso8601String().split(
-        'T',
-      )[0];
+      queryParams['check_in_to'] = checkInTo.toIso8601String().split('T')[0];
     }
     if (checkOutFrom != null) {
       queryParams['check_out_from'] = checkOutFrom.toIso8601String().split(
@@ -56,9 +54,7 @@ class BookingRepository {
       )[0];
     }
     if (checkOutTo != null) {
-      queryParams['check_out_to'] = checkOutTo.toIso8601String().split(
-        'T',
-      )[0];
+      queryParams['check_out_to'] = checkOutTo.toIso8601String().split('T')[0];
     }
     if (ordering != null && ordering.isNotEmpty) {
       queryParams['ordering'] = ordering;

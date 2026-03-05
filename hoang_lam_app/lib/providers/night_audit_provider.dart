@@ -39,12 +39,11 @@ final auditByDateProvider = FutureProvider.autoDispose
       final repository = ref.watch(nightAuditRepositoryProvider);
       // Use read-only fetch instead of createAudit to avoid
       // side-effect creation on every provider rebuild/invalidation
-      final audits = await repository.getAudits(
-        dateFrom: date,
-        dateTo: date,
-      );
+      final audits = await repository.getAudits(dateFrom: date, dateTo: date);
       if (audits.isEmpty) {
-        throw Exception('No audit found for ${date.toIso8601String().split('T')[0]}');
+        throw Exception(
+          'No audit found for ${date.toIso8601String().split('T')[0]}',
+        );
       }
       // Fetch full audit detail by ID
       return repository.getAudit(audits.first.id);

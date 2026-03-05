@@ -10,10 +10,12 @@ import '../l10n/app_localizations.dart';
 
 /// Provider that periodically checks connectivity (web-safe, uses Dio)
 final connectivityProvider = StreamProvider<bool>((ref) {
-  final dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 5),
-  ));
+  final dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
+    ),
+  );
   return Stream.periodic(const Duration(seconds: 10), (_) async {
     try {
       final response = await dio.head('https://www.google.com/generate_204');
