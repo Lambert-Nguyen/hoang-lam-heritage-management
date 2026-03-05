@@ -411,7 +411,15 @@ class GuestSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
-        read_only_fields = ["id", "total_stays", "total_spent", "first_stay", "last_stay", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "total_stays",
+            "total_spent",
+            "first_stay",
+            "last_stay",
+            "created_at",
+            "updated_at",
+        ]
 
     @extend_schema_field(serializers.IntegerField)
     def get_booking_count(self, obj):
@@ -879,9 +887,7 @@ class SplitPaymentSerializer(serializers.Serializer):
                     f"Split {i + 1}: Thiếu phương thức thanh toán ('method')."
                 )
             if "amount" not in split:
-                raise serializers.ValidationError(
-                    f"Split {i + 1}: Thiếu số tiền ('amount')."
-                )
+                raise serializers.ValidationError(f"Split {i + 1}: Thiếu số tiền ('amount').")
             if split["method"] not in valid_methods:
                 raise serializers.ValidationError(
                     f"Split {i + 1}: Phương thức '{split['method']}' không hợp lệ."
@@ -889,13 +895,9 @@ class SplitPaymentSerializer(serializers.Serializer):
             try:
                 amount = int(split["amount"])
                 if amount <= 0:
-                    raise serializers.ValidationError(
-                        f"Split {i + 1}: Số tiền phải lớn hơn 0."
-                    )
+                    raise serializers.ValidationError(f"Split {i + 1}: Số tiền phải lớn hơn 0.")
             except (ValueError, TypeError):
-                raise serializers.ValidationError(
-                    f"Split {i + 1}: Số tiền không hợp lệ."
-                )
+                raise serializers.ValidationError(f"Split {i + 1}: Số tiền không hợp lệ.")
         return value
 
 

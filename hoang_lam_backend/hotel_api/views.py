@@ -2127,7 +2127,9 @@ class BookingViewSet(viewsets.ModelViewSet):
         )
         if overlapping:
             return Response(
-                {"detail": "Không thể gia hạn vì phòng đã có booking khác trong khoảng thời gian này."},
+                {
+                    "detail": "Không thể gia hạn vì phòng đã có booking khác trong khoảng thời gian này."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -2198,7 +2200,12 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         # Calculate the total of all splits
         total_splits = sum(int(s["amount"]) for s in splits)
-        expected_total = int(booking.total_amount + booking.additional_charges + booking.early_check_in_fee + booking.late_check_out_fee)
+        expected_total = int(
+            booking.total_amount
+            + booking.additional_charges
+            + booking.early_check_in_fee
+            + booking.late_check_out_fee
+        )
 
         if total_splits != expected_total:
             return Response(
