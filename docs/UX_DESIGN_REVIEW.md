@@ -12,6 +12,7 @@
 - **Round 4 Implementation** (2026-02-27/28): All 60 UX issues fixed (8 Critical + 20 Major + 32 Minor). 14 use cases implemented (6 Must-have + 8 Should-have)
 - **Round 5 Review & Fix** (2026-03-01): Post-implementation audit — verified all 14 use cases + all UX fixes. Found 6 remaining gaps, all fixed
 - **Round 6** (2026-03-02): Full-stack consistency audit — reviewed all providers, screens, router, models, backend API endpoints. Found 93 issues (21 Critical + 30 Major + 42 Minor)
+- **Round 7** (2026-03-07): Deep full-stack audit — cross-referenced all backend views/models/serializers with frontend repositories/providers/models/screens/router. 68 gaps found across 7 categories.
 
 ---
 
@@ -692,3 +693,184 @@ These are the highest-priority issues — they cause runtime crashes, 404s, or s
 | 82 | Standardize on GoRouter `context.pop()` everywhere | Small |
 | 83 | Standardize on `getLocalizedErrorMessage()` everywhere | Medium |
 | 87 | Create shared `ErrorFallbackScreen` widget | Small |
+
+---
+
+## Round 7 — Deep Full-Stack Audit
+
+> **Date**: 2026-03-07
+> **Method**: Cross-referenced every backend view/model/serializer against frontend repositories/providers/models/screens/router. Verified enum alignment, provider lifecycle, security config, test coverage, and Celery task resilience. 68 gaps found.
+
+---
+
+### A. Backend Runtime Bugs (3 Critical)
+
+| # | Issue | Location | Impact |
+|---|-------|----------|--------|
+| R7-1 | **`extend_stay` references `base_price` — field is `base_rate`** | views.py:L2141 | **`AttributeError` at runtime** — UC-3 Extend Stay is broken server-side |
+| R7-2 | **Night audit export endpoint missing** | `NightAuditViewSet` — no `export` action | Frontend calls `GET /night-audits/{id}/export/` → **404** |
+| R7-3 | **Finance entry export endpoint missing** | `FinancialEntryViewSet` — no `export` action | Frontend calls `GET /finance/entries/export/` → **404** |
+
+> Note: Round 6 items #1–5 (swap-room, extend-stay, split-payment, partial-refund, audit-logs) are now confirmed **implemented** in the backend. However `extend_stay` has the `base_price` bug above.
+
+---
+
+### B. Security & Configuration (7 Issues)
+
+| # | Severity | Issue | Location |
+|---|----------|-------|----------|
+| R7-4 | **Critical** | **JWT access token lifetime is 12 hours** — excessive for a financial system handling payments, guest PII, and audit logs. Industry standard: 15–60 minutes | `backend/settings/base.py` |
+| R7-5 | **Critical** | **`FIELD_ENCRYPTION_KEY` defaults to `""` with no production enforcement** — guest ID numbers, visa numbers are stored unencrypted if env var is missing. Unlike `SECRET_KEY` and `ALLOWED_HOSTS`, production.py has no `ValueError` check for this | `backend/settings/base.py`, `production.py` |
+| R7-6 | **High** | **`ExchangeRateViewSet` allows any authenticated user to create/update/delete rates** — only `IsAuthenticated` permission, no `IsManager` guard on write ops | `hotel_api/views.py` |
+| R7-7 | **High** | **`ExportReportView` only requires `IsAuthenticated`** — any logged-in user (including housekeeping staff) can export all financial reports | `hotel_api/views.py` |
+| R7-8 | **Medium** | **Staging settings lack `SECRET_KEY` validation** — production.py raises `ValueError` if insecure default is used, but staging.py does not | `backend/settings/staging.py` |
+| R7-9 | **Medium** | **Staging has no HSTS headers** — production has full HSTS (1 year, preload, subdomains), staging has none | `backend/settings/staging.py` |
+| R7-10 | **Low** | **`LogoutView` catches all exceptions with `except Exception as e: return Response({"detail": str(e)})`** — could leak internal error details | `hotel_api/views.py` |
+
+---
+
+### C. Provider & State Management (12 Issues)
+
+#### Critical — Data Leak / Stale State
+
+| # | Issue | Files | Impact |
+|---|-------|-------|--------|
+| R7-11 | **Logout clears only 14 of ~41 persistent providers** — 27 providers retain previous user's data across sessions: `todayTasksProvider`, `myTasksProvider`, `myMaintenanceRequestsProvider` (user-specific), `auditLogsProvider` (sensitive), `minibarCartProvider`, `vipGuestsProvider`, `returningGuestsProvider`, `lostFoundItemsProvider`, `groupBookingsProvider`, `roomInspectionsProvider`, and more | `auth_provider.dart` | **PII/data leak between user sessions** — next user sees cached guest data, tasks, audit trail |
+| R7-12 | **`RatePlanNotifier` and `DateRateOverrideNotifier` have no `Ref`** — cannot invalidate any downstream providers after rate changes. Booking price calculations, room availability display, and dashboard stats remain stale indefinitely | `rate_plan_provider.dart` | Rate plan changes invisible until app restart |
+| R7-13 | **`NightAuditNotifier` doesn't invalidate `dashboardSummaryProvider`** — closing a night audit affects financial/dashboard data but dashboard shows stale stats | `night_audit_provider.dart` | Dashboard totals wrong after night audit |
+
+#### High — Error Handling
+
+| # | Issue | Files | Impact |
+|---|-------|-------|--------|
+| R7-14 | **Systemic error-swallowing pattern** — nearly every `StateNotifier` catches errors and returns `null`/`false` instead of rethrowing. 10+ provider files affected. Only `FinanceNotifier` follows the correct pattern (sets error state AND rethrows) | All `*_provider.dart` except `finance_provider.dart` | UI cannot distinguish error types, show specific feedback, or implement retry logic |
+| R7-15 | **`GuestNotifier.findByPhone/findByIdNumber` catches ALL errors, returns `null`** — network errors are indistinguishable from "guest not found" | `guest_provider.dart` | Silent failures on connectivity issues |
+
+#### Medium — Stale Data / Memory
+
+| # | Issue | Files |
+|---|-------|-------|
+| R7-16 | **`RoomInspectionNotifier` doesn't invalidate room status providers** — completing an inspection should update the room's status but doesn't | `room_inspection_provider.dart` |
+| R7-17 | **`MinibarCartNotifier` doesn't invalidate `financialEntriesProvider`** — minibar charges are financial entries but finance screen stays stale | `minibar_provider.dart` |
+| R7-18 | **12 of 18 provider files use fully persistent (non-autoDispose) providers for list data** — `lostFoundItemsProvider`, `groupBookingsProvider`, `roomInspectionsProvider`, `minibarSalesProvider`, `auditLogsProvider` etc. live in memory forever | Multiple files |
+| R7-19 | **Finance `FinanceNotifier` inconsistency** — categories are persistent while entries/summaries are autoDispose. Categories cache never clears, entries do | `finance_provider.dart` |
+| R7-20 | **`SettingsNotifier` has no `Ref`** — cannot force-refresh providers when locale/theme/settings change | `settings_provider.dart` |
+| R7-21 | **`DeclarationExportNotifier` has no `Ref`** — cannot invalidate providers after export | `declaration_provider.dart` |
+| R7-22 | **Barrel file `providers.dart` only exports 15 of 22 provider files** — 7 missing: `notification_provider`, `messaging_provider`, `lost_found_provider`, `group_booking_provider`, `room_inspection_provider`, `audit_log_provider`, `biometric_provider` | `providers/providers.dart` |
+
+---
+
+### D. Model & Serialization (5 Issues)
+
+| # | Severity | Issue | Impact |
+|---|----------|-------|--------|
+| R7-23 | **Critical** | **No `unknownEnumValue` fallback on ANY enum** — all model enums (`BookingStatus`, `BookingSource`, `PaymentMethod`, `RoomStatus`, `UserRole`, `NotificationType`, etc.) will throw during `fromJson` if the backend adds a new value. Zero uses of `@JsonKey(unknownEnumValue:)` across the entire codebase | App crash on any new enum value |
+| R7-24 | **Medium** | **Duplicate `PaymentMethod` enum** — defined in both `booking.dart` and `finance.dart`, hidden via barrel file `hide PaymentMethod`. If enums diverge, one silently wins | Deserialization mismatch risk |
+| R7-25 | **Medium** | **`Booking.internal_notes` never exposed** — model field exists in backend but neither `BookingSerializer` nor `BookingListSerializer` includes it. Frontend can't read/write internal notes | Staff notes feature silently broken |
+| R7-26 | **Low** | **`Booking.declaration_submitted` / `declaration_submitted_at`** not in any serializer — frontend can't display declaration status | Feature gap |
+| R7-27 | **Low** | **Hardcoded Vietnamese in `MinibarSale.statusText`** — `"Đã tính tiền"` / `"Chưa tính tiền"` bypass the l10n system | English users see Vietnamese |
+
+---
+
+### E. Router & Web Compatibility (6 Issues)
+
+| # | Severity | Issue | Location |
+|---|----------|-------|----------|
+| R7-28 | **High** | **3 screens import `dart:io` unconditionally — web build will fail** | `report_screen.dart`, `lost_found_form_screen.dart`, `receipt_preview_screen.dart` |
+| R7-29 | **High** | **`sendMessage` route entirely broken via deep link** — all params via `state.extra`, shows error screen when accessed directly. No path parameters at all | `app_router.dart:L484` |
+| R7-30 | **Medium** | **Missing role-based route guards** — `roomManagement`, `roomNew`, `roomEdit`, `guestForm`, `groupBookings`, `groupBookingNew`, `groupBookingEdit`, `sendMessage`, `minibarItemForm` accessible to all roles | `app_router.dart` |
+| R7-31 | **Medium** | **Connectivity check pings `google.com`** — will false-positive "offline" in restricted networks (China, corporate firewalls). Should ping the app's own backend health endpoint | `main_scaffold.dart` |
+| R7-32 | **Low** | **`messageHistory` route relies entirely on `state.extra`** — deep link shows empty history with no path param fallback | `app_router.dart:L516` |
+| R7-33 | **Low** | **Connectivity polling every 10s has no lifecycle awareness** — continues in background when app is minimized, wasting battery and bandwidth | `main_scaffold.dart` |
+
+---
+
+### F. Test Coverage (7 Issues)
+
+| # | Severity | Issue | Scope |
+|---|----------|-------|-------|
+| R7-34 | **Critical** | **Backend: `swap-room`, `extend-stay`, `split-payment`, `partial-refund` have ZERO tests** — 4 new critical booking endpoints with no test coverage | `hotel_api/tests/test_bookings.py` |
+| R7-35 | **Critical** | **Flutter: No integration tests at all** — `integration_test/` directory doesn't exist. Complex booking/payment/checkout flows have no end-to-end validation | `hoang_lam_app/` |
+| R7-36 | **High** | **Flutter: ~75-80% of code is untested** — 14/18 providers, 18/21 screen directories, 11/18 models, 14/19 repositories have no test files | `hoang_lam_app/test/` |
+| R7-37 | **High** | **Backend: `LostAndFoundViewSet` has no test file** | `hotel_api/tests/` |
+| R7-38 | **High** | **Backend: `ReceiptViewSet` has no test file** | `hotel_api/tests/` |
+| R7-39 | **Medium** | **Backend: `InspectionTemplateViewSet`, `DateRateOverrideViewSet` have no dedicated test files** | `hotel_api/tests/` |
+| R7-40 | **Low** | **Existing Flutter tests lack error/failure path coverage** — sampled test files only test happy paths | `hoang_lam_app/test/` |
+
+---
+
+### G. Celery & Background Tasks (4 Issues)
+
+| # | Severity | Issue | Location |
+|---|----------|-------|----------|
+| R7-41 | **High** | **No retry/failure handling on any Celery task** — `send_checkin_reminders`, `send_checkout_reminders`, `cleanup_expired_tokens`, `apply_data_retention_policy` have no `autoretry_for`, `retry_backoff`, or `max_retries`. If push notification service is down, reminders are silently lost | `hotel_api/tasks.py` |
+| R7-42 | **Medium** | **Data retention task runs `dry_run=False` directly** — no confirmation or approval mechanism. A misconfigured `DATA_RETENTION_OVERRIDES` env var could delete data prematurely | `hotel_api/tasks.py` |
+| R7-43 | **Medium** | **Token cleanup race condition** — count query and delete query are separate (no transaction). Count logged may not match actual deletions | `hotel_api/tasks.py` |
+| R7-44 | **Low** | **No dead-letter queue or failure alerting** configured for Celery | `backend/celery.py` |
+
+---
+
+### H. Screen-Level UX (4 Issues)
+
+| # | Severity | Issue | Location |
+|---|----------|-------|----------|
+| R7-45 | **Medium** | **8 screens expose raw `error.toString()` to users** — internal exception details (stack traces, API URLs) shown in snackbars instead of localized messages | `home_screen`, `minibar_inventory_screen`, `minibar_pos_screen`, `maintenance_list_screen`, `task_list_screen` |
+| R7-46 | **Medium** | **Hardcoded `'Expedia'`, `'Google Hotel'`, `'ZaloPay'` strings** bypass the l10n system despite being proper nouns used in switch statements | `booking_detail_screen.dart:L634-637` |
+| R7-47 | **Low** | **`EnvConfig` static mutable `_current` field** — can cause test pollution if not reset between test cases | `core/config/` |
+| R7-48 | **Low** | **`MinibarItem.formattedPrice` / `MinibarSale.formattedTotal`** hardcode `"₫"` currency symbol instead of using locale-aware formatting | `models/minibar.dart` |
+
+---
+
+### Round 7 vs Round 6 — Resolved Items
+
+These Round 6 issues were verified as **already fixed**:
+
+| R6 # | Issue | Status |
+|-------|-------|--------|
+| 1–5 | Missing backend endpoints (swap-room, extend-stay, split-payment, partial-refund, audit-logs) | ✅ All implemented |
+| 6 | Calendar response format mismatch | ✅ Fixed |
+| 7–8 | URL path mismatches (payments/booking, folio-items) | ✅ Fixed |
+| 9 | Booking filter parameter name mismatch | ✅ Fixed |
+| 10 | Admin password reset missing | ✅ Implemented with `IsOwnerOrManager` guard |
+| 73–74 | Missing enum values (expedia, googleHotel, zalopay) | ✅ Added to Flutter enums |
+
+---
+
+### Priority Fix Matrix
+
+#### P0 — Must Fix (Production Blockers)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| R7-1 | Fix `base_price` → `base_rate` in `extend_stay` view | Tiny |
+| R7-2–3 | Add `export` actions to NightAudit and FinancialEntry viewsets | Medium |
+| R7-4 | Reduce JWT access token lifetime to 30–60 minutes | Tiny |
+| R7-5 | Add `FIELD_ENCRYPTION_KEY` validation to production.py | Tiny |
+| R7-11 | Clear all ~27 missing providers on logout | Small |
+| R7-23 | Add `@JsonKey(unknownEnumValue:)` fallbacks to all model enums | Small |
+| R7-34 | Write backend tests for 4 new booking endpoints | Medium |
+
+#### P1 — Should Fix (High Impact)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| R7-6–7 | Add `IsManager`/`IsStaffOrManager` guards to ExchangeRate write ops and ExportReportView | Small |
+| R7-12 | Add `Ref` to `RatePlanNotifier` and `DateRateOverrideNotifier` | Small |
+| R7-14 | Standardize error handling: set error state AND rethrow in all notifiers (follow `FinanceNotifier` pattern) | Medium |
+| R7-28 | Guard `dart:io` imports with conditional imports for web support | Small |
+| R7-29 | Add path parameters to `sendMessage` and `messageHistory` routes | Small |
+| R7-35 | Create at least smoke-level integration tests for booking lifecycle | Large |
+| R7-41 | Add `autoretry_for` + `max_retries` to all Celery tasks | Small |
+
+#### P2 — Nice to Fix (Polish)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| R7-8–9 | Add SECRET_KEY validation and HSTS to staging settings | Tiny |
+| R7-16–17 | Add missing cross-provider invalidations (inspection→room, minibar→finance) | Small |
+| R7-22 | Update barrel file to export all 22 providers | Tiny |
+| R7-24 | Consolidate duplicate `PaymentMethod` enum | Small |
+| R7-25 | Add `internal_notes` to BookingSerializer | Tiny |
+| R7-30 | Add role guards to remaining unguarded routes | Small |
+| R7-31 | Change connectivity check to ping own backend | Small |
+| R7-45 | Replace remaining raw `error.toString()` with `getLocalizedErrorMessage()` | Small |
