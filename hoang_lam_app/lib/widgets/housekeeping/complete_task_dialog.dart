@@ -83,6 +83,8 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
           _ChecklistItem(label: l10n.reinspect),
         ]);
         break;
+      case HousekeepingTaskType.unknown:
+        break;
     }
   }
 

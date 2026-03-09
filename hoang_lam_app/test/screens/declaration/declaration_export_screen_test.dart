@@ -129,7 +129,7 @@ void main() {
         createTestWidget(
           overrides: [
             declarationExportProvider.overrideWith((ref) {
-              return _LoadingExportNotifier();
+              return _LoadingExportNotifier(ref);
             }),
           ],
         ),
@@ -147,7 +147,7 @@ void main() {
         createTestWidget(
           overrides: [
             declarationExportProvider.overrideWith((ref) {
-              return _SuccessExportNotifier('/path/to/file.xlsx');
+              return _SuccessExportNotifier('/path/to/file.xlsx', ref);
             }),
           ],
         ),
@@ -192,14 +192,14 @@ void main() {
 
 /// Fake notifier that stays in loading state
 class _LoadingExportNotifier extends DeclarationExportNotifier {
-  _LoadingExportNotifier() : super(DeclarationRepository()) {
+  _LoadingExportNotifier(Ref ref) : super(DeclarationRepository(), ref) {
     state = const DeclarationExportState.loading();
   }
 }
 
 /// Fake notifier that returns success state
 class _SuccessExportNotifier extends DeclarationExportNotifier {
-  _SuccessExportNotifier(String filePath) : super(DeclarationRepository()) {
+  _SuccessExportNotifier(String filePath, Ref ref) : super(DeclarationRepository(), ref) {
     state = DeclarationExportState.success(filePath: filePath);
   }
 }

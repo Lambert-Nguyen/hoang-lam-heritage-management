@@ -244,7 +244,10 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
         return Icons.credit_card;
       case PaymentMethod.otaCollect:
         return Icons.business;
+      case PaymentMethod.zalopay:
+        return Icons.phone_android;
       case PaymentMethod.other:
+      case PaymentMethod.unknown:
         return Icons.more_horiz;
     }
   }
@@ -263,7 +266,10 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
         return context.l10n.cardPayment;
       case PaymentMethod.otaCollect:
         return 'OTA';
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
       case PaymentMethod.other:
+      case PaymentMethod.unknown:
         return context.l10n.otherLabel;
     }
   }

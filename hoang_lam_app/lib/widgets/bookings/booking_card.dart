@@ -297,6 +297,12 @@ class BookingCard extends StatelessWidget {
           icon: Icons.public,
           color: const Color(0xFF4285F4),
         );
+      case BookingSource.unknown:
+        return (
+          label: context.l10n.otherLabel,
+          icon: Icons.more_horiz,
+          color: AppColors.mutedAccent,
+        );
     }
   }
 

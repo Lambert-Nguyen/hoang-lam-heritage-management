@@ -279,6 +279,8 @@ class _NotificationTile extends StatelessWidget {
         return Icons.door_front_door_outlined;
       case NotificationType.general:
         return Icons.notifications_outlined;
+      case NotificationType.unknown:
+        return Icons.notifications_outlined;
     }
   }
 
@@ -300,6 +302,8 @@ class _NotificationTile extends StatelessWidget {
         return AppColors.statusBrown; // Brown
       case NotificationType.general:
         return AppColors.statusBlueGrey; // Blue Grey
+      case NotificationType.unknown:
+        return AppColors.statusBlueGrey;
     }
   }
 

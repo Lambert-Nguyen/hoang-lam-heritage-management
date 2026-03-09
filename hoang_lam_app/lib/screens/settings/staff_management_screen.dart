@@ -791,6 +791,7 @@ class _StaffDetailSheet extends ConsumerWidget {
           _PermissionItem(context.l10n.permManageBookings, false),
           _PermissionItem(context.l10n.permManageFinance, false),
         ]);
+      case UserRole.unknown:
       case null:
         permissions.add(
           _PermissionItem(context.l10n.noPermissionsAssigned, false),
@@ -843,6 +844,7 @@ Color _getRoleColor(UserRole? role) {
       return AppColors.info;
     case UserRole.housekeeping:
       return AppColors.cleaning;
+    case UserRole.unknown:
     case null:
       return AppColors.textSecondary;
   }

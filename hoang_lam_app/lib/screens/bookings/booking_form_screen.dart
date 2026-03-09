@@ -713,6 +713,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         return 'Expedia';
       case BookingSource.googleHotel:
         return 'Google Hotel';
+      case BookingSource.unknown:
+        return l10n.bookingSourceOther;
     }
   }
 
@@ -732,6 +734,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       case PaymentMethod.otaCollect:
         return l10n.paymentMethodOtaCollect;
       case PaymentMethod.other:
+      case PaymentMethod.unknown:
         return l10n.paymentMethodOther;
       case PaymentMethod.zalopay:
         return 'ZaloPay';

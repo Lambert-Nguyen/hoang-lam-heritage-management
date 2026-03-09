@@ -152,7 +152,7 @@ extension PaymentMethodExtension on PaymentMethod {
   IconData get icon {
     switch (this) {
       case PaymentMethod.cash:
-        return Icons.payments;
+        return Icons.money;
       case PaymentMethod.bankTransfer:
         return Icons.account_balance;
       case PaymentMethod.momo:
@@ -164,7 +164,7 @@ extension PaymentMethodExtension on PaymentMethod {
       case PaymentMethod.zalopay:
         return Icons.phone_android;
       case PaymentMethod.otaCollect:
-        return Icons.business;
+        return Icons.travel_explore;
       case PaymentMethod.unknown:
       case PaymentMethod.other:
         return Icons.more_horiz;

@@ -447,6 +447,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/group-bookings/:id',
         name: 'groupBookingDetail',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {

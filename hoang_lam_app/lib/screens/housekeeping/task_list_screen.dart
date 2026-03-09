@@ -193,6 +193,8 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         return 3;
       case HousekeepingTaskType.maintenance:
         return 4;
+      case HousekeepingTaskType.unknown:
+        return 5;
     }
   }
 

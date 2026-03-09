@@ -3027,7 +3027,7 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
                 entry.amount,
                 entry.payment_method,
                 entry.description,
-                entry.reference_number,
+                entry.receipt_number,
                 entry.created_by.get_full_name() if entry.created_by else "",
             ])
 
@@ -3700,7 +3700,7 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ["create", "update", "partial_update", "destroy"]:
-            return [IsManager()]
+            return [IsAuthenticated(), IsManager()]
         return super().get_permissions()
 
     def get_queryset(self):

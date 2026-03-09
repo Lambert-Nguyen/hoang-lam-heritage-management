@@ -96,6 +96,12 @@ class BookingStatusBadge extends StatelessWidget {
           icon: Icons.person_off,
           color: AppColors.error,
         );
+      case BookingStatus.unknown:
+        return (
+          label: context.l10n.statusPending,
+          icon: Icons.help_outline,
+          color: AppColors.textSecondary,
+        );
     }
   }
 }
@@ -174,6 +180,12 @@ class BookingStatusChip extends StatelessWidget {
           label: context.l10n.statusNoShow,
           icon: Icons.person_off,
           color: AppColors.error,
+        );
+      case BookingStatus.unknown:
+        return (
+          label: context.l10n.statusPending,
+          icon: Icons.help_outline,
+          color: AppColors.textSecondary,
         );
     }
   }

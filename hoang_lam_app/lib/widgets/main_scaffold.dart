@@ -222,6 +222,7 @@ class _RoleBasedBottomNav extends ConsumerWidget {
           ),
         ];
 
+      case UserRole.unknown:
       case null:
         // Unknown/null role: restrict to staff-level nav (no Finance)
         return [
