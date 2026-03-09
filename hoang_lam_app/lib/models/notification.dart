@@ -26,6 +26,8 @@ enum NotificationType {
   checkoutCompleted,
   @JsonValue('general')
   general,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension NotificationTypeExtension on NotificationType {
@@ -45,6 +47,7 @@ extension NotificationTypeExtension on NotificationType {
         return 'Đã nhận phòng';
       case NotificationType.checkoutCompleted:
         return 'Đã trả phòng';
+      case NotificationType.unknown:
       case NotificationType.general:
         return 'Thông báo chung';
     }
@@ -66,6 +69,7 @@ extension NotificationTypeExtension on NotificationType {
         return 'Check-in Completed';
       case NotificationType.checkoutCompleted:
         return 'Check-out Completed';
+      case NotificationType.unknown:
       case NotificationType.general:
         return 'General';
     }
@@ -87,6 +91,7 @@ extension NotificationTypeExtension on NotificationType {
         return 'how_to_reg';
       case NotificationType.checkoutCompleted:
         return 'door_front';
+      case NotificationType.unknown:
       case NotificationType.general:
         return 'notifications';
     }
@@ -108,6 +113,7 @@ extension NotificationTypeExtension on NotificationType {
         return l10n.notificationTypeCheckedIn;
       case NotificationType.checkoutCompleted:
         return l10n.notificationTypeCheckedOut;
+      case NotificationType.unknown:
       case NotificationType.general:
         return l10n.notificationTypeGeneral;
     }
@@ -122,7 +128,7 @@ extension NotificationTypeExtension on NotificationType {
 sealed class AppNotification with _$AppNotification {
   const factory AppNotification({
     required int id,
-    @JsonKey(name: 'notification_type')
+    @JsonKey(name: 'notification_type', unknownEnumValue: NotificationType.unknown)
     required NotificationType notificationType,
     @JsonKey(name: 'notification_type_display') String? notificationTypeDisplay,
     required String title,

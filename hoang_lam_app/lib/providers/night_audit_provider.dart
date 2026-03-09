@@ -2,6 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import '../models/night_audit.dart';
 import '../repositories/night_audit_repository.dart';
+import '../core/utils/error_utils.dart';
+import 'dashboard_provider.dart';
+import 'settings_provider.dart';
 
 part 'night_audit_provider.freezed.dart';
 
@@ -128,7 +131,7 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
       );
       state = state.copyWith(isLoading: false, audits: audits);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -139,7 +142,7 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
       final audit = await _repository.getTodayAudit();
       state = state.copyWith(isLoading: false, currentAudit: audit);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -152,9 +155,10 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
       state = state.copyWith(isCreating: false, currentAudit: audit);
       // Invalidate list to refresh
       _ref.invalidate(nightAuditsProvider);
+      _ref.invalidate(dashboardSummaryProvider);
       return audit;
     } catch (e) {
-      state = state.copyWith(isCreating: false, error: e.toString());
+      state = state.copyWith(isCreating: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -172,7 +176,7 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
       state = state.copyWith(isLoading: false, currentAudit: audit);
       return audit;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -185,9 +189,10 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
       state = state.copyWith(isClosing: false, currentAudit: audit);
       // Invalidate list to refresh
       _ref.invalidate(nightAuditsProvider);
+      _ref.invalidate(dashboardSummaryProvider);
       return audit;
     } catch (e) {
-      state = state.copyWith(isClosing: false, error: e.toString());
+      state = state.copyWith(isClosing: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -200,7 +205,7 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
       state = state.copyWith(isLoading: false, currentAudit: audit);
       return audit;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -220,7 +225,7 @@ class NightAuditNotifier extends StateNotifier<NightAuditState> {
       _ref.invalidate(nightAuditsProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return false;
     }
   }

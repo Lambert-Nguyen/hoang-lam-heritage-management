@@ -2,13 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../core/config/env_config.dart';
 import '../core/theme/app_colors.dart';
 import '../models/user.dart';
 import '../providers/auth_provider.dart';
 import '../router/app_router.dart';
 import '../l10n/app_localizations.dart';
 
-/// Provider that periodically checks connectivity (web-safe, uses Dio)
+/// Provider that periodically checks connectivity by pinging the backend health endpoint.
+/// Pauses polling when the app is in background via WidgetsBindingObserver in MainScaffold.
 final connectivityProvider = StreamProvider<bool>((ref) {
   final dio = Dio(
     BaseOptions(
@@ -16,10 +18,11 @@ final connectivityProvider = StreamProvider<bool>((ref) {
       receiveTimeout: const Duration(seconds: 5),
     ),
   );
-  return Stream.periodic(const Duration(seconds: 10), (_) async {
+  final healthUrl = '${EnvConfig.current.apiBaseUrl}/health/';
+  return Stream.periodic(const Duration(seconds: 30), (_) async {
     try {
-      final response = await dio.head('https://www.google.com/generate_204');
-      return response.statusCode == 204 || response.statusCode == 200;
+      final response = await dio.head(healthUrl);
+      return response.statusCode == 200;
     } catch (_) {
       return false;
     }

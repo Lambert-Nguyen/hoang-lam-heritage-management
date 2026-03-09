@@ -14,6 +14,8 @@ enum UserRole {
   staff,
   @JsonValue('housekeeping')
   housekeeping,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension to get role display names
@@ -24,6 +26,7 @@ extension UserRoleExtension on UserRole {
         return 'Chủ căn hộ';
       case UserRole.manager:
         return 'Quản lý';
+      case UserRole.unknown:
       case UserRole.staff:
         return 'Nhân viên';
       case UserRole.housekeeping:
@@ -37,6 +40,7 @@ extension UserRoleExtension on UserRole {
         return 'Owner';
       case UserRole.manager:
         return 'Manager';
+      case UserRole.unknown:
       case UserRole.staff:
         return 'Staff';
       case UserRole.housekeeping:
@@ -65,6 +69,7 @@ extension UserRoleExtension on UserRole {
         return l10n.userRoleOwner;
       case UserRole.manager:
         return l10n.userRoleManager;
+      case UserRole.unknown:
       case UserRole.staff:
         return l10n.userRoleStaff;
       case UserRole.housekeeping:
@@ -82,7 +87,7 @@ sealed class User with _$User {
     String? email,
     @JsonKey(name: 'first_name') String? firstName,
     @JsonKey(name: 'last_name') String? lastName,
-    UserRole? role,
+    @JsonKey(unknownEnumValue: UserRole.unknown) UserRole? role,
     @JsonKey(name: 'role_display') String? roleDisplay,
     String? phone,
   }) = _User;

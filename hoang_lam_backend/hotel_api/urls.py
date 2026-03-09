@@ -1,5 +1,6 @@
 """URL configuration for hotel_api."""
 
+from django.http import JsonResponse
 from django.urls import include, path
 
 from rest_framework.routers import DefaultRouter
@@ -85,6 +86,8 @@ router.register(r"guest-messages", GuestMessageViewSet, basename="guestmessage")
 router.register(r"audit-logs", AuditLogViewSet, basename="auditlog")
 
 urlpatterns = [
+    # Health check (unauthenticated, for connectivity probing)
+    path("health/", lambda request: JsonResponse({"status": "ok"}), name="health"),
     # JWT Authentication
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/refresh/", TokenRefreshView.as_view(), name="token_refresh"),

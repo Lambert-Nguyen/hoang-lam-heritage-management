@@ -3,6 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/room_inspection.dart';
 import '../repositories/room_inspection_repository.dart';
+import '../core/utils/error_utils.dart';
+import 'room_provider.dart';
+import 'settings_provider.dart';
 
 part 'room_inspection_provider.freezed.dart';
 
@@ -161,7 +164,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       );
       state = state.copyWith(isLoading: false, inspections: inspections);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -171,7 +174,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       final statistics = await _repository.getStatistics();
       state = state.copyWith(statistics: statistics);
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString());
+      state = state.copyWith(errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -186,7 +189,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(inspectionStatisticsProvider);
       return newInspection;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -204,7 +207,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(roomInspectionsProvider);
       return updatedInspection;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -220,7 +223,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(pendingInspectionsTodayProvider);
       return inspection;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -238,9 +241,10 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(roomInspectionsProvider);
       _ref.invalidate(pendingInspectionsTodayProvider);
       _ref.invalidate(inspectionStatisticsProvider);
+      _ref.invalidate(roomsProvider);
       return inspection;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -261,7 +265,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(pendingInspectionsTodayProvider);
       return inspection;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -276,7 +280,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
       _ref.invalidate(inspectionStatisticsProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return false;
     }
   }
@@ -333,7 +337,7 @@ class InspectionTemplateNotifier
       );
       state = state.copyWith(isLoading: false, templates: templates);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -349,7 +353,7 @@ class InspectionTemplateNotifier
       _ref.invalidate(defaultTemplatesProvider);
       return newTemplate;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -367,7 +371,7 @@ class InspectionTemplateNotifier
       _ref.invalidate(inspectionTemplatesProvider);
       return updatedTemplate;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -381,7 +385,7 @@ class InspectionTemplateNotifier
       _ref.invalidate(inspectionTemplatesProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return false;
     }
   }

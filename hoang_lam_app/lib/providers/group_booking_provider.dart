@@ -6,6 +6,8 @@ import '../repositories/group_booking_repository.dart';
 import 'booking_provider.dart';
 import 'dashboard_provider.dart';
 import 'room_provider.dart';
+import '../core/utils/error_utils.dart';
+import 'settings_provider.dart';
 
 part 'group_booking_provider.freezed.dart';
 
@@ -144,7 +146,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       );
       state = state.copyWith(isLoading: false, bookings: bookings);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -159,7 +161,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _invalidateCrossDomainProviders();
       return newBooking;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -174,7 +176,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _ref.invalidate(groupBookingsProvider);
       return updatedBooking;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -191,7 +193,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _invalidateCrossDomainProviders();
       return confirmedBooking;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -209,7 +211,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _invalidateCrossDomainProviders();
       return checkedInBooking;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -227,7 +229,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _invalidateCrossDomainProviders();
       return checkedOutBooking;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -248,7 +250,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _invalidateCrossDomainProviders();
       return cancelledBooking;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -264,7 +266,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _invalidateCrossDomainProviders();
       return updatedBooking;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -280,7 +282,7 @@ class GroupBookingNotifier extends StateNotifier<GroupBookingState> {
       _invalidateCrossDomainProviders();
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return false;
     }
   }

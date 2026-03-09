@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../core/utils/error_utils.dart';
 import '../models/declaration.dart';
 import '../repositories/declaration_repository.dart';
+import 'settings_provider.dart';
 
 part 'declaration_provider.freezed.dart';
 
@@ -25,8 +27,9 @@ class DeclarationExportState with _$DeclarationExportState {
 /// Notifier for declaration export operations
 class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
   final DeclarationRepository _repository;
+  final Ref _ref;
 
-  DeclarationExportNotifier(this._repository)
+  DeclarationExportNotifier(this._repository, this._ref)
     : super(const DeclarationExportState.initial());
 
   /// Export declaration for date range
@@ -47,7 +50,7 @@ class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
       );
       state = DeclarationExportState.success(filePath: filePath);
     } catch (e) {
-      state = DeclarationExportState.error(message: e.toString());
+      state = DeclarationExportState.error(message: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -63,5 +66,5 @@ final declarationExportProvider =
       ref,
     ) {
       final repository = ref.watch(declarationRepositoryProvider);
-      return DeclarationExportNotifier(repository);
+      return DeclarationExportNotifier(repository, ref);
     });

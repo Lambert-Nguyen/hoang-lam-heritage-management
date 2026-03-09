@@ -100,6 +100,10 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@hoanglam.com")
 if SECRET_KEY == "django-insecure-change-me-in-production":
     raise ValueError("SECRET_KEY must be set to a secure value in production")
 
+# Ensure FIELD_ENCRYPTION_KEY is set
+if not FIELD_ENCRYPTION_KEY:
+    raise ValueError("FIELD_ENCRYPTION_KEY must be set in production")
+
 # Admin notifications
 ADMINS = [
     ("Admin", os.getenv("ADMIN_EMAIL", "admin@hoanglam.com")),

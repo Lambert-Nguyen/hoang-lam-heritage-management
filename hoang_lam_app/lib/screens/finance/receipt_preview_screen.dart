@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -109,6 +110,14 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
 
   Future<void> _downloadReceipt() async {
     if (_receipt == null) return;
+    if (kIsWeb) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.featureNotAvailableOnWeb)),
+        );
+      }
+      return;
+    }
 
     try {
       final receiptText = _buildReceiptText();
@@ -134,6 +143,14 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
 
   Future<void> _shareReceipt() async {
     if (_receipt == null) return;
+    if (kIsWeb) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.featureNotAvailableOnWeb)),
+        );
+      }
+      return;
+    }
 
     final l10n = context.l10n;
     try {

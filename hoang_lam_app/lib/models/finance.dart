@@ -11,6 +11,8 @@ enum EntryType {
   income,
   @JsonValue('expense')
   expense,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for EntryType display properties
@@ -19,6 +21,7 @@ extension EntryTypeExtension on EntryType {
     switch (this) {
       case EntryType.income:
         return 'Thu';
+      case EntryType.unknown:
       case EntryType.expense:
         return 'Chi';
     }
@@ -28,6 +31,7 @@ extension EntryTypeExtension on EntryType {
     switch (this) {
       case EntryType.income:
         return 'Income';
+      case EntryType.unknown:
       case EntryType.expense:
         return 'Expense';
     }
@@ -37,6 +41,7 @@ extension EntryTypeExtension on EntryType {
     switch (this) {
       case EntryType.income:
         return const Color(0xFF4CAF50); // Green
+      case EntryType.unknown:
       case EntryType.expense:
         return const Color(0xFFF44336); // Red
     }
@@ -46,6 +51,7 @@ extension EntryTypeExtension on EntryType {
     switch (this) {
       case EntryType.income:
         return const Color(0xFFE8F5E9); // Green light
+      case EntryType.unknown:
       case EntryType.expense:
         return const Color(0xFFFFEBEE); // Red light
     }
@@ -55,6 +61,7 @@ extension EntryTypeExtension on EntryType {
     switch (this) {
       case EntryType.income:
         return Icons.arrow_downward;
+      case EntryType.unknown:
       case EntryType.expense:
         return Icons.arrow_upward;
     }
@@ -67,6 +74,7 @@ extension EntryTypeExtension on EntryType {
     switch (this) {
       case EntryType.income:
         return l10n.entryTypeIncome;
+      case EntryType.unknown:
       case EntryType.expense:
         return l10n.entryTypeExpense;
     }
@@ -85,10 +93,14 @@ enum PaymentMethod {
   vnpay,
   @JsonValue('card')
   card,
+  @JsonValue('zalopay')
+  zalopay,
   @JsonValue('ota_collect')
   otaCollect,
   @JsonValue('other')
   other,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for PaymentMethod display properties
@@ -105,8 +117,11 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'VNPay';
       case PaymentMethod.card:
         return 'Thẻ';
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return 'OTA thu hộ';
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return 'Khác';
     }
@@ -124,8 +139,11 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'VNPay';
       case PaymentMethod.card:
         return 'Card';
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return 'OTA Collect';
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return 'Other';
     }
@@ -143,8 +161,11 @@ extension PaymentMethodExtension on PaymentMethod {
         return Icons.qr_code;
       case PaymentMethod.card:
         return Icons.credit_card;
+      case PaymentMethod.zalopay:
+        return Icons.phone_android;
       case PaymentMethod.otaCollect:
         return Icons.business;
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return Icons.more_horiz;
     }
@@ -174,8 +195,11 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'VNPay';
       case PaymentMethod.card:
         return l10n.paymentMethodCard;
+      case PaymentMethod.zalopay:
+        return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return l10n.paymentMethodOtaCollect;
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return l10n.paymentMethodOther;
     }
@@ -265,7 +289,7 @@ sealed class FinancialEntry with _$FinancialEntry {
 
   const factory FinancialEntry({
     required int id,
-    @JsonKey(name: 'entry_type') required EntryType entryType,
+    @JsonKey(name: 'entry_type', unknownEnumValue: EntryType.unknown) required EntryType entryType,
     required int category,
     @JsonKey(name: 'category_details') FinancialCategory? categoryDetails,
     required double amount,
@@ -276,7 +300,7 @@ sealed class FinancialEntry with _$FinancialEntry {
     required String description,
     int? booking,
     @JsonKey(name: 'booking_details') FinancialBookingDetails? bookingDetails,
-    @JsonKey(name: 'payment_method')
+    @JsonKey(name: 'payment_method', unknownEnumValue: PaymentMethod.unknown)
     @Default(PaymentMethod.cash)
     PaymentMethod paymentMethod,
     @JsonKey(name: 'receipt_number') String? receiptNumber,
@@ -324,7 +348,7 @@ sealed class FinancialEntryListItem with _$FinancialEntryListItem {
 
   const factory FinancialEntryListItem({
     required int id,
-    @JsonKey(name: 'entry_type') required EntryType entryType,
+    @JsonKey(name: 'entry_type', unknownEnumValue: EntryType.unknown) required EntryType entryType,
     required int category,
     @JsonKey(name: 'category_name') String? categoryName,
     @JsonKey(name: 'category_icon') String? categoryIcon,
@@ -333,7 +357,7 @@ sealed class FinancialEntryListItem with _$FinancialEntryListItem {
     @Default('VND') String currency,
     required DateTime date,
     required String description,
-    @JsonKey(name: 'payment_method')
+    @JsonKey(name: 'payment_method', unknownEnumValue: PaymentMethod.unknown)
     @Default(PaymentMethod.cash)
     PaymentMethod paymentMethod,
     @JsonKey(name: 'room_number') String? roomNumber,
@@ -523,6 +547,8 @@ enum PaymentType {
   refund,
   @JsonValue('adjustment')
   adjustment,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for PaymentType display properties
@@ -537,6 +563,7 @@ extension PaymentTypeExtension on PaymentType {
         return 'Phí bổ sung';
       case PaymentType.refund:
         return 'Hoàn tiền';
+      case PaymentType.unknown:
       case PaymentType.adjustment:
         return 'Điều chỉnh';
     }
@@ -552,6 +579,7 @@ extension PaymentTypeExtension on PaymentType {
         return 'Extra Charge';
       case PaymentType.refund:
         return 'Refund';
+      case PaymentType.unknown:
       case PaymentType.adjustment:
         return 'Adjustment';
     }
@@ -567,6 +595,7 @@ extension PaymentTypeExtension on PaymentType {
         return Icons.add_shopping_cart;
       case PaymentType.refund:
         return Icons.money_off;
+      case PaymentType.unknown:
       case PaymentType.adjustment:
         return Icons.edit;
     }
@@ -582,6 +611,7 @@ extension PaymentTypeExtension on PaymentType {
         return const Color(0xFFFF9800); // Orange
       case PaymentType.refund:
         return const Color(0xFFF44336); // Red
+      case PaymentType.unknown:
       case PaymentType.adjustment:
         return const Color(0xFF9C27B0); // Purple
     }
@@ -609,6 +639,7 @@ extension PaymentTypeExtension on PaymentType {
         return l10n.paymentTypeExtraCharge;
       case PaymentType.refund:
         return l10n.paymentTypeRefund;
+      case PaymentType.unknown:
       case PaymentType.adjustment:
         return l10n.paymentTypeAdjustment;
     }
@@ -627,6 +658,8 @@ enum PaymentStatus {
   refunded,
   @JsonValue('cancelled')
   cancelled,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for PaymentStatus display properties
@@ -641,6 +674,7 @@ extension PaymentStatusExtension on PaymentStatus {
         return 'Thất bại';
       case PaymentStatus.refunded:
         return 'Đã hoàn';
+      case PaymentStatus.unknown:
       case PaymentStatus.cancelled:
         return 'Đã hủy';
     }
@@ -656,6 +690,7 @@ extension PaymentStatusExtension on PaymentStatus {
         return 'Failed';
       case PaymentStatus.refunded:
         return 'Refunded';
+      case PaymentStatus.unknown:
       case PaymentStatus.cancelled:
         return 'Cancelled';
     }
@@ -671,6 +706,7 @@ extension PaymentStatusExtension on PaymentStatus {
         return const Color(0xFFF44336); // Red
       case PaymentStatus.refunded:
         return const Color(0xFF9C27B0); // Purple
+      case PaymentStatus.unknown:
       case PaymentStatus.cancelled:
         return const Color(0xFF607D8B); // Blue Grey
     }
@@ -686,6 +722,7 @@ extension PaymentStatusExtension on PaymentStatus {
         return const Color(0xFFFFEBEE); // Red light
       case PaymentStatus.refunded:
         return const Color(0xFFF3E5F5); // Purple light
+      case PaymentStatus.unknown:
       case PaymentStatus.cancelled:
         return const Color(0xFFECEFF1); // Blue Grey light
     }
@@ -701,6 +738,7 @@ extension PaymentStatusExtension on PaymentStatus {
         return l10n.paymentStatusFailed;
       case PaymentStatus.refunded:
         return l10n.paymentStatusRefunded;
+      case PaymentStatus.unknown:
       case PaymentStatus.cancelled:
         return l10n.paymentStatusCancelled;
     }
@@ -717,10 +755,10 @@ sealed class Payment with _$Payment {
     required int booking,
     @JsonKey(name: 'booking_room') String? bookingRoom,
     @JsonKey(name: 'guest_name') String? guestName,
-    @JsonKey(name: 'payment_type') required PaymentType paymentType,
+    @JsonKey(name: 'payment_type', unknownEnumValue: PaymentType.unknown) required PaymentType paymentType,
     required double amount,
-    @JsonKey(name: 'payment_method') required PaymentMethod paymentMethod,
-    @Default(PaymentStatus.pending) PaymentStatus status,
+    @JsonKey(name: 'payment_method', unknownEnumValue: PaymentMethod.unknown) required PaymentMethod paymentMethod,
+    @Default(PaymentStatus.pending) @JsonKey(unknownEnumValue: PaymentStatus.unknown) PaymentStatus status,
     @JsonKey(name: 'receipt_number') String? receiptNumber,
     String? notes,
     @JsonKey(name: 'created_by') int? createdBy,
@@ -823,6 +861,8 @@ enum FolioItemType {
   damage,
   @JsonValue('other')
   other,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for FolioItemType display properties
@@ -847,6 +887,7 @@ extension FolioItemTypeExtension on FolioItemType {
         return 'Trả muộn';
       case FolioItemType.damage:
         return 'Hư hỏng';
+      case FolioItemType.unknown:
       case FolioItemType.other:
         return 'Khác';
     }
@@ -872,6 +913,7 @@ extension FolioItemTypeExtension on FolioItemType {
         return 'Late Checkout';
       case FolioItemType.damage:
         return 'Damage';
+      case FolioItemType.unknown:
       case FolioItemType.other:
         return 'Other';
     }
@@ -897,6 +939,7 @@ extension FolioItemTypeExtension on FolioItemType {
         return Icons.logout;
       case FolioItemType.damage:
         return Icons.warning;
+      case FolioItemType.unknown:
       case FolioItemType.other:
         return Icons.more_horiz;
     }
@@ -922,6 +965,7 @@ extension FolioItemTypeExtension on FolioItemType {
         return const Color(0xFFFF5722); // Deep Orange
       case FolioItemType.damage:
         return const Color(0xFFF44336); // Red
+      case FolioItemType.unknown:
       case FolioItemType.other:
         return const Color(0xFF607D8B); // Blue Grey
     }
@@ -961,6 +1005,7 @@ extension FolioItemTypeExtension on FolioItemType {
         return l10n.folioTypeLateCheckout;
       case FolioItemType.damage:
         return l10n.folioTypeDamage;
+      case FolioItemType.unknown:
       case FolioItemType.other:
         return l10n.folioTypeOther;
     }
@@ -976,7 +1021,7 @@ sealed class FolioItem with _$FolioItem {
     required int id,
     required int booking,
     @JsonKey(name: 'booking_room') String? bookingRoom,
-    @JsonKey(name: 'item_type') required FolioItemType itemType,
+    @JsonKey(name: 'item_type', unknownEnumValue: FolioItemType.unknown) required FolioItemType itemType,
     required String description,
     required int quantity,
     @JsonKey(name: 'unit_price') required double unitPrice,

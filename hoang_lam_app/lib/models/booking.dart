@@ -39,6 +39,8 @@ enum BookingStatus {
   cancelled,
   @JsonValue('no_show')
   noShow,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for BookingStatus display properties
@@ -55,6 +57,7 @@ extension BookingStatusExtension on BookingStatus {
         return 'Đã trả phòng';
       case BookingStatus.cancelled:
         return 'Đã hủy';
+      case BookingStatus.unknown:
       case BookingStatus.noShow:
         return 'Không đến';
     }
@@ -72,6 +75,7 @@ extension BookingStatusExtension on BookingStatus {
         return 'Checked Out';
       case BookingStatus.cancelled:
         return 'Cancelled';
+      case BookingStatus.unknown:
       case BookingStatus.noShow:
         return 'No Show';
     }
@@ -89,6 +93,7 @@ extension BookingStatusExtension on BookingStatus {
         return const Color(0xFF9E9E9E); // Grey
       case BookingStatus.cancelled:
         return const Color(0xFFF44336); // Red
+      case BookingStatus.unknown:
       case BookingStatus.noShow:
         return const Color(0xFF795548); // Brown
     }
@@ -106,6 +111,7 @@ extension BookingStatusExtension on BookingStatus {
         return const Color(0xFFF5F5F5); // Grey light
       case BookingStatus.cancelled:
         return const Color(0xFFFFEBEE); // Red light
+      case BookingStatus.unknown:
       case BookingStatus.noShow:
         return const Color(0xFFEFEBE9); // Brown light
     }
@@ -123,6 +129,7 @@ extension BookingStatusExtension on BookingStatus {
         return Icons.logout;
       case BookingStatus.cancelled:
         return Icons.cancel_outlined;
+      case BookingStatus.unknown:
       case BookingStatus.noShow:
         return Icons.person_off_outlined;
     }
@@ -166,6 +173,7 @@ extension BookingStatusExtension on BookingStatus {
         return 'checked_out';
       case BookingStatus.cancelled:
         return 'cancelled';
+      case BookingStatus.unknown:
       case BookingStatus.noShow:
         return 'no_show';
     }
@@ -183,6 +191,7 @@ extension BookingStatusExtension on BookingStatus {
         return l10n.bookingStatusCheckedOut;
       case BookingStatus.cancelled:
         return l10n.bookingStatusCancelled;
+      case BookingStatus.unknown:
       case BookingStatus.noShow:
         return l10n.bookingStatusNoShow;
     }
@@ -213,6 +222,8 @@ enum BookingSource {
   otherOta,
   @JsonValue('other')
   other,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for BookingSource display properties
@@ -239,6 +250,7 @@ extension BookingSourceExtension on BookingSource {
         return 'Google Hotel';
       case BookingSource.otherOta:
         return 'OTA khác';
+      case BookingSource.unknown:
       case BookingSource.other:
         return 'Khác';
     }
@@ -266,6 +278,7 @@ extension BookingSourceExtension on BookingSource {
         return 'Google Hotel';
       case BookingSource.otherOta:
         return 'Other OTA';
+      case BookingSource.unknown:
       case BookingSource.other:
         return 'Other';
     }
@@ -293,6 +306,7 @@ extension BookingSourceExtension on BookingSource {
         return Icons.travel_explore;
       case BookingSource.otherOta:
         return Icons.public;
+      case BookingSource.unknown:
       case BookingSource.other:
         return Icons.more_horiz;
     }
@@ -320,6 +334,7 @@ extension BookingSourceExtension on BookingSource {
         return const Color(0xFF4285F4); // Google blue
       case BookingSource.otherOta:
         return const Color(0xFF607D8B); // Blue grey
+      case BookingSource.unknown:
       case BookingSource.other:
         return const Color(0xFF9E9E9E); // Grey
     }
@@ -348,6 +363,7 @@ extension BookingSourceExtension on BookingSource {
         return 'google_hotel';
       case BookingSource.otherOta:
         return 'other_ota';
+      case BookingSource.unknown:
       case BookingSource.other:
         return 'other';
     }
@@ -393,6 +409,7 @@ extension BookingSourceExtension on BookingSource {
         return 'Google Hotel';
       case BookingSource.otherOta:
         return l10n.bookingSourceOtherOta;
+      case BookingSource.unknown:
       case BookingSource.other:
         return l10n.bookingSourceOther;
     }
@@ -417,6 +434,8 @@ enum PaymentMethod {
   otaCollect,
   @JsonValue('other')
   other,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for PaymentMethod display properties
@@ -437,6 +456,7 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return 'OTA thu hộ';
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return 'Khác';
     }
@@ -458,6 +478,7 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return 'OTA Collect';
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return 'Other';
     }
@@ -479,6 +500,7 @@ extension PaymentMethodExtension on PaymentMethod {
         return Icons.phone_android;
       case PaymentMethod.otaCollect:
         return Icons.travel_explore;
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return Icons.payment;
     }
@@ -500,6 +522,7 @@ extension PaymentMethodExtension on PaymentMethod {
         return const Color(0xFF008FE5); // ZaloPay blue
       case PaymentMethod.otaCollect:
         return const Color(0xFF607D8B); // Blue grey
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return const Color(0xFF9E9E9E); // Grey
     }
@@ -521,6 +544,7 @@ extension PaymentMethodExtension on PaymentMethod {
         return 'ZaloPay';
       case PaymentMethod.otaCollect:
         return l10n.paymentMethodOtaCollect;
+      case PaymentMethod.unknown:
       case PaymentMethod.other:
         return l10n.paymentMethodOther;
     }
@@ -533,12 +557,15 @@ enum BookingType {
   overnight,
   @JsonValue('hourly')
   hourly,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension for BookingType display properties
 extension BookingTypeExtension on BookingType {
   String get displayName {
     switch (this) {
+      case BookingType.unknown:
       case BookingType.overnight:
         return 'Qua đêm';
       case BookingType.hourly:
@@ -548,6 +575,7 @@ extension BookingTypeExtension on BookingType {
 
   String get displayNameEn {
     switch (this) {
+      case BookingType.unknown:
       case BookingType.overnight:
         return 'Overnight';
       case BookingType.hourly:
@@ -557,6 +585,7 @@ extension BookingTypeExtension on BookingType {
 
   IconData get icon {
     switch (this) {
+      case BookingType.unknown:
       case BookingType.overnight:
         return Icons.nightlight_round;
       case BookingType.hourly:
@@ -566,6 +595,7 @@ extension BookingTypeExtension on BookingType {
 
   Color get color {
     switch (this) {
+      case BookingType.unknown:
       case BookingType.overnight:
         return const Color(0xFF3F51B5); // Indigo
       case BookingType.hourly:
@@ -575,6 +605,7 @@ extension BookingTypeExtension on BookingType {
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
+      case BookingType.unknown:
       case BookingType.overnight:
         return l10n.bookingTypeOvernight;
       case BookingType.hourly:
@@ -634,14 +665,14 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'guest_count') @Default(1) int guestCount,
 
     // Status
-    @Default(BookingStatus.confirmed) BookingStatus status,
+    @Default(BookingStatus.confirmed) @JsonKey(unknownEnumValue: BookingStatus.unknown) BookingStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
-    @Default(BookingSource.walkIn) BookingSource source,
+    @Default(BookingSource.walkIn) @JsonKey(unknownEnumValue: BookingSource.unknown) BookingSource source,
     @JsonKey(name: 'source_display') String? sourceDisplay,
     @JsonKey(name: 'ota_reference') @Default('') String otaReference,
 
     // Booking type (hourly/overnight)
-    @JsonKey(name: 'booking_type')
+    @JsonKey(name: 'booking_type', unknownEnumValue: BookingType.unknown)
     @Default(BookingType.overnight)
     BookingType bookingType,
     @JsonKey(name: 'booking_type_display') String? bookingTypeDisplay,
@@ -688,7 +719,7 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'additional_charges', fromJson: _safeInt)
     @Default(0)
     int additionalCharges,
-    @JsonKey(name: 'payment_method')
+    @JsonKey(name: 'payment_method', unknownEnumValue: PaymentMethod.unknown)
     @Default(PaymentMethod.cash)
     PaymentMethod paymentMethod,
     @JsonKey(name: 'is_paid') @Default(false) bool isPaid,

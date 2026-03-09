@@ -5,6 +5,8 @@ import 'dashboard_provider.dart';
 
 import '../models/finance.dart';
 import '../repositories/finance_repository.dart';
+import '../core/utils/error_utils.dart';
+import 'settings_provider.dart';
 
 part 'finance_provider.freezed.dart';
 
@@ -212,7 +214,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
         isLoading: false,
       );
     } catch (error) {
-      state = state.copyWith(isLoading: false, error: error.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(error, _ref.read(l10nProvider)));
     }
   }
 
@@ -237,7 +239,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
 
       state = state.copyWith(entries: entries, isLoading: false);
     } catch (error) {
-      state = state.copyWith(isLoading: false, error: error.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(error, _ref.read(l10nProvider)));
     }
   }
 
@@ -273,7 +275,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
         filter: state.filter.copyWith(dateFrom: dateFrom, dateTo: dateTo),
       );
     } catch (error) {
-      state = state.copyWith(isLoading: false, error: error.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(error, _ref.read(l10nProvider)));
     }
   }
 
@@ -341,7 +343,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
       await refresh();
       return entry;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       rethrow;
     }
   }
@@ -368,7 +370,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
       await refresh();
       return entry;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       rethrow;
     }
   }
@@ -381,7 +383,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
       await refresh();
       return entry;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       rethrow;
     }
   }
@@ -397,7 +399,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
       await refresh();
       return entry;
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       rethrow;
     }
   }
@@ -409,7 +411,7 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
       await _repository.deleteEntry(id);
       await refresh();
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      state = state.copyWith(isLoading: false, error: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       rethrow;
     }
   }

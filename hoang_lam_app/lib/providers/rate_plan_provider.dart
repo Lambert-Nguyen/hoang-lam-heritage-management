@@ -103,9 +103,15 @@ sealed class DateRateOverrideFilter with _$DateRateOverrideFilter {
 class RatePlanNotifier
     extends StateNotifier<AsyncValue<List<RatePlanListItem>>> {
   final RatePlanRepository _repository;
+  final Ref _ref;
 
-  RatePlanNotifier(this._repository) : super(const AsyncValue.loading()) {
+  RatePlanNotifier(this._repository, this._ref) : super(const AsyncValue.loading()) {
     loadRatePlans();
+  }
+
+  void _invalidateRelated() {
+    _ref.invalidate(ratePlansProvider);
+    _ref.invalidate(activeRatePlansProvider);
   }
 
   Future<void> loadRatePlans({int? roomTypeId, bool? isActive}) async {
@@ -124,18 +130,21 @@ class RatePlanNotifier
   Future<RatePlan> createRatePlan(RatePlanCreateRequest request) async {
     final ratePlan = await _repository.createRatePlan(request);
     await loadRatePlans();
+    _invalidateRelated();
     return ratePlan;
   }
 
   Future<RatePlan> updateRatePlan(int id, Map<String, dynamic> updates) async {
     final ratePlan = await _repository.updateRatePlan(id, updates);
     await loadRatePlans();
+    _invalidateRelated();
     return ratePlan;
   }
 
   Future<void> deleteRatePlan(int id) async {
     await _repository.deleteRatePlan(id);
     await loadRatePlans();
+    _invalidateRelated();
   }
 }
 
@@ -144,7 +153,7 @@ final ratePlanNotifierProvider =
     StateNotifierProvider<RatePlanNotifier, AsyncValue<List<RatePlanListItem>>>(
       (ref) {
         final repository = ref.watch(ratePlanRepositoryProvider);
-        return RatePlanNotifier(repository);
+        return RatePlanNotifier(repository, ref);
       },
     );
 
@@ -152,8 +161,9 @@ final ratePlanNotifierProvider =
 class DateRateOverrideNotifier
     extends StateNotifier<AsyncValue<List<DateRateOverrideListItem>>> {
   final RatePlanRepository _repository;
+  final Ref _ref;
 
-  DateRateOverrideNotifier(this._repository)
+  DateRateOverrideNotifier(this._repository, this._ref)
     : super(const AsyncValue.loading());
 
   Future<void> loadOverrides({
@@ -179,6 +189,7 @@ class DateRateOverrideNotifier
   ) async {
     final override = await _repository.createDateRateOverride(request);
     await loadOverrides();
+    _ref.invalidate(ratePlansProvider);
     return override;
   }
 
@@ -187,6 +198,7 @@ class DateRateOverrideNotifier
   ) async {
     final overrides = await _repository.bulkCreateDateRateOverrides(request);
     await loadOverrides();
+    _ref.invalidate(ratePlansProvider);
     return overrides;
   }
 
@@ -196,12 +208,14 @@ class DateRateOverrideNotifier
   ) async {
     final override = await _repository.updateDateRateOverride(id, updates);
     await loadOverrides();
+    _ref.invalidate(ratePlansProvider);
     return override;
   }
 
   Future<void> deleteOverride(int id) async {
     await _repository.deleteDateRateOverride(id);
     await loadOverrides();
+    _ref.invalidate(ratePlansProvider);
   }
 }
 
@@ -212,5 +226,5 @@ final dateRateOverrideNotifierProvider =
       AsyncValue<List<DateRateOverrideListItem>>
     >((ref) {
       final repository = ref.watch(ratePlanRepositoryProvider);
-      return DateRateOverrideNotifier(repository);
+      return DateRateOverrideNotifier(repository, ref);
     });

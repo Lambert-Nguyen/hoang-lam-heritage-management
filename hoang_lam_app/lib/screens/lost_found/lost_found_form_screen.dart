@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -47,7 +47,8 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
   bool _isLoading = false;
   bool _isInitialized = false;
 
-  File? _selectedImage;
+  XFile? _selectedImage;
+  Uint8List? _selectedImageBytes;
   String? _existingImageUrl;
 
   @override
@@ -339,13 +340,13 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
   }
 
   Widget _buildPhotoSection(AppLocalizations l10n) {
-    if (_selectedImage != null) {
+    if (_selectedImage != null && _selectedImageBytes != null) {
       return Column(
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            child: Image.file(
-              _selectedImage!,
+            child: Image.memory(
+              _selectedImageBytes!,
               height: 200,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -353,7 +354,10 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
           ),
           const SizedBox(height: AppSpacing.sm),
           TextButton.icon(
-            onPressed: () => setState(() => _selectedImage = null),
+            onPressed: () => setState(() {
+              _selectedImage = null;
+              _selectedImageBytes = null;
+            }),
             icon: const Icon(Icons.close),
             label: Text(l10n.removePhoto),
           ),
@@ -409,7 +413,11 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
       imageQuality: 80,
     );
     if (picked != null && mounted) {
-      setState(() => _selectedImage = File(picked.path));
+      final bytes = await picked.readAsBytes();
+      setState(() {
+        _selectedImage = picked;
+        _selectedImageBytes = bytes;
+      });
     }
   }
 

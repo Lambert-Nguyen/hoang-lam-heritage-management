@@ -2138,7 +2138,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             # Recalculate total amount based on room rate and new night count
             nights = (new_check_out_date - booking.check_in_date).days
             if booking.room and booking.room.room_type:
-                booking.total_amount = booking.room.room_type.base_price * nights
+                booking.total_amount = booking.room.room_type.base_rate * nights
             booking.notes = (
                 f"{booking.notes}\n[Gia hạn] {old_check_out_date} → {new_check_out_date}"
                 if booking.notes
@@ -2980,6 +2980,61 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    @extend_schema(
+        summary="Export financial entries",
+        description="Export financial entries to CSV.",
+        parameters=[
+            OpenApiParameter(
+                name="date_from",
+                type=str,
+                description="Start date (YYYY-MM-DD)",
+            ),
+            OpenApiParameter(
+                name="date_to",
+                type=str,
+                description="End date (YYYY-MM-DD)",
+            ),
+            OpenApiParameter(
+                name="entry_type",
+                type=str,
+                description="Filter by type (income, expense)",
+            ),
+        ],
+        responses={200: OpenApiResponse(description="CSV file")},
+        tags=["Financial"],
+    )
+    @action(detail=False, methods=["get"], url_path="export")
+    def export(self, request):
+        """Export financial entries to CSV."""
+        import csv
+        import io
+
+        from django.http import HttpResponse
+
+        queryset = self.get_queryset()
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow([
+            "Ngày", "Loại", "Danh mục", "Số tiền", "Phương thức thanh toán",
+            "Mô tả", "Số tham chiếu", "Người tạo",
+        ])
+        for entry in queryset:
+            writer.writerow([
+                entry.date.isoformat(),
+                entry.entry_type,
+                entry.category.name if entry.category else "",
+                entry.amount,
+                entry.payment_method,
+                entry.description,
+                entry.reference_number,
+                entry.created_by.get_full_name() if entry.created_by else "",
+            ])
+
+        response = HttpResponse(output.getvalue(), content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="financial_entries.csv"'
+        return response
+
 
 @extend_schema_view(
     list=extend_schema(
@@ -3233,6 +3288,66 @@ class NightAuditViewSet(viewsets.ModelViewSet):
             )
 
         return Response(NightAuditSerializer(audit).data)
+
+    @extend_schema(
+        summary="Export night audits",
+        description="Export night audits to CSV.",
+        parameters=[
+            OpenApiParameter(
+                name="date_from",
+                type=str,
+                description="Start date (YYYY-MM-DD)",
+            ),
+            OpenApiParameter(
+                name="date_to",
+                type=str,
+                description="End date (YYYY-MM-DD)",
+            ),
+        ],
+        responses={200: OpenApiResponse(description="CSV file")},
+        tags=["Night Audit"],
+    )
+    @action(detail=False, methods=["get"], url_path="export")
+    def export(self, request):
+        """Export night audits to CSV."""
+        import csv
+        import io
+
+        from django.http import HttpResponse
+
+        queryset = self.get_queryset()
+        date_from = request.query_params.get("date_from")
+        date_to = request.query_params.get("date_to")
+        if date_from:
+            queryset = queryset.filter(audit_date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(audit_date__lte=date_to)
+
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow([
+            "Ngày", "Trạng thái", "Tổng phòng", "Phòng có khách",
+            "Tỷ lệ lấp đầy (%)", "Doanh thu phòng", "Doanh thu khác",
+            "Tổng doanh thu", "Check-in", "Check-out", "Người thực hiện",
+        ])
+        for audit in queryset:
+            writer.writerow([
+                audit.audit_date.isoformat(),
+                audit.status,
+                audit.total_rooms,
+                audit.occupied_rooms,
+                audit.occupancy_rate,
+                audit.room_revenue,
+                audit.other_revenue,
+                audit.total_revenue,
+                audit.checkins,
+                audit.checkouts,
+                audit.performed_by.get_full_name() if audit.performed_by else "",
+            ])
+
+        response = HttpResponse(output.getvalue(), content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="night_audits.csv"'
+        return response
 
 
 # ============================================================
@@ -3582,6 +3697,11 @@ class ExchangeRateViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ["create", "update", "partial_update", "destroy"]:
+            return [IsManager()]
+        return super().get_permissions()
 
     def get_queryset(self):
         from .models import ExchangeRate
@@ -6125,7 +6245,7 @@ class ExportReportView(APIView):
     Export reports to Excel/CSV.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsStaffOrManager]
 
     @extend_schema(
         summary="Export report to file",

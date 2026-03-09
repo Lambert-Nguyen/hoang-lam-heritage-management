@@ -21,6 +21,8 @@ enum HousekeepingTaskType {
   maintenance,
   @JsonValue('inspection')
   inspection,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
@@ -32,6 +34,7 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
         return 'Dọn phòng đang ở';
       case HousekeepingTaskType.deepClean:
         return 'Dọn sâu';
+      case HousekeepingTaskType.unknown:
       case HousekeepingTaskType.maintenance:
         return 'Bảo trì';
       case HousekeepingTaskType.inspection:
@@ -47,6 +50,7 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
         return 'Stay Clean';
       case HousekeepingTaskType.deepClean:
         return 'Deep Clean';
+      case HousekeepingTaskType.unknown:
       case HousekeepingTaskType.maintenance:
         return 'Maintenance';
       case HousekeepingTaskType.inspection:
@@ -62,6 +66,7 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
         return const Color(0xFF4CAF50); // Green
       case HousekeepingTaskType.deepClean:
         return const Color(0xFF9C27B0); // Purple
+      case HousekeepingTaskType.unknown:
       case HousekeepingTaskType.maintenance:
         return const Color(0xFFFF9800); // Orange
       case HousekeepingTaskType.inspection:
@@ -77,6 +82,7 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
         return Icons.bed;
       case HousekeepingTaskType.deepClean:
         return Icons.auto_fix_high;
+      case HousekeepingTaskType.unknown:
       case HousekeepingTaskType.maintenance:
         return Icons.build;
       case HousekeepingTaskType.inspection:
@@ -92,6 +98,7 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
         return 'stay_clean';
       case HousekeepingTaskType.deepClean:
         return 'deep_clean';
+      case HousekeepingTaskType.unknown:
       case HousekeepingTaskType.maintenance:
         return 'maintenance';
       case HousekeepingTaskType.inspection:
@@ -107,6 +114,7 @@ extension HousekeepingTaskTypeExtension on HousekeepingTaskType {
         return l10n.taskTypeStayoverClean;
       case HousekeepingTaskType.deepClean:
         return l10n.taskTypeDeepClean;
+      case HousekeepingTaskType.unknown:
       case HousekeepingTaskType.maintenance:
         return l10n.taskTypeMaintenance;
       case HousekeepingTaskType.inspection:
@@ -125,11 +133,14 @@ enum HousekeepingTaskStatus {
   completed,
   @JsonValue('verified')
   verified,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
   String get displayName {
     switch (this) {
+      case HousekeepingTaskStatus.unknown:
       case HousekeepingTaskStatus.pending:
         return 'Chờ xử lý';
       case HousekeepingTaskStatus.inProgress:
@@ -143,6 +154,7 @@ extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
 
   String get displayNameEn {
     switch (this) {
+      case HousekeepingTaskStatus.unknown:
       case HousekeepingTaskStatus.pending:
         return 'Pending';
       case HousekeepingTaskStatus.inProgress:
@@ -156,6 +168,7 @@ extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
 
   Color get color {
     switch (this) {
+      case HousekeepingTaskStatus.unknown:
       case HousekeepingTaskStatus.pending:
         return const Color(0xFFFFC107); // Amber
       case HousekeepingTaskStatus.inProgress:
@@ -169,6 +182,7 @@ extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
 
   IconData get icon {
     switch (this) {
+      case HousekeepingTaskStatus.unknown:
       case HousekeepingTaskStatus.pending:
         return Icons.schedule;
       case HousekeepingTaskStatus.inProgress:
@@ -182,6 +196,7 @@ extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
 
   String get apiValue {
     switch (this) {
+      case HousekeepingTaskStatus.unknown:
       case HousekeepingTaskStatus.pending:
         return 'pending';
       case HousekeepingTaskStatus.inProgress:
@@ -201,6 +216,7 @@ extension HousekeepingTaskStatusExtension on HousekeepingTaskStatus {
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
+      case HousekeepingTaskStatus.unknown:
       case HousekeepingTaskStatus.pending:
         return l10n.housekeepingStatusPending;
       case HousekeepingTaskStatus.inProgress:
@@ -227,6 +243,8 @@ enum MaintenancePriority {
   high,
   @JsonValue('urgent')
   urgent,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension MaintenancePriorityExtension on MaintenancePriority {
@@ -234,6 +252,7 @@ extension MaintenancePriorityExtension on MaintenancePriority {
     switch (this) {
       case MaintenancePriority.low:
         return 'Thấp';
+      case MaintenancePriority.unknown:
       case MaintenancePriority.medium:
         return 'Trung bình';
       case MaintenancePriority.high:
@@ -247,6 +266,7 @@ extension MaintenancePriorityExtension on MaintenancePriority {
     switch (this) {
       case MaintenancePriority.low:
         return 'Low';
+      case MaintenancePriority.unknown:
       case MaintenancePriority.medium:
         return 'Medium';
       case MaintenancePriority.high:
@@ -260,6 +280,7 @@ extension MaintenancePriorityExtension on MaintenancePriority {
     switch (this) {
       case MaintenancePriority.low:
         return const Color(0xFF4CAF50); // Green
+      case MaintenancePriority.unknown:
       case MaintenancePriority.medium:
         return const Color(0xFFFFC107); // Amber
       case MaintenancePriority.high:
@@ -273,6 +294,7 @@ extension MaintenancePriorityExtension on MaintenancePriority {
     switch (this) {
       case MaintenancePriority.low:
         return Icons.arrow_downward;
+      case MaintenancePriority.unknown:
       case MaintenancePriority.medium:
         return Icons.remove;
       case MaintenancePriority.high:
@@ -286,6 +308,7 @@ extension MaintenancePriorityExtension on MaintenancePriority {
     switch (this) {
       case MaintenancePriority.low:
         return 'low';
+      case MaintenancePriority.unknown:
       case MaintenancePriority.medium:
         return 'medium';
       case MaintenancePriority.high:
@@ -299,6 +322,7 @@ extension MaintenancePriorityExtension on MaintenancePriority {
     switch (this) {
       case MaintenancePriority.low:
         return l10n.priorityLow;
+      case MaintenancePriority.unknown:
       case MaintenancePriority.medium:
         return l10n.priorityMedium;
       case MaintenancePriority.high:
@@ -323,11 +347,14 @@ enum MaintenanceStatus {
   completed,
   @JsonValue('cancelled')
   cancelled,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension MaintenanceStatusExtension on MaintenanceStatus {
   String get displayName {
     switch (this) {
+      case MaintenanceStatus.unknown:
       case MaintenanceStatus.pending:
         return 'Chờ xử lý';
       case MaintenanceStatus.assigned:
@@ -345,6 +372,7 @@ extension MaintenanceStatusExtension on MaintenanceStatus {
 
   String get displayNameEn {
     switch (this) {
+      case MaintenanceStatus.unknown:
       case MaintenanceStatus.pending:
         return 'Pending';
       case MaintenanceStatus.assigned:
@@ -362,6 +390,7 @@ extension MaintenanceStatusExtension on MaintenanceStatus {
 
   Color get color {
     switch (this) {
+      case MaintenanceStatus.unknown:
       case MaintenanceStatus.pending:
         return const Color(0xFFFFC107); // Amber
       case MaintenanceStatus.assigned:
@@ -379,6 +408,7 @@ extension MaintenanceStatusExtension on MaintenanceStatus {
 
   IconData get icon {
     switch (this) {
+      case MaintenanceStatus.unknown:
       case MaintenanceStatus.pending:
         return Icons.schedule;
       case MaintenanceStatus.assigned:
@@ -396,6 +426,7 @@ extension MaintenanceStatusExtension on MaintenanceStatus {
 
   String get apiValue {
     switch (this) {
+      case MaintenanceStatus.unknown:
       case MaintenanceStatus.pending:
         return 'pending';
       case MaintenanceStatus.assigned:
@@ -429,6 +460,7 @@ extension MaintenanceStatusExtension on MaintenanceStatus {
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
+      case MaintenanceStatus.unknown:
       case MaintenanceStatus.pending:
         return l10n.maintenanceStatusPending;
       case MaintenanceStatus.assigned:
@@ -463,6 +495,8 @@ enum MaintenanceCategory {
   safety,
   @JsonValue('other')
   other,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension MaintenanceCategoryExtension on MaintenanceCategory {
@@ -482,6 +516,7 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
         return 'Kết cấu';
       case MaintenanceCategory.safety:
         return 'An toàn';
+      case MaintenanceCategory.unknown:
       case MaintenanceCategory.other:
         return 'Khác';
     }
@@ -503,6 +538,7 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
         return 'Structural';
       case MaintenanceCategory.safety:
         return 'Safety';
+      case MaintenanceCategory.unknown:
       case MaintenanceCategory.other:
         return 'Other';
     }
@@ -524,6 +560,7 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
         return const Color(0xFF607D8B); // Blue Grey
       case MaintenanceCategory.safety:
         return const Color(0xFFF44336); // Red
+      case MaintenanceCategory.unknown:
       case MaintenanceCategory.other:
         return const Color(0xFF9E9E9E); // Grey
     }
@@ -545,6 +582,7 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
         return Icons.foundation;
       case MaintenanceCategory.safety:
         return Icons.health_and_safety;
+      case MaintenanceCategory.unknown:
       case MaintenanceCategory.other:
         return Icons.more_horiz;
     }
@@ -566,6 +604,7 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
         return 'structural';
       case MaintenanceCategory.safety:
         return 'safety';
+      case MaintenanceCategory.unknown:
       case MaintenanceCategory.other:
         return 'other';
     }
@@ -587,6 +626,7 @@ extension MaintenanceCategoryExtension on MaintenanceCategory {
         return l10n.maintCatStructural;
       case MaintenanceCategory.safety:
         return l10n.maintCatSafety;
+      case MaintenanceCategory.unknown:
       case MaintenanceCategory.other:
         return l10n.maintCatOther;
     }
@@ -604,9 +644,9 @@ sealed class HousekeepingTask with _$HousekeepingTask {
     required int id,
     int? room,
     @JsonKey(name: 'room_number') String? roomNumber,
-    @JsonKey(name: 'task_type') required HousekeepingTaskType taskType,
+    @JsonKey(name: 'task_type', unknownEnumValue: HousekeepingTaskType.unknown) required HousekeepingTaskType taskType,
     @JsonKey(name: 'task_type_display') String? taskTypeDisplay,
-    @Default(HousekeepingTaskStatus.pending) HousekeepingTaskStatus status,
+    @Default(HousekeepingTaskStatus.pending) @JsonKey(unknownEnumValue: HousekeepingTaskStatus.unknown) HousekeepingTaskStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @JsonKey(name: 'scheduled_date') required DateTime scheduledDate,
     @JsonKey(name: 'completed_at') DateTime? completedAt,
@@ -699,11 +739,11 @@ sealed class MaintenanceRequest with _$MaintenanceRequest {
     @JsonKey(name: 'location_description') String? locationDescription,
     required String title,
     required String description,
-    @Default(MaintenanceCategory.other) MaintenanceCategory category,
+    @Default(MaintenanceCategory.other) @JsonKey(unknownEnumValue: MaintenanceCategory.unknown) MaintenanceCategory category,
     @JsonKey(name: 'category_display') String? categoryDisplay,
-    @Default(MaintenancePriority.medium) MaintenancePriority priority,
+    @Default(MaintenancePriority.medium) @JsonKey(unknownEnumValue: MaintenancePriority.unknown) MaintenancePriority priority,
     @JsonKey(name: 'priority_display') String? priorityDisplay,
-    @Default(MaintenanceStatus.pending) MaintenanceStatus status,
+    @Default(MaintenanceStatus.pending) @JsonKey(unknownEnumValue: MaintenanceStatus.unknown) MaintenanceStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @JsonKey(name: 'assigned_to') int? assignedTo,
     @JsonKey(name: 'assigned_to_name') String? assignedToName,

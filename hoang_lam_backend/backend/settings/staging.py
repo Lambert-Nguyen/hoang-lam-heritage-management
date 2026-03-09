@@ -16,7 +16,18 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_HSTS_SECONDS = 3600  # 1 hour (shorter than prod for staging)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 X_FRAME_OPTIONS = "DENY"
+
+# Validate critical env vars
+SECRET_KEY_VALUE = os.getenv("SECRET_KEY", "")
+if not SECRET_KEY_VALUE or SECRET_KEY_VALUE.startswith("django-insecure"):
+    raise ValueError("SECRET_KEY must be set to a secure value in staging")
+
+FIELD_ENCRYPTION_KEY = os.getenv("FIELD_ENCRYPTION_KEY", "")
+if not FIELD_ENCRYPTION_KEY:
+    raise ValueError("FIELD_ENCRYPTION_KEY must be set in staging")
 
 # CORS settings - must specify allowed origins
 CORS_ALLOW_ALL_ORIGINS = False

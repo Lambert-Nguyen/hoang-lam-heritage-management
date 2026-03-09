@@ -20,11 +20,14 @@ enum LostFoundStatus {
   donated,
   @JsonValue('disposed')
   disposed,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension LostFoundStatusX on LostFoundStatus {
   String get displayName {
     switch (this) {
+      case LostFoundStatus.unknown:
       case LostFoundStatus.found:
         return 'Đã tìm thấy';
       case LostFoundStatus.stored:
@@ -40,6 +43,7 @@ extension LostFoundStatusX on LostFoundStatus {
 
   String get displayNameEn {
     switch (this) {
+      case LostFoundStatus.unknown:
       case LostFoundStatus.found:
         return 'Found';
       case LostFoundStatus.stored:
@@ -55,6 +59,7 @@ extension LostFoundStatusX on LostFoundStatus {
 
   Color get color {
     switch (this) {
+      case LostFoundStatus.unknown:
       case LostFoundStatus.found:
         return Colors.blue;
       case LostFoundStatus.stored:
@@ -70,6 +75,7 @@ extension LostFoundStatusX on LostFoundStatus {
 
   IconData get icon {
     switch (this) {
+      case LostFoundStatus.unknown:
       case LostFoundStatus.found:
         return Icons.search;
       case LostFoundStatus.stored:
@@ -85,6 +91,7 @@ extension LostFoundStatusX on LostFoundStatus {
 
   String localizedName(AppLocalizations l10n) {
     switch (this) {
+      case LostFoundStatus.unknown:
       case LostFoundStatus.found:
         return l10n.lostFoundStatusFound;
       case LostFoundStatus.stored:
@@ -120,6 +127,8 @@ enum LostFoundCategory {
   personal,
   @JsonValue('other')
   other,
+  @JsonValue('unknown')
+  unknown,
 }
 
 extension LostFoundCategoryX on LostFoundCategory {
@@ -139,6 +148,7 @@ extension LostFoundCategoryX on LostFoundCategory {
         return 'Túi/Vali';
       case LostFoundCategory.personal:
         return 'Đồ cá nhân';
+      case LostFoundCategory.unknown:
       case LostFoundCategory.other:
         return 'Khác';
     }
@@ -160,6 +170,7 @@ extension LostFoundCategoryX on LostFoundCategory {
         return 'Bags/Luggage';
       case LostFoundCategory.personal:
         return 'Personal Items';
+      case LostFoundCategory.unknown:
       case LostFoundCategory.other:
         return 'Other';
     }
@@ -181,6 +192,7 @@ extension LostFoundCategoryX on LostFoundCategory {
         return Icons.luggage;
       case LostFoundCategory.personal:
         return Icons.person;
+      case LostFoundCategory.unknown:
       case LostFoundCategory.other:
         return Icons.category;
     }
@@ -202,6 +214,7 @@ extension LostFoundCategoryX on LostFoundCategory {
         return Colors.teal;
       case LostFoundCategory.personal:
         return Colors.purple;
+      case LostFoundCategory.unknown:
       case LostFoundCategory.other:
         return Colors.grey;
     }
@@ -223,6 +236,7 @@ extension LostFoundCategoryX on LostFoundCategory {
         return l10n.lostFoundCatBags;
       case LostFoundCategory.personal:
         return l10n.lostFoundCatPersonal;
+      case LostFoundCategory.unknown:
       case LostFoundCategory.other:
         return l10n.lostFoundCatOther;
     }
@@ -239,7 +253,7 @@ sealed class LostFoundItem with _$LostFoundItem {
     required int id,
     @JsonKey(name: 'item_name') required String itemName,
     @Default('') String description,
-    required LostFoundCategory category,
+    @JsonKey(unknownEnumValue: LostFoundCategory.unknown) required LostFoundCategory category,
     @JsonKey(name: 'category_display') String? categoryDisplay,
     @JsonKey(name: 'estimated_value') double? estimatedValue,
     // Location
@@ -252,7 +266,7 @@ sealed class LostFoundItem with _$LostFoundItem {
     @JsonKey(name: 'guest_name') String? guestName,
     int? booking,
     // Status
-    required LostFoundStatus status,
+    @JsonKey(unknownEnumValue: LostFoundStatus.unknown) required LostFoundStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @JsonKey(name: 'found_date') required String foundDate,
     @JsonKey(name: 'claimed_date') String? claimedDate,

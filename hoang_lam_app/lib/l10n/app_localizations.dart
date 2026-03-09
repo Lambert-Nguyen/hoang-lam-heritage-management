@@ -1796,6 +1796,8 @@ class AppLocalizations {
   String get errorRoomExists => translate('error_room_exists');
   String get errorCannotDeleteRoom => translate('error_cannot_delete_room');
   String get errorReportExport => translate('error_report_export');
+  String get featureNotAvailableOnWeb =>
+      translate('feature_not_available_on_web');
   String get biometricAuthenticateLogin =>
       translate('biometric_authenticate_login');
   String get biometricFingerprint => translate('biometric_fingerprint');
@@ -3570,6 +3572,7 @@ const Map<String, String> _viTranslations = {
   'error_room_exists': 'Số phòng đã tồn tại',
   'error_cannot_delete_room': 'Không thể xóa phòng đang có đặt phòng',
   'error_report_export': 'Lỗi xuất báo cáo: {error}',
+  'feature_not_available_on_web': 'Tính năng này không khả dụng trên web',
   'biometric_authenticate_login': 'Xác thực để đăng nhập',
   'biometric_fingerprint': 'Vân tay',
   'biometric_iris': 'Quét mống mắt',
@@ -5343,6 +5346,7 @@ const Map<String, String> _enTranslations = {
   'error_room_exists': 'Room number already exists',
   'error_cannot_delete_room': 'Cannot delete room with active bookings',
   'error_report_export': 'Report export error: {error}',
+  'feature_not_available_on_web': 'This feature is not available on web',
   'biometric_authenticate_login': 'Authenticate to login',
   'biometric_fingerprint': 'Fingerprint',
   'biometric_iris': 'Iris Scan',

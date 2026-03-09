@@ -588,6 +588,7 @@ class BookingSerializer(serializers.ModelSerializer):
             "payment_method",
             "is_paid",
             "notes",
+            "internal_notes",
             "special_requests",
             "nights",
             "balance_due",
@@ -725,6 +726,7 @@ class BookingListSerializer(serializers.ModelSerializer):
             "hourly_rate",
             "total_amount",
             "is_paid",
+            "internal_notes",
             "nights",
             "created_at",
         ]

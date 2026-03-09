@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../models/finance.dart';
 import '../repositories/finance_repository.dart';
 import 'providers.dart';
+import '../core/utils/error_utils.dart';
 
 part 'folio_provider.freezed.dart';
 
@@ -113,7 +114,7 @@ class FolioNotifier extends StateNotifier<FolioState> {
         error: _ref
             .read(l10nProvider)
             .errorFolioLoad
-            .replaceAll('{error}', e.toString()),
+            .replaceAll('{error}', getLocalizedErrorMessage(e, _ref.read(l10nProvider))),
       );
     }
   }
@@ -162,7 +163,7 @@ class FolioNotifier extends StateNotifier<FolioState> {
         error: _ref
             .read(l10nProvider)
             .errorChargeAdd
-            .replaceAll('{error}', e.toString()),
+            .replaceAll('{error}', getLocalizedErrorMessage(e, _ref.read(l10nProvider))),
       );
       return false;
     }
@@ -193,7 +194,7 @@ class FolioNotifier extends StateNotifier<FolioState> {
         error: _ref
             .read(l10nProvider)
             .errorChargeVoid
-            .replaceAll('{error}', e.toString()),
+            .replaceAll('{error}', getLocalizedErrorMessage(e, _ref.read(l10nProvider))),
       );
       return false;
     }

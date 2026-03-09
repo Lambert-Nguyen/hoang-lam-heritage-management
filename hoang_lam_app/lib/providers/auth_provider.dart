@@ -16,6 +16,13 @@ import 'housekeeping_provider.dart';
 import 'night_audit_provider.dart';
 import 'room_provider.dart';
 import 'settings_provider.dart';
+import 'minibar_provider.dart';
+import 'rate_plan_provider.dart';
+import 'notification_provider.dart';
+import 'lost_found_provider.dart';
+import 'group_booking_provider.dart';
+import 'room_inspection_provider.dart';
+import 'audit_log_provider.dart';
 import '../repositories/auth_repository.dart';
 
 /// Provider for AuthRepository
@@ -169,6 +176,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
       _ref.invalidate(staffListProvider);
       _ref.invalidate(financialEntriesProvider);
       _ref.invalidate(financialCategoriesProvider);
+      _ref.invalidate(minibarItemsProvider);
+      _ref.invalidate(minibarSalesProvider);
+      _ref.invalidate(ratePlansProvider);
+      _ref.invalidate(activeRatePlansProvider);
+      _ref.invalidate(notificationsProvider);
+      _ref.invalidate(unreadNotificationCountProvider);
+      _ref.invalidate(lostFoundItemsProvider);
+      _ref.invalidate(groupBookingsProvider);
+      _ref.invalidate(roomInspectionsProvider);
+      _ref.invalidate(pendingInspectionsTodayProvider);
+      _ref.invalidate(inspectionStatisticsProvider);
+      _ref.invalidate(auditLogsProvider);
       state = const AuthState.unauthenticated();
     }
   }

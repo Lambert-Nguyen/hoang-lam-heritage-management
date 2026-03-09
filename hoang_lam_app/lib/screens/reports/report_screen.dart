@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -261,6 +262,12 @@ class ReportScreen extends ConsumerWidget {
 
     if (context.mounted) {
       if (result != null) {
+        if (kIsWeb) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(context.l10n.featureNotAvailableOnWeb)),
+          );
+          return;
+        }
         try {
           final dir = await getTemporaryDirectory();
           final extension = format == ExportFormat.xlsx ? 'xlsx' : 'csv';

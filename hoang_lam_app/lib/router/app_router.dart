@@ -114,7 +114,7 @@ class AppRoutes {
   static const String dateOverrideEdit = '/pricing/date-overrides/:id';
   // Notification & Messaging routes
   static const String notifications = '/notifications';
-  static const String sendMessage = '/send-message';
+  static const String sendMessage = '/send-message/:guestId';
   static const String messageHistory = '/message-history';
   // Audit log
   static const String auditLog = '/audit-log';
@@ -203,20 +203,41 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Room Management routes (outside shell for full screen)
+      // Room Management routes (outside shell for full screen) — Manager/Owner only
       GoRoute(
         path: AppRoutes.roomManagement,
         name: 'roomManagement',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+            return AppRoutes.home;
+          }
+          return null;
+        },
         builder: (context, state) => const RoomManagementScreen(),
       ),
       GoRoute(
         path: AppRoutes.roomNew,
         name: 'roomNew',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+            return AppRoutes.home;
+          }
+          return null;
+        },
         builder: (context, state) => const RoomFormScreen(),
       ),
       GoRoute(
         path: AppRoutes.roomEdit,
         name: 'roomEdit',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+            return AppRoutes.home;
+          }
+          return null;
+        },
         builder: (context, state) {
           final room = state.extra as Room?;
           return RoomFormScreen(room: room);
@@ -393,15 +414,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Group Booking routes (outside shell for full screen)
+      // Group Booking routes (outside shell for full screen) — Staff and above
       GoRoute(
         path: AppRoutes.groupBookingNew,
         name: 'groupBookingNew',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) => const GroupBookingFormScreen(),
       ),
       GoRoute(
         path: '/group-bookings/:id/edit',
         name: 'groupBookingEdit',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
@@ -480,11 +511,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.sendMessage,
         name: 'sendMessage',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
-          final guestId = extra?['guestId'] as int?;
-          final guestName = extra?['guestName'] as String?;
-          if (extra == null || guestId == null || guestName == null) {
+          final guestIdStr = state.pathParameters['guestId'];
+          final guestId = int.tryParse(guestIdStr ?? '');
+          final guestName = state.uri.queryParameters['guestName'] ?? '';
+          final bookingIdStr = state.uri.queryParameters['bookingId'];
+          final bookingId = int.tryParse(bookingIdStr ?? '');
+          if (guestId == null || guestName.isEmpty) {
             return Scaffold(
               appBar: AppBar(title: Text(context.l10n.error)),
               body: Center(
@@ -505,7 +543,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return MessageTemplateScreen(
             guestId: guestId,
             guestName: guestName,
-            bookingId: extra['bookingId'] as int?,
+            bookingId: bookingId,
           );
         },
       ),
@@ -513,11 +551,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.messageHistory,
         name: 'messageHistory',
         builder: (context, state) {
-          final extra = state.extra as Map<String, dynamic>?;
+          final guestIdStr = state.uri.queryParameters['guestId'];
+          final bookingIdStr = state.uri.queryParameters['bookingId'];
           return MessageHistoryScreen(
-            guestId: extra?['guestId'] as int?,
-            bookingId: extra?['bookingId'] as int?,
-            title: extra?['title'] as String? ?? context.l10n.messageHistory,
+            guestId: int.tryParse(guestIdStr ?? ''),
+            bookingId: int.tryParse(bookingIdStr ?? ''),
+            title: state.uri.queryParameters['title'] ?? context.l10n.messageHistory,
           );
         },
       ),
@@ -663,6 +702,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.guestForm,
         name: 'guestForm',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final guest = state.extra as Guest?;
           return GuestFormScreen(guest: guest);
@@ -682,10 +726,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Minibar Item Form (outside shell for full screen)
+      // Minibar Item Form (outside shell for full screen) — Manager/Owner only
       GoRoute(
         path: AppRoutes.minibarItemForm,
         name: 'minibarItemForm',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+            return AppRoutes.home;
+          }
+          return null;
+        },
         builder: (context, state) {
           final item = state.extra as MinibarItem?;
           return MinibarItemFormScreen(item: item);
@@ -869,10 +920,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: LostFoundListScreen()),
           ),
 
-          // Group Bookings
+          // Group Bookings — Staff and above
           GoRoute(
             path: AppRoutes.groupBookings,
             name: 'groupBookings',
+            redirect: (context, state) {
+              final user = ref.read(currentUserProvider);
+              if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+              return null;
+            },
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: GroupBookingListScreen()),
           ),

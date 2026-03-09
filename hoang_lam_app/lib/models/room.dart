@@ -55,6 +55,8 @@ enum RoomStatus {
   maintenance,
   @JsonValue('blocked')
   blocked,
+  @JsonValue('unknown')
+  unknown,
 }
 
 /// Extension to get status display names and colors
@@ -69,6 +71,7 @@ extension RoomStatusExtension on RoomStatus {
         return 'Đang dọn';
       case RoomStatus.maintenance:
         return 'Bảo trì';
+      case RoomStatus.unknown:
       case RoomStatus.blocked:
         return 'Khóa';
     }
@@ -84,6 +87,7 @@ extension RoomStatusExtension on RoomStatus {
         return 'Cleaning';
       case RoomStatus.maintenance:
         return 'Maintenance';
+      case RoomStatus.unknown:
       case RoomStatus.blocked:
         return 'Blocked';
     }
@@ -99,6 +103,7 @@ extension RoomStatusExtension on RoomStatus {
         return AppColors.cleaning;
       case RoomStatus.maintenance:
         return AppColors.maintenance;
+      case RoomStatus.unknown:
       case RoomStatus.blocked:
         return AppColors.blocked;
     }
@@ -114,6 +119,7 @@ extension RoomStatusExtension on RoomStatus {
         return Icons.cleaning_services;
       case RoomStatus.maintenance:
         return Icons.build;
+      case RoomStatus.unknown:
       case RoomStatus.blocked:
         return Icons.block;
     }
@@ -137,6 +143,7 @@ extension RoomStatusExtension on RoomStatus {
         return l10n.roomStatusCleaning;
       case RoomStatus.maintenance:
         return l10n.roomStatusMaintenance;
+      case RoomStatus.unknown:
       case RoomStatus.blocked:
         return l10n.roomStatusBlocked;
     }
@@ -203,7 +210,7 @@ sealed class Room with _$Room {
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     @JsonKey(name: 'room_type_details') RoomType? roomTypeDetails,
     @Default(1) int floor,
-    @Default(RoomStatus.available) RoomStatus status,
+    @Default(RoomStatus.available) @JsonKey(unknownEnumValue: RoomStatus.unknown) RoomStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @Default([]) List<String> amenities,
     String? notes,

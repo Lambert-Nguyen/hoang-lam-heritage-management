@@ -12,7 +12,13 @@ from celery import shared_task
 logger = logging.getLogger("hotel_api")
 
 
-@shared_task(name="hotel_api.tasks.send_checkin_reminders")
+@shared_task(
+    name="hotel_api.tasks.send_checkin_reminders",
+    autoretry_for=(Exception,),
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=600,
+)
 def send_checkin_reminders():
     """
     Send push notifications for today's expected check-ins.
@@ -52,7 +58,13 @@ def send_checkin_reminders():
     return f"Sent {count} check-in reminder(s)."
 
 
-@shared_task(name="hotel_api.tasks.send_checkout_reminders")
+@shared_task(
+    name="hotel_api.tasks.send_checkout_reminders",
+    autoretry_for=(Exception,),
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=600,
+)
 def send_checkout_reminders():
     """
     Send push notifications for today's expected check-outs.
@@ -92,7 +104,13 @@ def send_checkout_reminders():
     return f"Sent {count} check-out reminder(s)."
 
 
-@shared_task(name="hotel_api.tasks.cleanup_expired_tokens")
+@shared_task(
+    name="hotel_api.tasks.cleanup_expired_tokens",
+    autoretry_for=(Exception,),
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=600,
+)
 def cleanup_expired_tokens():
     """
     Remove expired and blacklisted JWT tokens from the database.
@@ -114,7 +132,13 @@ def cleanup_expired_tokens():
     return f"Cleaned up {expired_count} expired token(s)."
 
 
-@shared_task(name="hotel_api.tasks.apply_data_retention_policy")
+@shared_task(
+    name="hotel_api.tasks.apply_data_retention_policy",
+    autoretry_for=(Exception,),
+    max_retries=3,
+    retry_backoff=True,
+    retry_backoff_max=600,
+)
 def apply_data_retention_policy():
     """
     Apply data retention policy — delete records past their retention period.

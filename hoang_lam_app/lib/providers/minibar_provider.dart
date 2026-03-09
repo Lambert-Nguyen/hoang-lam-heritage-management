@@ -3,6 +3,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/minibar.dart';
 import '../repositories/minibar_repository.dart';
+import '../core/utils/error_utils.dart';
+import 'dashboard_provider.dart';
+import 'finance_provider.dart';
 import 'folio_provider.dart';
 import 'settings_provider.dart';
 
@@ -282,13 +285,15 @@ class MinibarCartNotifier extends StateNotifier<MinibarCartState> {
 
       return true;
     } catch (e) {
-      state = state.copyWith(isProcessing: false, errorMessage: e.toString());
+      state = state.copyWith(isProcessing: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return false;
     }
   }
 
   void _invalidateProviders([int? bookingId]) {
     _ref.invalidate(minibarSalesProvider);
+    _ref.invalidate(financialEntriesProvider);
+    _ref.invalidate(dashboardSummaryProvider);
     final id = bookingId ?? state.bookingId;
     if (id != null) {
       _ref.invalidate(salesByBookingProvider(id));
@@ -349,7 +354,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       );
       state = state.copyWith(isLoading: false, items: items);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -365,7 +370,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateItemProviders();
       return newItem;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -385,7 +390,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateItemProviders();
       return updated;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -402,7 +407,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateItemProviders();
       return updated;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -417,7 +422,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateItemProviders();
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return false;
     }
   }
@@ -443,7 +448,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       );
       state = state.copyWith(isLoading: false, sales: sales);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
     }
   }
 
@@ -459,7 +464,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(request.booking);
       return newSale;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -476,7 +481,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(updated.booking);
       return updated;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -493,7 +498,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(updated.booking);
       return updated;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
@@ -508,7 +513,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(bookingId);
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return false;
     }
   }
@@ -522,7 +527,7 @@ class MinibarNotifier extends StateNotifier<MinibarState> {
       _invalidateSaleProviders(bookingId);
       return response;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
       return null;
     }
   }
