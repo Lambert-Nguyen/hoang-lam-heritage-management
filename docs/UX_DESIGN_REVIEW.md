@@ -874,3 +874,71 @@ These Round 6 issues were verified as **already fixed**:
 | R7-30 | Add role guards to remaining unguarded routes | Small |
 | R7-31 | Change connectivity check to ping own backend | Small |
 | R7-45 | Replace remaining raw `error.toString()` with `getLocalizedErrorMessage()` | Small |
+
+---
+
+## Current Status Update (2026-03-09) — Role-Based Design Review
+
+> **Method**: Rigorous cross-check of role behavior across 4 layers: (1) documented role intent in `USER_GUIDE.md`, (2) role-based navigation/menu visibility in Flutter, (3) route-level guards in GoRouter, and (4) backend API authorization in DRF view permissions.
+
+### Executive Verdict
+
+- **Partially correct**: core owner/manager restrictions for pricing, finance tabs, and audit logs are in place.
+- **Not fully consistent**: there are still role mismatches across UI menu, route guards, and backend permissions.
+- **Primary risk pattern**: UI allows navigation into screens that the backend later rejects (authorization mismatch), and some backend endpoints are broader than UI intent (policy mismatch).
+
+### What Is Correct
+
+| Area | Status | Notes |
+|---|---|---|
+| Owner-only pricing | ✅ Correct | Owner-only route guards exist on pricing routes; settings tile also owner-only |
+| Finance tab access | ✅ Correct | Owner/manager only in route guard and nav model |
+| Audit log access | ✅ Correct | Restricted in both router and backend (`IsOwnerOrManager`) |
+| Group booking housekeeping block | ✅ Correct | Housekeeping blocked from create/edit/detail/list group booking routes |
+
+### Current Role-Design Gaps
+
+| # | Severity | Gap | Impact |
+|---|---|---|---|
+| RS-1 | **High** | **Housekeeping workflow scope mismatch**: doc says housekeeping should handle only cleaning/inspection, but More menu still exposes broader operations (maintenance, minibar, room management links) | Housekeeping can enter out-of-scope screens and then hit permission failures, causing broken UX |
+| RS-2 | **High** | **Maintenance route is not role-guarded in router** while backend uses `IsStaffOrManager` | Housekeeping can navigate to maintenance pages but actions/data may fail due to backend authorization |
+| RS-3 | **High** | **Minibar is too permissive in backend** (`IsAuthenticated` only on minibar item/sale viewsets) | Housekeeping can access minibar APIs despite "tasks + inspections only" role intent |
+| RS-4 | **High** | **Reports/analytics authorization mismatch**: router restricts to owner/manager, but multiple backend report APIs are `IsAuthenticated` only | Non-manager users can call sensitive reporting endpoints directly |
+| RS-5 | **Medium** | **Staff directory endpoint is broad** (`auth/staff/` requires only authentication) | Role/data exposure is wider than needed for constrained roles |
+| RS-6 | **Medium** | **Menu-level role filtering and route/API policy are not centralized** | Policy drift risk: future screens can easily become inconsistent across layers |
+
+### Use-Case Consistency Check (Role × Workflow)
+
+| Role | Intended Use Cases | Current Status |
+|---|---|---|
+| Owner | Full access including pricing, staff management, audit | Mostly consistent |
+| Manager | Operations + finance/reporting (no owner-only pricing) | Mostly consistent |
+| Staff | Booking/guest/room/housekeeping/operations | Generally consistent |
+| Housekeeping | Cleaning tasks + inspections (and minimal related actions) | **Inconsistent**: UI exposure and some backend policies do not match this intent |
+
+### Priority Remediation Plan
+
+#### P0 (Must align now)
+
+1. Define a single role-policy matrix (route + menu + API) and enforce it as source-of-truth.
+2. Restrict minibar backend permissions from `IsAuthenticated` to the intended business roles.
+3. Restrict report endpoints from `IsAuthenticated` to owner/manager (or explicit report roles).
+4. Add missing router guards for maintenance and any route whose backend excludes housekeeping.
+
+#### P1 (Should harden)
+
+1. Filter More menu operations by role capability (do not show inaccessible features).
+2. Align `auth/staff/` endpoint with least privilege and intended assignment workflows.
+3. Add authorization integration tests per role for critical endpoints (finance, reports, minibar, housekeeping, staff list).
+
+#### P2 (Governance / drift prevention)
+
+1. Add a policy checklist to PR review: every new feature must pass menu + route + API role alignment.
+2. Add regression tests that assert role-route matrix and role-endpoint matrix.
+3. Document role capabilities in one canonical markdown table referenced by both frontend and backend teams.
+
+### Final Status Statement
+
+- The role-based design is **improved but not yet fully correct**.
+- Most critical remaining work is **authorization consistency** rather than UI styling or flow design.
+- After P0 is completed, the app will have a coherent and predictable role model across use cases, screens, and backend APIs.
