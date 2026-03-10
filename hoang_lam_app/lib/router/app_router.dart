@@ -337,6 +337,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '${AppRoutes.maintenanceDetail}/:requestId',
         name: 'maintenanceDetail',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           // Try extra first (in-app navigation)
           final request = state.extra;
@@ -373,6 +378,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.maintenanceNew,
         name: 'maintenanceNew',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final request = state.extra as MaintenanceRequest?;
           return MaintenanceFormScreen(request: request);
@@ -836,10 +846,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: FinanceScreen()),
           ),
 
-          // Minibar POS
+          // Minibar POS — Staff and above
           GoRoute(
             path: AppRoutes.minibarPos,
             name: 'minibarPos',
+            redirect: (context, state) {
+              final user = ref.read(currentUserProvider);
+              if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+              return null;
+            },
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: MinibarPosScreen()),
             routes: [
@@ -909,10 +924,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 const NoTransitionPage(child: TaskListScreen()),
           ),
 
-          // Maintenance Requests
+          // Maintenance Requests — Staff and above
           GoRoute(
             path: AppRoutes.maintenance,
             name: 'maintenance',
+            redirect: (context, state) {
+              final user = ref.read(currentUserProvider);
+              if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+              return null;
+            },
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: MaintenanceListScreen()),
           ),

@@ -287,9 +287,9 @@ class UserProfileView(APIView):
     )
 )
 class StaffListView(APIView):
-    """Staff list endpoint for task assignment."""
+    """Staff list endpoint for task assignment — accessible to staff, managers, and owners."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
 
     def get(self, request):
         """Get list of all active staff members."""
@@ -4747,10 +4747,11 @@ class MinibarItemViewSet(viewsets.ModelViewSet):
     ViewSet for managing minibar items.
 
     Provides CRUD operations for minibar inventory items.
+    Staff, managers, and owners can access minibar items.
     """
 
     queryset = MinibarItem.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -4912,10 +4913,11 @@ class MinibarSaleViewSet(viewsets.ModelViewSet):
     ViewSet for managing minibar sales.
 
     Provides CRUD operations for minibar sales/charges.
+    Staff, managers, and owners can manage minibar sales.
     """
 
     queryset = MinibarSale.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStaffOrManager]
 
     def get_serializer_class(self):
         if self.action == "create":
@@ -5266,9 +5268,10 @@ class OccupancyReportView(APIView):
     """
     Occupancy report endpoint.
     Returns daily/weekly/monthly occupancy data with revenue.
+    Only owners and managers can access reports.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Get occupancy report",
@@ -5448,9 +5451,10 @@ class RevenueReportView(APIView):
     """
     Revenue report endpoint.
     Returns revenue breakdown by source with expenses and profit.
+    Only owners and managers can access reports.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Get revenue report",
@@ -5659,9 +5663,10 @@ class KPIReportView(APIView):
     """
     KPI report endpoint (RevPAR, ADR, etc.).
     Returns key performance indicators for the hotel.
+    Only owners and managers can access reports.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Get KPI report",
@@ -5817,9 +5822,10 @@ class KPIReportView(APIView):
 class ExpenseReportView(APIView):
     """
     Expense breakdown report by category.
+    Only owners and managers can access reports.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Get expense breakdown report",
@@ -5895,9 +5901,10 @@ class ExpenseReportView(APIView):
 class ChannelPerformanceView(APIView):
     """
     Channel (booking source) performance report.
+    Only owners and managers can access reports.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Get channel performance report",
@@ -5986,9 +5993,10 @@ class ChannelPerformanceView(APIView):
 class GuestDemographicsView(APIView):
     """
     Guest demographics report.
+    Only owners and managers can access reports.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Get guest demographics report",
@@ -6080,9 +6088,10 @@ class GuestDemographicsView(APIView):
 class ComparativeReportView(APIView):
     """
     Period-over-period comparative report.
+    Only owners and managers can access reports.
     """
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Get comparative report",

@@ -942,3 +942,46 @@ These Round 6 issues were verified as **already fixed**:
 - The role-based design is **improved but not yet fully correct**.
 - Most critical remaining work is **authorization consistency** rather than UI styling or flow design.
 - After P0 is completed, the app will have a coherent and predictable role model across use cases, screens, and backend APIs.
+
+---
+
+## P0 Role-Based Fixes — IMPLEMENTED (2026-03-10)
+
+> **Method**: Implemented all P0 remediation items from the role-based design review. Changes span backend API permissions, frontend route guards, menu visibility, and role capability model.
+
+### Fixes Applied
+
+| # | Gap | Fix Applied | Files Changed |
+|---|-----|-------------|---------------|
+| RS-1 | Housekeeping sees full Operations menu | Operations section now role-filtered: housekeeping sees only Tasks + Inspections; maintenance, room mgmt, minibar, lost & found require `canAccessFullOperations` | `more_menu_screen.dart`, `user.dart` |
+| RS-2 | Maintenance routes not guarded | Added `redirect` guards on maintenance list, detail, and new routes — blocks housekeeping role | `app_router.dart` |
+| RS-3 | Minibar backend too permissive | Changed `MinibarItemViewSet` and `MinibarSaleViewSet` from `IsAuthenticated` to `IsAuthenticated, IsStaffOrManager` | `views.py` |
+| RS-3 | Minibar routes not guarded | Added `redirect` guard on minibar POS route — blocks housekeeping role | `app_router.dart` |
+| RS-4 | Reports backend too permissive | Changed all 7 report views (Occupancy, Revenue, KPI, Expense, Channel, Demographics, Comparative) from `IsAuthenticated` to `IsAuthenticated, IsOwnerOrManager` | `views.py` |
+| RS-5 | Staff directory too broad | Changed `StaffListView` from `IsAuthenticated` to `IsAuthenticated, IsStaffOrManager` — housekeeping can no longer list all staff | `views.py` |
+
+### New Capability Added
+
+| Extension | Roles | Purpose |
+|-----------|-------|---------|
+| `canAccessFullOperations` | owner, manager, staff | Controls visibility of maintenance, room mgmt, minibar, lost & found in More menu + router |
+
+### Test Updates
+
+- Updated `test_reports.py` fixtures: test user now has `HotelUser` profile with `manager` role
+- Added `staff_user` and `staff_client` fixtures for permission denial tests
+- Added `test_occupancy_report_forbidden_for_staff` — verifies staff gets 403 on report endpoints
+- All 33 minibar tests pass (existing tests already use correct roles)
+- All 30 report tests pass
+- All 16 user model tests pass
+
+### Files Changed
+
+**Backend:**
+- `hoang_lam_backend/hotel_api/views.py` — 11 permission class updates (2 minibar + 7 reports + 1 staff list + 1 staff list docstring)
+- `hoang_lam_backend/hotel_api/tests/test_reports.py` — Added `HotelUser` import, manager role on user fixture, staff permission test fixtures + test
+
+**Frontend:**
+- `hoang_lam_app/lib/models/user.dart` — Added `canAccessFullOperations` capability extension
+- `hoang_lam_app/lib/screens/more/more_menu_screen.dart` — Operations section split: base items (tasks + inspections) always visible, extended items gated by `canAccessFullOperations`
+- `hoang_lam_app/lib/router/app_router.dart` — Added housekeeping-blocking `redirect` guards on 4 routes: minibar POS, maintenance list, maintenance detail, maintenance new

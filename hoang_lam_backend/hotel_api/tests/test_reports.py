@@ -17,6 +17,7 @@ from hotel_api.models import (
     FinancialCategory,
     FinancialEntry,
     Guest,
+    HotelUser,
     MinibarItem,
     MinibarSale,
     Room,
@@ -31,9 +32,28 @@ def api_client():
 
 @pytest.fixture
 def user(db):
-    return User.objects.create_user(
+    user = User.objects.create_user(
         username="testuser", password="testpass123", email="test@example.com"
     )
+    HotelUser.objects.create(user=user, role="manager", phone="+84900000000")
+    return user
+
+
+@pytest.fixture
+def staff_user(db):
+    """Create a staff user (non-manager) for permission tests."""
+    user = User.objects.create_user(
+        username="staffuser", password="testpass123", email="staff@example.com"
+    )
+    HotelUser.objects.create(user=user, role="staff", phone="+84900000001")
+    return user
+
+
+@pytest.fixture
+def staff_client(api_client, staff_user):
+    """Client authenticated as staff — should be denied access to reports."""
+    api_client.force_authenticate(user=staff_user)
+    return api_client
 
 
 @pytest.fixture
@@ -221,6 +241,12 @@ class TestOccupancyReport:
         url = reverse("report_occupancy")
         response = api_client.get(url)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_occupancy_report_forbidden_for_staff(self, staff_client):
+        """Test that staff users without manager/owner role are denied."""
+        url = reverse("report_occupancy")
+        response = staff_client.get(url)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
     def test_occupancy_report_missing_dates(self, authenticated_client):
         """Test that missing date parameters return error."""

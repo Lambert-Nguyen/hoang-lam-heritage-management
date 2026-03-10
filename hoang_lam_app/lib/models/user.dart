@@ -63,6 +63,12 @@ extension UserRoleExtension on UserRole {
     return this != UserRole.housekeeping;
   }
 
+  /// Check if user can access full operations (maintenance, minibar, room mgmt, lost & found)
+  /// Housekeeping only gets tasks + inspections
+  bool get canAccessFullOperations {
+    return this != UserRole.housekeeping && this != UserRole.unknown;
+  }
+
   String localizedName(AppLocalizations l10n) {
     switch (this) {
       case UserRole.owner:

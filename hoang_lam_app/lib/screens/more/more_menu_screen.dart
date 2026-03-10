@@ -163,45 +163,53 @@ class _MoreMenuScreenState extends ConsumerState<MoreMenuScreen> {
       );
     }
 
-    // Operations section
+    // Operations section — role-filtered
     final operationsItems = <_MenuItem>[
+      // Housekeeping tasks — visible to all roles
       _MenuItem(
         icon: Icons.cleaning_services,
         label: l10n.housekeepingTasks,
         route: AppRoutes.housekeepingTasks,
         color: Colors.teal,
       ),
-      _MenuItem(
-        icon: Icons.build,
-        label: l10n.maintenance,
-        route: AppRoutes.maintenance,
-        color: Colors.orange,
-      ),
-      _MenuItem(
-        icon: Icons.meeting_room,
-        label: l10n.roomManagement,
-        route: AppRoutes.roomManagement,
-        color: Colors.blue,
-      ),
+      // Room inspections — visible to all roles
       _MenuItem(
         icon: Icons.checklist,
         label: l10n.roomInspection,
         route: AppRoutes.roomInspections,
         color: Colors.deepPurple,
       ),
-      _MenuItem(
-        icon: Icons.local_bar,
-        label: l10n.minibarManagement,
-        route: AppRoutes.minibarPos,
-        color: Colors.pink,
-      ),
-      _MenuItem(
-        icon: Icons.inventory_2,
-        label: l10n.lostAndFound,
-        route: AppRoutes.lostFound,
-        color: Colors.brown,
-      ),
     ];
+
+    // Full operations items — only for staff, managers, and owners
+    if (role?.canAccessFullOperations ?? false) {
+      operationsItems.addAll([
+        _MenuItem(
+          icon: Icons.build,
+          label: l10n.maintenance,
+          route: AppRoutes.maintenance,
+          color: Colors.orange,
+        ),
+        _MenuItem(
+          icon: Icons.meeting_room,
+          label: l10n.roomManagement,
+          route: AppRoutes.roomManagement,
+          color: Colors.blue,
+        ),
+        _MenuItem(
+          icon: Icons.local_bar,
+          label: l10n.minibarManagement,
+          route: AppRoutes.minibarPos,
+          color: Colors.pink,
+        ),
+        _MenuItem(
+          icon: Icons.inventory_2,
+          label: l10n.lostAndFound,
+          route: AppRoutes.lostFound,
+          color: Colors.brown,
+        ),
+      ]);
+    }
     sections.add(
       _MenuSection(title: l10n.operationsCategory, items: operationsItems),
     );
