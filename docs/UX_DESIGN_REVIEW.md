@@ -985,3 +985,55 @@ These Round 6 issues were verified as **already fixed**:
 - `hoang_lam_app/lib/models/user.dart` — Added `canAccessFullOperations` capability extension
 - `hoang_lam_app/lib/screens/more/more_menu_screen.dart` — Operations section split: base items (tasks + inspections) always visible, extended items gated by `canAccessFullOperations`
 - `hoang_lam_app/lib/router/app_router.dart` — Added housekeeping-blocking `redirect` guards on 4 routes: minibar POS, maintenance list, maintenance detail, maintenance new
+
+---
+
+## P1 Role-Based Fixes — IMPLEMENTED (2026-03-11)
+
+> **Method**: Hardened remaining route guards, aligned ExportReportView permissions with other report endpoints, and added comprehensive role-based authorization integration tests covering all critical endpoints.
+
+### Fixes Applied
+
+| # | Gap | Fix Applied | Files Changed |
+|---|-----|-------------|---------------|
+| RS-6 / R7-30 | Lost & Found routes missing guards | Added `redirect` guards on `lostFoundNew`, `lostFoundEdit`, `lostFoundDetail` — blocks housekeeping role (matches backend `IsStaffOrManager`) | `app_router.dart` |
+| RS-6 / R7-29 | messageHistory route missing guard | Added `redirect` guard — blocks housekeeping role (aligns with sendMessage guard) | `app_router.dart` |
+| RS-6 | financeForm route missing guard | Added `redirect` guard — owner/manager only (aligns with finance tab guard and backend `IsStaff`/`IsManager` permissions) | `app_router.dart` |
+| R7-6–7 | ExportReportView used `IsStaffOrManager` while all other reports use `IsOwnerOrManager` | Changed to `[IsAuthenticated, IsOwnerOrManager]` for consistency | `views.py` |
+| R7-6–7 | ExchangeRate write ops | Already correctly guarded with `IsManager()` via `get_permissions()` — verified, no change needed | — |
+
+### New Integration Tests
+
+Created `test_role_authorization.py` with **54 tests** covering role-based access across all critical endpoints:
+
+| Test Class | Endpoints Covered | Tests |
+|------------|-------------------|-------|
+| `TestReportAuthorization` | 7 report views (occupancy, revenue, kpi, expenses, channels, demographics, comparative) | 28 (4 roles x 7 endpoints) |
+| `TestExportReportAuthorization` | Export report | 4 |
+| `TestMinibarAuthorization` | Minibar items + sales | 5 |
+| `TestStaffListAuthorization` | Staff list | 4 |
+| `TestFinanceAuthorization` | Finance categories + entries (read + write) | 8 |
+| `TestLostFoundAuthorization` | Lost & Found list | 3 |
+| `TestHousekeepingAuthorization` | Housekeeping tasks | 3 |
+
+### Expected Role x Endpoint Matrix (verified by tests)
+
+| Endpoint | Owner | Manager | Staff | Housekeeping |
+|----------|-------|---------|-------|--------------|
+| Reports (7 views) | ✅ | ✅ | ❌ | ❌ |
+| Export Report | ✅ | ✅ | ❌ | ❌ |
+| Minibar Items/Sales | ✅ | ✅ | ✅ | ❌ |
+| Staff List | ✅ | ✅ | ✅ | ❌ |
+| Finance (read) | ✅ | ✅ | ✅ | ❌ |
+| Finance (write) | ✅ | ✅ | ❌ | ❌ |
+| Lost & Found | ✅ | ✅ | ✅ | ❌ |
+| Housekeeping Tasks | ✅ | ✅ | ✅ | ❌ |
+
+### Files Changed
+
+**Backend:**
+- `hoang_lam_backend/hotel_api/views.py` — ExportReportView permission changed from `[IsStaffOrManager]` to `[IsAuthenticated, IsOwnerOrManager]`
+- `hoang_lam_backend/hotel_api/tests/test_role_authorization.py` — **NEW** — 54 role-based authorization integration tests
+
+**Frontend:**
+- `hoang_lam_app/lib/router/app_router.dart` — Added redirect guards on 4 routes: lostFoundNew, lostFoundEdit, lostFoundDetail (housekeeping block), messageHistory (housekeeping block), financeForm (owner/manager only)

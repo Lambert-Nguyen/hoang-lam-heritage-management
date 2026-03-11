@@ -389,15 +389,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Lost & Found routes (outside shell for full screen)
+      // Lost & Found routes (outside shell for full screen) — Staff and above
       GoRoute(
         path: AppRoutes.lostFoundNew,
         name: 'lostFoundNew',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) => const LostFoundFormScreen(),
       ),
       GoRoute(
         path: '/lost-found/:id/edit',
         name: 'lostFoundEdit',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
@@ -412,6 +422,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/lost-found/:id',
         name: 'lostFoundDetail',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final id = int.tryParse(state.pathParameters['id'] ?? '');
           if (id == null) {
@@ -565,6 +580,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.messageHistory,
         name: 'messageHistory',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role == UserRole.housekeeping) return AppRoutes.home;
+          return null;
+        },
         builder: (context, state) {
           final guestIdStr = state.uri.queryParameters['guestId'];
           final bookingIdStr = state.uri.queryParameters['bookingId'];
@@ -728,10 +748,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Finance Form (outside shell for full screen)
+      // Finance Form (outside shell for full screen) — Manager/Owner only
       GoRoute(
         path: AppRoutes.financeForm,
         name: 'financeForm',
+        redirect: (context, state) {
+          final user = ref.read(currentUserProvider);
+          if (user?.role != UserRole.owner && user?.role != UserRole.manager) {
+            return AppRoutes.home;
+          }
+          return null;
+        },
         builder: (context, state) {
           final extra = state.extra as Map<String, dynamic>?;
           final entryType =

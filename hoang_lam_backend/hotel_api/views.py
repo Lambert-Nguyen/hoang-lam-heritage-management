@@ -6254,7 +6254,7 @@ class ExportReportView(APIView):
     Export reports to Excel/CSV.
     """
 
-    permission_classes = [IsStaffOrManager]
+    permission_classes = [IsAuthenticated, IsOwnerOrManager]
 
     @extend_schema(
         summary="Export report to file",
