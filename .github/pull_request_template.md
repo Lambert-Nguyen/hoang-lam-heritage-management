@@ -57,6 +57,15 @@ Fixes #
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] Any dependent changes have been merged and published
 
+## Role-Based Access Control Checklist
+<!-- Required for PRs that add/modify screens, routes, or API endpoints. -->
+<!-- Reference: docs/ROLE_POLICY_MATRIX.md -->
+- [ ] Menu visibility uses the correct `UserRole` capability (or N/A)
+- [ ] Route has a `redirect:` guard in `app_router.dart` matching backend permission (or N/A)
+- [ ] ViewSet/APIView has explicit `permission_classes` per the policy matrix (or N/A)
+- [ ] Role authorization tests added/updated in `test_role_authorization.py` (or N/A)
+- [ ] `docs/ROLE_POLICY_MATRIX.md` updated with new endpoint/route/menu entries (or N/A)
+
 ## Deployment Notes
 <!-- Any special deployment considerations or database migrations needed? -->
 

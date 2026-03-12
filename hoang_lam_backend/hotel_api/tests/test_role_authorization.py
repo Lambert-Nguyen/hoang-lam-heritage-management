@@ -320,3 +320,208 @@ class TestHousekeepingAuthorization:
         url = reverse("housekeepingtask-list")
         response = owner_client.get(url)
         assert response.status_code != status.HTTP_403_FORBIDDEN
+
+
+# ══════════════════════════════════════════════════════════════════════
+# P2 Regression: Role × Endpoint matrix (drift-detection tests)
+# ══════════════════════════════════════════════════════════════════════
+#
+# These parametrized tests assert the COMPLETE role-endpoint matrix from
+# docs/ROLE_POLICY_MATRIX.md.  Any permission change that breaks these
+# tests means the matrix document must be updated, too.
+
+# ── Helper: list-endpoint URL names grouped by expected permission ────
+
+# IsStaffOrManager: owner ✅  manager ✅  staff ✅  housekeeping ❌
+STAFF_OR_MANAGER_LIST_ENDPOINTS = [
+    "nightaudit-list",
+    "payment-list",
+    "folioitem-list",
+    "housekeepingtask-list",
+    "maintenancerequest-list",
+    "minibaritem-list",
+    "minibarsale-list",
+    "lostandfound-list",
+    "groupbooking-list",
+    "inspectiontemplate-list",
+    "roominspection-list",
+    "rateplan-list",
+    "daterateoverride-list",
+]
+
+# IsStaff (base): owner ✅  manager ✅  staff ✅  housekeeping ❌
+STAFF_LIST_ENDPOINTS = [
+    "roomtype-list",
+    "room-list",
+    "guest-list",
+    "booking-list",
+    "financialcategory-list",
+    "financialentry-list",
+]
+
+# IsOwnerOrManager: owner ✅  manager ✅  staff ❌  housekeeping ❌
+OWNER_OR_MANAGER_LIST_ENDPOINTS = [
+    "auditlog-list",
+]
+
+# IsAuthenticated: owner ✅  manager ✅  staff ✅  housekeeping ✅
+AUTHENTICATED_LIST_ENDPOINTS = [
+    "notification-list",
+    "messagetemplate-list",
+    "guestmessage-list",
+    "exchangerate-list",
+]
+
+# Named path endpoints (non-router)
+
+# IsStaffOrManager
+STAFF_OR_MANAGER_PATH_ENDPOINTS = [
+    "staff_list",
+]
+
+# IsOwnerOrManager
+OWNER_OR_MANAGER_PATH_ENDPOINTS = [
+    "admin_reset_password",
+]
+
+
+@pytest.mark.django_db
+class TestRoleEndpointMatrixRegression:
+    """
+    Regression suite: asserts the full role × endpoint matrix.
+    If a permission class changes, these tests will catch the drift.
+    """
+
+    # ── IsStaffOrManager list endpoints ──────────────────────────────
+
+    @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_LIST_ENDPOINTS)
+    def test_owner_allowed_stafformanager_endpoint(self, owner_client, url_name):
+        response = owner_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_LIST_ENDPOINTS)
+    def test_manager_allowed_stafformanager_endpoint(self, manager_client, url_name):
+        response = manager_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_LIST_ENDPOINTS)
+    def test_staff_allowed_stafformanager_endpoint(self, staff_client, url_name):
+        response = staff_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_LIST_ENDPOINTS)
+    def test_housekeeping_denied_stafformanager_endpoint(
+        self, housekeeping_client, url_name
+    ):
+        response = housekeeping_client.get(reverse(url_name))
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    # ── IsStaff list endpoints ───────────────────────────────────────
+
+    @pytest.mark.parametrize("url_name", STAFF_LIST_ENDPOINTS)
+    def test_owner_allowed_staff_endpoint(self, owner_client, url_name):
+        response = owner_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", STAFF_LIST_ENDPOINTS)
+    def test_manager_allowed_staff_endpoint(self, manager_client, url_name):
+        response = manager_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", STAFF_LIST_ENDPOINTS)
+    def test_staff_allowed_staff_endpoint(self, staff_client, url_name):
+        response = staff_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", STAFF_LIST_ENDPOINTS)
+    def test_housekeeping_denied_staff_endpoint(self, housekeeping_client, url_name):
+        response = housekeeping_client.get(reverse(url_name))
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    # ── IsOwnerOrManager list endpoints ──────────────────────────────
+
+    @pytest.mark.parametrize("url_name", OWNER_OR_MANAGER_LIST_ENDPOINTS)
+    def test_owner_allowed_ownerormanager_endpoint(self, owner_client, url_name):
+        response = owner_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", OWNER_OR_MANAGER_LIST_ENDPOINTS)
+    def test_manager_allowed_ownerormanager_endpoint(self, manager_client, url_name):
+        response = manager_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", OWNER_OR_MANAGER_LIST_ENDPOINTS)
+    def test_staff_denied_ownerormanager_endpoint(self, staff_client, url_name):
+        response = staff_client.get(reverse(url_name))
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", OWNER_OR_MANAGER_LIST_ENDPOINTS)
+    def test_housekeeping_denied_ownerormanager_endpoint(
+        self, housekeeping_client, url_name
+    ):
+        response = housekeeping_client.get(reverse(url_name))
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    # ── IsAuthenticated list endpoints ───────────────────────────────
+
+    @pytest.mark.parametrize("url_name", AUTHENTICATED_LIST_ENDPOINTS)
+    def test_owner_allowed_authenticated_endpoint(self, owner_client, url_name):
+        response = owner_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", AUTHENTICATED_LIST_ENDPOINTS)
+    def test_housekeeping_allowed_authenticated_endpoint(
+        self, housekeeping_client, url_name
+    ):
+        response = housekeeping_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    # ── Named path endpoints ─────────────────────────────────────────
+
+    @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_PATH_ENDPOINTS)
+    def test_staff_allowed_stafformanager_path(self, staff_client, url_name):
+        response = staff_client.get(reverse(url_name))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_PATH_ENDPOINTS)
+    def test_housekeeping_denied_stafformanager_path(
+        self, housekeeping_client, url_name
+    ):
+        response = housekeeping_client.get(reverse(url_name))
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    # ── Reports (IsOwnerOrManager) ───────────────────────────────────
+
+    @pytest.mark.parametrize("url_name", REPORT_URLS)
+    def test_owner_allowed_report(self, owner_client, url_name):
+        response = owner_client.get(reverse(url_name), REPORT_PARAMS)
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", REPORT_URLS)
+    def test_manager_allowed_report(self, manager_client, url_name):
+        response = manager_client.get(reverse(url_name), REPORT_PARAMS)
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", REPORT_URLS)
+    def test_staff_denied_report(self, staff_client, url_name):
+        response = staff_client.get(reverse(url_name), REPORT_PARAMS)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    @pytest.mark.parametrize("url_name", REPORT_URLS)
+    def test_housekeeping_denied_report(self, housekeeping_client, url_name):
+        response = housekeeping_client.get(reverse(url_name), REPORT_PARAMS)
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    # ── Dashboard (IsStaff base) ─────────────────────────────────────
+
+    def test_owner_allowed_dashboard(self, owner_client):
+        response = owner_client.get(reverse("dashboard"))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    def test_staff_allowed_dashboard(self, staff_client):
+        response = staff_client.get(reverse("dashboard"))
+        assert response.status_code != status.HTTP_403_FORBIDDEN
+
+    def test_housekeeping_denied_dashboard(self, housekeeping_client):
+        response = housekeeping_client.get(reverse("dashboard"))
+        assert response.status_code == status.HTTP_403_FORBIDDEN

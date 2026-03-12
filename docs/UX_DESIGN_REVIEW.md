@@ -939,9 +939,10 @@ These Round 6 issues were verified as **already fixed**:
 
 ### Final Status Statement
 
-- The role-based design is **improved but not yet fully correct**.
-- Most critical remaining work is **authorization consistency** rather than UI styling or flow design.
-- After P0 is completed, the app will have a coherent and predictable role model across use cases, screens, and backend APIs.
+- The role-based design is **fully implemented and protected against drift**.
+- All P0/P1/P2 remediation items are complete — see implementation sections below.
+- 176 automated authorization tests and a PR review checklist guard against regressions.
+- The canonical policy matrix is documented in `docs/ROLE_POLICY_MATRIX.md`.
 
 ---
 
@@ -1037,3 +1038,50 @@ Created `test_role_authorization.py` with **54 tests** covering role-based acces
 
 **Frontend:**
 - `hoang_lam_app/lib/router/app_router.dart` — Added redirect guards on 4 routes: lostFoundNew, lostFoundEdit, lostFoundDetail (housekeeping block), messageHistory (housekeeping block), financeForm (owner/manager only)
+
+---
+
+## P2 Role-Based Fixes — IMPLEMENTED (2026-03-11)
+
+> **Method**: Governance and drift-prevention layer. Created canonical policy documentation, comprehensive regression tests, and PR review checklist to prevent future role-permission misalignment.
+
+### Deliverables
+
+| # | P2 Item | Deliverable | Location |
+|---|---------|-------------|----------|
+| P2-1 | Policy checklist in PR review | Added Role-Based Access Control Checklist section to PR template — requires menu, route, API, test, and doc alignment for every feature change | `.github/PULL_REQUEST_TEMPLATE.md` |
+| P2-2 | Regression tests for role-endpoint matrix | Added `TestRoleEndpointMatrixRegression` class with **122 parametrized tests** covering ALL endpoints grouped by permission tier (IsStaffOrManager, IsStaff, IsOwnerOrManager, IsAuthenticated, Reports, Dashboard) | `hotel_api/tests/test_role_authorization.py` |
+| P2-3 | Canonical role capabilities document | Created comprehensive markdown document with 5 matrices: Role Hierarchy, Frontend Capabilities, Role × Endpoint, Role × Route Guard, More Menu Visibility — serves as single source of truth for both frontend and backend teams | `docs/ROLE_POLICY_MATRIX.md` |
+
+### Test Summary
+
+Total authorization tests in `test_role_authorization.py`: **176 tests** (54 original P1 + 122 P2 regression)
+
+Regression test endpoint coverage by permission tier:
+
+| Permission Tier | Endpoints Tested | Tests per Endpoint |
+|-----------------|------------------|--------------------|
+| IsStaffOrManager (list) | 13 ViewSets + 1 path endpoint | 4 roles each |
+| IsStaff (list) | 6 ViewSets | 4 roles each |
+| IsOwnerOrManager (list) | 1 ViewSet (audit-logs) | 4 roles each |
+| IsAuthenticated (list) | 4 ViewSets (notifications, messages, exchange-rates) | 2 roles each |
+| Reports (IsOwnerOrManager) | 7 report views | 4 roles each |
+| Dashboard (IsStaff) | 1 endpoint | 3 role checks |
+
+### Files Changed
+
+- `docs/ROLE_POLICY_MATRIX.md` — **NEW** — Canonical role-based access control policy matrix
+- `.github/PULL_REQUEST_TEMPLATE.md` — Added RBAC checklist section
+- `hoang_lam_backend/hotel_api/tests/test_role_authorization.py` — Added `TestRoleEndpointMatrixRegression` class (122 parametrized tests)
+
+---
+
+### Final Status — All Priorities Complete
+
+All role-based design review items (P0 + P1 + P2) are now implemented:
+
+- **P0 (Critical)**: Backend permissions, route guards, menu filtering — ✅
+- **P1 (Harden)**: Remaining route guards, ExportReportView fix, integration tests — ✅
+- **P2 (Governance)**: Canonical documentation, regression test matrix, PR checklist — ✅
+
+The 4-layer enforcement model (documented intent → UI menu visibility → route guards → backend API permissions) is fully implemented and protected against drift by 176 automated tests and PR-level review gates.
