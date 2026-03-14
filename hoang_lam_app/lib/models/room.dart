@@ -210,7 +210,9 @@ sealed class Room with _$Room {
     @JsonKey(name: 'room_type_name') String? roomTypeName,
     @JsonKey(name: 'room_type_details') RoomType? roomTypeDetails,
     @Default(1) int floor,
-    @Default(RoomStatus.available) @JsonKey(unknownEnumValue: RoomStatus.unknown) RoomStatus status,
+    @Default(RoomStatus.available)
+    @JsonKey(unknownEnumValue: RoomStatus.unknown)
+    RoomStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @Default([]) List<String> amenities,
     String? notes,

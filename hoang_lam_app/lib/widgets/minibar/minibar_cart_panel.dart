@@ -91,12 +91,15 @@ class MinibarCartPanel extends StatelessWidget {
             ),
           ),
 
-        // Cart items
+        // Cart items + summary in a single scrollable area
         Expanded(
-          child: cartState.items.isEmpty
-              ? Center(
+          child: ListView(
+            children: [
+              // Cart items or empty state
+              if (cartState.items.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.xl),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(
                         Icons.shopping_cart_outlined,
@@ -107,68 +110,87 @@ class MinibarCartPanel extends StatelessWidget {
                       Text(
                         context.l10n.emptyCart,
                         style: const TextStyle(color: AppColors.textSecondary),
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
                 )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(AppSpacing.sm),
-                  itemCount: cartState.items.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final cartItem = cartState.items[index];
-                    return _buildCartItem(context, cartItem, currencyFormat);
-                  },
+              else
+                ...cartState.items.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final cartItem = entry.value;
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                        ),
+                        child: _buildCartItem(
+                          context,
+                          cartItem,
+                          currencyFormat,
+                        ),
+                      ),
+                      if (index < cartState.items.length - 1)
+                        const Divider(height: 1),
+                    ],
+                  );
+                }),
+
+              // Summary and checkout
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
                 ),
-        ),
-
-        // Summary and checkout
-        Container(
-          padding: const EdgeInsets.all(AppSpacing.md),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.deepAccent.withValues(alpha: 0.1),
-                blurRadius: 4,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              // Total
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${context.l10n.total}:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
-                  Text(
-                    currencyFormat.format(cartState.totalAmount),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.primary,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.deepAccent.withValues(alpha: 0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, -2),
                     ),
-                  ),
-                ],
-              ),
-              AppSpacing.gapVerticalMd,
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Total
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${context.l10n.total}:',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          currencyFormat.format(cartState.totalAmount),
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    AppSpacing.gapVerticalSm,
 
-              // Checkout button
-              SizedBox(
-                width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: cartState.items.isNotEmpty && booking != null
-                      ? onCheckout
-                      : null,
-                  icon: const Icon(Icons.point_of_sale),
-                  label: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.sm),
-                    child: Text(context.l10n.checkoutBtn),
-                  ),
+                    // Checkout button
+                    SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        onPressed:
+                            cartState.items.isNotEmpty && booking != null
+                                ? onCheckout
+                                : null,
+                        icon: const Icon(Icons.point_of_sale),
+                        label: Text(context.l10n.checkoutBtn),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

@@ -105,7 +105,8 @@ class RatePlanNotifier
   final RatePlanRepository _repository;
   final Ref _ref;
 
-  RatePlanNotifier(this._repository, this._ref) : super(const AsyncValue.loading()) {
+  RatePlanNotifier(this._repository, this._ref)
+    : super(const AsyncValue.loading()) {
     loadRatePlans();
   }
 

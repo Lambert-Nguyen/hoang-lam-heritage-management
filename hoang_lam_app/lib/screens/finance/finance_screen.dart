@@ -166,18 +166,18 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         children: [
           SimpleDialogOption(
             onPressed: () => Navigator.pop(ctx, 'csv'),
-            child: const ListTile(
-              leading: Icon(Icons.table_chart),
-              title: Text('CSV'),
-              subtitle: Text('Excel compatible'),
+            child: ListTile(
+              leading: const Icon(Icons.table_chart),
+              title: const Text('CSV'),
+              subtitle: Text(l10n.excelCompatible),
             ),
           ),
           SimpleDialogOption(
             onPressed: () => Navigator.pop(ctx, 'pdf'),
-            child: const ListTile(
-              leading: Icon(Icons.picture_as_pdf),
-              title: Text('PDF'),
-              subtitle: Text('Print ready'),
+            child: ListTile(
+              leading: const Icon(Icons.picture_as_pdf),
+              title: const Text('PDF'),
+              subtitle: Text(l10n.printReady),
             ),
           ),
         ],

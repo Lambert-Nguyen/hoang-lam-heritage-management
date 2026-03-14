@@ -44,7 +44,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Minibar POS'),
+        title: Text(context.l10n.minibarPos),
         actions: [
           IconButton(
             icon: const Icon(Icons.inventory_2),
@@ -116,9 +116,9 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
           // Stacked layout for narrow phone screens
           return Column(
             children: [
-              Expanded(child: itemPanel),
+              Expanded(flex: 2, child: itemPanel),
               const Divider(height: 1),
-              SizedBox(height: constraints.maxHeight * 0.35, child: cartPanel),
+              Expanded(flex: 1, child: cartPanel),
             ],
           );
         },

@@ -289,7 +289,8 @@ sealed class FinancialEntry with _$FinancialEntry {
 
   const factory FinancialEntry({
     required int id,
-    @JsonKey(name: 'entry_type', unknownEnumValue: EntryType.unknown) required EntryType entryType,
+    @JsonKey(name: 'entry_type', unknownEnumValue: EntryType.unknown)
+    required EntryType entryType,
     required int category,
     @JsonKey(name: 'category_details') FinancialCategory? categoryDetails,
     required double amount,
@@ -348,7 +349,8 @@ sealed class FinancialEntryListItem with _$FinancialEntryListItem {
 
   const factory FinancialEntryListItem({
     required int id,
-    @JsonKey(name: 'entry_type', unknownEnumValue: EntryType.unknown) required EntryType entryType,
+    @JsonKey(name: 'entry_type', unknownEnumValue: EntryType.unknown)
+    required EntryType entryType,
     required int category,
     @JsonKey(name: 'category_name') String? categoryName,
     @JsonKey(name: 'category_icon') String? categoryIcon,
@@ -755,10 +757,14 @@ sealed class Payment with _$Payment {
     required int booking,
     @JsonKey(name: 'booking_room') String? bookingRoom,
     @JsonKey(name: 'guest_name') String? guestName,
-    @JsonKey(name: 'payment_type', unknownEnumValue: PaymentType.unknown) required PaymentType paymentType,
+    @JsonKey(name: 'payment_type', unknownEnumValue: PaymentType.unknown)
+    required PaymentType paymentType,
     required double amount,
-    @JsonKey(name: 'payment_method', unknownEnumValue: PaymentMethod.unknown) required PaymentMethod paymentMethod,
-    @Default(PaymentStatus.pending) @JsonKey(unknownEnumValue: PaymentStatus.unknown) PaymentStatus status,
+    @JsonKey(name: 'payment_method', unknownEnumValue: PaymentMethod.unknown)
+    required PaymentMethod paymentMethod,
+    @Default(PaymentStatus.pending)
+    @JsonKey(unknownEnumValue: PaymentStatus.unknown)
+    PaymentStatus status,
     @JsonKey(name: 'receipt_number') String? receiptNumber,
     String? notes,
     @JsonKey(name: 'created_by') int? createdBy,
@@ -1021,7 +1027,8 @@ sealed class FolioItem with _$FolioItem {
     required int id,
     required int booking,
     @JsonKey(name: 'booking_room') String? bookingRoom,
-    @JsonKey(name: 'item_type', unknownEnumValue: FolioItemType.unknown) required FolioItemType itemType,
+    @JsonKey(name: 'item_type', unknownEnumValue: FolioItemType.unknown)
+    required FolioItemType itemType,
     required String description,
     required int quantity,
     @JsonKey(name: 'unit_price') required double unitPrice,

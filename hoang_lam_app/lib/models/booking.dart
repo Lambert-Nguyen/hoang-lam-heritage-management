@@ -665,9 +665,13 @@ sealed class Booking with _$Booking {
     @JsonKey(name: 'guest_count') @Default(1) int guestCount,
 
     // Status
-    @Default(BookingStatus.confirmed) @JsonKey(unknownEnumValue: BookingStatus.unknown) BookingStatus status,
+    @Default(BookingStatus.confirmed)
+    @JsonKey(unknownEnumValue: BookingStatus.unknown)
+    BookingStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
-    @Default(BookingSource.walkIn) @JsonKey(unknownEnumValue: BookingSource.unknown) BookingSource source,
+    @Default(BookingSource.walkIn)
+    @JsonKey(unknownEnumValue: BookingSource.unknown)
+    BookingSource source,
     @JsonKey(name: 'source_display') String? sourceDisplay,
     @JsonKey(name: 'ota_reference') @Default('') String otaReference,
 

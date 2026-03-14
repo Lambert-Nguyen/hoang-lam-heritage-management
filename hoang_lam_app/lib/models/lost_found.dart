@@ -253,7 +253,8 @@ sealed class LostFoundItem with _$LostFoundItem {
     required int id,
     @JsonKey(name: 'item_name') required String itemName,
     @Default('') String description,
-    @JsonKey(unknownEnumValue: LostFoundCategory.unknown) required LostFoundCategory category,
+    @JsonKey(unknownEnumValue: LostFoundCategory.unknown)
+    required LostFoundCategory category,
     @JsonKey(name: 'category_display') String? categoryDisplay,
     @JsonKey(name: 'estimated_value') double? estimatedValue,
     // Location
@@ -266,7 +267,8 @@ sealed class LostFoundItem with _$LostFoundItem {
     @JsonKey(name: 'guest_name') String? guestName,
     int? booking,
     // Status
-    @JsonKey(unknownEnumValue: LostFoundStatus.unknown) required LostFoundStatus status,
+    @JsonKey(unknownEnumValue: LostFoundStatus.unknown)
+    required LostFoundStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @JsonKey(name: 'found_date') required String foundDate,
     @JsonKey(name: 'claimed_date') String? claimedDate,

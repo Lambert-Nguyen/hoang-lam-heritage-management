@@ -199,7 +199,8 @@ class _LoadingExportNotifier extends DeclarationExportNotifier {
 
 /// Fake notifier that returns success state
 class _SuccessExportNotifier extends DeclarationExportNotifier {
-  _SuccessExportNotifier(String filePath, Ref ref) : super(DeclarationRepository(), ref) {
+  _SuccessExportNotifier(String filePath, Ref ref)
+    : super(DeclarationRepository(), ref) {
     state = DeclarationExportState.success(filePath: filePath);
   }
 }

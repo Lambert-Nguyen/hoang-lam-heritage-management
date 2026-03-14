@@ -50,7 +50,9 @@ class DeclarationExportNotifier extends StateNotifier<DeclarationExportState> {
       );
       state = DeclarationExportState.success(filePath: filePath);
     } catch (e) {
-      state = DeclarationExportState.error(message: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = DeclarationExportState.error(
+        message: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
     }
   }
 

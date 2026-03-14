@@ -186,7 +186,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       );
       state = state.copyWith(isLoading: false, tasks: tasks);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
     }
   }
 
@@ -202,7 +205,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return newTask;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -219,7 +225,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -233,7 +242,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -247,7 +259,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -261,7 +276,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedTask;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -278,7 +296,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return false;
     }
   }
@@ -311,7 +332,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       );
       state = state.copyWith(isLoading: false, requests: requests);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
     }
   }
 
@@ -335,7 +359,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       }
       return newRequest;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -355,7 +382,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -377,7 +407,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -399,7 +432,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -419,7 +455,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -435,7 +474,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -455,7 +497,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return updatedRequest;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -472,7 +517,10 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
       _invalidateProviders();
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return false;
     }
   }

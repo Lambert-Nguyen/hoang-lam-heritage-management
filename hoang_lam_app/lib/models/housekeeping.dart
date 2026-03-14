@@ -644,9 +644,12 @@ sealed class HousekeepingTask with _$HousekeepingTask {
     required int id,
     int? room,
     @JsonKey(name: 'room_number') String? roomNumber,
-    @JsonKey(name: 'task_type', unknownEnumValue: HousekeepingTaskType.unknown) required HousekeepingTaskType taskType,
+    @JsonKey(name: 'task_type', unknownEnumValue: HousekeepingTaskType.unknown)
+    required HousekeepingTaskType taskType,
     @JsonKey(name: 'task_type_display') String? taskTypeDisplay,
-    @Default(HousekeepingTaskStatus.pending) @JsonKey(unknownEnumValue: HousekeepingTaskStatus.unknown) HousekeepingTaskStatus status,
+    @Default(HousekeepingTaskStatus.pending)
+    @JsonKey(unknownEnumValue: HousekeepingTaskStatus.unknown)
+    HousekeepingTaskStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @JsonKey(name: 'scheduled_date') required DateTime scheduledDate,
     @JsonKey(name: 'completed_at') DateTime? completedAt,
@@ -739,11 +742,17 @@ sealed class MaintenanceRequest with _$MaintenanceRequest {
     @JsonKey(name: 'location_description') String? locationDescription,
     required String title,
     required String description,
-    @Default(MaintenanceCategory.other) @JsonKey(unknownEnumValue: MaintenanceCategory.unknown) MaintenanceCategory category,
+    @Default(MaintenanceCategory.other)
+    @JsonKey(unknownEnumValue: MaintenanceCategory.unknown)
+    MaintenanceCategory category,
     @JsonKey(name: 'category_display') String? categoryDisplay,
-    @Default(MaintenancePriority.medium) @JsonKey(unknownEnumValue: MaintenancePriority.unknown) MaintenancePriority priority,
+    @Default(MaintenancePriority.medium)
+    @JsonKey(unknownEnumValue: MaintenancePriority.unknown)
+    MaintenancePriority priority,
     @JsonKey(name: 'priority_display') String? priorityDisplay,
-    @Default(MaintenanceStatus.pending) @JsonKey(unknownEnumValue: MaintenanceStatus.unknown) MaintenanceStatus status,
+    @Default(MaintenanceStatus.pending)
+    @JsonKey(unknownEnumValue: MaintenanceStatus.unknown)
+    MaintenanceStatus status,
     @JsonKey(name: 'status_display') String? statusDisplay,
     @JsonKey(name: 'assigned_to') int? assignedTo,
     @JsonKey(name: 'assigned_to_name') String? assignedToName,

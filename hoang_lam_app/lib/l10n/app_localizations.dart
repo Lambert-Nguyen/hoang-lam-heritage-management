@@ -1937,6 +1937,10 @@ class AppLocalizations {
   // UC-27: Financial export
   String get exportData => translate('export_data');
   String get selectDateRange => translate('select_date_range');
+
+  // Export format descriptions
+  String get excelCompatible => translate('excel_compatible');
+  String get printReady => translate('print_ready');
 }
 
 // Vietnamese translations
@@ -3711,6 +3715,10 @@ const Map<String, String> _viTranslations = {
   // UC-27: Financial export
   'export_data': 'Xuất dữ liệu',
   'select_date_range': 'Chọn khoảng thời gian',
+
+  // Export format descriptions
+  'excel_compatible': 'Tương thích Excel',
+  'print_ready': 'Sẵn sàng in',
 };
 // English translations
 const Map<String, String> _enTranslations = {
@@ -5485,6 +5493,10 @@ const Map<String, String> _enTranslations = {
   // UC-27: Financial export
   'export_data': 'Export Data',
   'select_date_range': 'Select date range',
+
+  // Export format descriptions
+  'excel_compatible': 'Excel compatible',
+  'print_ready': 'Print ready',
 };
 
 // Delegate

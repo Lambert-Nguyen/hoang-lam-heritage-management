@@ -131,7 +131,10 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       );
       state = state.copyWith(isLoading: false, items: items);
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
     }
   }
 
@@ -141,7 +144,9 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       final statistics = await _repository.getStatistics();
       state = state.copyWith(statistics: statistics);
     } catch (e) {
-      state = state.copyWith(errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
     }
   }
 
@@ -155,7 +160,10 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return newItem;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -170,7 +178,10 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundItemsProvider);
       return updatedItem;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -189,7 +200,10 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return storedItem;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -213,7 +227,10 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return claimedItem;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -237,7 +254,10 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return disposedItem;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return null;
     }
   }
@@ -252,7 +272,10 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
       _ref.invalidate(lostFoundStatisticsProvider);
       return true;
     } catch (e) {
-      state = state.copyWith(isLoading: false, errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)));
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+      );
       return false;
     }
   }

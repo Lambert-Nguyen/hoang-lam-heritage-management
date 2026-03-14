@@ -43,7 +43,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Folio'),
+        title: Text(l10n.folio),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),

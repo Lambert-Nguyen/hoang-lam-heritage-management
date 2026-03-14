@@ -591,7 +591,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return MessageHistoryScreen(
             guestId: int.tryParse(guestIdStr ?? ''),
             bookingId: int.tryParse(bookingIdStr ?? ''),
-            title: state.uri.queryParameters['title'] ?? context.l10n.messageHistory,
+            title:
+                state.uri.queryParameters['title'] ??
+                context.l10n.messageHistory,
           );
         },
       ),

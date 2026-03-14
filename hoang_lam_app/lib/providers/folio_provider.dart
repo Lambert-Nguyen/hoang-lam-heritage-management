@@ -114,7 +114,10 @@ class FolioNotifier extends StateNotifier<FolioState> {
         error: _ref
             .read(l10nProvider)
             .errorFolioLoad
-            .replaceAll('{error}', getLocalizedErrorMessage(e, _ref.read(l10nProvider))),
+            .replaceAll(
+              '{error}',
+              getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+            ),
       );
     }
   }
@@ -163,7 +166,10 @@ class FolioNotifier extends StateNotifier<FolioState> {
         error: _ref
             .read(l10nProvider)
             .errorChargeAdd
-            .replaceAll('{error}', getLocalizedErrorMessage(e, _ref.read(l10nProvider))),
+            .replaceAll(
+              '{error}',
+              getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+            ),
       );
       return false;
     }
@@ -194,7 +200,10 @@ class FolioNotifier extends StateNotifier<FolioState> {
         error: _ref
             .read(l10nProvider)
             .errorChargeVoid
-            .replaceAll('{error}', getLocalizedErrorMessage(e, _ref.read(l10nProvider))),
+            .replaceAll(
+              '{error}',
+              getLocalizedErrorMessage(e, _ref.read(l10nProvider)),
+            ),
       );
       return false;
     }

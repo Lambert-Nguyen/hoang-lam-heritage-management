@@ -128,7 +128,10 @@ extension NotificationTypeExtension on NotificationType {
 sealed class AppNotification with _$AppNotification {
   const factory AppNotification({
     required int id,
-    @JsonKey(name: 'notification_type', unknownEnumValue: NotificationType.unknown)
+    @JsonKey(
+      name: 'notification_type',
+      unknownEnumValue: NotificationType.unknown,
+    )
     required NotificationType notificationType,
     @JsonKey(name: 'notification_type_display') String? notificationTypeDisplay,
     required String title,
