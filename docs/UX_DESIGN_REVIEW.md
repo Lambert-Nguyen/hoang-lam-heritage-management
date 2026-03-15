@@ -13,6 +13,7 @@
 - **Round 5 Review & Fix** (2026-03-01): Post-implementation audit — verified all 14 use cases + all UX fixes. Found 6 remaining gaps, all fixed
 - **Round 6** (2026-03-02): Full-stack consistency audit — reviewed all providers, screens, router, models, backend API endpoints. Found 93 issues (21 Critical + 30 Major + 42 Minor)
 - **Round 7** (2026-03-07): Deep full-stack audit — cross-referenced all backend views/models/serializers with frontend repositories/providers/models/screens/router. 68 gaps found across 7 categories.
+- **Round 8** (2026-03-15): Cross-layer quality & consistency audit — 4 parallel agents reviewed all screens, providers/models, router/backend, and l10n/widgets. 81 issues found across 8 categories.
 
 ---
 
@@ -1085,3 +1086,219 @@ All role-based design review items (P0 + P1 + P2) are now implemented:
 - **P2 (Governance)**: Canonical documentation, regression test matrix, PR checklist — ✅
 
 The 4-layer enforcement model (documented intent → UI menu visibility → route guards → backend API permissions) is fully implemented and protected against drift by 176 automated tests and PR-level review gates.
+
+---
+
+## Round 8 — Cross-Layer Quality & Consistency Audit
+
+> **Date**: 2026-03-15
+> **Method**: Four parallel review agents audited (1) all ~30 screen files, (2) all providers + models, (3) router + backend + repositories, (4) l10n + widgets + utilities. Cross-referenced findings against Rounds 1–7 to identify net-new issues only. 78 issues found across 8 categories.
+
+---
+
+### A. Raw Error Messages Shown to Users (Critical — 50+ instances)
+
+The app has `getLocalizedErrorMessage()` in `error_utils.dart`, but only 2 screens use it (`bookings_screen.dart`, `group_booking_detail_screen.dart`). All others display raw exceptions.
+
+| # | Screen | Pattern | Lines |
+|---|--------|---------|-------|
+| R8-1 | **home_screen** | `error.toString()` / `'${l10n.errorOccurred}: ${e.toString()}'` | :182, :414 |
+| R8-2 | **booking_detail_screen** | `'${l10n.error}: $e'` | :1276, :1375, :1425 |
+| R8-3 | **booking_form_screen** | `'${context.l10n.error}: $error'` | :292 |
+| R8-4 | **guest_detail_screen** | `'${l10n.error}: $e'` | :532 |
+| R8-5 | **guest_form_screen** | `'${l10n.error}: $e'` | :589 |
+| R8-6 | **finance_screen** | `'${l10n.error}: $e'` | :210 |
+| R8-7 | **finance_form_screen** | `'${l10n.error}: $e'` | :522 |
+| R8-8 | **financial_category_screen** | Raw error messages | :180, :243, :876 |
+| R8-9 | **group_booking_form_screen** | `'${l10n.error}: $e'` | :151 |
+| R8-10 | **lost_found_detail_screen** | `'${l10n.error}: $e'` | :87 |
+| R8-11 | **lost_found_form_screen** | `'${l10n.error}: $e'` | :114 |
+| R8-12 | **lost_found_list_screen** | `'${context.l10n.error}: $e'` | :413 |
+| R8-13 | **minibar_pos_screen** | `error.toString()` / raw `$e` | :89, :392 |
+| R8-14 | **minibar_inventory_screen** | Multiple raw error instances | :124, :329, :390, :483 |
+| R8-15 | **task_list_screen** | `error.toString()` | :97, :117, :138 |
+| R8-16 | **maintenance_list_screen** | `error.toString()` | :308 |
+| R8-17 | **night_audit_screen** | Raw error messages | :82, :663, :788 |
+| R8-18 | **room_inspection screens** | `'${l10n.error}: $e'` | Multiple |
+| R8-19 | **receipt_preview_screen** | Raw exceptions | :62, :139, :174 |
+| R8-20 | **audit_log_screen** | `'${l10n.error}: $e'` | :71 |
+| R8-21 | **settings_screen** | `'${l10n.error}: $e'` | :607 |
+| R8-22 | **message_template_screen** | `Center(child: Text('$e'))` | :153 |
+
+**Fix**: Replace all `'${l10n.error}: $e'` and `error.toString()` with `getLocalizedErrorMessage(context, e)` from `error_utils.dart`.
+
+---
+
+### B. Missing `context.mounted` Checks After Async (Critical — 15+ instances)
+
+Several screens use `ScaffoldMessenger.of(context)` or `context.pop()` after `await` without checking `context.mounted`. Can crash if user navigates away during the operation.
+
+| # | Screen | Line(s) | Operation |
+|---|--------|---------|-----------|
+| R8-23 | **guest_form_screen** | :589 | Snackbar after async create/update |
+| R8-24 | **guest_detail_screen** | :532 | Snackbar after async |
+| R8-25 | **group_booking_form_screen** | :514 | ScaffoldMessenger after async |
+| R8-26 | **lost_found_form_screen** | :484 | Snackbar after async |
+| R8-27 | **minibar_inventory_screen** | :390, :483 | Snackbar after async |
+| R8-28 | **task_form_screen** | :361 | Snackbar after async |
+| R8-29 | **receipt_preview_screen** | :139, :174 | Snackbar after async |
+| R8-30 | **night_audit_screen** | :663 | Snackbar after async |
+| R8-31 | **finance_screen** | Multiple | `_refreshData()` awaits without checks |
+| R8-32 | **booking_form_screen** | :292 | Error display after async |
+
+**Note**: `home_screen.dart` and `login_screen.dart` do this correctly — follow their pattern.
+
+---
+
+### C. Navigator.pop vs context.pop Inconsistency (Major — 100+ instances)
+
+GoRouter is the app's navigation system, but 100+ screens still use `Navigator.of(context).pop()`. This can break GoRouter's state and deep linking.
+
+| # | Screen | Approximate Count |
+|---|--------|-------------------|
+| R8-33 | **guest_list_screen** | 5 instances |
+| R8-34 | **guest_detail_screen** | 8 instances |
+| R8-35 | **group_booking_detail_screen** | 6 instances |
+| R8-36 | **lost_found_detail_screen** | 4 instances |
+| R8-37 | **settings_screen** | 9 instances |
+| R8-38 | **room_form_screen** | 2 instances |
+| R8-39 | **maintenance_detail_screen** | Multiple |
+| R8-40 | **minibar_inventory_screen** | 2 instances |
+| R8-41 | **room_management_screen** | 2 instances |
+| R8-42 | **finance_screen** | 8 instances |
+| R8-43 | **financial_category_screen** | 4 instances |
+| R8-44 | **task_detail_screen** | 4 instances |
+| R8-45 | **maintenance_list_screen** | 4 instances |
+| R8-46 | **minibar_pos_screen** | 4 instances |
+| R8-47 | **inspection_template_screen** | 7 instances |
+| R8-48 | **night_audit_screen** | 5 instances |
+| R8-49 | **bookings_screen** | 2 instances |
+| R8-50 | **booking_detail_screen** | 10 instances |
+| R8-51 | **pricing screens** | 4 instances |
+| R8-52 | **message_history_screen** | 2 instances |
+
+**Fix**: Global find-replace `Navigator.of(context).pop` → `context.pop` across all screens.
+
+---
+
+### D. Provider Data Flow Issues (Critical — 17 issues)
+
+#### D1. Double-Fetching Pattern (4 instances)
+
+Almost every mutation calls `loadItems()` (fetches from API) AND then `_ref.invalidate(provider)` (triggers another fetch), resulting in 2 network requests per mutation.
+
+| # | Provider | Pattern |
+|---|----------|---------|
+| R8-53 | **booking_provider** | `await loadBookings()` then `_invalidateRelatedProviders()` in createBooking, updateBooking, etc. |
+| R8-54 | **lost_found_provider** | `await loadItems()` then `_ref.invalidate(lostFoundItemsProvider)` |
+| R8-55 | **room_inspection_provider** | `await loadInspections()` then invalidates providers |
+| R8-56 | **housekeeping_provider** | Optimistic local update + `_invalidateProviders()` = redundant refresh |
+
+**Fix**: Use EITHER `loadItems()` OR `_ref.invalidate()`, not both.
+
+#### D2. Race Conditions (3 instances)
+
+| # | Provider | Issue |
+|---|----------|-------|
+| R8-57 | **finance_provider** | `_loadInitialData()` uses `Future.wait` but `_currentYear`/`_currentMonth` can be changed by `changeMonth()` during the wait, assigning stale results to wrong month |
+| R8-58 | **folio_provider** | `loadFolio(bookingId)` — if user navigates to different booking while loading, results get assigned to wrong booking |
+| R8-59 | **booking_provider** | `createBooking()` calls `loadBookings()` then `_invalidateRelatedProviders()` which re-triggers load |
+
+#### D3. Logout Cleanup Gaps (2 instances)
+
+| # | Issue | Missing Providers |
+|---|-------|-------------------|
+| R8-60 | **auth_provider logout** misses ~27 providers | `todayTasksProvider`, `myTasksProvider`, `myMaintenanceRequestsProvider`, `auditLogsProvider`, `minibarCartProvider`, `vipGuestsProvider`, `returningGuestsProvider`, `lostFoundItemsProvider`, `groupBookingsProvider`, `roomInspectionsProvider`, `folioNotifierProvider`, `inspectionTemplateNotifierProvider`, `groupBookingNotifierProvider`, `notificationsProvider`, `unreadNotificationCountProvider`, `todayAuditProvider`, `latestAuditProvider`, and more |
+| R8-61 | **Family provider instances** not invalidated | `bookingByIdProvider(id)`, `bookingsByRoomProvider(params)`, `filteredTasksProvider(filter)` etc. — parameterized providers retain data per-key |
+
+**Impact**: Next user session sees previous user's cached guest data, tasks, audit trail — **PII leak**.
+
+#### D4. Silent Error Swallowing (4 instances)
+
+| # | Provider | Issue |
+|---|----------|-------|
+| R8-62 | **notification_provider** | `markAsRead()` / `markAllAsRead()` catch all errors, return 0, no user feedback |
+| R8-63 | **guest_provider** | `findByPhone()` / `findByIdNumber()` return `null` for ALL errors — network errors indistinguishable from "not found" |
+| R8-64 | **report_provider** | `exportReport()` returns `null` on error — can't distinguish cancellation from failure |
+| R8-65 | **All providers except finance** | Catch errors and return `null`/`false` instead of rethrowing — UI cannot show specific error feedback or implement retry |
+
+#### D5. Missing Cross-Provider Invalidations (4 instances)
+
+| # | Provider | Missing Invalidation |
+|---|----------|----------------------|
+| R8-66 | **folio_provider** | `addCharge()`/`voidItem()` don't invalidate `bookingFolioProvider(bookingId)` or `folioItemsByBookingProvider(bookingId)` |
+| R8-67 | **room_inspection_provider** | Completing inspection doesn't consistently invalidate `dashboardSummaryProvider` |
+| R8-68 | **rate_plan_provider** | Rate changes don't invalidate booking providers showing stale rate info |
+| R8-69 | **housekeeping_provider** | Maintenance mutations don't invalidate `filteredTasksProvider` / `filteredMaintenanceRequestsProvider` |
+
+---
+
+### E. Model Serialization Gaps (Medium — 3 issues)
+
+| # | Model | Issue |
+|---|-------|-------|
+| R8-70 | **guest.dart** | `IDType` enum on `idType` field missing `unknownEnumValue` — deserialization crash if backend adds new ID type |
+| R8-71 | **guest.dart** | `PassportType` / `VisaType` enums missing `unknownEnumValue` — crash for foreign guest edge cases |
+| R8-72 | **Non-autoDispose state providers** | `selectedRoomProvider`, `selectedRoomTypeFilterProvider`, `selectedStatusFilterProvider`, `selectedFloorFilterProvider` in `room_provider.dart` and similar in `guest_provider.dart` — UI state persists across screen navigations |
+
+---
+
+### F. Hardcoded Strings Bypassing L10n (Medium — 3 areas)
+
+| # | File | Issue | Lines |
+|---|------|-------|-------|
+| R8-73 | **currency_selector.dart** | 8 currency names hardcoded in English: 'Vietnamese Dong', 'US Dollar', 'Euro', etc. | :6-13 |
+| R8-74 | **minibar_item_card.dart** | 8 category names hardcoded in mixed Vietnamese/English: 'nước ngọt', 'beer', 'rượu', etc. — used in `_getCategoryIcon()` / `_getCategoryColor()` | :137-214 |
+| R8-75 | **app_exceptions.dart** | 3 exception messages hardcoded bilingually instead of using l10n | :93-94, :114-115, :124-125 |
+
+---
+
+### G. Deprecated API Usage (Low — 1 area)
+
+| # | File | Issue | Lines |
+|---|------|-------|-------|
+| R8-76 | **room_status_dialog.dart** | 3 uses of deprecated `.withAlpha(int)` — should use `.withValues(alpha: double)` | :121, :284, :322 |
+
+---
+
+### H. Missing Pull-to-Refresh on Detail Screens (Low — 5 screens)
+
+| # | Screen | Issue |
+|---|--------|-------|
+| R8-77 | **room_detail_screen** | No RefreshIndicator — stale data cannot be refreshed |
+| R8-78 | **group_booking_detail_screen** | No RefreshIndicator |
+| R8-79 | **lost_found_detail_screen** | No RefreshIndicator |
+| R8-80 | **maintenance_detail_screen** | No RefreshIndicator |
+| R8-81 | **task_detail_screen** | No RefreshIndicator |
+
+---
+
+### Priority Fix Matrix
+
+#### P0 — Must Fix (Production Blockers)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| R8-60–61 | **Complete logout cleanup** — invalidate all ~27 missing providers to prevent PII leak between sessions | Small |
+| R8-57–58 | **Fix race conditions** — capture year/month/bookingId before async, verify after | Small |
+| R8-1–22 | **Standardize error display** — replace all `'$e'` / `error.toString()` with `getLocalizedErrorMessage()` | Medium |
+| R8-23–32 | **Add `context.mounted` checks** — all async gaps before context usage | Medium |
+
+#### P1 — Should Fix (Major UX Impact)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| R8-53–56 | **Eliminate double-fetching** — use either `loadItems()` or `invalidate()`, not both | Small |
+| R8-33–52 | **Migrate Navigator.pop to context.pop** — global find-replace across all screens | Medium |
+| R8-62–65 | **Standardize error handling in providers** — follow `FinanceNotifier` pattern (set error state AND rethrow) | Medium |
+| R8-66–69 | **Add missing cross-provider invalidations** — folio→booking, inspection→dashboard, rate→booking, housekeeping→filters | Small |
+| R8-70–71 | **Add unknownEnumValue** to Guest model enums (IDType, PassportType, VisaType) | Tiny |
+
+#### P2 — Nice to Fix (Polish)
+
+| # | Fix | Effort |
+|---|-----|--------|
+| R8-73–75 | **Localize hardcoded strings** — currency names, minibar categories, exception messages | Small |
+| R8-76 | **Replace deprecated `.withAlpha()`** with `.withValues(alpha:)` | Tiny |
+| R8-77–81 | **Add RefreshIndicator** to 5 detail screens | Small |
+| R8-72 | **Convert UI state providers to autoDispose** — room/guest selection providers | Small |
