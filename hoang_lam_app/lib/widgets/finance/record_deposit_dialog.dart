@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../providers/finance_provider.dart';
@@ -71,7 +72,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
       final payment = await repository.recordDeposit(request);
 
       if (mounted) {
-        Navigator.of(context).pop(payment);
+        context.pop(payment);
       }
     } catch (e) {
       setState(() {
@@ -213,7 +214,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+          onPressed: _isLoading ? null : () => context.pop(),
           child: Text(context.l10n.cancel),
         ),
         FilledButton(

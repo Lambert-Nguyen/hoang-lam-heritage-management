@@ -494,11 +494,11 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         content: Text(l10n.verifyTaskConfirmation),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: Text(l10n.verify),
           ),
         ],
@@ -529,11 +529,11 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         content: Text(l10n.deleteTaskConfirmation),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),

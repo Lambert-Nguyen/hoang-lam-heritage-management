@@ -450,13 +450,10 @@ class _DateRateOverrideFormScreenState
           '${l10n.confirmDeleteDateRate} ${_selectedDate != null ? dateFormat.format(_selectedDate!) : ''}?',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => context.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              context.pop();
               await _deleteOverride();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),

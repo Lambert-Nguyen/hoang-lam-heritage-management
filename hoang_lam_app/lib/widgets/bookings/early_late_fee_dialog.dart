@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -249,7 +250,7 @@ class _EarlyLateFeeDialogState extends State<EarlyLateFeeDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(null),
+          onPressed: () => context.pop(null),
           child: Text(l10n.cancel),
         ),
         ElevatedButton.icon(
@@ -271,7 +272,7 @@ class _EarlyLateFeeDialogState extends State<EarlyLateFeeDialog> {
     final hours = double.parse(_hoursController.text);
     final fee = int.parse(_feeController.text);
 
-    Navigator.of(context).pop({
+    context.pop({
       'hours': hours,
       'fee': fee,
       'notes': _notesController.text,

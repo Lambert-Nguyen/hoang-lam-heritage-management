@@ -4,7 +4,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../models/housekeeping.dart';
 import '../models/room.dart';
 import '../repositories/housekeeping_repository.dart';
-import 'dashboard_provider.dart';
 import 'room_provider.dart';
 import '../core/utils/error_utils.dart';
 import 'settings_provider.dart';
@@ -202,7 +201,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         isLoading: false,
         tasks: [...state.tasks, newTask],
       );
-      _invalidateProviders();
       return newTask;
     } catch (e) {
       state = state.copyWith(
@@ -222,7 +220,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
     try {
       final updatedTask = await _repository.updateTask(taskId, update);
       _updateTaskInList(updatedTask);
-      _invalidateProviders();
       return updatedTask;
     } catch (e) {
       state = state.copyWith(
@@ -239,7 +236,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
     try {
       final updatedTask = await _repository.assignTask(taskId, userId);
       _updateTaskInList(updatedTask);
-      _invalidateProviders();
       return updatedTask;
     } catch (e) {
       state = state.copyWith(
@@ -256,7 +252,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
     try {
       final updatedTask = await _repository.completeTask(taskId, notes: notes);
       _updateTaskInList(updatedTask);
-      _invalidateProviders();
       return updatedTask;
     } catch (e) {
       state = state.copyWith(
@@ -273,7 +268,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
     try {
       final updatedTask = await _repository.verifyTask(taskId, notes: notes);
       _updateTaskInList(updatedTask);
-      _invalidateProviders();
       return updatedTask;
     } catch (e) {
       state = state.copyWith(
@@ -293,7 +287,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         isLoading: false,
         tasks: state.tasks.where((t) => t.id != taskId).toList(),
       );
-      _invalidateProviders();
       return true;
     } catch (e) {
       state = state.copyWith(
@@ -350,7 +343,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         isLoading: false,
         requests: [...state.requests, newRequest],
       );
-      _invalidateProviders();
       // Auto-set room to Maintenance when creating a maintenance request
       if (request.room != null) {
         await _ref
@@ -379,7 +371,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         update,
       );
       _updateRequestInList(updatedRequest);
-      _invalidateProviders();
       return updatedRequest;
     } catch (e) {
       state = state.copyWith(
@@ -404,7 +395,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         estimatedCost: estimatedCost,
       );
       _updateRequestInList(updatedRequest);
-      _invalidateProviders();
       return updatedRequest;
     } catch (e) {
       state = state.copyWith(
@@ -429,7 +419,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         resolutionNotes: resolutionNotes,
       );
       _updateRequestInList(updatedRequest);
-      _invalidateProviders();
       return updatedRequest;
     } catch (e) {
       state = state.copyWith(
@@ -452,7 +441,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         reason: reason,
       );
       _updateRequestInList(updatedRequest);
-      _invalidateProviders();
       return updatedRequest;
     } catch (e) {
       state = state.copyWith(
@@ -471,7 +459,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         requestId,
       );
       _updateRequestInList(updatedRequest);
-      _invalidateProviders();
       return updatedRequest;
     } catch (e) {
       state = state.copyWith(
@@ -494,7 +481,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         reason: reason,
       );
       _updateRequestInList(updatedRequest);
-      _invalidateProviders();
       return updatedRequest;
     } catch (e) {
       state = state.copyWith(
@@ -514,7 +500,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
         isLoading: false,
         requests: state.requests.where((r) => r.id != requestId).toList(),
       );
-      _invalidateProviders();
       return true;
     } catch (e) {
       state = state.copyWith(
@@ -547,17 +532,6 @@ class HousekeepingNotifier extends StateNotifier<HousekeepingState> {
   /// Select a maintenance request
   void selectRequest(MaintenanceRequest? request) {
     state = state.copyWith(selectedRequest: request);
-  }
-
-  /// Invalidate related providers to refresh data
-  void _invalidateProviders() {
-    _ref.invalidate(housekeepingTasksProvider);
-    _ref.invalidate(todayTasksProvider);
-    _ref.invalidate(myTasksProvider);
-    _ref.invalidate(maintenanceRequestsProvider);
-    _ref.invalidate(urgentRequestsProvider);
-    _ref.invalidate(myMaintenanceRequestsProvider);
-    _ref.invalidate(dashboardSummaryProvider);
   }
 }
 

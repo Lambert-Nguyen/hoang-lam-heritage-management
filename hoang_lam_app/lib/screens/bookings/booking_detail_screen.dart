@@ -888,12 +888,12 @@ class BookingDetailScreen extends ConsumerWidget {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(ctx),
+                onPressed: () => ctx.pop(),
                 child: Text(context.l10n.cancel),
               ),
               ElevatedButton(
                 onPressed: selectedRoomId != null
-                    ? () => Navigator.pop(ctx, {
+                    ? () => ctx.pop({
                         'roomId': selectedRoomId,
                         'reason': reasonController.text,
                       })
@@ -971,12 +971,9 @@ class BookingDetailScreen extends ConsumerWidget {
           '${l10n.newCheckoutDate}: ${DateFormat("dd/MM/yyyy").format(newDate)}',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l10n.cancel)),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => ctx.pop(true),
             child: Text(l10n.confirm),
           ),
         ],
@@ -1337,14 +1334,11 @@ class BookingDetailScreen extends ConsumerWidget {
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l10n.cancel)),
           ElevatedButton(
             onPressed: () {
               if (formKey.currentState!.validate()) {
-                Navigator.pop(ctx, true);
+                ctx.pop(true);
               }
             },
             child: Text(l10n.confirm),
@@ -1392,12 +1386,9 @@ class BookingDetailScreen extends ConsumerWidget {
         title: Text(l10n.markAsPaid),
         content: Text(l10n.confirmAction),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l10n.cancel)),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => ctx.pop(true),
             child: Text(l10n.confirm),
           ),
         ],
@@ -1508,10 +1499,7 @@ class _SplitPaymentDialogState extends State<_SplitPaymentDialog> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
+        TextButton(onPressed: () => context.pop(), child: Text(l10n.cancel)),
         ElevatedButton(
           onPressed: _remaining == 0
               ? () {
@@ -1519,7 +1507,7 @@ class _SplitPaymentDialogState extends State<_SplitPaymentDialog> {
                       .where((s) => s.amount > 0)
                       .map((s) => {'method': s.method.name, 'amount': s.amount})
                       .toList();
-                  Navigator.pop(context, result);
+                  context.pop(result);
                 }
               : null,
           child: Text(l10n.confirm),

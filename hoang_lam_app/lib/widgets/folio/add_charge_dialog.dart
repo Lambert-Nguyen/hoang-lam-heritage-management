@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -197,7 +198,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+          onPressed: _isLoading ? null : () => context.pop(),
           child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
@@ -301,7 +302,7 @@ class _AddChargeDialogState extends ConsumerState<AddChargeDialog> {
       if (mounted) {
         if (success) {
           ref.invalidate(bookingFolioProvider);
-          Navigator.of(context).pop();
+          context.pop();
           widget.onChargeAdded?.call();
 
           ScaffoldMessenger.of(context).showSnackBar(

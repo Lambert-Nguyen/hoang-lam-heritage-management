@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/error_utils.dart';
@@ -197,7 +198,7 @@ class _InspectionTemplateScreenState
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.pop(context);
+                          context.pop();
                           _editTemplate(template);
                         },
                         icon: const Icon(Icons.edit),
@@ -208,7 +209,7 @@ class _InspectionTemplateScreenState
                     Expanded(
                       child: FilledButton.icon(
                         onPressed: () {
-                          Navigator.pop(context);
+                          context.pop();
                           _duplicateTemplate(template);
                         },
                         icon: const Icon(Icons.copy),
@@ -358,11 +359,11 @@ class _InspectionTemplateScreenState
         content: Text(l10n.confirmDeleteTemplate),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             style: FilledButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),
@@ -827,7 +828,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.pop(),
                 child: Text(l10n.cancel),
               ),
               FilledButton(
@@ -844,7 +845,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
                     });
                     _itemNameController.clear();
                     _itemCritical = false;
-                    Navigator.pop(context);
+                    context.pop();
                   }
                 },
                 child: Text(l10n.addLabel),
@@ -870,8 +871,7 @@ class _CreateTemplateSheetState extends ConsumerState<_CreateTemplateSheet> {
       return;
     }
 
-    Navigator.pop(
-      context,
+    context.pop(
       InspectionTemplateCreate(
         name: _name,
         inspectionType: _type,

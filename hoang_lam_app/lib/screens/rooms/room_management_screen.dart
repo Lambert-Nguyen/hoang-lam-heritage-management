@@ -470,12 +470,12 @@ class _RoomManagementScreenState extends ConsumerState<RoomManagementScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(dialogContext);
+              dialogContext.pop();
               final success = await ref
                   .read(roomStateProvider.notifier)
                   .deleteRoom(room.id);

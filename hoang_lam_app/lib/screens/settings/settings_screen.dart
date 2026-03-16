@@ -443,7 +443,7 @@ class SettingsScreen extends ConsumerWidget {
             if (value != null) {
               ref.read(settingsProvider.notifier).setThemeMode(value);
             }
-            Navigator.pop(dialogContext);
+            dialogContext.pop();
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -466,7 +466,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(l10n.cancel),
           ),
         ],
@@ -490,7 +490,7 @@ class SettingsScreen extends ConsumerWidget {
             if (value != null) {
               ref.read(settingsProvider.notifier).setLocale(value);
             }
-            Navigator.pop(dialogContext);
+            dialogContext.pop();
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -502,7 +502,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(l10n.cancel),
           ),
         ],
@@ -526,7 +526,7 @@ class SettingsScreen extends ConsumerWidget {
             if (value != null) {
               ref.read(settingsProvider.notifier).setTextScaleFactor(value);
             }
-            Navigator.pop(dialogContext);
+            dialogContext.pop();
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -555,7 +555,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(l10n.cancel),
           ),
         ],
@@ -682,7 +682,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
+              onPressed: () => dialogContext.pop(),
               child: Text(l10n.close),
             ),
           ],
@@ -734,12 +734,12 @@ class SettingsScreen extends ConsumerWidget {
         content: Text(l10n.confirmLogoutMessage),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
-              Navigator.pop(dialogContext);
+              dialogContext.pop();
               await ref.read(authStateProvider.notifier).logout();
               if (context.mounted) {
                 context.go(AppRoutes.login);

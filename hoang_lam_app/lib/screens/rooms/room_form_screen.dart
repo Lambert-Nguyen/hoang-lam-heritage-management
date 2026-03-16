@@ -413,12 +413,12 @@ class _RoomFormScreenState extends ConsumerState<RoomFormScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(dialogContext);
+              dialogContext.pop();
               await _deleteRoom();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),

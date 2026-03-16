@@ -349,7 +349,7 @@ class ReportScreenNotifier extends StateNotifier<ReportScreenState> {
             .errorReportExport
             .replaceAll('{error}', '$e'),
       );
-      return null;
+      rethrow;
     }
   }
 

@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../models/rate_plan.dart';
 import '../repositories/rate_plan_repository.dart';
+import 'booking_provider.dart';
 
 part 'rate_plan_provider.freezed.dart';
 
@@ -113,6 +114,8 @@ class RatePlanNotifier
   void _invalidateRelated() {
     _ref.invalidate(ratePlansProvider);
     _ref.invalidate(activeRatePlansProvider);
+    _ref.invalidate(bookingsProvider);
+    _ref.invalidate(activeBookingsProvider);
   }
 
   Future<void> loadRatePlans({int? roomTypeId, bool? isActive}) async {
@@ -191,6 +194,7 @@ class DateRateOverrideNotifier
     final override = await _repository.createDateRateOverride(request);
     await loadOverrides();
     _ref.invalidate(ratePlansProvider);
+    _ref.invalidate(activeRatePlansProvider);
     return override;
   }
 
@@ -200,6 +204,7 @@ class DateRateOverrideNotifier
     final overrides = await _repository.bulkCreateDateRateOverrides(request);
     await loadOverrides();
     _ref.invalidate(ratePlansProvider);
+    _ref.invalidate(activeRatePlansProvider);
     return overrides;
   }
 
@@ -210,6 +215,7 @@ class DateRateOverrideNotifier
     final override = await _repository.updateDateRateOverride(id, updates);
     await loadOverrides();
     _ref.invalidate(ratePlansProvider);
+    _ref.invalidate(activeRatePlansProvider);
     return override;
   }
 
@@ -217,6 +223,7 @@ class DateRateOverrideNotifier
     await _repository.deleteDateRateOverride(id);
     await loadOverrides();
     _ref.invalidate(ratePlansProvider);
+    _ref.invalidate(activeRatePlansProvider);
   }
 }
 

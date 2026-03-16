@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/models/housekeeping.dart';
@@ -13,7 +14,31 @@ void main() {
       HousekeepingTaskFilter? initialFilter,
       required void Function(HousekeepingTaskFilter) onApply,
     }) {
-      return MaterialApp(
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () {
+                    showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => TaskFilterSheet(
+                        initialFilter: initialFilter,
+                        onApply: onApply,
+                      ),
+                    );
+                  },
+                  child: const Text('Open Filter'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      return MaterialApp.router(
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -22,23 +47,7 @@ void main() {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('vi'),
-        home: Scaffold(
-          body: Builder(
-            builder: (context) => ElevatedButton(
-              onPressed: () {
-                showModalBottomSheet<void>(
-                  context: context,
-                  isScrollControlled: true,
-                  builder: (_) => TaskFilterSheet(
-                    initialFilter: initialFilter,
-                    onApply: onApply,
-                  ),
-                );
-              },
-              child: const Text('Open Filter'),
-            ),
-          ),
-        ),
+        routerConfig: router,
       );
     }
 

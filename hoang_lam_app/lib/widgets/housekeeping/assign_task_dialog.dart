@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -139,7 +140,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                 Expanded(
                   child: AppButton(
                     label: context.l10n.cancel,
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => context.pop(),
                     isOutlined: true,
                   ),
                 ),
@@ -148,7 +149,7 @@ class _AssignTaskDialogState extends ConsumerState<AssignTaskDialog> {
                   child: AppButton(
                     label: context.l10n.confirm,
                     onPressed: _selectedUserId != null
-                        ? () => Navigator.pop(context, _selectedUserId)
+                        ? () => context.pop(_selectedUserId)
                         : null,
                   ),
                 ),

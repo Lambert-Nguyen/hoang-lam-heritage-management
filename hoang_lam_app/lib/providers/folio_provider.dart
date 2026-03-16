@@ -159,6 +159,8 @@ class FolioNotifier extends StateNotifier<FolioState> {
       _ref.invalidate(dashboardSummaryProvider);
       if (state.bookingId != null) {
         _ref.invalidate(bookingByIdProvider(state.bookingId!));
+        _ref.invalidate(bookingFolioProvider(state.bookingId!));
+        _ref.invalidate(folioItemsByBookingProvider(state.bookingId!));
       }
       _ref.invalidate(bookingsProvider);
 
@@ -193,6 +195,8 @@ class FolioNotifier extends StateNotifier<FolioState> {
       _ref.invalidate(dashboardSummaryProvider);
       if (state.bookingId != null) {
         _ref.invalidate(bookingByIdProvider(state.bookingId!));
+        _ref.invalidate(bookingFolioProvider(state.bookingId!));
+        _ref.invalidate(folioItemsByBookingProvider(state.bookingId!));
       }
       _ref.invalidate(bookingsProvider);
 

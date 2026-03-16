@@ -307,7 +307,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
               leading: const Icon(Icons.visibility),
               title: Text(context.l10n.viewBookingDetails),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _navigateToDetail(context, guest);
               },
             ),
@@ -315,7 +315,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
               leading: const Icon(Icons.edit),
               title: Text(context.l10n.edit),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _navigateToForm(context, guest);
               },
             ),
@@ -328,7 +328,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
                 guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
               ),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _toggleVipStatus(guest);
               },
             ),
@@ -336,7 +336,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
               leading: const Icon(Icons.history),
               title: Text(context.l10n.history),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _navigateToDetail(context, guest);
               },
             ),
@@ -376,7 +376,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             _showVipOnly = vipOnly;
             _selectedNationality = nationality;
           });
-          Navigator.pop(context);
+          context.pop();
           _performSearch(_searchController.text);
         },
       ),

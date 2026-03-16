@@ -309,8 +309,9 @@ class GuestNotifier extends StateNotifier<GuestState> {
   Future<Guest?> findByPhone(String phone) async {
     try {
       return await _repository.findByPhone(phone);
-    } catch (e) {
-      return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
     }
   }
 
@@ -318,8 +319,9 @@ class GuestNotifier extends StateNotifier<GuestState> {
   Future<Guest?> findByIdNumber(String idNumber) async {
     try {
       return await _repository.findByIdNumber(idNumber);
-    } catch (e) {
-      return null;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return null;
+      rethrow;
     }
   }
 

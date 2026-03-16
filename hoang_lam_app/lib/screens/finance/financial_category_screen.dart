@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -214,11 +215,11 @@ class _FinancialCategoryScreenState
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
+            onPressed: () => dialogContext.pop(false),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
+            onPressed: () => dialogContext.pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),
@@ -691,7 +692,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _saving ? null : () => Navigator.pop(context, false),
+          onPressed: _saving ? null : () => context.pop(false),
           child: Text(l10n.cancel),
         ),
         ElevatedButton(
@@ -860,7 +861,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
 
       if (mounted) {
         final messenger = ScaffoldMessenger.of(context);
-        Navigator.pop(context, true);
+        context.pop(true);
         messenger.showSnackBar(
           SnackBar(
             content: Text(

@@ -362,7 +362,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
           setState(() {
             _filter = newFilter;
           });
-          Navigator.pop(context);
+          context.pop();
         },
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../l10n/app_localizations.dart';
@@ -191,7 +192,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _isLoading ? null : () => Navigator.pop(context, null),
+          onPressed: _isLoading ? null : () => context.pop(null),
           child: Text(context.l10n.cancel),
         ),
         ElevatedButton(
@@ -233,7 +234,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
       ref.invalidate(roomsProvider);
       ref.invalidate(allRoomsProvider);
       // Return the new status to the calling screen; let it show the SnackBar
-      Navigator.pop(context, _selectedStatus);
+      context.pop(_selectedStatus);
     } else {
       // Stay in the dialog and show error
       if (mounted) {
@@ -323,9 +324,7 @@ class QuickStatusBottomSheet extends ConsumerWidget {
                   labelStyle: TextStyle(
                     color: isCurrentStatus ? Colors.white : status.color,
                   ),
-                  onPressed: isCurrentStatus
-                      ? null
-                      : () => Navigator.pop(context, status),
+                  onPressed: isCurrentStatus ? null : () => context.pop(status),
                 );
               }).toList(),
             ),

@@ -357,7 +357,9 @@ sealed class Guest with _$Guest {
     @Default('') String email,
 
     // ID Information
-    @JsonKey(name: 'id_type') @Default(IDType.cccd) IDType idType,
+    @JsonKey(name: 'id_type', unknownEnumValue: IDType.other)
+    @Default(IDType.cccd)
+    IDType idType,
     @JsonKey(name: 'id_number') String? idNumber,
     @JsonKey(name: 'id_issue_date') DateTime? idIssueDate,
     @JsonKey(name: 'id_issue_place') @Default('') String idIssuePlace,
@@ -374,8 +376,10 @@ sealed class Guest with _$Guest {
     @Default('') String country,
 
     // Foreign guest fields (NA17)
-    @JsonKey(name: 'passport_type') PassportType? passportType,
-    @JsonKey(name: 'visa_type') VisaType? visaType,
+    @JsonKey(name: 'passport_type', unknownEnumValue: PassportType.other)
+    PassportType? passportType,
+    @JsonKey(name: 'visa_type', unknownEnumValue: VisaType.none)
+    VisaType? visaType,
     @JsonKey(name: 'visa_number') @Default('') String visaNumber,
     @JsonKey(name: 'visa_issue_date') DateTime? visaIssueDate,
     @JsonKey(name: 'visa_expiry_date') DateTime? visaExpiryDate,

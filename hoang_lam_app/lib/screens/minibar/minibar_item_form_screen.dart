@@ -389,11 +389,11 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),

@@ -442,13 +442,13 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
           if (!sale.isCharged)
             TextButton(
               onPressed: () async {
-                Navigator.pop(context);
+                context.pop();
                 await _markSaleCharged(sale);
               },
               child: Text(context.l10n.markAsCharged),
             ),
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             child: Text(context.l10n.closeButton),
           ),
         ],

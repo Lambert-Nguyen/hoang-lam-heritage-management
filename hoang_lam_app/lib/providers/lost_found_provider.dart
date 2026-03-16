@@ -155,7 +155,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final newItem = await _repository.createItem(item);
-      await loadItems();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(lostFoundItemsProvider);
       _ref.invalidate(lostFoundStatisticsProvider);
       return newItem;
@@ -173,7 +173,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updatedItem = await _repository.updateItem(id, update);
-      await loadItems();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(lostFoundItemByIdProvider(id));
       _ref.invalidate(lostFoundItemsProvider);
       return updatedItem;
@@ -194,7 +194,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
         id,
         storageLocation: storageLocation,
       );
-      await loadItems();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(lostFoundItemByIdProvider(id));
       _ref.invalidate(lostFoundItemsProvider);
       _ref.invalidate(lostFoundStatisticsProvider);
@@ -221,7 +221,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
         claimedByStaff: claimedByStaff,
         notes: notes,
       );
-      await loadItems();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(lostFoundItemByIdProvider(id));
       _ref.invalidate(lostFoundItemsProvider);
       _ref.invalidate(lostFoundStatisticsProvider);
@@ -248,7 +248,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
         reason: reason,
         notes: notes,
       );
-      await loadItems();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(lostFoundItemByIdProvider(id));
       _ref.invalidate(lostFoundItemsProvider);
       _ref.invalidate(lostFoundStatisticsProvider);
@@ -267,7 +267,7 @@ class LostFoundNotifier extends StateNotifier<LostFoundState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       await _repository.deleteItem(id);
-      await loadItems();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(lostFoundItemsProvider);
       _ref.invalidate(lostFoundStatisticsProvider);
       return true;

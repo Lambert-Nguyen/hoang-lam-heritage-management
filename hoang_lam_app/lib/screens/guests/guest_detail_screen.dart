@@ -496,12 +496,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => ctx.pop(false), child: Text(l10n.cancel)),
           ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, true),
+            onPressed: () => ctx.pop(true),
             child: Text(l10n.save),
           ),
         ],
@@ -743,7 +740,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               leading: const Icon(Icons.edit),
               title: Text(context.l10n.editInfo),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _navigateToEdit();
               },
             ),
@@ -756,7 +753,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                 _guest.isVip ? context.l10n.removeVip : context.l10n.markVip,
               ),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _toggleVipStatus();
               },
             ),
@@ -764,7 +761,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               leading: const Icon(Icons.phone),
               title: Text(context.l10n.call),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _launchPhone(_guest.phone);
               },
             ),
@@ -776,7 +773,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
                   style: const TextStyle(color: AppColors.error),
                 ),
                 onTap: () {
-                  Navigator.pop(context);
+                  context.pop();
                   _showDeleteConfirmation();
                 },
               ),
@@ -796,12 +793,12 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(context.l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(dialogContext);
+              dialogContext.pop();
               final success = await ref
                   .read(guestStateProvider.notifier)
                   .deleteGuest(_guest.id);

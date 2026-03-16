@@ -190,7 +190,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<Booking> createBooking(BookingCreate booking) async {
     try {
       final newBooking = await _repository.createBooking(booking);
-      await loadBookings();
       _invalidateRelatedProviders();
       return newBooking;
     } on DioException catch (e) {
@@ -201,7 +200,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
           operationType: OperationType.create,
           payload: booking.toJson(),
         );
-        await loadBookings();
         rethrow;
       }
       rethrow;
@@ -212,7 +210,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<Booking> updateBooking(int id, BookingUpdate booking) async {
     try {
       final updatedBooking = await _repository.updateBooking(id, booking);
-      await loadBookings();
       _invalidateRelatedProviders();
       return updatedBooking;
     } on DioException catch (e) {
@@ -224,7 +221,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
           operationType: OperationType.update,
           payload: booking.toJson(),
         );
-        await loadBookings();
         rethrow;
       }
       rethrow;
@@ -243,8 +239,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         status,
         notes: notes,
       );
-      // Reload bookings after status update
-      await loadBookings();
       _invalidateRelatedProviders(includeRooms: true);
       return updatedBooking;
     } catch (error) {
@@ -256,8 +250,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<Booking> checkIn(int id, {String? notes}) async {
     try {
       final booking = await _repository.checkIn(id, actualCheckInNotes: notes);
-      // Reload bookings after check-in
-      await loadBookings();
       _invalidateRelatedProviders(includeRooms: true);
       return booking;
     } catch (error) {
@@ -273,8 +265,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         actualCheckOutNotes: notes,
         finalAmount: finalAmount,
       );
-      // Reload bookings after check-out
-      await loadBookings();
       _invalidateRelatedProviders(includeRooms: true);
       return booking;
     } catch (error) {
@@ -298,7 +288,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         notes: notes,
         createFolioItem: createFolioItem,
       );
-      await loadBookings();
       _invalidateRelatedProviders();
       return booking;
     } catch (error) {
@@ -322,7 +311,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         notes: notes,
         createFolioItem: createFolioItem,
       );
-      await loadBookings();
       _invalidateRelatedProviders();
       return booking;
     } catch (error) {
@@ -342,7 +330,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         newRoomId,
         reason: reason,
       );
-      await loadBookings();
       _invalidateRelatedProviders(includeRooms: true);
       return result;
     } catch (error) {
@@ -357,8 +344,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         id,
         cancellationReason: reason,
       );
-      // Reload bookings after cancellation
-      await loadBookings();
       _invalidateRelatedProviders(includeRooms: true);
       return booking;
     } catch (error) {
@@ -370,8 +355,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<Booking> markAsNoShow(int id, {String? notes}) async {
     try {
       final booking = await _repository.markAsNoShow(id, notes: notes);
-      // Reload bookings after update
-      await loadBookings();
       _invalidateRelatedProviders();
       return booking;
     } catch (error) {
@@ -383,7 +366,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<Booking?> extendStay(int bookingId, DateTime newCheckOutDate) async {
     try {
       final result = await _repository.extendStay(bookingId, newCheckOutDate);
-      await loadBookings();
       _invalidateRelatedProviders();
       return result;
     } catch (e) {
@@ -398,7 +380,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   ) async {
     try {
       final result = await _repository.splitPayment(bookingId, splits);
-      await loadBookings();
       _invalidateRelatedProviders();
       return result;
     } catch (e) {
@@ -418,7 +399,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
         amount: amount,
         reason: reason,
       );
-      await loadBookings();
       _invalidateRelatedProviders();
       return result;
     } catch (e) {
@@ -430,7 +410,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
   Future<void> deleteBooking(int id) async {
     try {
       await _repository.deleteBooking(id);
-      await loadBookings();
       _invalidateRelatedProviders(includeRooms: true);
     } on DioException catch (e) {
       if (_isNetworkError(e)) {
@@ -441,7 +420,6 @@ class BookingNotifier extends StateNotifier<AsyncValue<List<Booking>>> {
           operationType: OperationType.delete,
           payload: {},
         );
-        await loadBookings();
         rethrow;
       }
       rethrow;

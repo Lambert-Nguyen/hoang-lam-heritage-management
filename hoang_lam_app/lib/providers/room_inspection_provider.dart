@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../models/room_inspection.dart';
 import '../repositories/room_inspection_repository.dart';
 import '../core/utils/error_utils.dart';
+import 'dashboard_provider.dart';
 import 'room_provider.dart';
 import 'settings_provider.dart';
 
@@ -188,7 +189,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final newInspection = await _repository.createInspection(data);
-      await loadInspections();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(roomInspectionsProvider);
       _ref.invalidate(pendingInspectionsTodayProvider);
       _ref.invalidate(inspectionStatisticsProvider);
@@ -210,7 +211,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updatedInspection = await _repository.updateInspection(id, update);
-      await loadInspections();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(roomInspectionByIdProvider(id));
       _ref.invalidate(roomInspectionsProvider);
       return updatedInspection;
@@ -228,7 +229,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final inspection = await _repository.startInspection(id);
-      await loadInspections();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(roomInspectionByIdProvider(id));
       _ref.invalidate(roomInspectionsProvider);
       _ref.invalidate(pendingInspectionsTodayProvider);
@@ -250,12 +251,13 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final inspection = await _repository.completeInspection(id, data);
-      await loadInspections();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(roomInspectionByIdProvider(id));
       _ref.invalidate(roomInspectionsProvider);
       _ref.invalidate(pendingInspectionsTodayProvider);
       _ref.invalidate(inspectionStatisticsProvider);
       _ref.invalidate(roomsProvider);
+      _ref.invalidate(dashboardSummaryProvider);
       return inspection;
     } catch (e) {
       state = state.copyWith(
@@ -277,7 +279,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
         bookingId,
         templateId: templateId,
       );
-      await loadInspections();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(roomInspectionsProvider);
       _ref.invalidate(pendingInspectionsTodayProvider);
       return inspection;
@@ -295,7 +297,7 @@ class RoomInspectionNotifier extends StateNotifier<RoomInspectionState> {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       await _repository.deleteInspection(id);
-      await loadInspections();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(roomInspectionsProvider);
       _ref.invalidate(inspectionStatisticsProvider);
       return true;
@@ -374,7 +376,7 @@ class InspectionTemplateNotifier
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final newTemplate = await _repository.createTemplate(data);
-      await loadTemplates();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(inspectionTemplatesProvider);
       _ref.invalidate(defaultTemplatesProvider);
       return newTemplate;
@@ -395,7 +397,7 @@ class InspectionTemplateNotifier
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final updatedTemplate = await _repository.updateTemplate(id, data);
-      await loadTemplates();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(inspectionTemplateByIdProvider(id));
       _ref.invalidate(inspectionTemplatesProvider);
       return updatedTemplate;
@@ -413,7 +415,7 @@ class InspectionTemplateNotifier
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       await _repository.deleteTemplate(id);
-      await loadTemplates();
+      state = state.copyWith(isLoading: false);
       _ref.invalidate(inspectionTemplatesProvider);
       return true;
     } catch (e) {

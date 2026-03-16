@@ -225,7 +225,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
                   selected: _categoryFilter == null,
                   onSelected: (_) {
                     setState(() => _categoryFilter = null);
-                    Navigator.pop(context);
+                    context.pop();
                   },
                 ),
                 ...LostFoundCategory.values.map(
@@ -234,7 +234,7 @@ class _LostFoundListScreenState extends ConsumerState<LostFoundListScreen>
                     selected: _categoryFilter == c,
                     onSelected: (_) {
                       setState(() => _categoryFilter = c);
-                      Navigator.pop(context);
+                      context.pop();
                     },
                   ),
                 ),

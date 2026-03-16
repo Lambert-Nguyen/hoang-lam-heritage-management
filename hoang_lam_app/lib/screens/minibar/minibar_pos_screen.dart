@@ -302,11 +302,11 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
         content: Text(l10n.clearCartConfirm),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),
@@ -346,11 +346,11 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: Text(l10n.confirm),
           ),
         ],

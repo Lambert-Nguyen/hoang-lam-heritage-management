@@ -617,7 +617,7 @@ class _InspectionDetailContentState
               actions: [
                 IconButton(
                   icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => context.pop(),
                 ),
               ],
             ),

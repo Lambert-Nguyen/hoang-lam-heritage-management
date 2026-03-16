@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -230,7 +231,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                       Expanded(
                         child: AppButton(
                           label: l10n.cancel,
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => context.pop(),
                           isOutlined: true,
                         ),
                       ),
@@ -239,10 +240,7 @@ class _CompleteTaskDialogState extends State<CompleteTaskDialog> {
                         child: AppButton(
                           label: l10n.completeBtn,
                           onPressed: _allItemsChecked
-                              ? () => Navigator.pop(
-                                  context,
-                                  _notesController.text,
-                                )
+                              ? () => context.pop(_notesController.text)
                               : null,
                         ),
                       ),

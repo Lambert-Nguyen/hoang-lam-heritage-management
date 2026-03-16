@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 
 /// A widget that wraps a form and warns the user about unsaved changes
@@ -35,11 +36,11 @@ class UnsavedChangesGuard extends StatelessWidget {
             content: Text(l10n.unsavedChangesMessage),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(context, false),
+                onPressed: () => context.pop(false),
                 child: Text(l10n.keepEditing),
               ),
               TextButton(
-                onPressed: () => Navigator.pop(context, true),
+                onPressed: () => context.pop(true),
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
                 child: Text(l10n.discardChanges),
               ),
@@ -47,7 +48,7 @@ class UnsavedChangesGuard extends StatelessWidget {
           ),
         );
         if (shouldLeave == true && context.mounted) {
-          Navigator.of(context).pop();
+          context.pop();
         }
       },
       child: child,

@@ -403,11 +403,11 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, controller.text),
+            onPressed: () => context.pop(controller.text),
             child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
@@ -426,11 +426,11 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         content: Text(content),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: Text(AppLocalizations.of(context)!.confirm),
           ),
         ],

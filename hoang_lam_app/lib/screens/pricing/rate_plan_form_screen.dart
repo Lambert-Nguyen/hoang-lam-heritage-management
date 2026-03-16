@@ -488,13 +488,10 @@ class _RatePlanFormScreenState extends ConsumerState<RatePlanFormScreen> {
           '${l10n.confirmDeleteRatePlan} "${_nameController.text}"?',
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => context.pop(), child: Text(l10n.cancel)),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              context.pop();
               await _deleteRatePlan();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),

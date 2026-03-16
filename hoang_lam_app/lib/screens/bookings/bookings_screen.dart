@@ -423,12 +423,12 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                 _selectedStatus = null;
                 _selectedSource = null;
               });
-              Navigator.pop(dialogContext);
+              dialogContext.pop();
             },
             child: Text(context.l10n.clearFilter),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(context.l10n.close),
           ),
         ],

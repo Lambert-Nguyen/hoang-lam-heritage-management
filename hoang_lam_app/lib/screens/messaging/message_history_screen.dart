@@ -129,11 +129,11 @@ class MessageHistoryScreen extends ConsumerWidget {
         content: Text(l10n.resendMessageConfirm),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: Text(l10n.send),
           ),
         ],

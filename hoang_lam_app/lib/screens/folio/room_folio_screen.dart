@@ -285,10 +285,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.cancel),
-          ),
+          TextButton(onPressed: () => context.pop(), child: Text(l10n.cancel)),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
@@ -305,7 +302,7 @@ class _RoomFolioScreenState extends ConsumerState<RoomFolioScreen> {
                 return;
               }
 
-              Navigator.of(context).pop();
+              context.pop();
 
               final success = await ref
                   .read(folioNotifierProvider.notifier)

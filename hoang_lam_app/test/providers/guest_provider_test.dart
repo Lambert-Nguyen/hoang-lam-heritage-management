@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -344,7 +345,14 @@ void main() {
       test('should return null if not found', () async {
         when(
           mockRepository.findByPhone('0999999999'),
-        ).thenThrow(Exception('Not found'));
+        ).thenThrow(DioException(
+          requestOptions: RequestOptions(path: ''),
+          response: Response(
+            requestOptions: RequestOptions(path: ''),
+            statusCode: 404,
+          ),
+          type: DioExceptionType.badResponse,
+        ));
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.findByPhone('0999999999');
@@ -369,7 +377,14 @@ void main() {
       test('should return null if not found', () async {
         when(
           mockRepository.findByIdNumber('000000000'),
-        ).thenThrow(Exception('Not found'));
+        ).thenThrow(DioException(
+          requestOptions: RequestOptions(path: ''),
+          response: Response(
+            requestOptions: RequestOptions(path: ''),
+            statusCode: 404,
+          ),
+          type: DioExceptionType.badResponse,
+        ));
 
         final notifier = container.read(guestStateProvider.notifier);
         final result = await notifier.findByIdNumber('000000000');

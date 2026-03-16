@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -678,11 +679,11 @@ class _MaintenanceDetailScreenState
         content: Text(l10n.continueRequestConfirmation),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: Text(l10n.resume),
           ),
         ],
@@ -726,12 +727,9 @@ class _MaintenanceDetailScreenState
         title: Text(l10n.cancelRequest),
         content: Text(l10n.cancelRequestConfirmation),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.no),
-          ),
+          TextButton(onPressed: () => context.pop(false), child: Text(l10n.no)),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
             child: Text(l10n.cancelRequest),
           ),
@@ -809,12 +807,9 @@ class _CompletionDialogState extends State<_CompletionDialog> {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
+        TextButton(onPressed: () => context.pop(), child: Text(l10n.cancel)),
         ElevatedButton(
-          onPressed: () => Navigator.pop(context, _notesController.text),
+          onPressed: () => context.pop(_notesController.text),
           child: Text(l10n.completed),
         ),
       ],
@@ -906,12 +901,12 @@ class _AssignDialogState extends ConsumerState<_AssignDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
           child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _selectedUserId != null
-              ? () => Navigator.pop(context, _selectedUserId)
+              ? () => context.pop(_selectedUserId)
               : null,
           child: Text(AppLocalizations.of(context)!.confirm),
         ),
@@ -956,12 +951,9 @@ class _HoldDialogState extends State<_HoldDialog> {
         ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
+        TextButton(onPressed: () => context.pop(), child: Text(l10n.cancel)),
         ElevatedButton(
-          onPressed: () => Navigator.pop(context, _reasonController.text),
+          onPressed: () => context.pop(_reasonController.text),
           child: Text(l10n.hold),
         ),
       ],

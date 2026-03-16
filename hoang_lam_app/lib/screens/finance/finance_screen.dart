@@ -110,7 +110,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
               leading: Icon(Icons.arrow_downward, color: AppColors.income),
               title: Text(l10n.addIncome),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _navigateToForm(EntryType.income);
               },
             ),
@@ -118,7 +118,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
               leading: Icon(Icons.arrow_upward, color: AppColors.expense),
               title: Text(l10n.addExpense),
               onTap: () {
-                Navigator.pop(context);
+                context.pop();
                 _navigateToForm(EntryType.expense);
               },
             ),
@@ -165,7 +165,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         title: Text(l10n.exportData),
         children: [
           SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'csv'),
+            onPressed: () => ctx.pop('csv'),
             child: ListTile(
               leading: const Icon(Icons.table_chart),
               title: const Text('CSV'),
@@ -173,7 +173,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
             ),
           ),
           SimpleDialogOption(
-            onPressed: () => Navigator.pop(ctx, 'pdf'),
+            onPressed: () => ctx.pop('pdf'),
             child: ListTile(
               leading: const Icon(Icons.picture_as_pdf),
               title: const Text('PDF'),
@@ -661,11 +661,11 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       builder: (context) => _EntryDetailSheet(
         entry: entry,
         onEdit: () {
-          Navigator.pop(context);
+          context.pop();
           _editEntry(entry);
         },
         onDelete: () async {
-          Navigator.pop(context);
+          context.pop();
           await _deleteEntry(entry);
         },
       ),
@@ -691,11 +691,11 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
         content: Text('${l10n.areYouSure} "${entry.categoryName ?? ""}"?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: Text(l10n.delete),
           ),

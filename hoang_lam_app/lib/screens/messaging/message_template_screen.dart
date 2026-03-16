@@ -250,12 +250,12 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => dialogContext.pop(),
             child: Text(l10n.cancel),
           ),
           FilledButton.icon(
             onPressed: () async {
-              Navigator.pop(dialogContext);
+              dialogContext.pop();
               await _sendMessage(
                 subject: subjectController.text,
                 body: bodyController.text,

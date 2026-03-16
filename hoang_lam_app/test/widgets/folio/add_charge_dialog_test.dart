@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/widgets/folio/add_charge_dialog.dart';
@@ -9,8 +10,31 @@ import 'package:hoang_lam_app/widgets/folio/add_charge_dialog.dart';
 void main() {
   group('AddChargeDialog', () {
     Widget buildWidget({int bookingId = 1, VoidCallback? onChargeAdded}) {
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AddChargeDialog(
+                        bookingId: bookingId,
+                        onChargeAdded: onChargeAdded,
+                      ),
+                    );
+                  },
+                  child: const Text('Open Dialog'),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
       return ProviderScope(
-        child: MaterialApp(
+        child: MaterialApp.router(
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -19,22 +43,7 @@ void main() {
           ],
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('vi'),
-          home: Scaffold(
-            body: Builder(
-              builder: (context) => ElevatedButton(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AddChargeDialog(
-                      bookingId: bookingId,
-                      onChargeAdded: onChargeAdded,
-                    ),
-                  );
-                },
-                child: const Text('Open Dialog'),
-              ),
-            ),
-          ),
+          routerConfig: router,
         ),
       );
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hoang_lam_app/l10n/app_localizations.dart';
 import 'package:hoang_lam_app/widgets/finance/record_deposit_dialog.dart';
 
@@ -12,7 +13,34 @@ void main() {
       String? roomNumber,
       String? guestName,
     }) {
-      return MaterialApp(
+      final router = GoRouter(
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (context, state) => Scaffold(
+              body: Builder(
+                builder: (context) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      showDialog<dynamic>(
+                        context: context,
+                        builder: (context) => RecordDepositDialog(
+                          bookingId: bookingId,
+                          suggestedAmount: suggestedAmount,
+                          roomNumber: roomNumber,
+                          guestName: guestName,
+                        ),
+                      );
+                    },
+                    child: const Text('Open Dialog'),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      );
+      return MaterialApp.router(
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -21,26 +49,7 @@ void main() {
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('vi'),
-        home: Scaffold(
-          body: Builder(
-            builder: (context) {
-              return ElevatedButton(
-                onPressed: () {
-                  showDialog<dynamic>(
-                    context: context,
-                    builder: (context) => RecordDepositDialog(
-                      bookingId: bookingId,
-                      suggestedAmount: suggestedAmount,
-                      roomNumber: roomNumber,
-                      guestName: guestName,
-                    ),
-                  );
-                },
-                child: const Text('Open Dialog'),
-              );
-            },
-          ),
-        ),
+        routerConfig: router,
       );
     }
 

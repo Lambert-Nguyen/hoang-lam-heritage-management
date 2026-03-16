@@ -381,11 +381,11 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
         content: Text(l10n.completeRequestConfirmation),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: Text(l10n.completed),
           ),
         ],
@@ -518,7 +518,7 @@ class _MaintenanceAssignDialogState
                 Expanded(
                   child: AppButton(
                     label: context.l10n.cancel,
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => context.pop(),
                     isOutlined: true,
                   ),
                 ),
@@ -527,7 +527,7 @@ class _MaintenanceAssignDialogState
                   child: AppButton(
                     label: context.l10n.confirm,
                     onPressed: _selectedUserId != null
-                        ? () => Navigator.pop(context, _selectedUserId)
+                        ? () => context.pop(_selectedUserId)
                         : null,
                   ),
                 ),

@@ -587,13 +587,13 @@ class _GroupBookingDetailScreenState
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(dialogContext),
+                  onPressed: () => dialogContext.pop(),
                   child: Text(l10n.cancel),
                 ),
                 ElevatedButton(
                   onPressed: selectedIds.isEmpty
                       ? null
-                      : () => Navigator.pop(dialogContext, selectedIds),
+                      : () => dialogContext.pop(selectedIds),
                   child: Text(l10n.save),
                 ),
               ],
@@ -637,11 +637,11 @@ class _GroupBookingDetailScreenState
         content: Text(content),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => context.pop(false),
             child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => context.pop(true),
             child: Text(context.l10n.confirm),
           ),
         ],
@@ -668,13 +668,13 @@ class _GroupBookingDetailScreenState
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => context.pop(),
             child: Text(context.l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               if (formKey.currentState!.validate()) {
-                Navigator.pop(context, controller.text.trim());
+                context.pop(controller.text.trim());
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),

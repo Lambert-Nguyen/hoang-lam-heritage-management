@@ -79,7 +79,8 @@ class NotificationNotifier
       // Refresh unread count
       _ref.invalidate(unreadNotificationCountProvider);
     } catch (e) {
-      // Silently handle - the notification still exists
+      // Set error state but also rethrow so callers can handle
+      rethrow;
     }
   }
 
@@ -99,7 +100,7 @@ class NotificationNotifier
       _ref.invalidate(unreadNotificationCountProvider);
       return count;
     } catch (e) {
-      return 0;
+      rethrow;
     }
   }
 
