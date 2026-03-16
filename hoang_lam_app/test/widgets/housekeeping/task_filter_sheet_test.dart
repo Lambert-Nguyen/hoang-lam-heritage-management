@@ -64,9 +64,10 @@ void main() {
 
       expect(find.text('Trạng thái'), findsOneWidget);
 
-      // Verify all status displayNames are present
+      // Verify all status displayNames are present (unknown and pending
+      // share the same displayName 'Chờ xử lý', so use findsAtLeastNWidgets)
       for (final status in HousekeepingTaskStatus.values) {
-        expect(find.text(status.displayName), findsOneWidget);
+        expect(find.text(status.displayName), findsAtLeastNWidgets(1));
       }
     });
 
@@ -81,9 +82,10 @@ void main() {
 
       expect(find.text('Loại công việc'), findsOneWidget);
 
-      // Verify all task type displayNames are present
+      // Verify all task type displayNames are present (unknown and maintenance
+      // share the same displayName 'Bảo trì', so use findsAtLeastNWidgets)
       for (final taskType in HousekeepingTaskType.values) {
-        expect(find.text(taskType.displayName), findsOneWidget);
+        expect(find.text(taskType.displayName), findsAtLeastNWidgets(1));
       }
     });
 

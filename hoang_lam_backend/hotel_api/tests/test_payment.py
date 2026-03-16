@@ -350,9 +350,9 @@ class TestExchangeRateViewSet:
         assert response.status_code == status.HTTP_200_OK
         assert len(response.json()["results"]) == 1
 
-    def test_create_exchange_rate(self, api_client, staff_user):
+    def test_create_exchange_rate(self, api_client, manager_user):
         """Test creating an exchange rate."""
-        api_client.force_authenticate(user=staff_user)
+        api_client.force_authenticate(user=manager_user)
         response = api_client.post(
             "/api/v1/exchange-rates/",
             {
@@ -367,9 +367,9 @@ class TestExchangeRateViewSet:
         assert response.status_code == status.HTTP_201_CREATED
         assert response.json()["from_currency"] == "EUR"
 
-    def test_create_duplicate_rate_fails(self, api_client, staff_user, exchange_rate):
+    def test_create_duplicate_rate_fails(self, api_client, manager_user, exchange_rate):
         """Test creating duplicate exchange rate fails."""
-        api_client.force_authenticate(user=staff_user)
+        api_client.force_authenticate(user=manager_user)
         response = api_client.post(
             "/api/v1/exchange-rates/",
             {

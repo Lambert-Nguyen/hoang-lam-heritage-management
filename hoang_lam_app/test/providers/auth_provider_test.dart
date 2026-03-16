@@ -17,8 +17,21 @@ import 'package:hoang_lam_app/providers/guest_provider.dart';
 import 'package:hoang_lam_app/providers/housekeeping_provider.dart';
 import 'package:hoang_lam_app/providers/night_audit_provider.dart';
 import 'package:hoang_lam_app/providers/finance_provider.dart';
+import 'package:hoang_lam_app/providers/minibar_provider.dart';
+import 'package:hoang_lam_app/providers/notification_provider.dart';
+import 'package:hoang_lam_app/providers/room_inspection_provider.dart';
+import 'package:hoang_lam_app/providers/folio_provider.dart';
+import 'package:hoang_lam_app/providers/group_booking_provider.dart';
+import 'package:hoang_lam_app/providers/report_provider.dart';
+import 'package:hoang_lam_app/providers/messaging_provider.dart';
 import 'package:hoang_lam_app/repositories/auth_repository.dart';
 import 'package:hoang_lam_app/repositories/booking_repository.dart';
+import 'package:hoang_lam_app/repositories/finance_repository.dart';
+import 'package:hoang_lam_app/repositories/group_booking_repository.dart';
+import 'package:hoang_lam_app/repositories/messaging_repository.dart';
+import 'package:hoang_lam_app/repositories/minibar_repository.dart';
+import 'package:hoang_lam_app/repositories/report_repository.dart';
+import 'package:hoang_lam_app/repositories/room_inspection_repository.dart';
 
 import 'auth_provider_test.mocks.dart';
 
@@ -95,6 +108,49 @@ void main() {
         staffListProvider.overrideWith((ref) async => []),
         financialCategoriesProvider.overrideWith((ref) async => []),
         financialEntriesProvider.overrideWith((ref) async => []),
+        // Housekeeping: tasks and maintenance
+        todayTasksProvider.overrideWith((ref) async => []),
+        myTasksProvider.overrideWith((ref) async => []),
+        maintenanceRequestsProvider.overrideWith((ref) async => []),
+        myMaintenanceRequestsProvider.overrideWith((ref) async => []),
+        urgentRequestsProvider.overrideWith((ref) async => []),
+        // Minibar
+        minibarCartProvider.overrideWith((ref) {
+          return MinibarCartNotifier(MinibarRepository(), ref);
+        }),
+        // Guests
+        vipGuestsProvider.overrideWith((ref) async => []),
+        returningGuestsProvider.overrideWith((ref) async => []),
+        // Night audits
+        todayAuditProvider.overrideWith(
+          (ref) async => throw UnimplementedError(),
+        ),
+        latestAuditProvider.overrideWith((ref) async => null),
+        // Folio
+        folioNotifierProvider.overrideWith((ref) {
+          return FolioNotifier(FinanceRepository(), ref);
+        }),
+        // Room inspection templates
+        inspectionTemplatesProvider.overrideWith((ref) async => []),
+        inspectionTemplateNotifierProvider.overrideWith((ref) {
+          return InspectionTemplateNotifier(RoomInspectionRepository(), ref);
+        }),
+        // Group bookings
+        groupBookingNotifierProvider.overrideWith((ref) {
+          return GroupBookingNotifier(GroupBookingRepository(), ref);
+        }),
+        // Reports
+        reportScreenStateProvider.overrideWith((ref) {
+          return ReportScreenNotifier(ReportRepository(), ref);
+        }),
+        // Notification preferences
+        notificationPreferencesProvider.overrideWith(
+          (ref) async => throw UnimplementedError(),
+        ),
+        // Messaging
+        messagingNotifierProvider.overrideWith((ref) {
+          return MessagingNotifier(MessagingRepository(), ref);
+        }),
       ],
     );
   });

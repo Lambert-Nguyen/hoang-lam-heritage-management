@@ -64,9 +64,10 @@ void main() {
 
       expect(find.text('Trạng thái'), findsOneWidget);
 
-      // Verify all status displayNames are present
+      // Verify all status displayNames are present (unknown and pending
+      // share the same displayName 'Chờ xử lý', so use findsAtLeastNWidgets)
       for (final status in MaintenanceStatus.values) {
-        expect(find.text(status.displayName), findsOneWidget);
+        expect(find.text(status.displayName), findsAtLeastNWidgets(1));
       }
     });
 
@@ -81,9 +82,10 @@ void main() {
 
       expect(find.text('Mức ưu tiên'), findsOneWidget);
 
-      // Verify all priority displayNames are present
+      // Verify all priority displayNames are present (unknown and medium
+      // share the same displayName 'Trung bình', so use findsAtLeastNWidgets)
       for (final priority in MaintenancePriority.values) {
-        expect(find.text(priority.displayName), findsOneWidget);
+        expect(find.text(priority.displayName), findsAtLeastNWidgets(1));
       }
     });
 
@@ -98,9 +100,10 @@ void main() {
 
       expect(find.text('Danh mục'), findsOneWidget);
 
-      // Verify all category displayNames are present
+      // Verify all category displayNames are present (unknown and other
+      // share the same displayName 'Khác', so use findsAtLeastNWidgets)
       for (final category in MaintenanceCategory.values) {
-        expect(find.text(category.displayName), findsOneWidget);
+        expect(find.text(category.displayName), findsAtLeastNWidgets(1));
       }
     });
 
@@ -209,8 +212,11 @@ void main() {
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
 
-      // Select status
-      await tester.tap(find.text(MaintenanceStatus.pending.displayName));
+      // Select status (use .first because 'Chờ xử lý' appears twice:
+      // once for unknown and once for pending)
+      await tester.tap(
+        find.text(MaintenanceStatus.pending.displayName).first,
+      );
       await tester.pump();
 
       // Select priority

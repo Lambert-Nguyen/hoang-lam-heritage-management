@@ -331,7 +331,12 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Network error'), findsOneWidget);
+      // getLocalizedErrorMessage falls through to l10n.errorGeneric for
+      // a plain Exception whose message doesn't match any known pattern.
+      expect(
+        find.textContaining('Đã xảy ra lỗi. Vui lòng thử lại.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('has history button in app bar', (WidgetTester tester) async {

@@ -373,9 +373,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Verify all sources are displayed
+      // Verify all sources are displayed (some displayNames like 'Khác'
+      // appear twice because unknown and other share the same label)
       for (final source in BookingSource.values) {
-        expect(find.text(source.displayName), findsOneWidget);
+        expect(find.text(source.displayName), findsAtLeastNWidgets(1));
       }
     });
 
@@ -537,9 +538,10 @@ void main() {
       // Verify icons exist for each source
       expect(find.byType(Icon), findsNWidgets(BookingSource.values.length));
 
-      // Verify all source names are present
+      // Verify all source names are present (some displayNames like 'Khác'
+      // appear twice because unknown and other share the same label)
       for (final source in BookingSource.values) {
-        expect(find.text(source.displayName), findsOneWidget);
+        expect(find.text(source.displayName), findsAtLeastNWidgets(1));
       }
     });
 
