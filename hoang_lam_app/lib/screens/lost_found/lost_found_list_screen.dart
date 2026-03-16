@@ -410,7 +410,7 @@ class _StatisticsSheet extends ConsumerWidget {
             ),
           ),
           loading: () => const LoadingIndicator(),
-          error: (e, _) => Center(child: Text('${context.l10n.error}: $e')),
+          error: (e, _) => Center(child: Text(getLocalizedErrorMessage(e, context.l10n))),
         ),
       ),
     );

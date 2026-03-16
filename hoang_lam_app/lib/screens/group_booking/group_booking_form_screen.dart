@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_spacing.dart';
+import '../../core/utils/error_utils.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/group_booking.dart';
 import '../../providers/group_booking_provider.dart';
@@ -148,7 +149,7 @@ class _GroupBookingFormScreenState
           },
           loading: () => const LoadingIndicator(),
           error: (e, _) => ErrorDisplay(
-            message: '${l10n.error}: $e',
+            message: getLocalizedErrorMessage(e, l10n),
             onRetry: () =>
                 ref.invalidate(groupBookingByIdProvider(widget.bookingId!)),
           ),
@@ -511,7 +512,7 @@ class _GroupBookingFormScreenState
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

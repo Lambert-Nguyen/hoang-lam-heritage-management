@@ -7,6 +7,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
+import '../../core/utils/error_utils.dart';
 import '../../providers/finance_provider.dart';
 
 /// Finance Form Screen for adding/editing income and expense entries
@@ -101,7 +102,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               AppSpacing.gapVerticalMd,
-              Text('${l10n.dataLoadError}: $error'),
+              Text(getLocalizedErrorMessage(error, l10n)),
               AppSpacing.gapVerticalMd,
               ElevatedButton(
                 onPressed: () {
@@ -519,7 +520,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, l10n)),
             backgroundColor: AppColors.error,
           ),
         );

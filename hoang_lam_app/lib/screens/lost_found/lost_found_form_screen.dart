@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/theme/app_spacing.dart';
+import '../../core/utils/error_utils.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/lost_found.dart';
 import '../../providers/lost_found_provider.dart';
@@ -111,7 +112,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
           },
           loading: () => const LoadingIndicator(),
           error: (e, _) => ErrorDisplay(
-            message: '${l10n.error}: $e',
+            message: getLocalizedErrorMessage(e, l10n),
             onRetry: () =>
                 ref.invalidate(lostFoundItemByIdProvider(widget.itemId!)),
           ),
@@ -481,7 +482,7 @@ class _LostFoundFormScreenState extends ConsumerState<LostFoundFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

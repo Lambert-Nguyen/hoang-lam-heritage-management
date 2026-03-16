@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/lost_found.dart';
@@ -84,7 +85,7 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
         data: (item) => _buildContent(item),
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorDisplay(
-          message: '${l10n.error}: $e',
+          message: getLocalizedErrorMessage(e, l10n),
           onRetry: () =>
               ref.invalidate(lostFoundItemByIdProvider(widget.itemId)),
         ),

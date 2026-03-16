@@ -103,6 +103,9 @@ class FolioNotifier extends StateNotifier<FolioState> {
         ),
       ]);
 
+      // Verify we're still loading the same booking
+      if (state.bookingId != bookingId) return; // User navigated away
+
       state = state.copyWith(
         summary: results[0] as BookingFolioSummary,
         items: results[1] as List<FolioItem>,

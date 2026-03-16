@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
@@ -94,7 +95,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         return _buildTaskList(filtered, showPriorityHint: true);
       },
       loading: () => const LoadingIndicator(),
-      error: (error, _) => _buildErrorState(error.toString()),
+      error: (error, _) => _buildErrorState(error),
     );
   }
 
@@ -114,7 +115,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         return _buildTaskList(tasks);
       },
       loading: () => const LoadingIndicator(),
-      error: (error, _) => _buildErrorState(error.toString()),
+      error: (error, _) => _buildErrorState(error),
     );
   }
 
@@ -135,7 +136,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
         return _buildTaskList(filtered);
       },
       loading: () => const LoadingIndicator(),
-      error: (error, _) => _buildErrorState(error.toString()),
+      error: (error, _) => _buildErrorState(error),
     );
   }
 
@@ -310,7 +311,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
     );
   }
 
-  Widget _buildErrorState(String error) {
+  Widget _buildErrorState(dynamic error) {
     final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
@@ -326,7 +327,7 @@ class _TaskListScreenState extends ConsumerState<TaskListScreen>
             ),
             AppSpacing.gapVerticalSm,
             Text(
-              error,
+              getLocalizedErrorMessage(error, l10n),
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,

@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/guest_message.dart';
 import '../../providers/messaging_provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 
 /// Screen for selecting and previewing message templates before sending
 class MessageTemplateScreen extends ConsumerStatefulWidget {
@@ -150,7 +151,7 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('$e')),
+              error: (e, _) => Center(child: Text(getLocalizedErrorMessage(e, l10n))),
             ),
           ),
         ],

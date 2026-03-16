@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/audit_log.dart';
@@ -68,7 +69,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                   );
                 },
                 loading: () => const LoadingIndicator(),
-                error: (e, _) => Center(child: Text('${l10n.error}: $e')),
+                error: (e, _) => Center(child: Text(getLocalizedErrorMessage(e, l10n))),
               ),
             ),
           ),

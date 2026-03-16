@@ -10,6 +10,7 @@ import '../../models/finance.dart';
 import '../../providers/finance_provider.dart';
 import '../../widgets/finance/currency_selector.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 
 /// Screen to preview and download a receipt for a booking
 class ReceiptPreviewScreen extends ConsumerStatefulWidget {
@@ -59,7 +60,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       });
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = getLocalizedErrorMessage(e, context.l10n);
         _isLoading = false;
       });
     }
@@ -136,7 +137,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
       }
     }
   }
@@ -171,7 +172,7 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
       }
     }
   }

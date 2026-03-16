@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/housekeeping.dart';
@@ -305,7 +306,7 @@ class _MaintenanceListScreenState extends ConsumerState<MaintenanceListScreen>
             ),
             AppSpacing.gapVerticalSm,
             Text(
-              error.toString(),
+              getLocalizedErrorMessage(error, l10n),
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),

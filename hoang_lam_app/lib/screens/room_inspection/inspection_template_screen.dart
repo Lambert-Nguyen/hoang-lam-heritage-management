@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
@@ -51,7 +52,7 @@ class _InspectionTemplateScreenState
         },
         loading: () => const LoadingIndicator(),
         error: (e, _) => ErrorDisplay(
-          message: '${l10n.error}: $e',
+          message: getLocalizedErrorMessage(e, l10n),
           onRetry: () => ref.invalidate(inspectionTemplatesProvider),
         ),
       ),
@@ -300,7 +301,7 @@ class _InspectionTemplateScreenState
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${context.l10n.error}: $e'),
+              content: Text(getLocalizedErrorMessage(e, context.l10n)),
               backgroundColor: AppColors.error,
             ),
           );
@@ -340,7 +341,7 @@ class _InspectionTemplateScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, context.l10n)),
             backgroundColor: AppColors.error,
           ),
         );
@@ -386,7 +387,7 @@ class _InspectionTemplateScreenState
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${l10n.error}: $e'),
+              content: Text(getLocalizedErrorMessage(e, l10n)),
               backgroundColor: AppColors.error,
             ),
           );

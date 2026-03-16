@@ -207,7 +207,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
       }
     }
   }

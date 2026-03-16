@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/config/app_constants.dart';
 import '../../l10n/app_localizations.dart';
@@ -604,7 +605,7 @@ class SettingsScreen extends ConsumerWidget {
                           } catch (e) {
                             if (dialogContext.mounted) {
                               ScaffoldMessenger.of(dialogContext).showSnackBar(
-                                SnackBar(content: Text('${l10n.error}: $e')),
+                                SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
                               );
                             }
                           }

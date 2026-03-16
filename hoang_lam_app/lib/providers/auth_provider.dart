@@ -23,6 +23,9 @@ import 'lost_found_provider.dart';
 import 'group_booking_provider.dart';
 import 'room_inspection_provider.dart';
 import 'audit_log_provider.dart';
+import 'folio_provider.dart';
+import 'report_provider.dart';
+import 'messaging_provider.dart';
 import '../repositories/auth_repository.dart';
 
 /// Provider for AuthRepository
@@ -188,6 +191,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
       _ref.invalidate(pendingInspectionsTodayProvider);
       _ref.invalidate(inspectionStatisticsProvider);
       _ref.invalidate(auditLogsProvider);
+      // Housekeeping: tasks and maintenance
+      _ref.invalidate(todayTasksProvider);
+      _ref.invalidate(myTasksProvider);
+      _ref.invalidate(maintenanceRequestsProvider);
+      _ref.invalidate(myMaintenanceRequestsProvider);
+      _ref.invalidate(urgentRequestsProvider);
+      // Minibar cart
+      _ref.invalidate(minibarCartProvider);
+      // Guests
+      _ref.invalidate(vipGuestsProvider);
+      _ref.invalidate(returningGuestsProvider);
+      // Night audits
+      _ref.invalidate(todayAuditProvider);
+      _ref.invalidate(latestAuditProvider);
+      // Folio
+      _ref.invalidate(folioNotifierProvider);
+      // Room inspection templates
+      _ref.invalidate(inspectionTemplatesProvider);
+      _ref.invalidate(inspectionTemplateNotifierProvider);
+      // Group bookings
+      _ref.invalidate(groupBookingNotifierProvider);
+      // Reports
+      _ref.invalidate(reportScreenStateProvider);
+      // Notification preferences
+      _ref.invalidate(notificationPreferencesProvider);
+      // Messaging
+      _ref.invalidate(messagingNotifierProvider);
       state = const AuthState.unauthenticated();
     }
   }

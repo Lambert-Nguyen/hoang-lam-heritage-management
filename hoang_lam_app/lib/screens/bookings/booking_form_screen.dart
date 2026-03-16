@@ -10,6 +10,7 @@ import '../../providers/dashboard_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../widgets/guests/guest_quick_search.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../widgets/common/unsaved_changes_guard.dart';
 
 /// Booking Form Screen - Phase 1.9.6
@@ -289,7 +290,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Text('${context.l10n.error}: $error'),
+      error: (error, stack) => Text(getLocalizedErrorMessage(error, context.l10n)),
     );
   }
 
@@ -890,7 +891,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${context.l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
       }
     } finally {
       if (mounted) {

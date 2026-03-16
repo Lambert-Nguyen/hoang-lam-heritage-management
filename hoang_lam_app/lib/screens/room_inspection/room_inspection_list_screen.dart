@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
@@ -88,7 +89,7 @@ class _RoomInspectionListScreenState
               ),
               loading: () => const LoadingIndicator(),
               error: (e, _) => ErrorDisplay(
-                message: '${l10n.error}: $e',
+                message: getLocalizedErrorMessage(e, l10n),
                 onRetry: () => ref.invalidate(roomInspectionsProvider),
               ),
             ),
@@ -378,7 +379,7 @@ class _RoomInspectionListScreenState
                   ),
                   loading: () => const LoadingIndicator(),
                   error: (e, _) =>
-                      ErrorDisplay(message: '${context.l10n.error}: $e'),
+                      ErrorDisplay(message: getLocalizedErrorMessage(e, context.l10n)),
                 ),
               );
             },

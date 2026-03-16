@@ -192,11 +192,15 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
     try {
       state = state.copyWith(isLoading: true, error: null);
 
+      // Capture before async to detect stale results
+      final year = _currentYear;
+      final month = _currentMonth;
+
       // Load categories and monthly summary in parallel
       final results = await Future.wait([
         _repository.getIncomeCategories(),
         _repository.getExpenseCategories(),
-        _repository.getMonthlySummary(year: _currentYear, month: _currentMonth),
+        _repository.getMonthlySummary(year: year, month: month),
         _repository.getEntries(
           entryType: state.filter.entryType,
           category: state.filter.categoryId,
@@ -205,6 +209,9 @@ class FinanceNotifier extends StateNotifier<FinanceState> {
           paymentMethod: state.filter.paymentMethod,
         ),
       ]);
+
+      // Verify year/month haven't changed during the await
+      if (year != _currentYear || month != _currentMonth) return;
 
       state = state.copyWith(
         incomeCategories: results[0] as List<FinancialCategory>,

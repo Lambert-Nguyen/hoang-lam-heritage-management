@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
@@ -74,7 +75,7 @@ class _RoomInspectionFormScreenState
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, l10n)),
             backgroundColor: AppColors.error,
           ),
         );
@@ -309,7 +310,7 @@ class _RoomInspectionFormScreenState
                 },
                 loading: () => const LoadingIndicator(),
                 error: (e, _) =>
-                    ErrorDisplay(message: '${context.l10n.error}: $e'),
+                    ErrorDisplay(message: getLocalizedErrorMessage(e, context.l10n)),
               ),
               const SizedBox(height: AppSpacing.xl),
 
@@ -682,7 +683,7 @@ class _RoomInspectionFormScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, context.l10n)),
             backgroundColor: AppColors.error,
           ),
         );
@@ -735,7 +736,7 @@ class _RoomInspectionFormScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, context.l10n)),
             backgroundColor: AppColors.error,
           ),
         );

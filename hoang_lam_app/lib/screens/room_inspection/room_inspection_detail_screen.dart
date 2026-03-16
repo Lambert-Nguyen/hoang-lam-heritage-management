@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/room_inspection.dart';
@@ -31,7 +32,7 @@ class RoomInspectionDetailScreen extends ConsumerWidget {
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(l10n.inspectionDetails)),
         body: ErrorDisplay(
-          message: '${l10n.error}: $e',
+          message: getLocalizedErrorMessage(e, l10n),
           onRetry: () =>
               ref.invalidate(roomInspectionByIdProvider(inspectionId)),
         ),
@@ -647,7 +648,7 @@ class _InspectionDetailContentState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, context.l10n)),
             backgroundColor: AppColors.error,
           ),
         );

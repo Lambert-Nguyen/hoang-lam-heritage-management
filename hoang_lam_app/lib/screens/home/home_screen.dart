@@ -19,6 +19,7 @@ import '../../widgets/common/app_button.dart';
 import '../../widgets/dashboard/dashboard_revenue_card.dart';
 import '../../widgets/dashboard/dashboard_occupancy_widget.dart';
 import '../../widgets/rooms/room_status_card.dart';
+import '../../core/utils/error_utils.dart';
 import '../../widgets/rooms/room_status_dialog.dart';
 
 /// Home/Dashboard screen
@@ -114,7 +115,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (error, _) => Text('${l10n.error}: $error'),
+                    error: (error, _) => Text(getLocalizedErrorMessage(error, l10n)),
                   ),
                   AppSpacing.gapVerticalLg,
 
@@ -134,7 +135,7 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (error, _) => Text('${l10n.error}: $error'),
+                    error: (error, _) => Text(getLocalizedErrorMessage(error, l10n)),
                   ),
 
                   // Bottom padding for FAB
@@ -179,7 +180,7 @@ class HomeScreen extends ConsumerWidget {
                         ),
                         AppSpacing.gapVerticalSm,
                         Text(
-                          error.toString(),
+                          getLocalizedErrorMessage(error, context.l10n),
                           style: const TextStyle(
                             color: AppColors.textSecondary,
                           ),
@@ -411,7 +412,7 @@ class HomeScreen extends ConsumerWidget {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                '${l10n.errorOccurred}: ${e.toString()}',
+                                getLocalizedErrorMessage(e, l10n),
                               ),
                               backgroundColor: AppColors.error,
                             ),
@@ -441,7 +442,7 @@ class HomeScreen extends ConsumerWidget {
       error: (error, stack) => Padding(
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Text(
-          '${context.l10n.roomLoadError}: $error',
+          getLocalizedErrorMessage(error, context.l10n),
           style: const TextStyle(color: AppColors.error),
         ),
       ),
@@ -708,7 +709,7 @@ class HomeScreen extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
       }
     }
   }

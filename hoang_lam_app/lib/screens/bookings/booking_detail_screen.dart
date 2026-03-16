@@ -1273,7 +1273,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
         }
       }
     }
@@ -1372,7 +1372,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
         }
       }
     }
@@ -1422,7 +1422,7 @@ class BookingDetailScreen extends ConsumerWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
         }
       }
     }

@@ -6,6 +6,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
 import '../../providers/finance_provider.dart';
+import '../../core/utils/error_utils.dart';
 import '../../repositories/finance_repository.dart';
 
 /// Screen for managing financial categories (income/expense)
@@ -113,7 +114,7 @@ class _FinancialCategoryScreenState
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               AppSpacing.gapVerticalMd,
-              Text('${l10n.error}: $error'),
+              Text(getLocalizedErrorMessage(error, l10n)),
               AppSpacing.gapVerticalMd,
               ElevatedButton(
                 onPressed: _refreshCategories,
@@ -177,7 +178,7 @@ class _FinancialCategoryScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${context.l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, context.l10n)),
             backgroundColor: AppColors.error,
           ),
         );
@@ -240,7 +241,7 @@ class _FinancialCategoryScreenState
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${l10n.error}: $e'),
+              content: Text(getLocalizedErrorMessage(e, l10n)),
               backgroundColor: AppColors.error,
             ),
           );
@@ -873,7 +874,7 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: $e'),
+            content: Text(getLocalizedErrorMessage(e, l10n)),
             backgroundColor: AppColors.error,
           ),
         );

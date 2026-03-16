@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
@@ -121,7 +122,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
             error: (error, _) => EmptyState(
               icon: Icons.error_outline,
               title: context.l10n.error,
-              subtitle: error.toString(),
+              subtitle: getLocalizedErrorMessage(error, context.l10n),
             ),
           ),
         ),
@@ -326,7 +327,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
       error: (error, _) => EmptyState(
         icon: Icons.error_outline,
         title: context.l10n.error,
-        subtitle: error.toString(),
+        subtitle: getLocalizedErrorMessage(error, context.l10n),
       ),
     );
   }
@@ -387,7 +388,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: ${e.toString()}')),
+          SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))),
         );
       }
     }
@@ -480,7 +481,7 @@ class _MinibarInventoryScreenState extends ConsumerState<MinibarInventoryScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${context.l10n.error}: ${e.toString()}')),
+          SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))),
         );
       }
     }

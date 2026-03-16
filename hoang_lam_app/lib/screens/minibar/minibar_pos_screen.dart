@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
@@ -86,7 +87,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
                   error: (error, _) => EmptyState(
                     icon: Icons.error_outline,
                     title: l10n.error,
-                    subtitle: error.toString(),
+                    subtitle: getLocalizedErrorMessage(error, l10n),
                   ),
                 ),
               ),
@@ -389,7 +390,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: ${e.toString()}'),
+            content: Text(getLocalizedErrorMessage(e, l10n)),
             backgroundColor: AppColors.error,
           ),
         );

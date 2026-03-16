@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
@@ -586,7 +587,7 @@ class _GuestFormScreenState extends ConsumerState<GuestFormScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${context.l10n.error}: ${e.toString()}'),
+          content: Text(getLocalizedErrorMessage(e, context.l10n)),
           backgroundColor: AppColors.error,
         ),
       );

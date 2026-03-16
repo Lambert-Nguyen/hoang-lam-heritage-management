@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/utils/currency_formatter.dart';
+import '../../core/utils/error_utils.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/night_audit.dart';
 import '../../providers/night_audit_provider.dart';
@@ -79,7 +80,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
               child: SizedBox(
                 height: constraints.maxHeight,
                 child: ErrorDisplay(
-                  message: '${l10n.auditLoadError}: $error',
+                  message: getLocalizedErrorMessage(error, l10n),
                   onRetry: _refreshData,
                 ),
               ),
@@ -660,7 +661,7 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+      ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
     }
   }
 
@@ -785,7 +786,7 @@ class _AuditHistorySheet extends ConsumerWidget {
             },
             loading: () => const LoadingIndicator(),
             error: (e, _) => ErrorDisplay(
-              message: '${context.l10n.loadHistoryError}: $e',
+              message: getLocalizedErrorMessage(e, context.l10n),
               onRetry: () => ref.invalidate(nightAuditsProvider),
             ),
           ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
@@ -529,7 +530,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         if (mounted) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
         }
       }
     }
