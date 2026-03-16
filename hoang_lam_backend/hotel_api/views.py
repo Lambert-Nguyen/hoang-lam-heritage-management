@@ -2217,8 +2217,6 @@ class BookingViewSet(viewsets.ModelViewSet):
 
         with transaction.atomic():
             # Create Payment records for each split
-            from django.utils import timezone
-
             for split in splits:
                 Payment.objects.create(
                     booking=booking,
