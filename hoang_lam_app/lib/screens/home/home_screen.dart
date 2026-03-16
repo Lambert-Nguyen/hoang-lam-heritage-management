@@ -115,7 +115,8 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (error, _) => Text(getLocalizedErrorMessage(error, l10n)),
+                    error: (error, _) =>
+                        Text(getLocalizedErrorMessage(error, l10n)),
                   ),
                   AppSpacing.gapVerticalLg,
 
@@ -135,7 +136,8 @@ class HomeScreen extends ConsumerWidget {
                     ),
                     loading: () =>
                         const Center(child: CircularProgressIndicator()),
-                    error: (error, _) => Text(getLocalizedErrorMessage(error, l10n)),
+                    error: (error, _) =>
+                        Text(getLocalizedErrorMessage(error, l10n)),
                   ),
 
                   // Bottom padding for FAB
@@ -411,9 +413,7 @@ class HomeScreen extends ConsumerWidget {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                getLocalizedErrorMessage(e, l10n),
-                              ),
+                              content: Text(getLocalizedErrorMessage(e, l10n)),
                               backgroundColor: AppColors.error,
                             ),
                           );
@@ -707,9 +707,9 @@ class HomeScreen extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+        );
       }
     }
   }

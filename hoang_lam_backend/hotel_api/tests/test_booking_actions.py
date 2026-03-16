@@ -21,14 +21,10 @@ class ExtendStayTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.staff_user = User.objects.create_user(
-            username="staff_ext", password="testpass123"
-        )
+        self.staff_user = User.objects.create_user(username="staff_ext", password="testpass123")
         HotelUser.objects.create(user=self.staff_user, role=HotelUser.Role.STAFF)
 
-        self.room_type = RoomType.objects.create(
-            name="Standard", base_rate=500000, max_guests=2
-        )
+        self.room_type = RoomType.objects.create(name="Standard", base_rate=500000, max_guests=2)
         self.room = Room.objects.create(
             room_type=self.room_type,
             number="201",
@@ -119,9 +115,7 @@ class SwapRoomTestCase(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.staff_user = User.objects.create_user(
-            username="staff_swap", password="testpass123"
-        )
+        self.staff_user = User.objects.create_user(username="staff_swap", password="testpass123")
         HotelUser.objects.create(user=self.staff_user, role=HotelUser.Role.STAFF)
 
         self.room_type = RoomType.objects.create(

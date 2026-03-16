@@ -205,9 +205,9 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+        );
       }
     }
   }

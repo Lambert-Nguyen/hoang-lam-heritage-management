@@ -14,7 +14,6 @@ from rest_framework.test import APIClient
 
 from hotel_api.models import HotelUser
 
-
 # ── Fixtures ──────────────────────────────────────────────────────────
 
 
@@ -410,9 +409,7 @@ class TestRoleEndpointMatrixRegression:
         assert response.status_code != status.HTTP_403_FORBIDDEN
 
     @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_LIST_ENDPOINTS)
-    def test_housekeeping_denied_stafformanager_endpoint(
-        self, housekeeping_client, url_name
-    ):
+    def test_housekeeping_denied_stafformanager_endpoint(self, housekeeping_client, url_name):
         response = housekeeping_client.get(reverse(url_name))
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -456,9 +453,7 @@ class TestRoleEndpointMatrixRegression:
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
     @pytest.mark.parametrize("url_name", OWNER_OR_MANAGER_LIST_ENDPOINTS)
-    def test_housekeeping_denied_ownerormanager_endpoint(
-        self, housekeeping_client, url_name
-    ):
+    def test_housekeeping_denied_ownerormanager_endpoint(self, housekeeping_client, url_name):
         response = housekeeping_client.get(reverse(url_name))
         assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -470,9 +465,7 @@ class TestRoleEndpointMatrixRegression:
         assert response.status_code != status.HTTP_403_FORBIDDEN
 
     @pytest.mark.parametrize("url_name", AUTHENTICATED_LIST_ENDPOINTS)
-    def test_housekeeping_allowed_authenticated_endpoint(
-        self, housekeeping_client, url_name
-    ):
+    def test_housekeeping_allowed_authenticated_endpoint(self, housekeeping_client, url_name):
         response = housekeeping_client.get(reverse(url_name))
         assert response.status_code != status.HTTP_403_FORBIDDEN
 
@@ -484,9 +477,7 @@ class TestRoleEndpointMatrixRegression:
         assert response.status_code != status.HTTP_403_FORBIDDEN
 
     @pytest.mark.parametrize("url_name", STAFF_OR_MANAGER_PATH_ENDPOINTS)
-    def test_housekeeping_denied_stafformanager_path(
-        self, housekeeping_client, url_name
-    ):
+    def test_housekeeping_denied_stafformanager_path(self, housekeeping_client, url_name):
         response = housekeeping_client.get(reverse(url_name))
         assert response.status_code == status.HTTP_403_FORBIDDEN
 

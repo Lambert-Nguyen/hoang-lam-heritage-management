@@ -3015,21 +3015,31 @@ class FinancialEntryViewSet(viewsets.ModelViewSet):
 
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow([
-            "Ngày", "Loại", "Danh mục", "Số tiền", "Phương thức thanh toán",
-            "Mô tả", "Số tham chiếu", "Người tạo",
-        ])
+        writer.writerow(
+            [
+                "Ngày",
+                "Loại",
+                "Danh mục",
+                "Số tiền",
+                "Phương thức thanh toán",
+                "Mô tả",
+                "Số tham chiếu",
+                "Người tạo",
+            ]
+        )
         for entry in queryset:
-            writer.writerow([
-                entry.date.isoformat(),
-                entry.entry_type,
-                entry.category.name if entry.category else "",
-                entry.amount,
-                entry.payment_method,
-                entry.description,
-                entry.receipt_number,
-                entry.created_by.get_full_name() if entry.created_by else "",
-            ])
+            writer.writerow(
+                [
+                    entry.date.isoformat(),
+                    entry.entry_type,
+                    entry.category.name if entry.category else "",
+                    entry.amount,
+                    entry.payment_method,
+                    entry.description,
+                    entry.receipt_number,
+                    entry.created_by.get_full_name() if entry.created_by else "",
+                ]
+            )
 
         response = HttpResponse(output.getvalue(), content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="financial_entries.csv"'
@@ -3325,25 +3335,37 @@ class NightAuditViewSet(viewsets.ModelViewSet):
 
         output = io.StringIO()
         writer = csv.writer(output)
-        writer.writerow([
-            "Ngày", "Trạng thái", "Tổng phòng", "Phòng có khách",
-            "Tỷ lệ lấp đầy (%)", "Doanh thu phòng", "Doanh thu khác",
-            "Tổng doanh thu", "Check-in", "Check-out", "Người thực hiện",
-        ])
+        writer.writerow(
+            [
+                "Ngày",
+                "Trạng thái",
+                "Tổng phòng",
+                "Phòng có khách",
+                "Tỷ lệ lấp đầy (%)",
+                "Doanh thu phòng",
+                "Doanh thu khác",
+                "Tổng doanh thu",
+                "Check-in",
+                "Check-out",
+                "Người thực hiện",
+            ]
+        )
         for audit in queryset:
-            writer.writerow([
-                audit.audit_date.isoformat(),
-                audit.status,
-                audit.total_rooms,
-                audit.occupied_rooms,
-                audit.occupancy_rate,
-                audit.room_revenue,
-                audit.other_revenue,
-                audit.total_revenue,
-                audit.checkins,
-                audit.checkouts,
-                audit.performed_by.get_full_name() if audit.performed_by else "",
-            ])
+            writer.writerow(
+                [
+                    audit.audit_date.isoformat(),
+                    audit.status,
+                    audit.total_rooms,
+                    audit.occupied_rooms,
+                    audit.occupancy_rate,
+                    audit.room_revenue,
+                    audit.other_revenue,
+                    audit.total_revenue,
+                    audit.checkins,
+                    audit.checkouts,
+                    audit.performed_by.get_full_name() if audit.performed_by else "",
+                ]
+            )
 
         response = HttpResponse(output.getvalue(), content_type="text/csv")
         response["Content-Disposition"] = 'attachment; filename="night_audits.csv"'

@@ -214,9 +214,7 @@ void main() {
 
       // Select status (use .first because 'Chờ xử lý' appears twice:
       // once for unknown and once for pending)
-      await tester.tap(
-        find.text(MaintenanceStatus.pending.displayName).first,
-      );
+      await tester.tap(find.text(MaintenanceStatus.pending.displayName).first);
       await tester.pump();
 
       // Select priority

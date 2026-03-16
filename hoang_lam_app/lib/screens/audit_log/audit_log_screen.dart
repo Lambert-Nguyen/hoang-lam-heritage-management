@@ -69,7 +69,8 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                   );
                 },
                 loading: () => const LoadingIndicator(),
-                error: (e, _) => Center(child: Text(getLocalizedErrorMessage(e, l10n))),
+                error: (e, _) =>
+                    Center(child: Text(getLocalizedErrorMessage(e, l10n))),
               ),
             ),
           ),

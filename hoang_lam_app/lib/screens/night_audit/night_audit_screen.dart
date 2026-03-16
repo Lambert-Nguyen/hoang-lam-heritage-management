@@ -659,9 +659,9 @@ class _NightAuditScreenState extends ConsumerState<NightAuditScreen> {
       ).showSnackBar(SnackBar(content: Text(l10n.exportSuccess)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+      );
     }
   }
 

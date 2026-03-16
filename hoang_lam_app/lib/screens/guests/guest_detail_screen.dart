@@ -528,9 +528,9 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+          );
         }
       }
     }

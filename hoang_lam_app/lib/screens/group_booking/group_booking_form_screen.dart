@@ -510,9 +510,9 @@ class _GroupBookingFormScreenState
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))),
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);

@@ -1271,9 +1271,9 @@ class BookingDetailScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+          );
         }
       }
     }
@@ -1370,9 +1370,9 @@ class BookingDetailScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+          );
         }
       }
     }
@@ -1420,9 +1420,9 @@ class BookingDetailScreen extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+          );
         }
       }
     }

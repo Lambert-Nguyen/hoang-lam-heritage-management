@@ -135,9 +135,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))),
+        );
       }
     }
   }
@@ -170,9 +170,9 @@ class _ReceiptPreviewScreenState extends ConsumerState<ReceiptPreviewScreen> {
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+        );
       }
     }
   }

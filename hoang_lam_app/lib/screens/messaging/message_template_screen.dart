@@ -151,7 +151,8 @@ class _MessageTemplateScreenState extends ConsumerState<MessageTemplateScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text(getLocalizedErrorMessage(e, l10n))),
+              error: (e, _) =>
+                  Center(child: Text(getLocalizedErrorMessage(e, l10n))),
             ),
           ),
         ],

@@ -182,10 +182,9 @@ class MinibarCartPanel extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
-                        onPressed:
-                            cartState.items.isNotEmpty && booking != null
-                                ? onCheckout
-                                : null,
+                        onPressed: cartState.items.isNotEmpty && booking != null
+                            ? onCheckout
+                            : null,
                         icon: const Icon(Icons.point_of_sale),
                         label: Text(context.l10n.checkoutBtn),
                       ),

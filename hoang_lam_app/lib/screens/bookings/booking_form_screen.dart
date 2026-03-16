@@ -290,7 +290,8 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Text(getLocalizedErrorMessage(error, context.l10n)),
+      error: (error, stack) =>
+          Text(getLocalizedErrorMessage(error, context.l10n)),
     );
   }
 
@@ -889,9 +890,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(getLocalizedErrorMessage(e, context.l10n))),
+        );
       }
     } finally {
       if (mounted) {

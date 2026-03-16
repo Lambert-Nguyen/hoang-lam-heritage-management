@@ -378,8 +378,9 @@ class _RoomInspectionListScreenState
                     ],
                   ),
                   loading: () => const LoadingIndicator(),
-                  error: (e, _) =>
-                      ErrorDisplay(message: getLocalizedErrorMessage(e, context.l10n)),
+                  error: (e, _) => ErrorDisplay(
+                    message: getLocalizedErrorMessage(e, context.l10n),
+                  ),
                 ),
               );
             },

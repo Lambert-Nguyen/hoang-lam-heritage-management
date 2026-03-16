@@ -605,7 +605,11 @@ class SettingsScreen extends ConsumerWidget {
                           } catch (e) {
                             if (dialogContext.mounted) {
                               ScaffoldMessenger.of(dialogContext).showSnackBar(
-                                SnackBar(content: Text(getLocalizedErrorMessage(e, l10n))),
+                                SnackBar(
+                                  content: Text(
+                                    getLocalizedErrorMessage(e, l10n),
+                                  ),
+                                ),
                               );
                             }
                           }
