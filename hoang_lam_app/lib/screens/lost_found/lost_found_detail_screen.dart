@@ -97,181 +97,191 @@ class _LostFoundDetailScreenState extends ConsumerState<LostFoundDetailScreen> {
   }
 
   Widget _buildContent(LostFoundItem item) {
-    return SingleChildScrollView(
-      padding: AppSpacing.paddingAll,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                decoration: BoxDecoration(
-                  color: item.status.color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(item.status.icon, size: 16, color: item.status.color),
-                    const SizedBox(width: 4),
-                    Text(
-                      item.status.localizedName(context.l10n),
-                      style: TextStyle(
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(lostFoundItemByIdProvider(widget.itemId));
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: AppSpacing.paddingAll,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
+                  ),
+                  decoration: BoxDecoration(
+                    color: item.status.color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        item.status.icon,
+                        size: 16,
                         color: item.status.color,
-                        fontWeight: FontWeight.bold,
                       ),
+                      const SizedBox(width: 4),
+                      Text(
+                        item.status.localizedName(context.l10n),
+                        style: TextStyle(
+                          color: item.status.color,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: AppSpacing.sm,
+                  ),
+                  decoration: BoxDecoration(
+                    color: item.category.color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        item.category.icon,
+                        size: 16,
+                        color: item.category.color,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        item.category.localizedName(context.l10n),
+                        style: TextStyle(color: item.category.color),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              item.itemName,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            if (item.image != null && item.image!.isNotEmpty) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  item.image!,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ],
+                    child: const Icon(
+                      Icons.broken_image,
+                      size: 48,
+                      color: Colors.grey,
+                    ),
+                  ),
                 ),
               ),
-              const SizedBox(width: AppSpacing.sm),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.md,
-                  vertical: AppSpacing.sm,
-                ),
-                decoration: BoxDecoration(
-                  color: item.category.color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      item.category.icon,
-                      size: 16,
-                      color: item.category.color,
+              const SizedBox(height: AppSpacing.md),
+            ],
+            if (item.description.isNotEmpty) ...[
+              _SectionCard(
+                title: context.l10n.description,
+                icon: Icons.description,
+                child: Text(item.description),
+              ),
+              const SizedBox(height: AppSpacing.md),
+            ],
+            _SectionCard(
+              title: context.l10n.locationSection,
+              icon: Icons.location_on,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (item.roomNumber != null)
+                    _InfoRow(label: context.l10n.room, value: item.roomNumber!),
+                  if (item.foundLocation.isNotEmpty)
+                    _InfoRow(
+                      label: context.l10n.foundLocationLabel,
+                      value: item.foundLocation,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      item.category.localizedName(context.l10n),
-                      style: TextStyle(color: item.category.color),
+                  if (item.storageLocation.isNotEmpty)
+                    _InfoRow(
+                      label: context.l10n.storageLocationLabel,
+                      value: item.storageLocation,
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: AppSpacing.md),
+            _SectionCard(
+              title: context.l10n.timeLabel,
+              icon: Icons.calendar_today,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _InfoRow(
+                    label: context.l10n.foundDateLabel,
+                    value: _formatDate(item.foundDate),
+                  ),
+                  if (item.claimedDate != null)
+                    _InfoRow(
+                      label: context.l10n.claimedDate,
+                      value: _formatDate(item.claimedDate!),
+                    ),
+                ],
+              ),
+            ),
+            if (item.guestName != null) ...[
+              const SizedBox(height: AppSpacing.md),
+              _SectionCard(
+                title: context.l10n.guest,
+                icon: Icons.person,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _InfoRow(label: context.l10n.name, value: item.guestName!),
+                    _InfoRow(
+                      label: context.l10n.guestContacted,
+                      value: item.guestContacted
+                          ? context.l10n.yesLabel
+                          : context.l10n.notYetLabel,
                     ),
                   ],
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            item.itemName,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          if (item.image != null && item.image!.isNotEmpty) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                item.image!,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.broken_image,
-                    size: 48,
-                    color: Colors.grey,
+            if (item.estimatedValue != null) ...[
+              const SizedBox(height: AppSpacing.md),
+              _SectionCard(
+                title: context.l10n.estimatedValueVnd,
+                icon: Icons.attach_money,
+                child: Text(
+                  '${item.estimatedValue!.toStringAsFixed(0)}₫',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
+            ],
+            const SizedBox(height: AppSpacing.xl),
           ],
-          if (item.description.isNotEmpty) ...[
-            _SectionCard(
-              title: context.l10n.description,
-              icon: Icons.description,
-              child: Text(item.description),
-            ),
-            const SizedBox(height: AppSpacing.md),
-          ],
-          _SectionCard(
-            title: context.l10n.locationSection,
-            icon: Icons.location_on,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (item.roomNumber != null)
-                  _InfoRow(label: context.l10n.room, value: item.roomNumber!),
-                if (item.foundLocation.isNotEmpty)
-                  _InfoRow(
-                    label: context.l10n.foundLocationLabel,
-                    value: item.foundLocation,
-                  ),
-                if (item.storageLocation.isNotEmpty)
-                  _InfoRow(
-                    label: context.l10n.storageLocationLabel,
-                    value: item.storageLocation,
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _SectionCard(
-            title: context.l10n.timeLabel,
-            icon: Icons.calendar_today,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _InfoRow(
-                  label: context.l10n.foundDateLabel,
-                  value: _formatDate(item.foundDate),
-                ),
-                if (item.claimedDate != null)
-                  _InfoRow(
-                    label: context.l10n.claimedDate,
-                    value: _formatDate(item.claimedDate!),
-                  ),
-              ],
-            ),
-          ),
-          if (item.guestName != null) ...[
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              title: context.l10n.guest,
-              icon: Icons.person,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _InfoRow(label: context.l10n.name, value: item.guestName!),
-                  _InfoRow(
-                    label: context.l10n.guestContacted,
-                    value: item.guestContacted
-                        ? context.l10n.yesLabel
-                        : context.l10n.notYetLabel,
-                  ),
-                ],
-              ),
-            ),
-          ],
-          if (item.estimatedValue != null) ...[
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              title: context.l10n.estimatedValueVnd,
-              icon: Icons.attach_money,
-              child: Text(
-                '${item.estimatedValue!.toStringAsFixed(0)}₫',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-            ),
-          ],
-          const SizedBox(height: AppSpacing.xl),
-        ],
+        ),
       ),
     );
   }

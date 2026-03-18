@@ -3,29 +3,49 @@ import '../../l10n/app_localizations.dart';
 
 /// Common currencies for the hotel
 const List<CurrencyOption> supportedCurrencies = [
-  CurrencyOption(code: 'VND', name: 'Vietnamese Dong', symbol: '₫'),
-  CurrencyOption(code: 'USD', name: 'US Dollar', symbol: '\$'),
-  CurrencyOption(code: 'EUR', name: 'Euro', symbol: '€'),
-  CurrencyOption(code: 'CNY', name: 'Chinese Yuan', symbol: '¥'),
-  CurrencyOption(code: 'KRW', name: 'Korean Won', symbol: '₩'),
-  CurrencyOption(code: 'JPY', name: 'Japanese Yen', symbol: '¥'),
-  CurrencyOption(code: 'THB', name: 'Thai Baht', symbol: '฿'),
-  CurrencyOption(code: 'GBP', name: 'British Pound', symbol: '£'),
+  CurrencyOption(code: 'VND', symbol: '₫'),
+  CurrencyOption(code: 'USD', symbol: '\$'),
+  CurrencyOption(code: 'EUR', symbol: '€'),
+  CurrencyOption(code: 'CNY', symbol: '¥'),
+  CurrencyOption(code: 'KRW', symbol: '₩'),
+  CurrencyOption(code: 'JPY', symbol: '¥'),
+  CurrencyOption(code: 'THB', symbol: '฿'),
+  CurrencyOption(code: 'GBP', symbol: '£'),
 ];
 
 /// Represents a currency option
 class CurrencyOption {
   final String code;
-  final String name;
   final String symbol;
 
-  const CurrencyOption({
-    required this.code,
-    required this.name,
-    required this.symbol,
-  });
+  const CurrencyOption({required this.code, required this.symbol});
 
-  String get displayName => '$code - $name';
+  /// Get localized currency name
+  String getLocalizedName(AppLocalizations l10n) {
+    switch (code) {
+      case 'VND':
+        return l10n.currencyVnd;
+      case 'USD':
+        return l10n.currencyUsd;
+      case 'EUR':
+        return l10n.currencyEur;
+      case 'CNY':
+        return l10n.currencyCny;
+      case 'KRW':
+        return l10n.currencyKrw;
+      case 'JPY':
+        return l10n.currencyJpy;
+      case 'THB':
+        return l10n.currencyThb;
+      case 'GBP':
+        return l10n.currencyGbp;
+      default:
+        return code;
+    }
+  }
+
+  String localizedDisplayName(AppLocalizations l10n) =>
+      '$code - ${getLocalizedName(l10n)}';
 
   @override
   bool operator ==(Object other) =>
@@ -159,7 +179,7 @@ class CompactCurrencySelector extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(currency.displayName),
+              Text(currency.localizedDisplayName(context.l10n)),
             ],
           ),
         );

@@ -16,6 +16,7 @@
 - **Round 8** (2026-03-15): Cross-layer quality & consistency audit — 4 parallel agents reviewed all screens, providers/models, router/backend, and l10n/widgets. 81 issues found across 8 categories.
 - **Round 8 P0 Implementation** (2026-03-15): All P0 items fixed — localized error messages (28 files), logout PII leak (17 providers added), race conditions (2 providers). Mounted checks verified already correct.
 - **Round 8 P1 Implementation** (2026-03-16): All P1 items fixed — Navigator.pop→context.pop (120+ replacements, 42 files), double-fetching eliminated (4 providers, 36 methods), error handling standardized (3 providers), cross-provider invalidations added (4 providers), unknownEnumValue on guest enums (3 enums).
+- **Round 8 P2 Implementation** (2026-03-17): All P2 items fixed — localized currency names (8 currencies), deprecated .withAlpha()→.withValues(alpha:) (3 instances), RefreshIndicator on 5 detail screens, autoDispose on 9 UI state providers.
 
 ---
 
@@ -1216,7 +1217,7 @@ Almost every mutation calls `loadItems()` (fetches from API) AND then `_ref.inva
 
 ---
 
-### E. Model Serialization Gaps — FIXED (enums) / P2 (autoDispose)
+### E. Model Serialization Gaps — ALL FIXED
 
 | # | Model | Issue |
 |---|-------|-------|
@@ -1226,33 +1227,33 @@ Almost every mutation calls `loadItems()` (fetches from API) AND then `_ref.inva
 
 ---
 
-### F. Hardcoded Strings Bypassing L10n (Medium — 3 areas)
+### F. Hardcoded Strings Bypassing L10n — FIXED (1 of 3)
 
-| # | File | Issue | Lines |
-|---|------|-------|-------|
-| R8-73 | **currency_selector.dart** | 8 currency names hardcoded in English: 'Vietnamese Dong', 'US Dollar', 'Euro', etc. | :6-13 |
-| R8-74 | **minibar_item_card.dart** | 8 category names hardcoded in mixed Vietnamese/English: 'nước ngọt', 'beer', 'rượu', etc. — used in `_getCategoryIcon()` / `_getCategoryColor()` | :137-214 |
-| R8-75 | **app_exceptions.dart** | 3 exception messages hardcoded bilingually instead of using l10n | :93-94, :114-115, :124-125 |
-
----
-
-### G. Deprecated API Usage (Low — 1 area)
-
-| # | File | Issue | Lines |
-|---|------|-------|-------|
-| R8-76 | **room_status_dialog.dart** | 3 uses of deprecated `.withAlpha(int)` — should use `.withValues(alpha: double)` | :121, :284, :322 |
+| # | File | Issue | Status |
+|---|------|-------|--------|
+| R8-73 | **currency_selector.dart** | 8 currency names hardcoded in English | ✅ Fixed — localized via 8 new l10n entries |
+| R8-74 | **minibar_item_card.dart** | Category names in `_getCategoryIcon()`/`_getCategoryColor()` | ✅ No action needed — internal matching only, not displayed |
+| R8-75 | **app_exceptions.dart** | Exception messages hardcoded bilingually | ✅ No action needed — already uses bilingual `message`/`messageEn` pattern resolved via `getLocalizedMessage()` |
 
 ---
 
-### H. Missing Pull-to-Refresh on Detail Screens (Low — 5 screens)
+### G. Deprecated API Usage — FIXED
 
-| # | Screen | Issue |
-|---|--------|-------|
-| R8-77 | **room_detail_screen** | No RefreshIndicator — stale data cannot be refreshed |
-| R8-78 | **group_booking_detail_screen** | No RefreshIndicator |
-| R8-79 | **lost_found_detail_screen** | No RefreshIndicator |
-| R8-80 | **maintenance_detail_screen** | No RefreshIndicator |
-| R8-81 | **task_detail_screen** | No RefreshIndicator |
+| # | File | Issue | Status |
+|---|------|-------|--------|
+| R8-76 | **room_status_dialog.dart** | 3 uses of deprecated `.withAlpha(int)` | ✅ Fixed — replaced with `.withValues(alpha: double)` |
+
+---
+
+### H. Missing Pull-to-Refresh on Detail Screens — FIXED
+
+| # | Screen | Status |
+|---|--------|--------|
+| R8-77 | **room_detail_screen** | ✅ Fixed — RefreshIndicator added, invalidates roomByIdProvider + roomsProvider |
+| R8-78 | **group_booking_detail_screen** | ✅ Fixed — RefreshIndicator added, invalidates groupBookingByIdProvider |
+| R8-79 | **lost_found_detail_screen** | ✅ Fixed — RefreshIndicator added, invalidates lostFoundItemByIdProvider |
+| R8-80 | **maintenance_detail_screen** | ✅ Fixed — RefreshIndicator added, invalidates maintenanceRequestByIdProvider |
+| R8-81 | **task_detail_screen** | ✅ Fixed — RefreshIndicator added, invalidates housekeepingTasksProvider |
 
 ---
 
@@ -1277,14 +1278,14 @@ Almost every mutation calls `loadItems()` (fetches from API) AND then `_ref.inva
 | R8-66–69 | **Add missing cross-provider invalidations** — folio→booking, inspection→dashboard, rate→booking | ✅ Fixed |
 | R8-70–71 | **Add unknownEnumValue** to Guest model enums (IDType→other, PassportType→other, VisaType→none) | ✅ Fixed |
 
-#### P2 — Nice to Fix (Polish)
+#### P2 — Nice to Fix (Polish) — ALL DONE ✅
 
-| # | Fix | Effort |
+| # | Fix | Status |
 |---|-----|--------|
-| R8-73–75 | **Localize hardcoded strings** — currency names, minibar categories, exception messages | Small |
-| R8-76 | **Replace deprecated `.withAlpha()`** with `.withValues(alpha:)` | Tiny |
-| R8-77–81 | **Add RefreshIndicator** to 5 detail screens | Small |
-| R8-72 | **Convert UI state providers to autoDispose** — room/guest selection providers | Small |
+| R8-73–75 | **Localize hardcoded strings** — currency names localized (8 l10n entries); minibar/exceptions already correct | ✅ Fixed |
+| R8-76 | **Replace deprecated `.withAlpha()`** with `.withValues(alpha:)` — 3 instances in room_status_dialog | ✅ Fixed |
+| R8-77–81 | **Add RefreshIndicator** to 5 detail screens with provider invalidation | ✅ Fixed |
+| R8-72 | **Convert UI state providers to autoDispose** — 9 providers in room_provider + guest_provider | ✅ Fixed |
 
 ---
 
@@ -1357,3 +1358,24 @@ Almost every mutation calls `loadItems()` (fetches from API) AND then `_ref.inva
 **Guest model enums:**
 
 - `models/guest.dart` — added `unknownEnumValue` to IDType (→other), PassportType (→other), VisaType (→none)
+
+### P2 Implementation — Files Changed (2026-03-17)
+
+**Localized currency names:**
+- `widgets/finance/currency_selector.dart` — removed hardcoded English names, added `getLocalizedName(l10n)` method
+- `l10n/app_localizations.dart` — 8 new currency l10n entries (VND, USD, EUR, JPY, CNY, KRW, THB, GBP)
+- `test/widgets/finance/currency_selector_test.dart` — updated for new API
+
+**Deprecated API fix:**
+- `widgets/rooms/room_status_dialog.dart` — 3× `.withAlpha(int)` → `.withValues(alpha: double)`
+
+**RefreshIndicator on 5 detail screens:**
+- `screens/rooms/room_detail_screen.dart` — pull-to-refresh invalidates roomByIdProvider + roomsProvider
+- `screens/group_booking/group_booking_detail_screen.dart` — pull-to-refresh invalidates groupBookingByIdProvider
+- `screens/lost_found/lost_found_detail_screen.dart` — pull-to-refresh invalidates lostFoundItemByIdProvider
+- `screens/housekeeping/maintenance_detail_screen.dart` — pull-to-refresh invalidates maintenanceRequestByIdProvider
+- `screens/housekeeping/task_detail_screen.dart` — pull-to-refresh invalidates housekeepingTasksProvider
+
+**AutoDispose UI state providers:**
+- `providers/room_provider.dart` — 4 providers converted: selectedRoom, roomTypeFilter, statusFilter, floorFilter
+- `providers/guest_provider.dart` — 5 providers converted: selectedGuest, nationalityFilter, vipFilter, searchQuery, searchType

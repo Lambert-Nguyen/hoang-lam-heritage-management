@@ -119,7 +119,7 @@ class _RoomStatusDialogState extends ConsumerState<RoomStatusDialog> {
                 padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                 child: Material(
                   color: isSelected
-                      ? status.color.withAlpha(30)
+                      ? status.color.withValues(alpha: 0.12)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                   child: InkWell(
@@ -282,7 +282,7 @@ class QuickStatusBottomSheet extends ConsumerWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppColors.textSecondary.withAlpha(77),
+                  color: AppColors.textSecondary.withValues(alpha: 0.30),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -320,7 +320,7 @@ class QuickStatusBottomSheet extends ConsumerWidget {
                   label: Text(status.localizedName(context.l10n)),
                   backgroundColor: isCurrentStatus
                       ? status.color
-                      : status.color.withAlpha(30),
+                      : status.color.withValues(alpha: 0.12),
                   labelStyle: TextStyle(
                     color: isCurrentStatus ? Colors.white : status.color,
                   ),

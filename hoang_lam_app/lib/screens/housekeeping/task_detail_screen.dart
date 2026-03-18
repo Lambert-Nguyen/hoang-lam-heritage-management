@@ -77,32 +77,38 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: AppSpacing.paddingScreen,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Status header
-            _buildStatusHeader(),
-            AppSpacing.gapVerticalLg,
-
-            // Task info card
-            _buildInfoCard(dateFormat),
-            AppSpacing.gapVerticalLg,
-
-            // Assignment info
-            _buildAssignmentCard(),
-            AppSpacing.gapVerticalLg,
-
-            // Notes section
-            if (_task.notes != null && _task.notes!.isNotEmpty) ...[
-              _buildNotesSection(),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(housekeepingTasksProvider);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: AppSpacing.paddingScreen,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Status header
+              _buildStatusHeader(),
               AppSpacing.gapVerticalLg,
-            ],
 
-            // Timeline
-            _buildTimelineSection(dateFormat, timeFormat),
-          ],
+              // Task info card
+              _buildInfoCard(dateFormat),
+              AppSpacing.gapVerticalLg,
+
+              // Assignment info
+              _buildAssignmentCard(),
+              AppSpacing.gapVerticalLg,
+
+              // Notes section
+              if (_task.notes != null && _task.notes!.isNotEmpty) ...[
+                _buildNotesSection(),
+                AppSpacing.gapVerticalLg,
+              ],
+
+              // Timeline
+              _buildTimelineSection(dateFormat, timeFormat),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: _buildBottomBar(),

@@ -100,39 +100,46 @@ class _MaintenanceDetailScreenState
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: AppSpacing.paddingScreen,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Status and Priority header
-            _buildStatusHeader(),
-            AppSpacing.gapVerticalLg,
-
-            // Request info card
-            _buildInfoCard(),
-            AppSpacing.gapVerticalLg,
-
-            // Assignment info
-            _buildAssignmentCard(),
-            AppSpacing.gapVerticalLg,
-
-            // Description section
-            if (_request.description.isNotEmpty) ...[
-              _buildDescriptionSection(),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(maintenanceRequestByIdProvider(_request.id));
+          ref.invalidate(maintenanceRequestsProvider);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: AppSpacing.paddingScreen,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Status and Priority header
+              _buildStatusHeader(),
               AppSpacing.gapVerticalLg,
-            ],
 
-            // Resolution notes
-            if (_request.resolutionNotes != null &&
-                _request.resolutionNotes!.isNotEmpty) ...[
-              _buildResolutionSection(),
+              // Request info card
+              _buildInfoCard(),
               AppSpacing.gapVerticalLg,
-            ],
 
-            // Timeline
-            _buildTimelineSection(dateFormat, timeFormat),
-          ],
+              // Assignment info
+              _buildAssignmentCard(),
+              AppSpacing.gapVerticalLg,
+
+              // Description section
+              if (_request.description.isNotEmpty) ...[
+                _buildDescriptionSection(),
+                AppSpacing.gapVerticalLg,
+              ],
+
+              // Resolution notes
+              if (_request.resolutionNotes != null &&
+                  _request.resolutionNotes!.isNotEmpty) ...[
+                _buildResolutionSection(),
+                AppSpacing.gapVerticalLg,
+              ],
+
+              // Timeline
+              _buildTimelineSection(dateFormat, timeFormat),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: _buildBottomBar(),

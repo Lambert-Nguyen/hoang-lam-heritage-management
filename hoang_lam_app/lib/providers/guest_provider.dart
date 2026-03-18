@@ -369,16 +369,20 @@ final guestStateProvider = StateNotifierProvider<GuestNotifier, GuestState>((
 });
 
 /// Provider for selected guest (for detail view)
-final selectedGuestProvider = StateProvider<Guest?>((ref) => null);
+final selectedGuestProvider = StateProvider.autoDispose<Guest?>((ref) => null);
 
 /// Provider for selected nationality filter
-final selectedNationalityFilterProvider = StateProvider<String?>((ref) => null);
+final selectedNationalityFilterProvider = StateProvider.autoDispose<String?>(
+  (ref) => null,
+);
 
 /// Provider for VIP filter state
-final vipFilterProvider = StateProvider<bool?>((ref) => null);
+final vipFilterProvider = StateProvider.autoDispose<bool?>((ref) => null);
 
 /// Provider for search query
-final guestSearchQueryProvider = StateProvider<String>((ref) => '');
+final guestSearchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 
 /// Provider for search type
-final guestSearchTypeProvider = StateProvider<String>((ref) => 'all');
+final guestSearchTypeProvider = StateProvider.autoDispose<String>(
+  (ref) => 'all',
+);

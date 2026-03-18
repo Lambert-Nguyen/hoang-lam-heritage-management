@@ -249,13 +249,19 @@ final roomStateProvider = StateNotifierProvider<RoomNotifier, RoomState>((ref) {
 });
 
 /// Provider for selected room (for detail view)
-final selectedRoomProvider = StateProvider<Room?>((ref) => null);
+final selectedRoomProvider = StateProvider.autoDispose<Room?>((ref) => null);
 
 /// Provider for selected room type filter
-final selectedRoomTypeFilterProvider = StateProvider<RoomType?>((ref) => null);
+final selectedRoomTypeFilterProvider = StateProvider.autoDispose<RoomType?>(
+  (ref) => null,
+);
 
 /// Provider for selected status filter
-final selectedStatusFilterProvider = StateProvider<RoomStatus?>((ref) => null);
+final selectedStatusFilterProvider = StateProvider.autoDispose<RoomStatus?>(
+  (ref) => null,
+);
 
 /// Provider for selected floor filter
-final selectedFloorFilterProvider = StateProvider<int?>((ref) => null);
+final selectedFloorFilterProvider = StateProvider.autoDispose<int?>(
+  (ref) => null,
+);

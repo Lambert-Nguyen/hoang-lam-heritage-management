@@ -122,179 +122,194 @@ class _GroupBookingDetailScreenState
 
   Widget _buildContent(GroupBooking booking) {
     final l10n = context.l10n;
-    return SingleChildScrollView(
-      padding: AppSpacing.paddingAll,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: booking.status.color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  booking.status.icon,
-                  size: 18,
-                  color: booking.status.color,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  booking.status.localizedName(context.l10n),
-                  style: TextStyle(
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(groupBookingByIdProvider(widget.bookingId));
+      },
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: AppSpacing.paddingAll,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                color: booking.status.color.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    booking.status.icon,
+                    size: 18,
                     color: booking.status.color,
-                    fontWeight: FontWeight.bold,
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          Text(
-            booking.name,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          _SectionCard(
-            title: l10n.contactLabel,
-            icon: Icons.person,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _InfoRow(label: l10n.contactPerson, value: booking.contactName),
-                if (booking.contactPhone.isNotEmpty)
-                  _InfoRow(label: l10n.phoneLabel, value: booking.contactPhone),
-                if (booking.contactEmail.isNotEmpty)
-                  _InfoRow(label: 'Email', value: booking.contactEmail),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _SectionCard(
-            title: l10n.bookingDetails,
-            icon: Icons.hotel,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _InfoRow(
-                  label: l10n.checkInDate,
-                  value: _formatDate(booking.checkInDate),
-                ),
-                _InfoRow(
-                  label: l10n.checkOutDate,
-                  value: _formatDate(booking.checkOutDate),
-                ),
-                _InfoRow(
-                  label: l10n.roomCountLabel,
-                  value: '${booking.roomCount} ${l10n.roomsSuffix}',
-                ),
-                _InfoRow(
-                  label: l10n.guestCountLabel,
-                  value: '${booking.guestCount} ${l10n.guestsSuffix}',
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
-          _SectionCard(
-            title: l10n.paymentLabel,
-            icon: Icons.payment,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _InfoRow(
-                  label: l10n.totalAmount,
-                  value: '${_formatCurrency(booking.totalAmount)}₫',
-                  valueStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary,
+                  const SizedBox(width: 4),
+                  Text(
+                    booking.status.localizedName(context.l10n),
+                    style: TextStyle(
+                      color: booking.status.color,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                _InfoRow(
-                  label: l10n.depositLabel,
-                  value: '${_formatCurrency(booking.depositAmount)}₫',
-                ),
-                if (booking.discountPercent > 0)
-                  _InfoRow(
-                    label: l10n.discountLabel,
-                    value: '${booking.discountPercent}%',
-                  ),
-                _InfoRow(
-                  label: l10n.paidStatus,
-                  value: booking.depositPaid ? l10n.yesLabel : l10n.notYetLabel,
-                  valueStyle: TextStyle(
-                    color: booking.depositPaid
-                        ? AppColors.success
-                        : AppColors.warning,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (booking.roomNumbers.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.md),
-            _SectionCard(
-              title: l10n.assignedRooms,
-              icon: Icons.meeting_room,
-              child: Wrap(
-                spacing: AppSpacing.sm,
-                runSpacing: AppSpacing.sm,
-                children: booking.roomNumbers
-                    .map(
-                      (r) => Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.md,
-                          vertical: AppSpacing.sm,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(
-                            AppSpacing.radiusSm,
-                          ),
-                          border: Border.all(
-                            color: AppColors.primary.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        child: Text(
-                          '${l10n.roomLabel} $r',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    )
-                    .toList(),
+                ],
               ),
             ),
-          ],
-          if (booking.specialRequests.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              booking.name,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            _SectionCard(
+              title: l10n.contactLabel,
+              icon: Icons.person,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _InfoRow(
+                    label: l10n.contactPerson,
+                    value: booking.contactName,
+                  ),
+                  if (booking.contactPhone.isNotEmpty)
+                    _InfoRow(
+                      label: l10n.phoneLabel,
+                      value: booking.contactPhone,
+                    ),
+                  if (booking.contactEmail.isNotEmpty)
+                    _InfoRow(label: 'Email', value: booking.contactEmail),
+                ],
+              ),
+            ),
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              title: l10n.specialRequests,
-              icon: Icons.star,
-              child: Text(booking.specialRequests),
+              title: l10n.bookingDetails,
+              icon: Icons.hotel,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _InfoRow(
+                    label: l10n.checkInDate,
+                    value: _formatDate(booking.checkInDate),
+                  ),
+                  _InfoRow(
+                    label: l10n.checkOutDate,
+                    value: _formatDate(booking.checkOutDate),
+                  ),
+                  _InfoRow(
+                    label: l10n.roomCountLabel,
+                    value: '${booking.roomCount} ${l10n.roomsSuffix}',
+                  ),
+                  _InfoRow(
+                    label: l10n.guestCountLabel,
+                    value: '${booking.guestCount} ${l10n.guestsSuffix}',
+                  ),
+                ],
+              ),
             ),
-          ],
-          if (booking.notes.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.md),
             _SectionCard(
-              title: l10n.notesLabel,
-              icon: Icons.note,
-              child: Text(booking.notes),
+              title: l10n.paymentLabel,
+              icon: Icons.payment,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _InfoRow(
+                    label: l10n.totalAmount,
+                    value: '${_formatCurrency(booking.totalAmount)}₫',
+                    valueStyle: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary,
+                        ),
+                  ),
+                  _InfoRow(
+                    label: l10n.depositLabel,
+                    value: '${_formatCurrency(booking.depositAmount)}₫',
+                  ),
+                  if (booking.discountPercent > 0)
+                    _InfoRow(
+                      label: l10n.discountLabel,
+                      value: '${booking.discountPercent}%',
+                    ),
+                  _InfoRow(
+                    label: l10n.paidStatus,
+                    value: booking.depositPaid
+                        ? l10n.yesLabel
+                        : l10n.notYetLabel,
+                    valueStyle: TextStyle(
+                      color: booking.depositPaid
+                          ? AppColors.success
+                          : AppColors.warning,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
+            if (booking.roomNumbers.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.md),
+              _SectionCard(
+                title: l10n.assignedRooms,
+                icon: Icons.meeting_room,
+                child: Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: booking.roomNumbers
+                      .map(
+                        (r) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                            vertical: AppSpacing.sm,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(
+                              AppSpacing.radiusSm,
+                            ),
+                            border: Border.all(
+                              color: AppColors.primary.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Text(
+                            '${l10n.roomLabel} $r',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+            if (booking.specialRequests.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.md),
+              _SectionCard(
+                title: l10n.specialRequests,
+                icon: Icons.star,
+                child: Text(booking.specialRequests),
+              ),
+            ],
+            if (booking.notes.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.md),
+              _SectionCard(
+                title: l10n.notesLabel,
+                icon: Icons.note,
+                child: Text(booking.notes),
+              ),
+            ],
+            const SizedBox(height: AppSpacing.xl),
           ],
-          const SizedBox(height: AppSpacing.xl),
-        ],
+        ),
       ),
     );
   }

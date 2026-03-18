@@ -904,6 +904,14 @@ class AppLocalizations {
   String get vndPerNight => translate('vnd_per_night');
   String get referenceCode => translate('reference_code');
   String get methodLabel => translate('method_label');
+  String get currencyVnd => translate('currency_vnd');
+  String get currencyUsd => translate('currency_usd');
+  String get currencyEur => translate('currency_eur');
+  String get currencyCny => translate('currency_cny');
+  String get currencyKrw => translate('currency_krw');
+  String get currencyJpy => translate('currency_jpy');
+  String get currencyThb => translate('currency_thb');
+  String get currencyGbp => translate('currency_gbp');
 
   // Financial Category
   String get noIncomeCategories => translate('no_income_categories');
@@ -2760,6 +2768,14 @@ const Map<String, String> _viTranslations = {
   'vnd_per_night': 'VNĐ/đêm',
   'reference_code': 'Mã tham chiếu',
   'method_label': 'Phương thức',
+  'currency_vnd': 'Đồng Việt Nam',
+  'currency_usd': 'Đô la Mỹ',
+  'currency_eur': 'Euro',
+  'currency_cny': 'Nhân dân tệ',
+  'currency_krw': 'Won Hàn Quốc',
+  'currency_jpy': 'Yên Nhật',
+  'currency_thb': 'Baht Thái',
+  'currency_gbp': 'Bảng Anh',
   'no_income_categories': 'Chưa có danh mục thu',
   'no_expense_categories': 'Chưa có danh mục chi',
   'category_hidden': 'Đã ẩn danh mục',
@@ -4538,6 +4554,14 @@ const Map<String, String> _enTranslations = {
   'vnd_per_night': 'VND/night',
   'reference_code': 'Reference code',
   'method_label': 'Method',
+  'currency_vnd': 'Vietnamese Dong',
+  'currency_usd': 'US Dollar',
+  'currency_eur': 'Euro',
+  'currency_cny': 'Chinese Yuan',
+  'currency_krw': 'Korean Won',
+  'currency_jpy': 'Japanese Yen',
+  'currency_thb': 'Thai Baht',
+  'currency_gbp': 'British Pound',
   'no_income_categories': 'No income categories',
   'no_expense_categories': 'No expense categories',
   'category_hidden': 'Category hidden',

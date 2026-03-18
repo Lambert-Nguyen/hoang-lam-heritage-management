@@ -36,47 +36,18 @@ void main() {
   }
 
   group('CurrencyOption', () {
-    test('displayName returns code with name', () {
-      const option = CurrencyOption(
-        code: 'VND',
-        name: 'Vietnamese Dong',
-        symbol: '₫',
-      );
-      expect(option.displayName, 'VND - Vietnamese Dong');
-    });
-
     test('equality based on code', () {
-      const option1 = CurrencyOption(
-        code: 'VND',
-        name: 'Vietnamese Dong',
-        symbol: '₫',
-      );
-      const option2 = CurrencyOption(
-        code: 'VND',
-        name: 'Different Name',
-        symbol: 'd',
-      );
-      const option3 = CurrencyOption(
-        code: 'USD',
-        name: 'US Dollar',
-        symbol: '\$',
-      );
+      const option1 = CurrencyOption(code: 'VND', symbol: '₫');
+      const option2 = CurrencyOption(code: 'VND', symbol: 'd');
+      const option3 = CurrencyOption(code: 'USD', symbol: '\$');
 
       expect(option1, equals(option2));
       expect(option1, isNot(equals(option3)));
     });
 
     test('hashCode based on code', () {
-      const option1 = CurrencyOption(
-        code: 'VND',
-        name: 'Vietnamese Dong',
-        symbol: '₫',
-      );
-      const option2 = CurrencyOption(
-        code: 'VND',
-        name: 'Different Name',
-        symbol: 'd',
-      );
+      const option1 = CurrencyOption(code: 'VND', symbol: '₫');
+      const option2 = CurrencyOption(code: 'VND', symbol: 'd');
 
       expect(option1.hashCode, equals(option2.hashCode));
     });
@@ -187,8 +158,8 @@ void main() {
 
     testWidgets('works with custom currency list', (tester) async {
       const customCurrencies = [
-        CurrencyOption(code: 'AAA', name: 'Test A', symbol: 'A'),
-        CurrencyOption(code: 'BBB', name: 'Test B', symbol: 'B'),
+        CurrencyOption(code: 'AAA', symbol: 'A'),
+        CurrencyOption(code: 'BBB', symbol: 'B'),
       ];
 
       await tester.pumpWidget(

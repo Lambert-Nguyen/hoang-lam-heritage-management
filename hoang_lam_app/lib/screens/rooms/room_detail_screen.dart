@@ -76,38 +76,45 @@ class _RoomDetailScreenState extends ConsumerState<RoomDetailScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: AppSpacing.paddingScreen,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Status header
-            _buildStatusHeader(),
-            AppSpacing.gapVerticalLg,
-
-            // Room info card
-            _buildInfoCard(),
-            AppSpacing.gapVerticalLg,
-
-            // Quick actions
-            _buildQuickActions(),
-            AppSpacing.gapVerticalLg,
-
-            // Notes section
-            if (_room.notes != null && _room.notes!.isNotEmpty) ...[
-              _buildNotesSection(),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(roomByIdProvider(widget.room.id));
+          ref.invalidate(roomsProvider);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: AppSpacing.paddingScreen,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Status header
+              _buildStatusHeader(),
               AppSpacing.gapVerticalLg,
-            ],
 
-            // Current booking (if occupied)
-            if (_room.status == RoomStatus.occupied) ...[
-              _buildCurrentBookingSection(),
+              // Room info card
+              _buildInfoCard(),
               AppSpacing.gapVerticalLg,
-            ],
 
-            // Room history
-            _buildHistorySection(),
-          ],
+              // Quick actions
+              _buildQuickActions(),
+              AppSpacing.gapVerticalLg,
+
+              // Notes section
+              if (_room.notes != null && _room.notes!.isNotEmpty) ...[
+                _buildNotesSection(),
+                AppSpacing.gapVerticalLg,
+              ],
+
+              // Current booking (if occupied)
+              if (_room.status == RoomStatus.occupied) ...[
+                _buildCurrentBookingSection(),
+                AppSpacing.gapVerticalLg,
+              ],
+
+              // Room history
+              _buildHistorySection(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: _buildBottomBar(),
