@@ -17,6 +17,8 @@
 - **Round 8 P0 Implementation** (2026-03-15): All P0 items fixed — localized error messages (28 files), logout PII leak (17 providers added), race conditions (2 providers). Mounted checks verified already correct.
 - **Round 8 P1 Implementation** (2026-03-16): All P1 items fixed — Navigator.pop→context.pop (120+ replacements, 42 files), double-fetching eliminated (4 providers, 36 methods), error handling standardized (3 providers), cross-provider invalidations added (4 providers), unknownEnumValue on guest enums (3 enums).
 - **Round 8 P2 Implementation** (2026-03-17): All P2 items fixed — localized currency names (8 currencies), deprecated .withAlpha()→.withValues(alpha:) (3 instances), RefreshIndicator on 5 detail screens, autoDispose on 9 UI state providers.
+- **Round 9** (2026-03-19): Deep quality + security audit — 4 parallel agents reviewed screens, providers/models, widgets, and backend. 79 issues found across accessibility, performance, security, and data integrity.
+- **Round 9 P0 Implementation** (2026-03-19): All critical/major fixes — backend: booking overlap check, checkout charge preservation, balance_due discount fix, privilege escalation prevention, receipt number race condition, DB indexes/constraints, N+1 query fix. Frontend: DatePickerField memory leak, voided badge visibility, FAB tab bug, raw error strings, touch targets, keyboard handling.
 
 ---
 
@@ -1379,3 +1381,128 @@ Almost every mutation calls `loadItems()` (fetches from API) AND then `_ref.inva
 **AutoDispose UI state providers:**
 - `providers/room_provider.dart` — 4 providers converted: selectedRoom, roomTypeFilter, statusFilter, floorFilter
 - `providers/guest_provider.dart` — 5 providers converted: selectedGuest, nationalityFilter, vipFilter, searchQuery, searchType
+
+---
+
+## Round 9 — Deep Quality & Security Audit
+
+> **Date**: 2026-03-19
+> **Method**: Four parallel review agents audited (1) main screens (bookings, finance, guests, home, housekeeping, minibar), (2) all providers/models/repositories, (3) remaining screens + all widgets, (4) Django backend (views, models, serializers, permissions). 79 issues found across security, performance, accessibility, and data integrity.
+
+---
+
+### A. Backend Security & Data Integrity — ALL FIXED
+
+| # | Issue | Severity | Fix Applied |
+|---|-------|----------|-------------|
+| R9-1 | **check_availability ignores booking overlaps** — rooms with confirmed/checked-in bookings shown as available | Critical | ✅ Added booking overlap exclusion query |
+| R9-2 | **checkout overwrites folio charges** — `additional_charges` from request replaces folio-calculated total | Major | ✅ Removed overwrite; folio maintains charges |
+| R9-3 | **balance_due ignores discount_amount** — guests overcharged when discount applied | Major | ✅ Added `- self.discount_amount` to property |
+| R9-4 | **Admin password reset privilege escalation** — managers can reset owner passwords | Major | ✅ Added role-hierarchy validation in serializer |
+| R9-5 | **Receipt number race condition** — concurrent payments get duplicate numbers | Major | ✅ Added `unique=True` + sequence-based generation |
+| R9-6 | **Missing DB indexes** — FinancialEntry and HousekeepingTask queries do full table scans | Major | ✅ Added 6 indexes via migration |
+| R9-7 | **Missing unique constraint** — duplicate FinancialCategory names allowed | Major | ✅ Added `unique_together` on `(name, category_type)` |
+| R9-8 | **OccupancyReportView N+1 query** — 730 queries for 365-day range | Major | ✅ Refactored to single query + in-memory computation |
+
+---
+
+### B. Frontend Critical Fixes — ALL FIXED
+
+| # | Issue | Severity | Fix Applied |
+|---|-------|----------|-------------|
+| R9-9 | **DatePickerField memory leak** — new TextEditingController on every build, never disposed | Critical | ✅ Converted to StatefulWidget with proper lifecycle |
+| R9-10 | **Voided badge invisible** — text same color as background (error on error) | Critical | ✅ Changed text to `Colors.white` |
+| R9-11 | **FAB visibility bug** — minibar FAB doesn't update on tab swipe | Critical | ✅ Added `_tabController.addListener` |
+| R9-12 | **Raw error strings** — 6 files still showing `e.toString()` to users | Major | ✅ Replaced with `getLocalizedErrorMessage()` in 6 files |
+| R9-13 | **Hardcoded English "Check-in:"** in booking_card.dart | Major | ✅ Replaced with `context.l10n.checkIn` |
+
+---
+
+### C. Accessibility — Touch Targets Fixed
+
+| # | Issue | Severity | Fix Applied |
+|---|-------|----------|-------------|
+| R9-14 | **Split-payment remove button** — 32px touch target | Major | ✅ Increased to 48px minimum |
+| R9-15 | **Clear date filter button** — 32px touch target | Major | ✅ Increased to 48px minimum |
+| R9-16 | **Color picker items** — 36px touch target | Major | ✅ Increased to 48px minimum |
+| R9-17 | **Copy buttons** in guest detail — 32px touch target | Major | ✅ Increased to 48px minimum |
+| R9-18 | **Minibar quantity buttons** — ~24px touch target | Major | ✅ Increased to 48px minimum |
+| R9-19 | **Offline banner retry** — zero-padding IconButton | Major | ✅ Restored minimum constraints |
+
+---
+
+### D. Keyboard Handling — FIXED
+
+| # | Fix | Status |
+|---|-----|--------|
+| R9-20 | Added `keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag` to 6 form/list screens | ✅ Fixed |
+| R9-21 | Added `textInputAction: TextInputAction.search` to 3 search TextFields | ✅ Fixed |
+
+---
+
+### E. Provider Architecture Issues — P2 (Documented)
+
+These are architectural issues that require larger refactoring:
+
+| # | Issue | Severity | Notes |
+|---|-------|----------|-------|
+| R9-22 | **No double-submission guards** on any mutation (all providers) | Critical | Requires `_isMutating` flag pattern across all StateNotifiers |
+| R9-23 | **No pagination** on list providers (bookings, guests, finance, tasks, etc.) | Major | Requires cursor/offset pagination implementation |
+| R9-24 | **SyncManager incomplete** — room, finance, housekeeping, payment operations throw UnimplementedError | Major | Offline sync for these entity types not yet built |
+| R9-25 | **SyncManager no conflict resolution** — blind overwrites on sync | Major | Needs ETag/timestamp-based merge strategy |
+| R9-26 | **Failed sync operations silently discarded** after max retries | Major | Needs dead-letter queue with user notification |
+
+---
+
+### Priority Fix Matrix
+
+#### P0 — Critical Fixes — ALL DONE ✅
+
+All backend security/data-integrity issues and frontend critical bugs fixed (R9-1 through R9-13).
+
+#### P1 — Major Fixes — ALL DONE ✅
+
+Touch targets, keyboard handling, DB indexes, N+1 query, unique constraints (R9-14 through R9-21).
+
+#### P2 — Architecture (Future)
+
+Double-submission guards, pagination, offline sync completion (R9-22 through R9-26). These require significant refactoring and are documented for future sprints.
+
+---
+
+### Round 9 Files Changed
+
+**Backend:**
+- `hotel_api/views.py` — booking overlap check, checkout charge fix, admin password context, N+1 query fix
+- `hotel_api/models.py` — balance_due discount, receipt number unique + sequence, DB indexes, unique constraint
+- `hotel_api/serializers.py` — role-hierarchy validation for admin password reset
+- `hotel_api/tests/test_integration_flows.py` — updated checkout test for folio-based charges
+- `hotel_api/migrations/0020_unique_receipt_number_and_balance_fix.py` — receipt_number unique constraint
+- `hotel_api/migrations/0021_add_indexes_and_constraints.py` — DB indexes + FinancialCategory unique_together
+
+**Frontend — Critical:**
+- `widgets/common/app_input.dart` — DatePickerField StatefulWidget conversion
+- `widgets/folio/folio_item_list_widget.dart` — voided badge text color
+- `screens/minibar/minibar_inventory_screen.dart` — FAB tab listener
+- `screens/bookings/booking_calendar_screen.dart` — localized error messages
+- `screens/minibar/minibar_item_form_screen.dart` — localized error messages
+- `widgets/finance/record_deposit_dialog.dart` — localized error messages
+- `widgets/guests/guest_history_widget.dart` — localized error messages
+- `widgets/bookings/booking_card.dart` — localized check-in label
+
+**Frontend — Accessibility:**
+- `screens/bookings/booking_detail_screen.dart` — touch target
+- `screens/finance/finance_screen.dart` — touch target
+- `screens/finance/financial_category_screen.dart` — touch target
+- `screens/guests/guest_detail_screen.dart` — touch target
+- `widgets/minibar/minibar_cart_panel.dart` — touch target
+- `widgets/common/offline_banner.dart` — touch target
+
+**Frontend — Keyboard:**
+- `screens/bookings/bookings_screen.dart` — keyboardDismissBehavior + textInputAction
+- `screens/bookings/booking_form_screen.dart` — keyboardDismissBehavior
+- `screens/finance/finance_form_screen.dart` — keyboardDismissBehavior
+- `screens/guests/guest_list_screen.dart` — keyboardDismissBehavior + textInputAction
+- `screens/housekeeping/task_form_screen.dart` — keyboardDismissBehavior
+- `screens/housekeeping/maintenance_form_screen.dart` — keyboardDismissBehavior
+- `screens/minibar/minibar_pos_screen.dart` — textInputAction

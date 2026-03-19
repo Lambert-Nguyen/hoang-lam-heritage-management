@@ -799,28 +799,29 @@ class Payment(models.Model):
         return f"{self.get_payment_type_display()} - {self.amount:,.0f}đ"
 
     def save(self, *args, **kwargs):
-        # Generate receipt number if not set
-        if not self.receipt_number and self.status == self.Status.COMPLETED:
-            from django.utils import timezone
-            from django.db import IntegrityError
-
-            date_str = timezone.now().strftime("%Y%m%d")
-            for attempt in range(10):
-                count = (
-                    Payment.objects.filter(created_at__date=timezone.now().date()).count()
-                    + 1
-                    + attempt
-                )
-                self.receipt_number = f"PMT-{date_str}-{count:04d}"
-                try:
-                    super().save(*args, **kwargs)
-                    return
-                except IntegrityError:
-                    if attempt == 9:
-                        raise
-                    continue
+        # Ensure blank receipt_number is stored as NULL for unique constraint
         if not self.receipt_number:
             self.receipt_number = None
+
+        # Generate receipt number for completed payments
+        if self.receipt_number is None and self.status == self.Status.COMPLETED:
+            from django.utils import timezone
+
+            today = timezone.now()
+            date_str = today.strftime("%Y%m%d")
+            prefix = f"PMT-{date_str}-"
+            # Find the highest existing sequence number for today
+            last = (
+                Payment.objects.filter(receipt_number__startswith=prefix)
+                .order_by("-receipt_number")
+                .values_list("receipt_number", flat=True)
+                .first()
+            )
+            if last:
+                seq = int(last.split("-")[-1]) + 1
+            else:
+                seq = 1
+            self.receipt_number = f"{prefix}{seq:04d}"
         super().save(*args, **kwargs)
 
 

@@ -105,7 +105,8 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ref.invalidate(filteredBookingsProvider(filter));
                   },
                   child: ListView.separated(
-                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                    keyboardDismissBehavior:
+                        ScrollViewKeyboardDismissBehavior.onDrag,
                     padding: const EdgeInsets.all(16),
                     itemCount: filteredBookings.length,
                     separatorBuilder: (context, index) =>
