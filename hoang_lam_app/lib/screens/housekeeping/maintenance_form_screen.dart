@@ -74,6 +74,7 @@ class _MaintenanceFormScreenState extends ConsumerState<MaintenanceFormScreen> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: AppSpacing.paddingScreen,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

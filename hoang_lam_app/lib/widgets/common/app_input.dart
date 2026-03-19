@@ -248,7 +248,7 @@ class AppDropdown<T> extends StatelessWidget {
 }
 
 /// Date picker field
-class DatePickerField extends StatelessWidget {
+class DatePickerField extends StatefulWidget {
   final String? label;
   final DateTime? value;
   final DateTime? firstDate;
@@ -267,15 +267,42 @@ class DatePickerField extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final displayValue = value != null
-        ? '${value!.day}/${value!.month}/${value!.year}'
-        : '';
+  State<DatePickerField> createState() => _DatePickerFieldState();
+}
 
+class _DatePickerFieldState extends State<DatePickerField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: _formatValue(widget.value));
+  }
+
+  @override
+  void didUpdateWidget(DatePickerField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.value != widget.value) {
+      _controller.text = _formatValue(widget.value);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  String _formatValue(DateTime? value) {
+    return value != null ? '${value.day}/${value.month}/${value.year}' : '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return AppTextField(
-      label: label,
-      hint: hint ?? 'dd/mm/yyyy',
-      controller: TextEditingController(text: displayValue),
+      label: widget.label,
+      hint: widget.hint ?? 'dd/mm/yyyy',
+      controller: _controller,
       readOnly: true,
       prefixIcon: Icons.calendar_today,
       onTap: () => _showDatePicker(context),
@@ -285,13 +312,13 @@ class DatePickerField extends StatelessWidget {
   Future<void> _showDatePicker(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: value ?? DateTime.now(),
-      firstDate: firstDate ?? DateTime(2020),
-      lastDate: lastDate ?? DateTime(2030),
+      initialDate: widget.value ?? DateTime.now(),
+      firstDate: widget.firstDate ?? DateTime(2020),
+      lastDate: widget.lastDate ?? DateTime(2030),
       locale: Localizations.localeOf(context),
     );
-    if (picked != null && onChanged != null) {
-      onChanged!(picked);
+    if (picked != null && widget.onChanged != null) {
+      widget.onChanged!(picked);
     }
   }
 }

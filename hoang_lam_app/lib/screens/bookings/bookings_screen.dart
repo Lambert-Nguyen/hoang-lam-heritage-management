@@ -105,6 +105,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
                     ref.invalidate(filteredBookingsProvider(filter));
                   },
                   child: ListView.separated(
+                    keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
                     padding: const EdgeInsets.all(16),
                     itemCount: filteredBookings.length,
                     separatorBuilder: (context, index) =>
@@ -278,6 +279,7 @@ class _BookingsScreenState extends ConsumerState<BookingsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: TextField(
         controller: _searchController,
+        textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: context.l10n.searchGuestRoom,
           prefixIcon: const Icon(Icons.search),

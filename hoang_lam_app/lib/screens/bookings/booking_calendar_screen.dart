@@ -9,6 +9,7 @@ import '../../providers/booking_provider.dart';
 import '../../router/app_router.dart';
 import '../../widgets/bookings/booking_card.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/utils/error_utils.dart';
 
 /// Booking Calendar Screen - Phase 1.9.4
 ///
@@ -84,7 +85,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             error: (error, stack) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text('${context.l10n.error}: $error'),
+                child: Text(getLocalizedErrorMessage(error, context.l10n)),
               ),
             ),
           ),
@@ -301,7 +302,7 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             children: [
               const Icon(Icons.error_outline, size: 48, color: AppColors.error),
               const SizedBox(height: 16),
-              Text('${context.l10n.error}: $error'),
+              Text(getLocalizedErrorMessage(error, context.l10n)),
             ],
           ),
         ),

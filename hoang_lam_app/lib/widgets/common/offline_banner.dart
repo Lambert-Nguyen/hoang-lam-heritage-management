@@ -46,7 +46,7 @@ class OfflineBanner extends StatelessWidget {
               ),
               onPressed: onRetry,
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             ),
         ],
       ),

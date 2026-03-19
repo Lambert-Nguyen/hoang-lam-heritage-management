@@ -115,6 +115,7 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
           key: _formKey,
           onChanged: _markDirty,
           child: ListView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: const EdgeInsets.all(16),
             children: [
               // Room Selection

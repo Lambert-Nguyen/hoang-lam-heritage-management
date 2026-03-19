@@ -64,6 +64,7 @@ class _TaskFormScreenState extends ConsumerState<TaskFormScreen> {
       body: Form(
         key: _formKey,
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           padding: AppSpacing.paddingScreen,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

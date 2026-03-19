@@ -65,6 +65,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
       padding: const EdgeInsets.all(AppSpacing.md),
       child: TextField(
         controller: _searchController,
+        textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: context.l10n.searchGuests,
           helperText: context.l10n.searchMinChars,
@@ -202,6 +203,7 @@ class _GuestListScreenState extends ConsumerState<GuestListScreen> {
             );
       },
       child: ListView.separated(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: AppSpacing.paddingScreen,
         itemCount: guests.length,
         separatorBuilder: (_, __) => AppSpacing.gapVerticalSm,

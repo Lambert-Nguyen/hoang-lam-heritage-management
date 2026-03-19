@@ -341,7 +341,7 @@ class AdminResetPasswordView(APIView):
 
     def post(self, request):
         """Reset another user's password (admin action)."""
-        serializer = AdminResetPasswordSerializer(data=request.data)
+        serializer = AdminResetPasswordSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(
@@ -620,12 +620,21 @@ class RoomViewSet(viewsets.ModelViewSet):
         check_out = serializer.validated_data["check_out"]
         room_type = serializer.validated_data.get("room_type")
 
-        # For now, return all available rooms (no booking overlap check yet)
-        # Will be enhanced when Booking model endpoints are implemented
-        available_rooms = Room.objects.filter(
-            is_active=True,
-            status=Room.Status.AVAILABLE,
-        ).select_related("room_type")
+        # Exclude rooms with overlapping confirmed/checked-in bookings
+        booked_room_ids = Booking.objects.filter(
+            status__in=[Booking.Status.CONFIRMED, Booking.Status.CHECKED_IN],
+            check_in_date__lt=check_out,
+            check_out_date__gt=check_in,
+        ).values_list("room_id", flat=True)
+
+        available_rooms = (
+            Room.objects.filter(
+                is_active=True,
+                status=Room.Status.AVAILABLE,
+            )
+            .exclude(id__in=booked_room_ids)
+            .select_related("room_type")
+        )
 
         if room_type:
             available_rooms = available_rooms.filter(room_type=room_type)
@@ -1648,8 +1657,7 @@ class BookingViewSet(viewsets.ModelViewSet):
                 booking.notes = (
                     f"{booking.notes}\n{additional_notes}" if booking.notes else additional_notes
                 )
-            # Store additional charges
-            booking.additional_charges = serializer.validated_data.get("additional_charges", 0)
+            # additional_charges is maintained by FolioItem.save() — do not overwrite
             booking.save()
 
             # Update room status to CLEANING
@@ -5360,20 +5368,20 @@ class OccupancyReportView(APIView):
         if room_type_id:
             bookings_query = bookings_query.filter(room__room_type_id=room_type_id)
 
+        # Fetch all relevant bookings once to avoid N+1 queries
+        all_bookings = list(
+            bookings_query.values_list("check_in_date", "check_out_date", "nightly_rate")
+        )
+
         daily_data = {}
         while current_date <= end_date:
-            # Count rooms occupied on this date
-            occupied = bookings_query.filter(
-                check_in_date__lte=current_date,
-                check_out_date__gt=current_date,
-            ).count()
-
-            # Get revenue for this date (from bookings that include this night)
-            day_bookings = bookings_query.filter(
-                check_in_date__lte=current_date,
-                check_out_date__gt=current_date,
-            )
-            day_revenue = sum(b.nightly_rate for b in day_bookings)
+            # Count rooms occupied and revenue from in-memory list
+            occupied = 0
+            day_revenue = 0
+            for check_in, check_out, nightly_rate in all_bookings:
+                if check_in <= current_date < check_out:
+                    occupied += 1
+                    day_revenue += nightly_rate
 
             daily_data[current_date] = {
                 "date": current_date,

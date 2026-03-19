@@ -8,6 +8,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/minibar.dart';
 import '../../providers/minibar_provider.dart';
+import '../../core/utils/error_utils.dart';
 import '../../widgets/common/loading_indicator.dart';
 
 /// Form screen for creating/editing minibar items
@@ -366,7 +367,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: ${e.toString()}'),
+            content: Text(getLocalizedErrorMessage(e, l10n)),
             backgroundColor: AppColors.error,
           ),
         );
@@ -422,7 +423,7 @@ class _MinibarItemFormScreenState extends ConsumerState<MinibarItemFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('${l10n.error}: ${e.toString()}'),
+            content: Text(getLocalizedErrorMessage(e, l10n)),
             backgroundColor: AppColors.error,
           ),
         );

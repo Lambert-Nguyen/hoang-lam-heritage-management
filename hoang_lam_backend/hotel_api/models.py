@@ -577,7 +577,13 @@ class Booking(models.Model):
     def balance_due(self):
         """Calculate remaining balance including additional charges and fees"""
         total_fees = self.early_check_in_fee + self.late_check_out_fee
-        return self.total_amount + self.additional_charges + total_fees - self.deposit_amount
+        return (
+            self.total_amount
+            + self.additional_charges
+            + total_fees
+            - self.deposit_amount
+            - self.discount_amount
+        )
 
     @property
     def is_hourly(self):
@@ -607,6 +613,7 @@ class FinancialCategory(models.Model):
         verbose_name = "Danh mục tài chính"
         verbose_name_plural = "Danh mục tài chính"
         ordering = ["category_type", "sort_order", "name"]
+        unique_together = [("name", "category_type")]
 
     def __str__(self):
         return f"{self.name} ({self.get_category_type_display()})"
@@ -681,6 +688,11 @@ class FinancialEntry(models.Model):
         verbose_name = "Giao dịch tài chính"
         verbose_name_plural = "Giao dịch tài chính"
         ordering = ["-date", "-created_at"]
+        indexes = [
+            models.Index(fields=["date", "entry_type"]),
+            models.Index(fields=["category", "date"]),
+            models.Index(fields=["payment_method"]),
+        ]
 
     def __str__(self):
         sign = "+" if self.entry_type == self.EntryType.INCOME else "-"
@@ -748,7 +760,9 @@ class Payment(models.Model):
     reference_number = models.CharField(max_length=100, blank=True, verbose_name="Số tham chiếu")
 
     # Receipt
-    receipt_number = models.CharField(max_length=50, blank=True, verbose_name="Số hóa đơn")
+    receipt_number = models.CharField(
+        max_length=50, blank=True, unique=True, null=True, verbose_name="Số hóa đơn"
+    )
     receipt_generated = models.BooleanField(default=False, verbose_name="Đã tạo hóa đơn")
 
     # Notes
@@ -788,10 +802,25 @@ class Payment(models.Model):
         # Generate receipt number if not set
         if not self.receipt_number and self.status == self.Status.COMPLETED:
             from django.utils import timezone
+            from django.db import IntegrityError
 
             date_str = timezone.now().strftime("%Y%m%d")
-            count = Payment.objects.filter(created_at__date=timezone.now().date()).count() + 1
-            self.receipt_number = f"PMT-{date_str}-{count:04d}"
+            for attempt in range(10):
+                count = (
+                    Payment.objects.filter(created_at__date=timezone.now().date()).count()
+                    + 1
+                    + attempt
+                )
+                self.receipt_number = f"PMT-{date_str}-{count:04d}"
+                try:
+                    super().save(*args, **kwargs)
+                    return
+                except IntegrityError:
+                    if attempt == 9:
+                        raise
+                    continue
+        if not self.receipt_number:
+            self.receipt_number = None
         super().save(*args, **kwargs)
 
 
@@ -979,6 +1008,11 @@ class HousekeepingTask(models.Model):
         verbose_name = "Công việc dọn phòng"
         verbose_name_plural = "Công việc dọn phòng"
         ordering = ["-scheduled_date", "room__number"]
+        indexes = [
+            models.Index(fields=["status", "scheduled_date"]),
+            models.Index(fields=["assigned_to", "status"]),
+            models.Index(fields=["task_type", "scheduled_date"]),
+        ]
 
     def __str__(self):
         return f"{self.room.number} - {self.get_task_type_display()}"

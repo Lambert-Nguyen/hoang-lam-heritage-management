@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/finance.dart';
+import '../../core/utils/error_utils.dart';
 import '../../providers/finance_provider.dart';
 
 /// Dialog to record a deposit payment
@@ -76,7 +77,7 @@ class _RecordDepositDialogState extends ConsumerState<RecordDepositDialog> {
       }
     } catch (e) {
       setState(() {
-        _error = e.toString();
+        _error = getLocalizedErrorMessage(e, AppLocalizations.of(context)!);
         _isLoading = false;
       });
     }

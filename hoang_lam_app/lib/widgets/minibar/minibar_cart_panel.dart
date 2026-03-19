@@ -284,13 +284,16 @@ class MinibarCartPanel extends StatelessWidget {
     return InkWell(
       onTap: onPressed,
       borderRadius: BorderRadius.circular(4),
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
-          borderRadius: BorderRadius.circular(4),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+        child: Container(
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Icon(icon, size: 16, color: AppColors.primary),
         ),
-        child: Icon(icon, size: 16, color: AppColors.primary),
       ),
     );
   }

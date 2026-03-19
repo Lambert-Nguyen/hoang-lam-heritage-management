@@ -125,6 +125,7 @@ class _FinanceFormScreenState extends ConsumerState<FinanceFormScreen> {
     return Form(
       key: _formKey,
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: AppSpacing.paddingAll,
         children: [
           // Amount field (prominent)

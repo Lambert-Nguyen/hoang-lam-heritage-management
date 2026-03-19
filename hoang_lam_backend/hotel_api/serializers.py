@@ -153,11 +153,22 @@ class AdminResetPasswordSerializer(serializers.Serializer):
     )
 
     def validate_user_id(self, value):
-        """Validate that the target user exists."""
+        """Validate that the target user exists and requestor has sufficient role."""
         try:
-            User.objects.get(pk=value)
+            target_user = User.objects.get(pk=value)
         except User.DoesNotExist:
             raise serializers.ValidationError("Người dùng không tồn tại.")
+
+        # Prevent resetting password of users with equal or higher role
+        request = self.context.get("request")
+        if request and request.user:
+            role_hierarchy = {"owner": 4, "manager": 3, "staff": 2, "housekeeping": 1}
+            requestor_level = role_hierarchy.get(getattr(request.user, "role", ""), 0)
+            target_level = role_hierarchy.get(getattr(target_user, "role", ""), 0)
+            if target_level >= requestor_level:
+                raise serializers.ValidationError(
+                    "Không có quyền đặt lại mật khẩu cho người dùng này."
+                )
         return value
 
     def validate_new_password(self, value):

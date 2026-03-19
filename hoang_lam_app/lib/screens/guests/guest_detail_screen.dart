@@ -648,7 +648,7 @@ class _GuestDetailScreenState extends ConsumerState<GuestDetailScreen>
               icon: const Icon(Icons.copy, size: 18),
               color: AppColors.textHint,
               onPressed: onCopy,
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
               padding: EdgeInsets.zero,
             ),
         ],

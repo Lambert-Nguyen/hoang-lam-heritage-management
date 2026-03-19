@@ -171,7 +171,7 @@ class BookingCard extends StatelessWidget {
                     booking.actualCheckIn != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    'Check-in: ${DateFormat('HH:mm dd/MM', Localizations.localeOf(context).languageCode).format(booking.actualCheckIn!)}',
+                    '${context.l10n.checkIn}: ${DateFormat('HH:mm dd/MM', Localizations.localeOf(context).languageCode).format(booking.actualCheckIn!)}',
                     style: TextStyle(
                       fontSize: 12,
                       color: AppColors.textSecondary,

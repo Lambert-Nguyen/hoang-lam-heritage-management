@@ -1576,7 +1576,7 @@ class _SplitPaymentDialogState extends State<_SplitPaymentDialog> {
               icon: const Icon(Icons.remove_circle_outline, size: 20),
               onPressed: () => setState(() => _splits.removeAt(index)),
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 32),
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             ),
         ],
       ),

@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/guest.dart';
+import '../../core/utils/error_utils.dart';
 import '../../providers/guest_provider.dart';
 
 /// Widget to display guest booking history
@@ -26,7 +27,11 @@ class GuestHistoryWidget extends ConsumerWidget {
     return historyAsync.when(
       data: (history) => _buildHistory(context, history),
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => _buildError(context, error.toString(), ref),
+      error: (error, stack) => _buildError(
+        context,
+        getLocalizedErrorMessage(error, context.l10n),
+        ref,
+      ),
     );
   }
 

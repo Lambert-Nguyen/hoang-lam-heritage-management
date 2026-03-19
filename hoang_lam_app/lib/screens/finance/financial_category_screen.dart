@@ -751,10 +751,10 @@ class _CategoryFormDialogState extends State<_CategoryFormDialog> {
         final color = _hexToColor(hex);
         return InkWell(
           onTap: () => setState(() => _selectedColor = hex),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           child: Container(
-            width: 36,
-            height: 36,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,

@@ -462,7 +462,7 @@ class _FinanceScreenState extends ConsumerState<FinanceScreen> {
                 _dateTo = null;
               }),
               padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
             ),
         ],
       ),

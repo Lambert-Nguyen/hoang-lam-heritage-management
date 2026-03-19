@@ -401,7 +401,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Check-in'), findsOneWidget);
+      expect(find.textContaining('Nhận phòng'), findsOneWidget);
     });
 
     testWidgets('shows chevron icon when onTap is provided', (tester) async {

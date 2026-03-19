@@ -222,6 +222,7 @@ class _MinibarPosScreenState extends ConsumerState<MinibarPosScreen> {
       padding: const EdgeInsets.all(AppSpacing.md),
       child: TextField(
         controller: _searchController,
+        textInputAction: TextInputAction.search,
         decoration: InputDecoration(
           hintText: l10n.searchProductHint,
           prefixIcon: const Icon(Icons.search),

@@ -165,7 +165,7 @@ class FolioItemListWidget extends StatelessWidget {
                 ),
                 child: Text(
                   context.l10n.voided,
-                  style: TextStyle(fontSize: 10, color: AppColors.error),
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
                 ),
               ),
           ],

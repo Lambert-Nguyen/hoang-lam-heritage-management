@@ -491,17 +491,21 @@ class TestCheckOutFlow:
     def test_checkout_with_additional_charges(
         self, api_client, staff_user, checked_in_booking, income_category
     ):
-        """Checkout with additional charges should include them in financial entry."""
+        """Checkout preserves folio-accumulated additional charges in financial entry."""
         api_client.force_authenticate(user=staff_user)
+
+        # Simulate folio-accumulated charges (as FolioItem.save() would do)
+        checked_in_booking.additional_charges = Decimal("200000")
+        checked_in_booking.save()
 
         resp = api_client.post(
             f"/api/v1/bookings/{checked_in_booking.id}/check-out/",
-            {"additional_charges": "200000"},
             format="json",
         )
         assert resp.status_code == status.HTTP_200_OK
 
         checked_in_booking.refresh_from_db()
+        # additional_charges preserved from folio, not overwritten by checkout
         assert checked_in_booking.additional_charges == Decimal("200000")
 
         # Financial entry should include the additional charges
