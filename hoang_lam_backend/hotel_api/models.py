@@ -1932,8 +1932,9 @@ class GroupBooking(models.Model):
 
     @property
     def balance_due(self):
-        """Calculate remaining balance"""
-        return self.total_amount - self.deposit_amount
+        """Calculate remaining balance after discount"""
+        discount = self.total_amount * self.discount_percent / 100
+        return self.total_amount - discount - self.deposit_amount
 
 
 class RatePlan(models.Model):

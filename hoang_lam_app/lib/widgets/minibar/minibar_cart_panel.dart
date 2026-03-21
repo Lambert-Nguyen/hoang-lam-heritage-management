@@ -61,8 +61,10 @@ class MinibarCartPanel extends StatelessWidget {
                   onPressed: onClear,
                   tooltip: context.l10n.clearAll,
                   iconSize: 20,
-                  constraints: const BoxConstraints(),
-                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(
+                    minWidth: 48,
+                    minHeight: 48,
+                  ),
                 ),
             ],
           ),

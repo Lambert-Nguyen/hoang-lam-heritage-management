@@ -425,9 +425,9 @@ class _BookingFormScreenState extends ConsumerState<BookingFormScreen> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          border: Border.all(color: color.withAlpha(80)),
+          border: Border.all(color: color.withValues(alpha: 0.31)),
           borderRadius: BorderRadius.circular(12),
-          color: color.withAlpha(15),
+          color: color.withValues(alpha: 0.06),
         ),
         child: Column(
           children: [

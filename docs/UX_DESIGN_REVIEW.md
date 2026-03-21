@@ -19,6 +19,7 @@
 - **Round 8 P2 Implementation** (2026-03-17): All P2 items fixed — localized currency names (8 currencies), deprecated .withAlpha()→.withValues(alpha:) (3 instances), RefreshIndicator on 5 detail screens, autoDispose on 9 UI state providers.
 - **Round 9** (2026-03-19): Deep quality + security audit — 4 parallel agents reviewed screens, providers/models, widgets, and backend. 79 issues found across accessibility, performance, security, and data integrity.
 - **Round 9 P0 Implementation** (2026-03-19): All critical/major fixes — backend: booking overlap check, checkout charge preservation, balance_due discount fix, privilege escalation prevention, receipt number race condition, DB indexes/constraints, N+1 query fix. Frontend: DatePickerField memory leak, voided badge visibility, FAB tab bug, raw error strings, touch targets, keyboard handling.
+- **Round 10 Verification** (2026-03-21): Full implementation review of Rounds 8–9 fixes. 25/29 items verified correct, 4 residual issues found and fixed.
 
 ---
 
@@ -1506,3 +1507,31 @@ Double-submission guards, pagination, offline sync completion (R9-22 through R9-
 - `screens/housekeeping/task_form_screen.dart` — keyboardDismissBehavior
 - `screens/housekeeping/maintenance_form_screen.dart` — keyboardDismissBehavior
 - `screens/minibar/minibar_pos_screen.dart` — textInputAction
+
+---
+
+## Round 10 — Implementation Verification (2026-03-21)
+
+> **Method**: Three parallel review agents verified all Round 8–9 fix implementations by reading source code. Checked 29 items across backend fixes, frontend fixes, and widget/P2 fixes.
+
+### Verification Results
+
+**25/29 items verified correct.** 4 residual issues found and fixed:
+
+| # | Severity | File | Issue | Fix Applied |
+|---|----------|------|-------|-------------|
+| R10-1 | Medium | `booking_form_screen.dart:428-430` | 2 remaining `.withAlpha()` calls missed in Round 8 | ✅ Replaced with `.withValues(alpha:)` |
+| R10-2 | Medium | `hotel_api/models.py:1934-1936` | `GroupBooking.balance_due` doesn't subtract `discount_percent` (inconsistent with Booking model) | ✅ Added discount calculation: `total * discount_percent / 100` |
+| R10-3 | Low | `minibar_cart_panel.dart:59-66` | Clear cart button has empty `BoxConstraints()` — touch target below 48px | ✅ Restored `minWidth: 48, minHeight: 48` constraints |
+| R10-4 | Low | `booking_calendar_screen.dart:484-485` | Hardcoded `'Check-in'`/`'Check-out'` filter labels not localized | ✅ Replaced with `l10n.checkIn`/`l10n.checkOut` |
+
+### False Positive Dismissed
+
+- **Navigator.of(ctx).pop() in dialogs** — Agent flagged 20+ instances across 7 files as "not migrated". All are inside `showDialog` callbacks using the dialog's own `ctx`/`dialogContext`. This is correct — dialogs use Flutter's Navigator overlay, not GoRouter routes.
+
+### Files Changed
+
+- `hoang_lam_app/lib/screens/bookings/booking_form_screen.dart` — `.withAlpha()` → `.withValues(alpha:)`
+- `hoang_lam_app/lib/screens/bookings/booking_calendar_screen.dart` — localized filter labels
+- `hoang_lam_app/lib/widgets/minibar/minibar_cart_panel.dart` — touch target constraints
+- `hoang_lam_backend/hotel_api/models.py` — GroupBooking.balance_due discount calculation

@@ -481,8 +481,8 @@ class _BookingCalendarScreenState extends ConsumerState<BookingCalendarScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildFilterOption(l10n.all, 'all'),
-              _buildFilterOption('Check-in', 'check_in'),
-              _buildFilterOption('Check-out', 'check_out'),
+              _buildFilterOption(l10n.checkIn, 'check_in'),
+              _buildFilterOption(l10n.checkOut, 'check_out'),
               _buildFilterOption(l10n.staying, 'staying'),
             ],
           ),
