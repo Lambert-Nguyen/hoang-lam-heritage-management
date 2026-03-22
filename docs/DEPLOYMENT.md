@@ -593,6 +593,15 @@ heroku config:set \
   AWS_SECRET_ACCESS_KEY=your-secret \
   AWS_STORAGE_BUCKET_NAME=hoang-lam-media \
   AWS_S3_REGION_NAME=ap-southeast-1
+
+# If using Cloudflare R2 (S3-compatible, low-cost/free tier):
+heroku config:set \
+  MEDIA_STORAGE_BACKEND=s3 \
+  AWS_ACCESS_KEY_ID=your-r2-access-key \
+  AWS_SECRET_ACCESS_KEY=your-r2-secret-key \
+  AWS_STORAGE_BUCKET_NAME=hoang-lam-media \
+  AWS_S3_REGION_NAME=auto \
+  AWS_S3_ENDPOINT_URL=https://<accountid>.r2.cloudflarestorage.com
 ```
 
 ### 7.3 Deploy
@@ -1017,7 +1026,7 @@ This starts an nginx container that serves `/media/` and `/static/` files, and p
 
 ### Option B: S3-Compatible Storage (Cloud)
 
-For cloud deployments or when you need CDN distribution, use S3-compatible storage (AWS S3, MinIO, DigitalOcean Spaces).
+For cloud deployments or when you need CDN distribution, use S3-compatible storage (AWS S3, Cloudflare R2, MinIO, DigitalOcean Spaces).
 
 **Setup:**
 
@@ -1052,6 +1061,23 @@ AWS_STORAGE_BUCKET_NAME=hoang-lam-media
 AWS_S3_REGION_NAME=sgp1
 AWS_S3_ENDPOINT_URL=https://sgp1.digitaloceanspaces.com
 ```
+
+**For Cloudflare R2 (recommended free-tier option for Heroku):**
+
+```bash
+MEDIA_STORAGE_BACKEND=s3
+AWS_ACCESS_KEY_ID=your-r2-access-key
+AWS_SECRET_ACCESS_KEY=your-r2-secret-key
+AWS_STORAGE_BUCKET_NAME=hoang-lam-media
+AWS_S3_REGION_NAME=auto
+AWS_S3_ENDPOINT_URL=https://<accountid>.r2.cloudflarestorage.com
+```
+
+R2 setup notes:
+
+- Create an R2 bucket and API token with read/write permissions.
+- Keep objects private and let the app generate signed URLs.
+- Optionally put Cloudflare CDN in front later using `AWS_S3_CUSTOM_DOMAIN`.
 
 ### Security Notes
 
