@@ -550,83 +550,142 @@ flutter build apk --release --dart-define=ENV=staging
 
 ## 7. Heroku Deployment (PaaS)
 
-A simpler alternative to VPS — Heroku manages the infrastructure. Suitable for small-scale deployments.
+A simpler alternative to VPS — Heroku manages the infrastructure. Recommended for small-scale deployments with Cloudflare R2 for media storage.
 
 ### 7.1 Cost Estimate
 
-| Resource | Monthly |
-|----------|---------|
-| Eco dyno (backend) | $5 |
-| Mini Postgres (10K rows, 1GB) | $5 |
-| Custom domain SSL | Free (ACM) |
-| **Total (no Celery)** | **$10/mo** |
+| Resource | Plan | Monthly |
+|----------|------|---------|
+| Heroku Eco Dyno (backend) | Eco | $5 |
+| Heroku Postgres | Mini (10K rows, 1GB) | $5 |
+| Cloudflare R2 | Free (10 GB storage, 10M reads/writes) | $0 |
+| Heroku Scheduler | Standard | $0 |
+| Custom domain SSL | ACM (auto-managed) | $0 |
+| **Total (recommended)** | | **$10/mo** |
 
-> Eco dynos sleep after 30 min of inactivity. First request after sleep takes ~10s to wake.
+Optional add-ons:
 
-### 7.2 Initial Setup
+| Resource | Plan | Monthly |
+|----------|------|---------|
+| Heroku Redis (for Celery) | Mini (25 MB) | +$3 |
+| Heroku Postgres upgrade | Basic (10M rows, 10GB) | +$4 (=$9 total) |
+
+> **Eco dyno limitations:** Sleeps after 30 min of inactivity. First request after sleep takes 5–10s to wake. 512 MB RAM. Acceptable for an internal hotel management tool.
+
+### 7.2 Step 1 — Create Heroku App
 
 ```bash
 # Install Heroku CLI: https://devcenter.heroku.com/articles/heroku-cli
+brew tap heroku/brew && brew install heroku   # macOS
 heroku login
 
 # Create the app
 heroku create hoang-lam-heritage
 
-# Add Postgres
+# Add PostgreSQL
 heroku addons:create heroku-postgresql:mini
-
-# Set config vars
-heroku config:set \
-  DJANGO_ENVIRONMENT=production \
-  DJANGO_SECRET_KEY="$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')" \
-  ALLOWED_HOSTS=hoang-lam-heritage.herokuapp.com \
-  CORS_ALLOWED_ORIGINS=https://hoang-lam-heritage.herokuapp.com \
-  FIELD_ENCRYPTION_KEY="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')" \
-  HASH_PEPPER="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')" \
-  FCM_ENABLED=False \
-  SMS_ENABLED=False \
-  MEDIA_STORAGE_BACKEND=s3
-
-# If using S3 for media:
-heroku config:set \
-  AWS_ACCESS_KEY_ID=your-key \
-  AWS_SECRET_ACCESS_KEY=your-secret \
-  AWS_STORAGE_BUCKET_NAME=hoang-lam-media \
-  AWS_S3_REGION_NAME=ap-southeast-1
-
-# If using Cloudflare R2 (S3-compatible, low-cost/free tier):
-heroku config:set \
-  MEDIA_STORAGE_BACKEND=s3 \
-  AWS_ACCESS_KEY_ID=your-r2-access-key \
-  AWS_SECRET_ACCESS_KEY=your-r2-secret-key \
-  AWS_STORAGE_BUCKET_NAME=hoang-lam-media \
-  AWS_S3_REGION_NAME=auto \
-  AWS_S3_ENDPOINT_URL=https://<accountid>.r2.cloudflarestorage.com
 ```
 
-### 7.3 Deploy
+### 7.3 Step 2 — Set Up Cloudflare R2
+
+Cloudflare R2 provides S3-compatible object storage with a generous free tier (10 GB, no egress fees). This replaces Heroku's ephemeral filesystem for media uploads.
+
+1. **Create a bucket:**
+   - Go to [Cloudflare Dashboard](https://dash.cloudflare.com) → R2 → **Create Bucket**
+   - Bucket name: `hoang-lam-media`
+   - Location hint: Asia Pacific (closest to Vietnam)
+
+2. **Create an API token:**
+   - Go to R2 → **Manage R2 API Tokens** → **Create API Token**
+   - Permissions: **Object Read & Write**
+   - Scope: Apply to `hoang-lam-media` bucket only
+   - Save the **Access Key ID** and **Secret Access Key** (shown only once)
+
+3. **Note your Account ID** from the Cloudflare dashboard URL or R2 overview page.
+
+4. **(Optional) Enable public access for CDN:**
+   - In R2 → `hoang-lam-media` → **Settings** → **Public Access**
+   - Connect a custom domain (e.g., `media.yourdomain.com`)
+   - This lets media files be served via Cloudflare CDN instead of signed URLs
+
+> **R2 Free Plan Limits:** 10 GB storage, 10M Class A (write) operations, 10M Class B (read) operations per month. No egress fees.
+
+### 7.4 Step 3 — Generate Security Keys
+
+Run these locally to generate required secrets:
 
 ```bash
-# Heroku expects the app root in the repo root.
-# Since Django is in hoang_lam_backend/, set the project path:
-heroku config:set PROJECT_PATH=hoang_lam_backend
+# Django secret key
+python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 
-# Push to Heroku (from repo root)
-# Option A: If hoang_lam_backend is in a subdirectory, use subtree push:
+# Fernet encryption key (for guest ID/passport encryption)
+python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+
+# Hash pepper (for CCCD hash lookups)
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+> **Back up these keys securely.** If `FIELD_ENCRYPTION_KEY` is lost, encrypted guest data cannot be recovered.
+
+### 7.5 Step 4 — Configure Environment Variables
+
+```bash
+# Core Django settings
+heroku config:set \
+  DJANGO_ENVIRONMENT=production \
+  DJANGO_SECRET_KEY='<generated-secret-key>' \
+  DEBUG=False \
+  ALLOWED_HOSTS=hoang-lam-heritage-xxxx.herokuapp.com \
+  CORS_ALLOWED_ORIGINS=https://hoang-lam-heritage-xxxx.herokuapp.com
+
+# Security / Encryption
+heroku config:set \
+  FIELD_ENCRYPTION_KEY='<generated-fernet-key>' \
+  HASH_PEPPER='<generated-hash-pepper>'
+
+# Cloudflare R2 (media storage)
+heroku config:set \
+  MEDIA_STORAGE_BACKEND=s3 \
+  AWS_ACCESS_KEY_ID='<r2-access-key-id>' \
+  AWS_SECRET_ACCESS_KEY='<r2-secret-access-key>' \
+  AWS_STORAGE_BUCKET_NAME=hoang-lam-media \
+  AWS_S3_REGION_NAME=auto \
+  AWS_S3_ENDPOINT_URL='https://<cloudflare-account-id>.r2.cloudflarestorage.com'
+
+# Optional: If you set up R2 public access with a custom domain
+heroku config:set AWS_S3_CUSTOM_DOMAIN=media.yourdomain.com
+
+# Disable services not needed initially
+heroku config:set \
+  FCM_ENABLED=False \
+  SMS_ENABLED=False
+```
+
+Replace `hoang-lam-heritage-xxxx` with the actual app name Heroku assigned.
+
+### 7.6 Step 5 — Deploy
+
+Since Django is in the `hoang_lam_backend/` subdirectory, use one of these approaches:
+
+```bash
+# Option A: git subtree (simpler, no extra buildpack)
 git subtree push --prefix hoang_lam_backend heroku main
 
-# Option B: Or set the Heroku buildpack to use subdirectory:
+# Option B: Subdirectory buildpack (supports standard git push)
 heroku buildpacks:set https://github.com/timanovsky/subdir-heroku-buildpack
 heroku buildpacks:add heroku/python
 heroku config:set PROJECT_PATH=hoang_lam_backend
 git push heroku main
 ```
 
-The `release` phase in the Procfile automatically runs migrations and `collectstatic`.
+The `release` phase in the Procfile automatically runs `migrate` and `collectstatic`.
 
-### 7.4 First-Time Setup (After Deploy)
+### 7.7 Step 6 — First-Time Setup (After Deploy)
 
 ```bash
+# Verify deployment
+heroku logs --tail
+
 # Create admin user
 heroku run python manage.py createsuperuser
 
@@ -637,12 +696,38 @@ heroku run python manage.py seed_financial_categories
 heroku run python manage.py seed_nationalities
 heroku run python manage.py seed_message_templates
 
-# Encrypt existing guest data (if FIELD_ENCRYPTION_KEY is set)
+# Encrypt existing guest data (if migrating from an existing database)
 heroku run python manage.py encrypt_guest_data --dry-run
 heroku run python manage.py encrypt_guest_data
+
+# Verify API is working
+heroku open /api/schema/swagger-ui/
+heroku open /admin/
 ```
 
-### 7.5 Useful Heroku Commands
+### 7.8 Step 7 — Set Up Heroku Scheduler (Celery Alternative)
+
+Without Redis, Celery Beat cannot run scheduled tasks. Heroku Scheduler is a free alternative for cron-like jobs.
+
+```bash
+# Add the Scheduler add-on (free)
+heroku addons:create scheduler:standard
+```
+
+Then go to the **Heroku Dashboard → your app → Heroku Scheduler** and add these jobs:
+
+| Schedule | Command | Purpose |
+|----------|---------|---------|
+| Daily at 09:00 UTC | `python manage.py send_checkin_reminders` | Check-in reminders |
+| Daily at 08:00 UTC | `python manage.py send_checkout_reminders` | Check-out reminders |
+| Daily at 02:00 UTC | `python manage.py flushexpiredtokens` | Clean up expired JWT tokens |
+| Every Sunday at 03:00 UTC | `python manage.py apply_retention_policy` | Data retention cleanup |
+
+> **Note:** Heroku Scheduler runs jobs as one-off dynos. Jobs may occasionally be skipped or run late — this is acceptable for maintenance tasks but not for time-critical operations.
+
+> **Upgrading to Celery later:** If you need reliable task scheduling, add Heroku Redis Mini ($3/mo), set `CELERY_BROKER_URL` to the Redis URL, and add a `worker` process to the Procfile: `worker: celery -A backend worker -l info`. Celery Beat schedule in `base.py` will take over automatically.
+
+### 7.9 Useful Heroku Commands
 
 ```bash
 # View logs (live)
@@ -658,18 +743,22 @@ heroku open /admin/
 # Check database info
 heroku pg:info
 
-# Database backup
-heroku pg:backups:capture
-heroku pg:backups:download
+# Database backup (automatic daily backups included with Mini plan)
+heroku pg:backups:capture        # Manual backup
+heroku pg:backups:download       # Download latest backup
+heroku pg:backups:schedule --at '03:00 Asia/Ho_Chi_Minh'  # Schedule daily backup
 
 # Restart dyno
 heroku restart
 
-# Open Rails-like console
+# Django shell
 heroku run python manage.py shell
+
+# Check config vars
+heroku config
 ```
 
-### 7.6 Custom Domain (Later)
+### 7.10 Custom Domain (Optional)
 
 ```bash
 # Add your domain
@@ -691,7 +780,7 @@ After adding a custom domain, update:
 - `CORS_ALLOWED_ORIGINS` to include the new domain
 - Flutter `env_config.dart` default URLs (or use `--dart-define=API_BASE_URL=...`)
 
-### 7.7 Flutter App Pointing to Heroku
+### 7.11 Flutter App Pointing to Heroku
 
 Build the mobile app with the Heroku backend URL:
 
@@ -706,15 +795,16 @@ flutter build apk --release \
 # Or via Fastlane (add --dart-define to Fastfile flutter build command)
 ```
 
-### 7.8 Heroku Limitations
+### 7.12 Heroku Limitations & Workarounds
 
 | Limitation | Impact | Workaround |
 |------------|--------|------------|
-| Eco dyno sleeps after 30 min | First request takes ~10s | Acceptable for family hotel app |
-| Ephemeral filesystem | Uploaded files lost on restart | Use S3 for media (`MEDIA_STORAGE_BACKEND=s3`) |
-| No Celery without Redis add-on | Scheduled tasks don't run | Run manually: `heroku run python manage.py apply_retention_policy` |
-| 10K row limit on Mini Postgres | May need upgrade eventually | Monitor with `heroku pg:info` |
+| Eco dyno sleeps after 30 min | First request takes 5–10s | Acceptable for internal hotel app; upgrade to Basic ($7/mo) for always-on |
+| Ephemeral filesystem | Uploaded files lost on restart | Use Cloudflare R2 (`MEDIA_STORAGE_BACKEND=s3`) |
+| No Celery without Redis | Scheduled tasks need alternative | Use Heroku Scheduler (free) — see Step 7 |
+| 10K row limit on Mini Postgres | May need upgrade eventually | Monitor with `heroku pg:info`; upgrade to Basic ($9/mo) for 10M rows |
 | 30s request timeout | Long reports may timeout | Optimize queries, paginate results |
+| 512 MB RAM | Limited to ~2 Gunicorn workers | Sufficient for low-traffic internal tool |
 
 ---
 
